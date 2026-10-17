@@ -75,8 +75,8 @@ Tìm **Agent Meeting** trong menu. Bấm vào sẽ mở một cửa sổ termina
 | Bước | Bạn làm gì |
 |---|---|
 | 1 | Mở trang chủ trì, viết **bối cảnh/chủ đề** họp. Có thể đặt **điều kiện kết thúc** (tuỳ chọn). |
-| 2 | Trong khung **Mời agent vào họp**, chọn loại agent rồi sao chép lệnh và prompt. Gửi cho từng máy. |
-| 3 | Mỗi agent chạy lệnh (một lần) và nhận prompt. Slot trên trang tăng dần: *slot 1, slot 2...* |
+| 2 | Trong khung **Mời agent vào họp**, bấm **📋 Sao chép prompt** (tab *Dán là vào ngay* hoặc tab đúng loại agent). |
+| 3 | Dán đúng một prompt đó cho từng agent. Agent tự cài MCP (nếu cần) rồi tự vào họp. Slot trên trang tăng dần: *slot 1, slot 2...* |
 | 4 | Bấm **Bắt đầu cuộc họp**. Agent đọc bối cảnh và tự trao đổi. Bạn xem trực tiếp. |
 | 5 | Muốn dừng sớm: **Kết thúc cuộc họp**. Không bấm thì agent tự chốt rồi rời phòng. |
 

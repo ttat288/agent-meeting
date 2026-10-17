@@ -102,33 +102,43 @@ const colorOf = (name) => { let h = 0; for (const c of name) h = (h * 31 + c.cha
 const STATUS = { listening: 'đang nghe', thinking: 'đang soạn tin…', idle: 'có mặt', left: 'đã rời' };
 let inviteBuilt = false;
 
-function copy(text, btn) {
-  const done = () => { const t = btn.textContent; btn.textContent = 'Đã chép ✓'; setTimeout(() => btn.textContent = t, 1400); };
+function copy(text, btn, label) {
+  const done = () => { btn.textContent = 'Đã chép ✓'; setTimeout(() => btn.textContent = label, 1400); };
   if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, () => fallback());
   else fallback();
   function fallback() { const a = document.createElement('textarea'); a.value = text; document.body.append(a); a.select(); document.execCommand('copy'); a.remove(); done(); }
 }
-function block(title, text) {
+function block(title, text, primary) {
   const wrap = document.createElement('div');
   const cap = document.createElement('div'); cap.className = 'cap'; cap.textContent = title;
   const pre = document.createElement('pre'); pre.textContent = text;
-  const b = document.createElement('button'); b.className = 'sec sm'; b.textContent = 'Sao chép'; b.onclick = () => copy(text, b);
+  const b = document.createElement('button'); b.className = primary ? '' : 'sec sm';
+  const label = primary ? '📋 Sao chép prompt này' : 'Sao chép'; b.textContent = label;
+  b.onclick = () => copy(text, b, label);
   wrap.append(cap, pre, b); return wrap;
 }
 function buildInvite(agentId) {
   const o = location.origin, mcp = `${o}/mcp/${agentId}`, base = `${o}/a/${agentId}`;
-  const mcpPrompt = 'Tham gia cuộc họp bằng MCP "agent-meeting": gọi join(name="<tên ngắn của bạn, ví dụ Claude>"), làm đúng giao thức nó trả về, rồi vào vòng lặp wait/say cho đến khi cuộc họp kết thúc.';
-  const curlPrompt = `Tham gia cuộc họp nhiều agent bằng curl. Bước 1: chạy lệnh sau (đổi TÊN thành tên ngắn của bạn, ví dụ GPT):\ncurl -s -X POST "${base}/join" --data-urlencode "name=TÊN"\nSau đó làm đúng giao thức nó trả về (vòng lặp nghe/nói bằng curl) cho đến khi cuộc họp kết thúc.`;
+  const curlSteps = `Chạy lệnh sau (đổi TÊN thành tên ngắn của bạn, ví dụ GPT):\ncurl -s -X POST "${base}/join" --data-urlencode "name=TÊN"\nRồi làm đúng giao thức nó trả về (vòng lặp nghe/nói bằng curl) cho đến khi cuộc họp kết thúc.`;
+  const curlPrompt = `Hãy tham gia một cuộc họp nhiều agent. ${curlSteps}`;
+  // Một prompt duy nhất: tự cài MCP, và có sẵn đường lui bằng curl nếu MCP chưa nạp được ngay
+  const combined = (cmd) => `Hãy tham gia một cuộc họp nhiều agent.
+
+Cách 1 (MCP): chạy lệnh shell sau để cài MCP "agent-meeting":
+${cmd}
+Nếu công cụ của bạn cần mở lại phiên để nạp MCP thì báo tôi mở lại, rồi gọi join(name="<tên ngắn của bạn, ví dụ Claude>"), làm đúng giao thức nó trả về và lặp wait/say cho đến khi cuộc họp kết thúc.
+
+Cách 2 (dùng ngay, không cần cài, nếu MCP chưa dùng được): ${curlSteps}`;
   const tabs = {
-    'Claude Code': [['Bước 1 · chạy trên máy có agent, rồi mở lại phiên', `claude mcp add --transport http agent-meeting ${mcp}`], ['Bước 2 · dán cho agent', mcpPrompt]],
-    'Codex CLI': [['Bước 1 · chạy trên máy có agent, rồi mở lại phiên', `codex mcp add agent-meeting --url ${mcp}`], ['Bước 2 · dán cho agent', mcpPrompt]],
-    'Gemini CLI': [['Bước 1 · chạy trên máy có agent, rồi mở lại phiên', `gemini mcp add --transport http agent-meeting ${mcp}`], ['Bước 2 · dán cho agent', mcpPrompt]],
-    'Agent bất kỳ (curl)': [['Chỉ cần dán, không cấu hình gì · agent phải chạy được shell/curl', curlPrompt]],
+    'Dán là vào ngay': [['Dùng được với mọi agent chạy được shell/curl, không cần cài hay mở lại phiên. Dán thẳng cho agent:', curlPrompt, true]],
+    'Claude Code': [['Dán thẳng cho agent: nó tự cài MCP rồi vào họp (có đường lui bằng curl):', combined(`claude mcp add --transport http agent-meeting ${mcp}`), true], ['Hoặc tự cài thủ công rồi mở lại phiên:', `claude mcp add --transport http agent-meeting ${mcp}`]],
+    'Codex CLI': [['Dán thẳng cho agent: nó tự cài MCP rồi vào họp (có đường lui bằng curl):', combined(`codex mcp add agent-meeting --url ${mcp}`), true], ['Hoặc tự cài thủ công rồi mở lại phiên:', `codex mcp add agent-meeting --url ${mcp}`]],
+    'Gemini CLI': [['Dán thẳng cho agent: nó tự cài MCP rồi vào họp (có đường lui bằng curl):', combined(`gemini mcp add --transport http agent-meeting ${mcp}`), true], ['Hoặc tự cài thủ công rồi mở lại phiên:', `gemini mcp add --transport http agent-meeting ${mcp}`]],
   };
   const tabsEl = $('tabs'), body = $('tabBody');
   Object.entries(tabs).forEach(([name, blocks], i) => {
     const t = document.createElement('button'); t.className = 'tab' + (i ? '' : ' on'); t.textContent = name;
-    const show = () => { [...tabsEl.children].forEach(c => c.classList.toggle('on', c === t)); body.replaceChildren(...blocks.map(([a, b]) => block(a, b))); };
+    const show = () => { [...tabsEl.children].forEach(c => c.classList.toggle('on', c === t)); body.replaceChildren(...blocks.map(([a, b, p]) => block(a, b, p))); };
     t.onclick = show; tabsEl.append(t); if (!i) show();
   });
 }

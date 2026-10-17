@@ -4,115 +4,157 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { Meeting } = require('./meeting');
+const pkg = require('../package.json');
 
-const UI = fs.readFileSync(path.join(__dirname, 'ui.html'), 'utf8');
+const UI_DIR = path.join(__dirname, 'ui');
+const ASSETS = {
+  '/assets/app.css': ['app.css', 'text/css; charset=utf-8'],
+  '/assets/app.js': ['app.js', 'text/javascript; charset=utf-8'],
+  '/favicon.svg': ['favicon.svg', 'image/svg+xml'],
+};
 const TTL_MS = 3 * 3600 * 1000;       // họp nhàn rỗi quá 3 giờ thì xóa
-const ENDED_TTL_MS = 15 * 60 * 1000;  // họp đã kết thúc thì xóa sau 15 phút
+const ENDED_TTL_MS = 30 * 60 * 1000;  // họp đã kết thúc thì xóa sau 30 phút
+const GONE_TEXT = 'Phòng họp không tồn tại hoặc đã bị xóa (app đã tắt, hoặc cuộc họp kết thúc quá lâu). Hãy dừng lại, không gọi thêm tool.';
 
 const str = (d) => ({ type: 'string', description: d });
+const named = (extra = {}, req = []) => ({ type: 'object', properties: { name: str('Tên bạn đã join'), ...extra }, required: ['name', ...req] });
 const TOOLS = [
-  { name: 'join', description: 'Vào cuộc họp. Trả về giao thức bạn phải tuân theo. Gọi đầu tiên.',
+  { name: 'join', description: 'Vào cuộc họp. Trả về tên bạn được gán và giao thức phải tuân theo. Gọi đầu tiên.',
     inputSchema: { type: 'object', properties: { name: str('Tên ngắn của bạn, ví dụ Claude hoặc GPT') } } },
-  { name: 'wait', description: 'Chờ (không tốn token) tới khi có tin mới hoặc hệ thống cần bạn quyết định. Nếu báo "Chưa có tin mới" thì gọi lại.',
-    inputSchema: { type: 'object', properties: { name: str('Tên bạn đã join') }, required: ['name'] } },
-  { name: 'say', description: 'Phát biểu trong cuộc họp. Chỉ nói khi có đóng góp mới.',
-    inputSchema: { type: 'object', properties: { name: str('Tên bạn đã join'), text: str('Nội dung ngắn gọn') }, required: ['name', 'text'] } },
-  { name: 'typing', description: 'Báo mọi người biết bạn đang soạn câu trả lời dài, để không ai tưởng cuộc họp đã im.',
-    inputSchema: { type: 'object', properties: { name: str('Tên bạn đã join') }, required: ['name'] } },
-  { name: 'leave', description: 'Rời phòng khi không còn gì để bàn. Sau đó dừng, không gọi thêm tool.',
-    inputSchema: { type: 'object', properties: { name: str('Tên bạn đã join'), reason: str('Lý do ngắn (tùy chọn)') }, required: ['name'] } },
+  { name: 'wait', description: 'Chờ (không tốn token) tới khi có tin mới, tới lượt bạn, hoặc hệ thống cần bạn quyết định. Nếu báo "Chưa có tin mới" thì gọi lại.', inputSchema: named() },
+  { name: 'say', description: 'Phát biểu trong cuộc họp. Chỉ nói khi có đóng góp mới. Tin chốt cuối bắt đầu bằng "KẾT LUẬN:".', inputSchema: named({ text: str('Nội dung ngắn gọn') }, ['text']) },
+  { name: 'pass', description: 'Bỏ lượt khi tới lượt mà không có gì mới (chế độ lần lượt).', inputSchema: named() },
+  { name: 'typing', description: 'Báo mọi người biết bạn đang soạn câu trả lời dài, để không ai tưởng cuộc họp đã im.', inputSchema: named() },
+  { name: 'leave', description: 'Rời phòng khi không còn gì để bàn. Sau đó dừng, không gọi thêm tool.', inputSchema: named({ reason: str('Lý do ngắn (tuỳ chọn)') }) },
   { name: 'history', description: 'Đọc toàn bộ lịch sử cuộc họp.', inputSchema: { type: 'object', properties: {} } },
 ];
 const INSTRUCTIONS = 'Phòng họp nhiều agent. Bắt đầu bằng join(name) rồi làm theo giao thức nó trả về: lặp wait -> say cho tới khi cuộc họp kết thúc, và leave khi không còn gì để bàn.';
 
 async function invoke(m, tool, a = {}, how) {
+  if (!TOOLS.some(t => t.name === tool)) return null;
+  if (!m) return GONE_TEXT;
   switch (tool) {
     case 'join': return m.join(a.name, how);
     case 'wait': return m.wait(a.name);
     case 'say': return m.say(a.name, a.text);
+    case 'pass': return m.pass(a.name);
     case 'typing': return m.typing(a.name);
     case 'leave': return m.leave(a.name, a.reason);
     case 'history': return m.history();
-    default: return null;
   }
 }
 
 async function rpc(m, msg) {
+  if (!msg || typeof msg !== 'object') return { jsonrpc: '2.0', id: null, error: { code: -32600, message: 'invalid request' } };
   const ok = (result) => ({ jsonrpc: '2.0', id: msg.id, result });
   const err = (code, message) => ({ jsonrpc: '2.0', id: msg.id, error: { code, message } });
-  if (msg.id === undefined) return null; // notification
+  if (msg.id === undefined || msg.id === null) return null; // notification
   switch (msg.method) {
     case 'initialize': return ok({ protocolVersion: msg.params?.protocolVersion || '2025-03-26', capabilities: { tools: {} },
-      serverInfo: { name: 'agent-meeting', version: '1.0.0' }, instructions: INSTRUCTIONS });
+      serverInfo: { name: 'agent-meeting', version: pkg.version }, instructions: INSTRUCTIONS });
     case 'ping': return ok({});
     case 'tools/list': return ok({ tools: TOOLS });
     case 'tools/call': {
       const text = await invoke(m, msg.params?.name, msg.params?.arguments || {}, null);
-      return text === null ? err(-32601, 'unknown tool') : ok({ content: [{ type: 'text', text }] });
+      return text === null ? err(-32602, 'unknown tool: ' + msg.params?.name) : ok({ content: [{ type: 'text', text }] });
     }
     default: return err(-32601, 'method not found');
   }
 }
 
-const readBody = (req) => new Promise(res => { let b = ''; req.on('data', c => { b += c; if (b.length > 1e6) req.destroy(); }); req.on('end', () => res(b)); });
+const readBody = (req) => new Promise((res, rej) => {
+  let b = ''; req.setEncoding('utf8');
+  req.on('data', c => { b += c; if (b.length > 1e6) { rej(new Error('body too large')); req.destroy(); } });
+  req.on('end', () => res(b)); req.on('error', rej);
+});
 const parseArgs = (u, raw) => {
   let d = {};
   if (raw) { try { d = JSON.parse(raw); } catch { d = Object.fromEntries(new URLSearchParams(raw)); } }
-  return { ...Object.fromEntries(u.searchParams), ...d };
+  return { ...Object.fromEntries(u.searchParams), ...(d && typeof d === 'object' ? d : {}) };
 };
+const SECURITY = {
+  'x-content-type-options': 'nosniff',
+  'referrer-policy': 'no-referrer',            // không để link chủ trì lộ qua Referer
+  'x-frame-options': 'DENY',
+};
+const CSP = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 
 function createApp(cfg = {}) {
   const byAgent = new Map(), byHost = new Map();
-  const create = () => { const m = new Meeting(cfg); byAgent.set(m.id, m); byHost.set(m.hostKey, m); return m; };
+  let publicOrigin = null; // địa chỉ công khai (tunnel) để prompt mời luôn dùng được từ máy khác
+  const assets = Object.fromEntries(Object.entries(ASSETS).map(([k, [f, type]]) => [k, { body: fs.readFileSync(path.join(UI_DIR, f)), type }]));
+  const index = fs.readFileSync(path.join(UI_DIR, 'index.html'));
+  const create = (overrides = {}) => { const m = new Meeting({ ...cfg, ...overrides }); byAgent.set(m.id, m); byHost.set(m.hostKey, m); return m; };
   const sweep = setInterval(() => {
-    for (const m of byAgent.values())
-      if (Date.now() - m.touched > (m.state === 'ENDED' ? ENDED_TTL_MS : TTL_MS)) { byAgent.delete(m.id); byHost.delete(m.hostKey); }
+    for (const m of byHost.values())
+      if (Date.now() - m.touched > (m.state === 'ENDED' ? ENDED_TTL_MS : TTL_MS)) {
+        m.stop('quá lâu không hoạt động'); byHost.delete(m.hostKey);
+        if (byAgent.get(m.id) === m) byAgent.delete(m.id);
+      }
   }, 60000);
   sweep.unref();
 
   const server = http.createServer(async (req, res) => {
     const u = new URL(req.url, 'http://x'), p = u.pathname;
     const origin = (req.headers['x-forwarded-proto'] || 'http') + '://' + req.headers.host;
-    const text = (code, t) => { res.writeHead(code, { 'content-type': 'text/plain; charset=utf-8' }); res.end(t); };
-    const json = (code, o) => { res.writeHead(code, { 'content-type': 'application/json' }); res.end(JSON.stringify(o)); };
+    const send = (code, type, body, extra) => { res.writeHead(code, { 'content-type': type, ...SECURITY, ...extra }); res.end(body); };
+    const text = (code, t) => send(code, 'text/plain; charset=utf-8', t);
+    const json = (code, o) => send(code, 'application/json; charset=utf-8', JSON.stringify(o), { 'cache-control': 'no-store' });
     let m;
     try {
       if (p === '/') return text(200, 'agent-meeting đang chạy. Hãy mở link chủ trì in ra ở terminal.');
+      if (p === '/healthz') return json(200, { ok: true, version: pkg.version });
+      if (ASSETS[p]) return send(200, assets[p].type, assets[p].body, { 'cache-control': 'no-cache' });
 
       // Giao diện chủ trì
-      if ((m = p.match(/^\/m\/(\w+)$/))) {
-        res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' }); return res.end(UI);
-      }
-      if ((m = p.match(/^\/api\/host\/(\w+)\/(state|start|stop)$/))) {
-        const mt = byHost.get(m[1]); if (!mt) return json(404, { error: 'no meeting' });
-        if (m[2] === 'start') { const d = parseArgs(u, await readBody(req)); return json(200, { ok: mt.start(d.context, d.endCondition) }); }
-        if (m[2] === 'stop') { mt.stop(); return json(200, { ok: true }); }
-        // long-poll thay cho SSE vì tunnel miễn phí của Cloudflare không hỗ trợ SSE
-        const v = Number.parseInt(u.searchParams.get('v'), 10);
-        return json(200, await mt.changedSince(Number.isNaN(v) ? -1 : v, 25000));
+      if ((m = p.match(/^\/m\/(\w+)$/)))
+        return send(byHost.has(m[1]) ? 200 : 404, 'text/html; charset=utf-8', index, { 'cache-control': 'no-store', 'content-security-policy': CSP });
+
+      if ((m = p.match(/^\/api\/host\/(\w+)\/(state|start|stop|say|kick|new)$/))) {
+        const mt = byHost.get(m[1]); if (!mt) return json(404, { error: 'Không tìm thấy cuộc họp (app đã khởi động lại?).' });
+        const act = m[2];
+        if (act === 'state') {
+          const v = Number.parseInt(u.searchParams.get('v'), 10), from = Number.parseInt(u.searchParams.get('from'), 10);
+          // long-poll thay cho SSE vì tunnel miễn phí của Cloudflare không hỗ trợ SSE
+          return json(200, { ...(await mt.changedSince(Number.isNaN(v) ? -1 : v, 25000, Number.isNaN(from) ? 0 : from)), origin: publicOrigin || origin });
+        }
+        if (req.method !== 'POST') return json(405, { error: 'POST only' });
+        const d = parseArgs(u, await readBody(req));
+        if (act === 'start') return json(200, { ok: mt.start(d.context, d.endCondition, d.settings) });
+        if (act === 'stop') { mt.stop(); return json(200, { ok: true }); }
+        if (act === 'say') return json(200, { ok: mt.hostSay(d.text) });
+        if (act === 'kick') return json(200, { ok: mt.kick(d.name) });
+        if (act === 'new') {
+          // Cuộc họp nối tiếp dùng lại mã agent: agent đã cài MCP không phải cài lại.
+          if (mt.state === 'LIVE') mt.stop('chủ trì mở cuộc họp mới');
+          const s = mt.cfg, n = create({ id: mt.id, mode: s.mode, maxMsgs: s.maxMsgs, idleMs: s.idleMs, timeLimitMin: s.timeLimitMin });
+          return json(200, { hostKey: n.hostKey });
+        }
       }
 
       // API cho agent dạng văn bản (curl)
       if ((m = p.match(/^\/a\/(\w+)\/(\w+)$/))) {
-        const mt = byAgent.get(m[1]); if (!mt) return text(404, 'Phòng không tồn tại hoặc đã bị xóa.');
+        const mt = byAgent.get(m[1]);
         const raw = req.method === 'POST' ? await readBody(req) : '';
-        const out = await invoke(mt, m[2], parseArgs(u, raw), { base: `${origin}/a/${mt.id}` });
-        return out === null ? text(404, 'tool không tồn tại') : text(200, out);
+        const out = await invoke(mt, m[2], parseArgs(u, raw), { base: `${origin}/a/${m[1]}` });
+        return out === null ? text(404, `Không có lệnh "${m[2]}". Các lệnh: ${TOOLS.map(t => t.name).join(', ')}.`) : text(200, out);
       }
 
-      // MCP (JSON-RPC qua HTTP)
+      // MCP (JSON-RPC qua HTTP, Streamable HTTP không phiên)
       if ((m = p.match(/^\/mcp\/(\w+)$/))) {
-        const mt = byAgent.get(m[1]); if (!mt) return json(404, { error: 'no meeting' });
-        if (req.method !== 'POST') { res.writeHead(405); return res.end(); }
-        const msg = JSON.parse(await readBody(req));
+        if (req.method !== 'POST') { res.writeHead(405, { allow: 'POST', ...SECURITY }); return res.end(); }
+        const mt = byAgent.get(m[1]) || null;
+        let msg;
+        try { msg = JSON.parse(await readBody(req)); } catch { return json(400, { jsonrpc: '2.0', id: null, error: { code: -32700, message: 'parse error' } }); }
         const out = Array.isArray(msg) ? (await Promise.all(msg.map(x => rpc(mt, x)))).filter(Boolean) : await rpc(mt, msg);
-        if (!out || (Array.isArray(out) && !out.length)) { res.writeHead(202); return res.end(); }
+        if (!out || (Array.isArray(out) && !out.length)) { res.writeHead(202, SECURITY); return res.end(); }
         return json(200, out);
       }
       text(404, 'not found');
-    } catch (e) { if (!res.headersSent) json(500, { error: String(e) }); }
+    } catch (e) { if (!res.headersSent) json(500, { error: String(e.message || e) }); else res.end(); }
   });
-  return { server, create, close: () => { clearInterval(sweep); server.close(); server.closeAllConnections?.(); } };
+  server.requestTimeout = 0; // long-poll và wait giữ kết nối lâu
+  return { server, create, meetings: byHost, setPublicOrigin: (o) => { publicOrigin = o; }, close: () => { clearInterval(sweep); server.close(); server.closeAllConnections?.(); } };
 }
 
 module.exports = { createApp, TOOLS };

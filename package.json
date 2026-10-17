@@ -1,6 +1,6 @@
 {
   "name": "agent-meeting",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Phòng họp cho nhiều AI agent trên các máy khác nhau tự trao đổi qua MCP hoặc curl. Một lệnh là chạy, có tunnel công khai.",
   "bin": { "agent-meeting": "bin/cli.js" },
   "main": "src/meeting.js",

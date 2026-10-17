@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Agent Meeting</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><img src="/favicon.svg" alt="" width="28" height="28"><span>Agent Meeting</span></div>
+  <span class="badge" id="status">Đang tải…</span>
+  <span class="spacer"></span>
+  <span class="conn" id="conn" title="Kết nối tới server"><i></i><span>Đang kết nối</span></span>
+  <button class="btn ghost" id="btnInvite" hidden>
+    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg><span>Mời agent</span>
+  </button>
+  <button class="btn ghost" id="btnMinutes" hidden>
+    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v10m0 0-4-4m4 4 4-4M4 16h12"/></svg><span>Biên bản</span>
+  </button>
+  <button class="btn danger" id="btnStop" hidden><span>Kết thúc</span></button>
+</header>
+
+<nav class="steps" aria-label="Quy trình">
+  <ol id="steps">
+    <li data-step="1"><b>1</b><span>Bối cảnh</span></li>
+    <li data-step="2"><b>2</b><span>Mời agent</span></li>
+    <li data-step="3"><b>3</b><span>Họp</span></li>
+    <li data-step="4"><b>4</b><span>Biên bản</span></li>
+  </ol>
+</nav>
+
+<!-- Màn 1: chuẩn bị -->
+<main class="setup" id="setup" hidden>
+  <section class="col">
+    <div class="card">
+      <div class="card-h"><h2><span class="num">1</span>Bối cảnh cuộc họp</h2></div>
+      <p class="hint">Chọn nhanh một mẫu rồi sửa phần trong dấu &lt;…&gt;, hoặc tự viết.</p>
+      <div class="templates" id="templates"></div>
+      <label class="field">
+        <span>Chủ đề và yêu cầu cho các agent</span>
+        <textarea id="ctx" rows="7" placeholder="Ví dụ: Hai bạn hãy thống nhất kiến trúc cho app todo: chọn database, cách đăng nhập, và chia việc."></textarea>
+        <small class="err" id="ctxErr" hidden>Hãy viết bối cảnh để các agent biết cần bàn gì.</small>
+      </label>
+      <label class="field">
+        <span>Điều kiện kết thúc <em>(tuỳ chọn)</em></span>
+        <input id="endc" placeholder="Để trống: các agent tự bàn đến khi chốt, gửi KẾT LUẬN rồi tự rời phòng">
+      </label>
+      <details class="adv" id="adv">
+        <summary>Tuỳ chọn nâng cao</summary>
+        <div class="grid2">
+          <label class="field"><span>Chế độ phát biểu</span>
+            <select id="mode"><option value="free">Tự do: ai có ý thì nói</option><option value="turns">Lần lượt theo slot</option></select>
+          </label>
+          <label class="field"><span>Giới hạn số tin</span><input id="maxMsgs" type="number" min="2" max="1000" inputmode="numeric"></label>
+          <label class="field"><span>Giới hạn thời gian (phút, 0 = không)</span><input id="timeLimit" type="number" min="0" max="600" inputmode="numeric"></label>
+          <label class="field" id="idleField"><span>Im lặng bao lâu thì hỏi chốt (giây)</span><input id="idleSec" type="number" min="10" max="600" inputmode="numeric"></label>
+        </div>
+        <p class="hint" id="modeHint"></p>
+      </details>
+    </div>
+  </section>
+  <section class="col">
+    <div class="card" id="inviteHome">
+      <div class="card-h"><h2><span class="num">2</span>Mời agent vào họp</h2></div>
+      <div id="invite"></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h2>Phòng chờ</h2><span class="muted" id="lobbyCount"></span></div>
+      <ul class="people" id="lobby"></ul>
+    </div>
+  </section>
+  <div class="startbar">
+    <div class="checks" id="checks"></div>
+    <button class="btn primary lg" id="btnStart">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5v10l8-5z" class="fill"/></svg><span>Bắt đầu cuộc họp</span>
+    </button>
+  </div>
+</main>
+
+<!-- Màn 2: cuộc họp -->
+<main class="room" id="room" hidden>
+  <aside class="side" id="side">
+    <div class="side-sec">
+      <h3>Thành viên <span class="muted" id="memberCount"></span></h3>
+      <ul class="people" id="members"></ul>
+    </div>
+    <div class="side-sec">
+      <h3>Thông tin</h3>
+      <dl class="info" id="info"></dl>
+    </div>
+    <div class="side-sec grow">
+      <h3>Bối cảnh</h3>
+      <div class="ctx" id="ctxView"></div>
+    </div>
+  </aside>
+  <section class="main">
+    <div class="feed" id="feed" aria-live="polite"><div class="feed-in" id="feedIn"></div></div>
+    <button class="newpill" id="newPill" hidden>↓ Có tin mới</button>
+    <div class="typing" id="typing"></div>
+    <form class="composer" id="composer" autocomplete="off">
+      <div class="quick" id="quick"></div>
+      <div class="send">
+        <textarea id="hostMsg" rows="1" placeholder="Nhắn với tư cách chủ trì…" title="Ctrl+Enter để gửi"></textarea>
+        <button class="btn primary" id="btnSend" type="submit" title="Gửi (Ctrl+Enter)">Gửi</button>
+      </div>
+    </form>
+    <div class="endcard" id="ended" hidden></div>
+  </section>
+</main>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-label="Mời agent">
+  <div class="drawer-h"><h2>Mời agent vào họp</h2><button class="icon" id="drawerClose" aria-label="Đóng">✕</button></div>
+  <div id="drawerBody"></div>
+</aside>
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-box">
+    <h3 id="modalTitle"></h3>
+    <p id="modalText"></p>
+    <div class="modal-a"><button class="btn ghost" id="modalNo">Huỷ</button><button class="btn danger" id="modalYes">Đồng ý</button></div>
+  </div>
+</div>
+<div class="notfound" id="gone" hidden>
+  <div class="card">
+    <h2>Không tìm thấy cuộc họp</h2>
+    <p>Link này không còn hiệu lực: app đã tắt hoặc đã khởi động lại. Hãy chạy lại Agent Meeting và mở link mới in ra ở terminal.</p>
+  </div>
+</div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<script src="/assets/app.js"></script>
+</body>
+</html>

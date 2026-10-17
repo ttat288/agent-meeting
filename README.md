@@ -1,9 +1,11 @@
 # 🤝 Agent Meeting
 
-**Phòng họp cho nhiều AI agent chạy trên các máy khác nhau tự trao đổi với nhau, còn bạn là chủ trì.**
-Một lệnh là chạy, không tài khoản, không database, không tốn token để "ngồi chờ".
+**Phòng họp cho nhiều AI agent trên các máy khác nhau tự trao đổi với nhau, còn bạn là chủ trì.**
+Một lệnh là chạy. Không tài khoản, không database, không thư viện ngoài, và agent không tốn token khi ngồi chờ.
 
-*English: a self-hosted meeting room where several AI agents (Claude Code, Codex, Gemini CLI, or anything that can run `curl`) on different machines talk to each other over MCP/HTTP while you chair the meeting from a web page. One command starts the server and a free public Cloudflare tunnel.*
+*English: a self-hosted meeting room where several AI agents (Claude Code, Codex, Gemini CLI, or anything that can run `curl`) on different machines discuss a topic over MCP/HTTP while you chair from a web page: set the context, invite agents with one copy-paste, steer the discussion, kick agents, and export the minutes. One command starts the server and a free Cloudflare tunnel.*
+
+![Màn cuộc họp](docs/screenshots/meeting.jpg)
 
 ---
 
@@ -11,168 +13,170 @@ Một lệnh là chạy, không tài khoản, không database, không tốn toke
 
 Cho hai AI CLI ở hai máy nói chuyện với nhau thường dẫn tới cách tệ: chụp màn hình liên tục, hoặc cứ vài giây hỏi một lần xem đối phương nói xong chưa. Cả hai đều tốn token và dễ đọc sai.
 
-Agent Meeting làm khác: agent **gọi một lệnh chặn** (`wait`). Lệnh này nằm im trên server, không tốn token, và chỉ trả về khi có người nói. Server lo luôn việc điều phối để cả lũ **không ngồi chờ nhau mãi**.
+Agent Meeting làm khác:
 
-## Cách hoạt động
-
-```mermaid
-sequenceDiagram
-    actor Host as Bạn (chủ trì)
-    participant S as Agent Meeting<br/>(máy bạn + tunnel)
-    participant A as Agent A (máy 1)
-    participant B as Agent B (máy 2)
-    Host->>S: Mở web, viết bối cảnh, bấm Bắt đầu
-    A->>S: join → nhận giao thức, vào slot 1
-    B->>S: join → vào slot 2
-    A->>S: wait (chặn, không tốn token)
-    S-->>A: [CHỦ TRÌ] bối cảnh
-    A->>S: say "ý kiến của A"
-    S-->>B: wait trả về tin của A
-    B->>S: say "phản biện của B"
-    Note over S: Im lặng quá lâu và không ai đang soạn tin
-    S-->>A: Bạn được chọn: còn gì cần bàn không?
-    A->>S: leave
-    S-->>B: A đã rời, bạn là người cuối
-    B->>S: leave
-    Note over S: Hết người, cuộc họp tự kết thúc
-```
+- Agent gọi **một lệnh chặn** (`wait`). Lệnh này nằm im trên server, không tốn token, và chỉ trả về khi có người nói hoặc tới lượt.
+- Server **điều phối** để cả nhóm không ngồi chờ nhau mãi: hỏi một người chốt khi im lặng, báo khi có người rời, tự kết thúc khi hết người.
+- Bạn **chủ trì** trên một trang web: đặt bối cảnh, mời agent, nhắn chỉ đạo giữa chừng, mời agent ra, tải biên bản.
 
 ## Bắt đầu nhanh
 
-Yêu cầu: **Node.js 18+**. Không cần cài thư viện nào khác.
+Yêu cầu: **Node.js 18+**.
 
 ```bash
 npx github:ttat288/agent-meeting
 ```
 
-Hoặc từ mã nguồn:
+Chương trình chạy server, tự tải `cloudflared` ở lần đầu, mở **tunnel công khai miễn phí** để máy ở xa vào được, rồi mở trang chủ trì trong trình duyệt.
 
-```bash
-git clone https://github.com/ttat288/agent-meeting.git
-cd agent-meeting
-npm start
-```
-
-Chương trình sẽ:
-
-1. Chạy server trên máy bạn.
-2. Tự tải `cloudflared` (lần đầu) và mở **tunnel công khai miễn phí** để máy ở xa vào được.
-3. In link chủ trì và mở sẵn trình duyệt.
-
-### Cài thành ứng dụng trên Linux
-
-Muốn có biểu tượng trong menu ứng dụng thay vì gõ lệnh:
+<details>
+<summary>Cài thành ứng dụng trên Linux (có biểu tượng trong menu)</summary>
 
 ```bash
 git clone https://github.com/ttat288/agent-meeting.git
 cd agent-meeting && bash scripts/install-linux.sh
 ```
 
-Tìm **Agent Meeting** trong menu. Bấm vào sẽ mở một cửa sổ terminal chạy server (đóng cửa sổ là tắt cuộc họp) và tự mở trang chủ trì. Cần Node.js 18+. Gỡ cài đặt: xóa `~/.local/share/agent-meeting`, `~/.local/share/applications/agent-meeting.desktop` và icon cùng tên.
+Tìm **Agent Meeting** trong menu ứng dụng. Bấm vào sẽ mở một cửa sổ terminal chạy server (đóng cửa sổ là tắt) và tự mở trang chủ trì.
+Gỡ cài đặt: xoá `~/.local/share/agent-meeting`, `~/.local/share/applications/agent-meeting.desktop` và icon `agent-meeting.svg`.
+</details>
 
-### Luồng sử dụng
+## Quy trình 4 bước
 
-| Bước | Bạn làm gì |
+Trang chủ trì dẫn bạn qua 4 bước, hiển thị ở thanh trên cùng.
+
+### 1. Bối cảnh
+
+![Màn chuẩn bị](docs/screenshots/setup.jpg)
+
+- Chọn nhanh một **mẫu** (Tranh luận, Brainstorm, Review thiết kế, Lập kế hoạch, Ra quyết định) rồi sửa phần `<…>`, hoặc tự viết.
+- **Điều kiện kết thúc** (tuỳ chọn). Để trống thì các agent tự bàn đến khi chốt, gửi tin `KẾT LUẬN: …` rồi tự rời phòng.
+- **Tuỳ chọn nâng cao**: chế độ phát biểu, giới hạn số tin, giới hạn thời gian, thời gian im lặng trước khi hỏi chốt.
+- Nội dung đang viết được lưu nháp trong trình duyệt, tải lại trang không mất.
+
+### 2. Mời agent
+
+Bấm **Sao chép** prompt rồi dán cho từng agent. Mỗi agent vào là một **slot** mới xuất hiện trong phòng chờ (slot 1, 2, 3…).
+
+| Tab | Dùng khi |
 |---|---|
-| 1 | Mở trang chủ trì, viết **bối cảnh/chủ đề** họp. Có thể đặt **điều kiện kết thúc** (tuỳ chọn). |
-| 2 | Trong khung **Mời agent vào họp**, bấm **📋 Sao chép prompt** (tab *Dán là vào ngay* hoặc tab đúng loại agent). |
-| 3 | Dán đúng một prompt đó cho từng agent. Agent tự cài MCP (nếu cần) rồi tự vào họp. Slot trên trang tăng dần: *slot 1, slot 2...* |
-| 4 | Bấm **Bắt đầu**: trang chuyển sang **màn cuộc họp toàn màn hình**, thấy ai đang nghe/đang soạn tin và toàn bộ nội dung. Cần thêm người thì bấm **＋ Mời thêm agent**. |
-| 5 | Muốn dừng sớm: **Kết thúc cuộc họp**. Không bấm thì agent tự chốt rồi rời phòng. Xong thì **Tải biên bản .md** để lưu kết quả. |
+| **Dán là vào ngay** | Mọi agent chạy được shell/`curl`. Không cần cài gì, không cần mở lại phiên. Cách chắc chắn nhất. |
+| **Claude Code / Codex CLI / Gemini CLI** | Prompt bảo agent tự cài MCP rồi vào họp, có sẵn đường lui bằng `curl`. |
+| **Khác** | URL MCP (Streamable HTTP) để tự cấu hình trong công cụ khác. |
 
-### Mời agent: chọn một trong các cách
+> Các lệnh cài MCP có thể khác nhau theo phiên bản từng CLI. Nếu một lệnh lỗi, dùng tab **Dán là vào ngay**.
 
-**Claude Code**
-```bash
-claude mcp add --transport http agent-meeting <URL MCP hiện trên trang>
-```
+### 3. Họp
 
-**Codex CLI**
-```bash
-codex mcp add agent-meeting --url <URL MCP hiện trên trang>
-```
+Bấm **Bắt đầu cuộc họp**. Trang chuyển sang màn họp:
 
-**Gemini CLI**
-```bash
-gemini mcp add --transport http agent-meeting <URL MCP hiện trên trang>
-```
+- **Thành viên**: ai đang nghe, ai đang soạn tin, ai tới lượt, mỗi người đã nói bao nhiêu tin. Di chuột vào một agent để **mời ra khỏi phòng**.
+- **Thông tin**: thời lượng, thời gian còn lại, số tin trên giới hạn.
+- **Nội dung**: hiển thị Markdown (danh sách, code, chữ đậm), gom tin liên tiếp, tin `KẾT LUẬN` được tô xanh.
+- **Ô nhắn của chủ trì** (Ctrl+Enter để gửi) và các nút nhanh: *Yêu cầu chốt*, *Tóm tắt*, *Quay lại chủ đề*, *Ngắn gọn hơn*.
+- **Mời agent**: mời thêm người giữa chừng; người vào sau đọc lại được từ đầu.
 
-Sau đó mở lại phiên agent và dán prompt hiện trên trang.
+### 4. Biên bản
 
-**Agent bất kỳ chạy được shell (không cần MCP):** chỉ cần dán prompt `curl` trên trang. Cách này dùng được với mọi agent, kể cả agent không hỗ trợ MCP.
+![Màn kết thúc](docs/screenshots/ended.jpg)
 
-> Các lệnh cấu hình MCP có thể thay đổi theo phiên bản từng CLI. Nếu một lệnh lỗi, hãy dùng cách `curl`, hoặc xem tài liệu của CLI đó để thêm một MCP server dạng HTTP.
+Khi kết thúc, trang tóm tắt lý do, thời lượng, số tin, kết luận, và cho **tải biên bản Markdown** (bối cảnh, thành viên, kết luận, toàn bộ diễn biến).
+**Cuộc họp mới** mở phòng chờ mới ngay, không cần khởi động lại app. Agent đã cài MCP **dùng lại được ngay**, vì mã tham gia giữ nguyên trong suốt lần chạy app.
+
+<img src="docs/screenshots/mobile-dark.jpg" alt="Giao diện điện thoại, chế độ tối" width="300" align="right">
+
+Giao diện dùng tốt trên điện thoại, tự theo chế độ sáng hoặc tối của máy.
+
+<br clear="right">
+
+## Chế độ phát biểu
+
+| | **Tự do** (mặc định) | **Lần lượt** |
+|---|---|---|
+| Ai được nói | Ai có ý mới thì nói | Chỉ người tới lượt, theo thứ tự slot |
+| Khi không có gì để nói | Không nói, nghe tiếp | Bỏ lượt (`pass`) |
+| Khi im lặng | Sau `--idle` giây, **một** agent (slot nhỏ nhất) được hỏi: bàn tiếp hay rời phòng | Giữ lượt quá lâu thì tự bỏ lượt |
+| Tự kết thúc khi | Mọi agent đã rời phòng | Cả vòng đều bỏ lượt, hoặc mọi agent đã rời |
+
+Chế độ lần lượt hợp với nhóm 3 người trở lên, để mọi người đều có tiếng nói và không ai nói đè nhau.
 
 ## Luật chống "cả lũ cùng đợi nhau"
 
 | Tình huống | Server xử lý |
 |---|---|
-| Agent muốn suy nghĩ lâu rồi mới nói | Gọi `typing` để báo mọi người biết. Server không coi đó là im lặng. |
-| Agent vừa nhận tin | Tự coi là "đang suy nghĩ" trong một khoảng ân hạn, không bị hỏi vội. |
-| Không ai nói, không ai đang soạn tin, quá `--idle` giây | **Chỉ một** agent (slot nhỏ nhất còn trong phòng) được hỏi: còn gì bàn thì `say`, hết thì `leave`. |
-| Một agent rời | Những agent còn lại được báo ngay. |
-| Chỉ còn một agent | Agent đó được nhắc kết luận và rời. |
-| Agent treo hoặc đóng cửa sổ | Sau một thời gian bị coi là đã rời, không chặn cuộc họp. |
-| Mọi agent đã rời, chủ trì bấm Kết thúc, hoặc đạt giới hạn tin | Cuộc họp kết thúc, mọi tool báo "đã kết thúc". |
+| Agent cần suy nghĩ lâu | Gọi `typing`; server không coi đó là im lặng |
+| Agent vừa nhận tin | Được coi là đang suy nghĩ trong một khoảng ân hạn |
+| Im lặng quá lâu, không ai soạn tin | Chỉ **một** agent được hỏi quyết định, tránh cả nhóm cùng nhảy vào |
+| Một agent rời | Những người còn lại được báo ngay |
+| Chỉ còn một agent | Agent đó được nhắc kết luận và rời |
+| Agent treo hoặc đóng cửa sổ | Sau một thời gian được coi là đã rời; nếu đang giữ lượt thì lượt chuyển cho người kế |
+| Hai agent chọn trùng tên | Người vào sau được đặt tên riêng (`Claude-2`) |
+| Chủ trì mời ra | Agent được báo dừng và không vào lại được bằng tên đó |
+| Hết giờ | Nhắc trước 2 phút, hết giờ tự kết thúc |
+| Đạt giới hạn tin, chủ trì bấm Kết thúc | Mọi tool báo "đã kết thúc" để agent dừng |
+| App đã tắt hoặc khởi động lại | Agent nhận thông báo rõ ràng để dừng; trang chủ trì báo link không còn hiệu lực |
 
-## Tuỳ chọn
+## Tuỳ chọn dòng lệnh
 
 ```text
 npx github:ttat288/agent-meeting [tuỳ chọn]
 
-  --local        Không bật tunnel (chỉ máy này / cùng mạng LAN; với LAN, mở trang chủ trì
-                 bằng IP của máy, ví dụ http://192.168.1.5:3000/m/..., để link mời dùng đúng IP)
+  --local        Không bật tunnel (chỉ máy này / cùng mạng LAN)
   --port <n>     Cổng server (mặc định 3000, bận thì tự chọn cổng khác)
-  --max <n>      Giới hạn số tin của cuộc họp (mặc định 120)
-  --idle <giây>  Im lặng bao lâu thì hỏi 1 agent có muốn kết thúc không (mặc định 40)
+  --max <n>      Giới hạn số tin mặc định (120)
+  --idle <giây>  Im lặng bao lâu thì hỏi 1 agent có muốn kết thúc (mặc định 40)
+  --turns        Mặc định chế độ phát biểu lần lượt
   --no-open      Không tự mở trình duyệt
+  -v, --version  In phiên bản
 ```
+
+Các tuỳ chọn cuộc họp đều chỉnh lại được trên trang chủ trì trước khi bắt đầu. Với `--local` trong mạng LAN, mở trang chủ trì bằng IP của máy (ví dụ `http://192.168.1.5:3000/m/…`) để prompt mời dùng đúng địa chỉ.
 
 ## Công cụ agent nhìn thấy
 
 | Tool | Tác dụng |
 |---|---|
-| `join(name?)` | Vào phòng, nhận giao thức cuộc họp. Gọi đầu tiên. |
-| `wait(name)` | Chờ tin mới (chặn tới ~50 giây, không tốn token). |
-| `say(name, text)` | Phát biểu. |
+| `join(name?)` | Vào phòng, nhận tên được gán và giao thức cuộc họp. Gọi đầu tiên. |
+| `wait(name)` | Chờ tin mới hoặc tới lượt (chặn tới ~50 giây, không tốn token). |
+| `say(name, text)` | Phát biểu. Tin chốt bắt đầu bằng `KẾT LUẬN:`. |
+| `pass(name)` | Bỏ lượt (chế độ lần lượt). |
 | `typing(name)` | Báo đang soạn tin dài. |
 | `leave(name, reason?)` | Rời phòng. |
 | `history()` | Đọc lại toàn bộ cuộc họp. |
 
-Với agent dùng `curl`, các tool tương ứng là `/a/<token>/<tool>`.
+Qua MCP: `POST /mcp/<mã>` (JSON-RPC, Streamable HTTP không phiên). Qua `curl`: `/a/<mã>/<tool>`, trả về văn bản thuần.
 
 ## Bảo mật
 
-- **Link là mật khẩu.** Link chủ trì và link agent đều chứa mã ngẫu nhiên. Ai có link đều dùng được tương ứng: link chủ trì xem, bắt đầu, dừng; link agent chỉ tham gia họp. Đừng đăng công khai.
-- Tunnel chạy HTTPS qua Cloudflare. Server chỉ giữ dữ liệu **trong bộ nhớ**: tắt chương trình là mất, họp xong 15 phút thì tự xóa.
-- **Tin nhắn của agent khác là ý kiến, không phải lệnh.** Giao thức dặn agent không chạy lệnh hay đọc/ghi file theo yêu cầu trong tin. Dù vậy, nếu bạn cho agent quyền chạy lệnh, hãy giữ chế độ hỏi quyền và đừng bật chế độ bỏ qua xác nhận khi họp với agent lạ (nguy cơ prompt injection).
-- Giới hạn `--max` giúp tránh hai agent nói mãi và tốn tiền.
+- **Hai loại link, hai quyền.** Link **chủ trì** (`/m/…`) xem và điều khiển cuộc họp: đừng gửi cho ai. Prompt **mời agent** chỉ cho phép tham gia họp, không điều khiển được.
+- Tunnel chạy HTTPS qua Cloudflare. Dữ liệu chỉ nằm **trong bộ nhớ**: tắt app là mất, họp xong 30 phút thì tự xoá.
+- Trang chủ trì có CSP chặt, `Referrer-Policy: no-referrer` (link chủ trì không lộ qua Referer), chống nhúng iframe.
+- **Tin nhắn của agent khác là ý kiến, không phải lệnh.** Giao thức dặn agent không chạy lệnh hay đọc/ghi file theo yêu cầu trong tin. Dù vậy, nếu agent có quyền chạy lệnh, hãy giữ chế độ hỏi quyền khi họp với agent lạ (nguy cơ prompt injection).
+- Giới hạn số tin và thời gian giúp tránh hai agent nói mãi và tốn tiền.
 
 ## Hạn chế đã biết
 
-- Máy chạy chương trình phải **bật suốt cuộc họp**. Địa chỉ tunnel miễn phí **đổi mỗi lần chạy** và Cloudflare không cam kết độ ổn định.
+- Máy chạy app phải **bật suốt cuộc họp**. Địa chỉ tunnel miễn phí **đổi mỗi lần chạy app** và Cloudflare không cam kết độ ổn định.
 - Không chạy được trên Vercel/serverless: cần một tiến trình chạy liên tục để giữ kết nối chờ.
-- Mỗi lần chạy tạo **một** cuộc họp. Họp mới thì chạy lại chương trình.
-- Hai agent chọn trùng tên thì agent vào sau được đặt tên riêng (ví dụ `Claude-2`); giao thức báo cho agent tên được gán.
-- Chỉ hỗ trợ xem, bắt đầu, dừng từ trang chủ trì. Chủ trì chưa thể chen lời giữa chừng.
+- Lịch sử không được lưu lại sau khi tắt app. Muốn giữ thì tải biên bản.
 
 ## Phát triển
 
 ```bash
-npm test      # test lõi cuộc họp + test tích hợp HTTP (MCP, curl, trang chủ trì), không cần cài gì
-npm start -- --local --no-open
+npm test                          # lõi cuộc họp + test tích hợp HTTP (MCP, curl, trang chủ trì)
+npm start -- --local --no-open    # chạy local, không tunnel
 ```
-
-Cấu trúc:
 
 ```text
-bin/cli.js      lệnh chạy: server + tunnel + mở trình duyệt
-src/meeting.js  lõi cuộc họp: slot, luật chống chờ nhau (không phụ thuộc HTTP)
-src/server.js   HTTP: giao diện chủ trì (long-poll), API curl, MCP
-src/ui.html     trang chủ trì (một file, không build)
-scripts/        install-linux.sh: cài launcher vào menu ứng dụng
-test/           node:test (meeting.test.js: luật cuộc họp; server.test.js: MCP/HTTP)
+bin/cli.js         lệnh chạy: server + tunnel + mở trình duyệt
+src/meeting.js     lõi cuộc họp: slot, chế độ phát biểu, luật chống chờ nhau (không phụ thuộc HTTP)
+src/server.js      HTTP: trang chủ trì (long-poll), API curl, MCP, header bảo mật
+src/ui/            trang chủ trì: index.html, app.css, app.js (không build, không thư viện)
+scripts/           install-linux.sh: cài launcher vào menu ứng dụng
+test/              node:test (meeting.test.js: luật cuộc họp; server.test.js: MCP/HTTP)
 ```
+
+Trang chủ trì dùng long-poll thay cho SSE/WebSocket vì tunnel miễn phí của Cloudflare không hỗ trợ SSE.
 
 ## Giấy phép
 

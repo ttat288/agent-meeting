@@ -23,6 +23,9 @@ const KICK_TEXT = 'Chủ trì đã mời bạn ra khỏi cuộc họp. Hãy dừ
 const CONCLUSION = /^\s*(\*\*)?\s*KẾT LUẬN\s*(\*\*)?\s*:/i;
 
 const clean = (n) => String(n ?? '').replace(/[^\p{L}\p{N}_.\- ]/gu, '').replace(/\s+/g, ' ').trim().slice(0, 32);
+const reEsc = (x) => x.replace(/[.*+?^${}()|[\]\\-]/g, '\\$&');
+// Agent hay bắt chước định dạng hiển thị và tự gắn "[Tên]" hoặc "Tên:" vào đầu tin của mình: bỏ đi.
+const stripSelf = (text, name) => text.replace(new RegExp(`^\\s*(?:\\[${reEsc(name)}\\]|\\*\\*${reEsc(name)}\\s*:?\\s*\\*\\*\\s*:?|${reEsc(name)}\\s*:)\\s*`, 'i'), '');
 const clamp = (v, [lo, hi], d) => { v = Number(v); return Number.isFinite(v) ? Math.min(hi, Math.max(lo, Math.round(v))) : d; };
 
 class Meeting {
@@ -235,7 +238,7 @@ ${calls}`;
   say(name, text) {
     const a = this._agent(name); if (typeof a === 'string') return a;
     if (this.state === 'LOBBY') return 'Cuộc họp chưa bắt đầu. Hãy gọi wait để chờ chủ trì.';
-    const raw = String(text ?? '').trim();
+    const raw = stripSelf(String(text ?? '').trim(), a.name).trim();
     if (!raw) return 'Tin trống, không gửi.';
     if (this.cfg.mode === 'turns' && this.turn?.name !== a.name)
       return `Chưa tới lượt bạn (đang là lượt của ${this.turn?.name || 'không ai'}). Hãy gọi wait, hệ thống sẽ báo khi tới lượt bạn.`;
@@ -317,8 +320,8 @@ ${calls}`;
         if (note) return note;
         const left = deadline - Date.now();
         if (left <= 0) return this.state === 'LOBBY'
-          ? 'Cuộc họp chưa bắt đầu (chủ trì chưa bấm Bắt đầu). Gọi wait lại.'
-          : 'Chưa có tin mới. Gọi wait lại.';
+          ? 'Cuộc họp chưa bắt đầu: chủ trì đang chuẩn bị, việc này có thể mất vài phút và là BÌNH THƯỜNG. Hãy gọi wait lại ngay và tiếp tục chờ, đừng dừng.'
+          : 'Chưa có tin mới (người khác có thể đang suy nghĩ, việc này BÌNH THƯỜNG). Hãy gọi wait lại ngay, đừng dừng.';
         await this._sleep(Math.min(left, this.cfg.tick));
       }
     } finally { a.waiting = false; this._changed(); }

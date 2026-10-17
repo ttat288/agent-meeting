@@ -235,3 +235,15 @@ test('chủ trì mời agent ra ngay từ phòng chờ', () => {
   assert.equal(m.state, 'LOBBY');
   assert.match(m.join('Lạ'), /mời bạn ra/);
 });
+
+test('bỏ tiền tố tên của chính người nói ([Tên], **Tên**:, Tên:)', () => {
+  const m = new Meeting(fast);
+  m.join('Haiku'); m.join('GPT-5.1'); m.start('x', '');
+  m.say('Haiku', '[Haiku] Lập trường KHÔNG');
+  m.say('Haiku', '**Haiku:** ý hai');
+  m.say('GPT-5.1', 'GPT-5.1: ý ba');
+  m.say('Haiku', '[GPT-5.1] không phải tên mình thì giữ nguyên');
+  assert.deepEqual(m.log.filter(x => x.type === 'chat').map(x => x.text),
+    ['Lập trường KHÔNG', 'ý hai', 'ý ba', '[GPT-5.1] không phải tên mình thì giữ nguyên']);
+  assert.match(m.say('Haiku', '[Haiku]   '), /Tin trống/);
+});

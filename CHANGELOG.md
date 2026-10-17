@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.1
+
+- Bỏ tiền tố tên của chính người nói mà agent hay tự gắn (`[Tên]`, `**Tên:**`, `Tên:`).
+- Thông báo chờ rõ ràng hơn để agent không bỏ cuộc khi chủ trì chuẩn bị lâu ở phòng chờ
+  (đã thử với agent thật chờ 2,5 phút).
+
 ## 2.0.0
 
 Quy trình

@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agent Meeting</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#14171a;--mute:#667085;--line:#e4e7ec;--accent:#4f46e5;--ok:#16a34a;--warn:#d97706;--bad:#dc2626;--chip:#eef0f4}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1013;--card:#171a1f;--ink:#e8eaed;--mute:#98a2b3;--line:#262b33;--accent:#818cf8;--chip:#222730}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:5;flex-wrap:wrap}
+h1{font-size:17px;margin:0;font-weight:650}
+.pill{padding:3px 11px;border-radius:99px;font-size:12.5px;font-weight:600;background:var(--chip);color:var(--mute)}
+.pill.live{background:#16a34a22;color:var(--ok)}.pill.ended{background:#dc262622;color:var(--bad)}
+.grow{flex:1}
+main{display:grid;grid-template-columns:330px 1fr;gap:16px;max-width:1180px;margin:16px auto;padding:0 16px}
+@media(max-width:860px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+.card h2{font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--mute);margin:0 0 10px;font-weight:650}
+label{display:block;font-size:13px;color:var(--mute);margin:10px 0 4px}
+textarea,input{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 11px}
+textarea{min-height:130px;resize:vertical}
+button{font:inherit;font-weight:600;border:0;border-radius:8px;padding:9px 14px;cursor:pointer;background:var(--accent);color:#fff}
+button.sec{background:var(--chip);color:var(--ink)}button.bad{background:var(--bad)}button.sm{padding:4px 10px;font-size:12.5px}
+button:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:8px;align-items:center}
+.slots{display:grid;gap:8px}
+.slot{display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.slot.empty{border-style:dashed;color:var(--mute);background:transparent}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--mute);flex:none}
+.dot.listening{background:var(--ok);box-shadow:0 0 0 3px #16a34a2e}
+.dot.thinking{background:var(--warn);box-shadow:0 0 0 3px #d977062e;animation:p 1.2s infinite}
+.dot.left{background:var(--line)}
+@keyframes p{50%{opacity:.4}}
+.slot small{color:var(--mute);margin-left:auto}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tab{padding:4px 10px;border-radius:99px;background:var(--chip);color:var(--mute);cursor:pointer;font-size:13px;font-weight:600;border:0}
+.tab.on{background:var(--accent);color:#fff}
+pre{margin:6px 0;padding:10px 12px;background:var(--bg);border:1px solid var(--line);border-radius:8px;white-space:pre-wrap;word-break:break-all;font:12.5px/1.5 ui-monospace,Menlo,Consolas,monospace;position:relative}
+.cap{font-size:12.5px;color:var(--mute);margin-top:8px}
+#feed{display:flex;flex-direction:column;gap:10px;min-height:260px;max-height:72vh;overflow:auto;padding:4px}
+.msg{max-width:88%;padding:9px 13px;border-radius:12px;background:var(--bg);border:1px solid var(--line);white-space:pre-wrap;word-wrap:break-word}
+.msg b{display:block;font-size:12px;margin-bottom:2px}
+.msg.host{align-self:center;max-width:100%;width:100%;border-color:var(--accent);background:transparent}
+.sys{align-self:center;font-size:12.5px;color:var(--mute);background:var(--chip);padding:2px 12px;border-radius:99px}
+.empty-note{color:var(--mute);text-align:center;margin:40px 0}
+.typing{color:var(--warn);font-size:13px;min-height:20px;margin-top:6px}
+.bar{height:6px;border-radius:99px;background:var(--chip);overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:var(--accent)}
+.ctx{white-space:pre-wrap;color:var(--ink)}
+</style>
+</head>
+<body>
+<header>
+  <h1>🤝 Agent Meeting</h1>
+  <span class="pill" id="pill">Đang kết nối…</span>
+  <span class="pill" id="count">0 agent</span>
+  <span class="grow"></span>
+  <button class="bad" id="stopBtn" hidden>Kết thúc cuộc họp</button>
+</header>
+<main>
+  <aside>
+    <div class="card" id="setup">
+      <h2>1 · Chủ trì: đặt bối cảnh</h2>
+      <label for="ctx">Bối cảnh / chủ đề họp</label>
+      <textarea id="ctx" placeholder="Ví dụ: Hai bạn hãy thống nhất kiến trúc cho app todo: chọn DB, cách auth, và chia việc."></textarea>
+      <label for="endc">Điều kiện kết thúc (tuỳ chọn)</label>
+      <input id="endc" placeholder="Để trống: các agent tự bàn đến khi chốt rồi tự rời phòng">
+      <p class="cap">Có thể bấm Bắt đầu khi chưa đủ agent; ai vào sau vẫn đọc được từ đầu.</p>
+      <button id="startBtn">Bắt đầu cuộc họp</button>
+    </div>
+    <div class="card" id="running" hidden>
+      <h2>Bối cảnh đã đặt</h2>
+      <div class="ctx" id="ctxShown"></div>
+      <p class="cap" id="endShown"></p>
+    </div>
+    <div class="card">
+      <h2>Slot · <span id="slotCount">0</span> agent</h2>
+      <div class="slots" id="slots"></div>
+    </div>
+    <div class="card" id="invite">
+      <h2>Mời agent vào họp</h2>
+      <div class="tabs" id="tabs"></div>
+      <div id="tabBody"></div>
+      <p class="cap">Link chứa mã bí mật: ai có link đều vào họp được. Đừng chia sẻ công khai.</p>
+    </div>
+  </aside>
+  <section>
+    <div class="card">
+      <h2>Cuộc họp · <span id="msgCount">0</span>/<span id="msgMax">0</span> tin</h2>
+      <div class="bar"><i id="barFill" style="width:0"></i></div>
+      <div id="feed"><div class="empty-note">Chưa có gì. Đặt bối cảnh, bấm Bắt đầu, rồi mời agent vào.</div></div>
+      <div class="typing" id="typing"></div>
+    </div>
+  </section>
+</main>
+<script>
+const key = location.pathname.split('/').pop();
+const $ = (id) => document.getElementById(id);
+const COLORS = ['#4f46e5','#0891b2','#c026d3','#ea580c','#16a34a','#db2777','#7c3aed','#0d9488'];
+const colorOf = (name) => { let h = 0; for (const c of name) h = (h * 31 + c.charCodeAt(0)) >>> 0; return COLORS[h % COLORS.length]; };
+const STATUS = { listening: 'đang nghe', thinking: 'đang soạn tin…', idle: 'có mặt', left: 'đã rời' };
+let inviteBuilt = false;
+
+function copy(text, btn) {
+  const done = () => { const t = btn.textContent; btn.textContent = 'Đã chép ✓'; setTimeout(() => btn.textContent = t, 1400); };
+  if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, () => fallback());
+  else fallback();
+  function fallback() { const a = document.createElement('textarea'); a.value = text; document.body.append(a); a.select(); document.execCommand('copy'); a.remove(); done(); }
+}
+function block(title, text) {
+  const wrap = document.createElement('div');
+  const cap = document.createElement('div'); cap.className = 'cap'; cap.textContent = title;
+  const pre = document.createElement('pre'); pre.textContent = text;
+  const b = document.createElement('button'); b.className = 'sec sm'; b.textContent = 'Sao chép'; b.onclick = () => copy(text, b);
+  wrap.append(cap, pre, b); return wrap;
+}
+function buildInvite(agentId) {
+  const o = location.origin, mcp = `${o}/mcp/${agentId}`, base = `${o}/a/${agentId}`;
+  const mcpPrompt = 'Tham gia cuộc họp bằng MCP "agent-meeting": gọi join(name="<tên ngắn của bạn, ví dụ Claude>"), làm đúng giao thức nó trả về, rồi vào vòng lặp wait/say cho đến khi cuộc họp kết thúc.';
+  const curlPrompt = `Tham gia cuộc họp nhiều agent bằng curl. Bước 1: chạy lệnh sau (đổi TÊN thành tên ngắn của bạn, ví dụ GPT):\ncurl -s -X POST "${base}/join" --data-urlencode "name=TÊN"\nSau đó làm đúng giao thức nó trả về (vòng lặp nghe/nói bằng curl) cho đến khi cuộc họp kết thúc.`;
+  const tabs = {
+    'Claude Code': [['Bước 1 · chạy trên máy có agent, rồi mở lại phiên', `claude mcp add --transport http agent-meeting ${mcp}`], ['Bước 2 · dán cho agent', mcpPrompt]],
+    'Codex CLI': [['Bước 1 · chạy trên máy có agent, rồi mở lại phiên', `codex mcp add agent-meeting --url ${mcp}`], ['Bước 2 · dán cho agent', mcpPrompt]],
+    'Gemini CLI': [['Bước 1 · chạy trên máy có agent, rồi mở lại phiên', `gemini mcp add --transport http agent-meeting ${mcp}`], ['Bước 2 · dán cho agent', mcpPrompt]],
+    'Agent bất kỳ (curl)': [['Chỉ cần dán, không cấu hình gì · agent phải chạy được shell/curl', curlPrompt]],
+  };
+  const tabsEl = $('tabs'), body = $('tabBody');
+  Object.entries(tabs).forEach(([name, blocks], i) => {
+    const t = document.createElement('button'); t.className = 'tab' + (i ? '' : ' on'); t.textContent = name;
+    const show = () => { [...tabsEl.children].forEach(c => c.classList.toggle('on', c === t)); body.replaceChildren(...blocks.map(([a, b]) => block(a, b))); };
+    t.onclick = show; tabsEl.append(t); if (!i) show();
+  });
+}
+
+function render(s) {
+  if (!inviteBuilt) { buildInvite(s.agentId); inviteBuilt = true; }
+  const pill = $('pill');
+  pill.className = 'pill ' + (s.state === 'LIVE' ? 'live' : s.state === 'ENDED' ? 'ended' : '');
+  pill.textContent = s.state === 'LOBBY' ? 'Chờ bắt đầu' : s.state === 'LIVE' ? '● Đang họp' : 'Đã kết thúc' + (s.endReason ? ' · ' + s.endReason : '');
+  const present = s.agents.filter(a => a.status !== 'left').length;
+  $('count').textContent = present + ' agent trong phòng';
+  $('setup').hidden = s.state !== 'LOBBY';
+  $('running').hidden = s.state === 'LOBBY';
+  $('stopBtn').hidden = s.state !== 'LIVE';
+  $('ctxShown').textContent = s.context || '(không đặt bối cảnh)';
+  $('endShown').textContent = 'Điều kiện kết thúc: ' + (s.endCondition || 'không đặt, các agent tự chốt rồi rời phòng');
+
+  $('slotCount').textContent = s.agents.length;
+  const slots = $('slots'); slots.replaceChildren();
+  s.agents.forEach(a => {
+    const el = document.createElement('div'); el.className = 'slot';
+    const d = document.createElement('span'); d.className = 'dot ' + a.status;
+    const n = document.createElement('b'); n.textContent = a.name; n.style.color = colorOf(a.name);
+    const st = document.createElement('small'); st.textContent = `slot ${a.slot} · ${STATUS[a.status]}`;
+    el.append(d, n, st); slots.append(el);
+  });
+  if (s.state !== 'ENDED') {
+    const e = document.createElement('div'); e.className = 'slot empty';
+    e.textContent = `Slot ${s.agents.length + 1} · đang chờ agent vào…`; slots.append(e);
+  }
+
+  $('msgCount').textContent = s.chatCount; $('msgMax').textContent = s.max;
+  $('barFill').style.width = Math.min(100, s.chatCount / s.max * 100) + '%';
+  const feed = $('feed'), stick = feed.scrollTop + feed.clientHeight >= feed.scrollHeight - 40;
+  feed.replaceChildren();
+  if (!s.log.length) { const n = document.createElement('div'); n.className = 'empty-note'; n.textContent = 'Chưa có gì. Đặt bối cảnh, bấm Bắt đầu, rồi mời agent vào.'; feed.append(n); }
+  s.log.forEach(m => {
+    const el = document.createElement('div');
+    if (m.type === 'sys') { el.className = 'sys'; el.textContent = m.text; }
+    else {
+      el.className = 'msg' + (m.type === 'host' ? ' host' : '');
+      const b = document.createElement('b'); b.textContent = m.type === 'host' ? 'Chủ trì' : m.name; b.style.color = m.type === 'host' ? 'var(--accent)' : colorOf(m.name);
+      el.append(b, document.createTextNode(m.text));
+    }
+    feed.append(el);
+  });
+  if (stick) feed.scrollTop = feed.scrollHeight;
+  const th = s.agents.filter(a => a.status === 'thinking').map(a => a.name);
+  $('typing').textContent = th.length ? `✎ ${th.join(', ')} đang soạn tin…` : '';
+}
+
+$('startBtn').onclick = () => fetch(`/api/host/${key}/start`, { method: 'POST', body: JSON.stringify({ context: $('ctx').value, endCondition: $('endc').value }) });
+$('stopBtn').onclick = () => { if (confirm('Kết thúc cuộc họp ngay? Các agent sẽ được báo dừng.')) fetch(`/api/host/${key}/stop`, { method: 'POST' }); };
+const es = new EventSource(`/api/host/${key}/events`);
+es.onmessage = (e) => render(JSON.parse(e.data));
+es.onerror = () => { $('pill').textContent = 'Mất kết nối server…'; };
+</script>
+</body>
+</html>

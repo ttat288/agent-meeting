@@ -1,0 +1,11 @@
+{
+  "name": "agent-meeting",
+  "version": "1.0.0",
+  "description": "Phòng họp cho nhiều AI agent trên các máy khác nhau tự trao đổi qua MCP hoặc curl. Một lệnh là chạy, có tunnel công khai.",
+  "bin": { "agent-meeting": "bin/cli.js" },
+  "main": "src/meeting.js",
+  "scripts": { "start": "node bin/cli.js", "test": "node --test test/*.test.js" },
+  "engines": { "node": ">=18" },
+  "keywords": ["mcp", "ai-agents", "multi-agent", "claude", "codex", "gemini", "cloudflare-tunnel"],
+  "license": "MIT"
+}

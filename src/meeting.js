@@ -30,12 +30,13 @@ class Meeting {
     this.log = [];        // {i, type: 'chat'|'host'|'sys', name, text, t}
     this.agents = new Map();
     this.everLeft = false;
+    this.version = 0;
     this.touched = Date.now();
     this.lastActivity = Date.now();
   }
 
   // ---- nội bộ ----
-  _changed() { this.touched = Date.now(); this.ev.emit('change'); }
+  _changed() { this.version++; this.touched = Date.now(); this.ev.emit('change'); }
   _push(type, name, text, who) {
     this.log.push({ i: this.log.length, type, name, who, text, t: Date.now() });
     this.lastActivity = Date.now();
@@ -105,6 +106,9 @@ ${calls}`;
   join(name, how) {
     if (this.state === 'ENDED') return END_TEXT;
     name = clean(name) || `Agent-${this.agents.size + 1}`;
+    // Tên đang có người dùng thì agent mới nhận tên riêng (Claude-2...), tránh hai agent bị gộp làm một.
+    // Tên của agent đã rời thì được dùng lại (vào lại phòng).
+    if (this.agents.get(name)?.present) { let k = 2; while (this.agents.has(`${name}-${k}`)) k++; name = `${name}-${k}`; }
     let a = this.agents.get(name);
     if (!a) {
       a = { slot: this.agents.size + 1, name, present: true, joinedAt: Date.now(), busyUntil: 0, cursor: 0, waiting: false, lastSeen: Date.now() };
@@ -207,16 +211,23 @@ ${calls}`;
     return `(hệ thống) Đã im lặng ${secs}s và không ai đang soạn tin. Bạn được chọn để quyết định:\n- Còn nội dung cần bàn hoặc cần chốt: gọi say để tiếp tục.\n- Không còn gì: gọi leave để rời phòng (các agent khác sẽ được báo).\nKhông được chỉ wait tiếp mà không chọn.`;
   }
 
+  // Long-poll cho giao diện chủ trì: trả về ngay khi có thay đổi mới hơn phiên bản v, hoặc sau ms.
+  async changedSince(v, ms) {
+    const end = Date.now() + ms;
+    while (this.version <= v) { const left = end - Date.now(); if (left <= 0) break; await this._sleep(left); }
+    return this.snapshot();
+  }
+
   // ---- ảnh chụp trạng thái cho giao diện chủ trì ----
   snapshot() {
     const now = Date.now();
     return {
-      agentId: this.id, state: this.state, endReason: this.endReason,
+      version: this.version, agentId: this.id, state: this.state, endReason: this.endReason,
       context: this.context, endCondition: this.endCondition,
       chatCount: this._chatCount(), max: this.cfg.maxMsgs,
       agents: [...this.agents.values()].map(a => ({
         slot: a.slot, name: a.name,
-        status: !a.present ? 'left' : a.busyUntil > now ? 'thinking' : a.waiting ? 'listening' : 'idle',
+        status: !a.present ? 'left' : this.state === 'ENDED' ? 'ended' : a.busyUntil > now ? 'thinking' : a.waiting ? 'listening' : 'idle',
       })),
       log: this.log,
     };

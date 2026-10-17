@@ -77,8 +77,8 @@ Tìm **Agent Meeting** trong menu. Bấm vào sẽ mở một cửa sổ termina
 | 1 | Mở trang chủ trì, viết **bối cảnh/chủ đề** họp. Có thể đặt **điều kiện kết thúc** (tuỳ chọn). |
 | 2 | Trong khung **Mời agent vào họp**, bấm **📋 Sao chép prompt** (tab *Dán là vào ngay* hoặc tab đúng loại agent). |
 | 3 | Dán đúng một prompt đó cho từng agent. Agent tự cài MCP (nếu cần) rồi tự vào họp. Slot trên trang tăng dần: *slot 1, slot 2...* |
-| 4 | Bấm **Bắt đầu cuộc họp**. Agent đọc bối cảnh và tự trao đổi. Bạn xem trực tiếp. |
-| 5 | Muốn dừng sớm: **Kết thúc cuộc họp**. Không bấm thì agent tự chốt rồi rời phòng. |
+| 5 | Bấm **Bắt đầu**: trang chuyển sang **màn cuộc họp toàn màn hình**, thấy ai đang nghe/đang soạn tin và toàn bộ nội dung. Cần thêm người thì bấm **＋ Mời thêm agent**. |
+| 6 | Muốn dừng sớm: **Kết thúc cuộc họp**. Không bấm thì agent tự chốt rồi rời phòng. Xong thì **Tải biên bản .md** để lưu kết quả. |
 
 ### Mời agent: chọn một trong các cách
 
@@ -152,6 +152,7 @@ Với agent dùng `curl`, các tool tương ứng là `/a/<token>/<tool>`.
 - Máy chạy chương trình phải **bật suốt cuộc họp**. Địa chỉ tunnel miễn phí **đổi mỗi lần chạy** và Cloudflare không cam kết độ ổn định.
 - Không chạy được trên Vercel/serverless: cần một tiến trình chạy liên tục để giữ kết nối chờ.
 - Mỗi lần chạy tạo **một** cuộc họp. Họp mới thì chạy lại chương trình.
+- Hai agent chọn trùng tên thì agent vào sau được đặt tên riêng (ví dụ `Claude-2`); giao thức báo cho agent tên được gán.
 - Chỉ hỗ trợ xem, bắt đầu, dừng từ trang chủ trì. Chủ trì chưa thể chen lời giữa chừng.
 
 ## Phát triển
@@ -166,7 +167,7 @@ Cấu trúc:
 ```text
 bin/cli.js      lệnh chạy: server + tunnel + mở trình duyệt
 src/meeting.js  lõi cuộc họp: slot, luật chống chờ nhau (không phụ thuộc HTTP)
-src/server.js   HTTP: giao diện chủ trì (SSE), API curl, MCP
+src/server.js   HTTP: giao diện chủ trì (long-poll), API curl, MCP
 src/ui.html     trang chủ trì (một file, không build)
 scripts/        install-linux.sh: cài launcher vào menu ứng dụng
 test/           node:test

@@ -1,5 +1,5 @@
 'use strict';
-// HTTP: giao diện chủ trì (SSE), API agent dạng văn bản (curl) và MCP (JSON-RPC qua HTTP).
+// HTTP: giao diện chủ trì (long-poll), API agent dạng văn bản (curl) và MCP (JSON-RPC qua HTTP).
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -83,16 +83,12 @@ function createApp(cfg = {}) {
       if ((m = p.match(/^\/m\/(\w+)$/))) {
         res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' }); return res.end(UI);
       }
-      if ((m = p.match(/^\/api\/host\/(\w+)\/(events|start|stop)$/))) {
+      if ((m = p.match(/^\/api\/host\/(\w+)\/(state|start|stop)$/))) {
         const mt = byHost.get(m[1]); if (!mt) return json(404, { error: 'no meeting' });
         if (m[2] === 'start') { const d = parseArgs(u, await readBody(req)); return json(200, { ok: mt.start(d.context, d.endCondition) }); }
         if (m[2] === 'stop') { mt.stop(); return json(200, { ok: true }); }
-        res.writeHead(200, { 'content-type': 'text/event-stream', 'cache-control': 'no-cache', connection: 'keep-alive' });
-        const push = () => res.write(`data: ${JSON.stringify(mt.snapshot())}\n\n`);
-        push(); mt.ev.on('change', push);
-        const ka = setInterval(() => res.write(': ka\n\n'), 20000);
-        req.on('close', () => { mt.ev.off('change', push); clearInterval(ka); });
-        return;
+        // long-poll thay cho SSE vì tunnel miễn phí của Cloudflare không hỗ trợ SSE
+        return json(200, await mt.changedSince(+u.searchParams.get('v') || -1, 25000));
       }
 
       // API cho agent dạng văn bản (curl)

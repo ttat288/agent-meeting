@@ -82,11 +82,20 @@ function listen(server, port) {
       cf.stderr.on('data', d => { buf += d; const m = buf.match(/https:\/\/[a-z0-9-]+\.trycloudflare\.com/); if (m) { clearTimeout(t); ok(m[0]); } });
       cf.on('exit', () => fail(new Error('cloudflared đã thoát')));
     });
-    for (let i = 0; i < 30; i++) { try { if ((await fetch(origin + '/')).ok) break; } catch {} await new Promise(r => setTimeout(r, 1500)); }
   }
   ['SIGINT', 'SIGTERM'].forEach(s => process.on(s, () => process.exit(0)));
 
   const host = `${origin}/m/${meeting.hostKey}`;
-  console.log(`\nCuộc họp đã sẵn sàng.\n\n  Trang chủ trì:  ${host}\n\nMở trang đó, viết bối cảnh, bấm Bắt đầu, rồi sao chép lệnh mời agent trong trang.\nGiữ cửa sổ này mở suốt cuộc họp. Ctrl+C để tắt.\nTrang chủ trì chứa mã bí mật, đừng chia sẻ link đó.`);
+  console.log(`\nCuộc họp đã sẵn sàng.\n\n  Trang chủ trì:  ${host}\n\nMở trang đó, viết bối cảnh, mời agent bằng nút "Sao chép prompt", rồi bấm Bắt đầu.\nGiữ cửa sổ này mở suốt cuộc họp. Ctrl+C để tắt.\nTrang chủ trì chứa mã bí mật, đừng chia sẻ link đó.`);
+  if (!flag('--local')) {
+    // Địa chỉ tunnel mới cần một lúc để DNS nhận ra; chờ ở đây rồi mới mở trình duyệt
+    process.stdout.write('\nĐang chờ địa chỉ công khai có hiệu lực');
+    let ok = false;
+    for (let i = 0; i < 60 && !ok; i++) {
+      try { ok = (await fetch(origin + '/')).ok; } catch {}
+      if (!ok) { process.stdout.write('.'); await new Promise(r => setTimeout(r, 2000)); }
+    }
+    console.log(ok ? ' sẵn sàng ✓' : '\nChưa truy cập được qua mạng. Thử mở link sau ít phút; nếu vẫn lỗi, chạy lại chương trình.');
+  }
   if (!flag('--no-open')) open(host);
 })().catch(e => { console.error('Lỗi:', e.message); process.exit(1); });

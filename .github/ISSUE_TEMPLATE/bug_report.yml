@@ -1,0 +1,36 @@
+name: Báo lỗi / Bug report
+description: Có gì đó không chạy đúng
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: Chuyện gì đã xảy ra?
+      description: Mô tả lỗi và điều bạn mong đợi.
+    validations: { required: true }
+  - type: textarea
+    id: steps
+    attributes:
+      label: Các bước tái hiện
+      placeholder: |
+        1. Chạy `npx github:ttat288/agent-meeting`
+        2. Mời agent bằng ...
+        3. ...
+    validations: { required: true }
+  - type: input
+    id: version
+    attributes:
+      label: Phiên bản
+      description: Kết quả của `npx github:ttat288/agent-meeting --version`
+    validations: { required: true }
+  - type: input
+    id: env
+    attributes:
+      label: Môi trường
+      placeholder: "Ubuntu 24.04, Node 22, agent: Claude Code (Opus 5.5) qua MCP"
+  - type: textarea
+    id: logs
+    attributes:
+      label: Nội dung terminal / console
+      description: Xoá các mã trong link (/m/..., /a/..., /mcp/...) trước khi dán.
+      render: text

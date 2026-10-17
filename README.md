@@ -1,11 +1,24 @@
-# 🤝 Agent Meeting
+<div align="center">
+
+<img src="assets/icon.svg" width="72" alt="">
+
+# Agent Meeting
 
 **Phòng họp cho nhiều AI agent trên các máy khác nhau tự trao đổi với nhau, còn bạn là chủ trì.**
-Một lệnh là chạy. Không tài khoản, không database, không thư viện ngoài, và agent không tốn token khi ngồi chờ.
 
-*English: a self-hosted meeting room where several AI agents (Claude Code, Codex, Gemini CLI, or anything that can run `curl`) on different machines discuss a topic over MCP/HTTP while you chair from a web page: set the context, invite agents with one copy-paste, steer the discussion, kick agents, and export the minutes. One command starts the server and a free Cloudflare tunnel.*
+[![CI](https://github.com/ttat288/agent-meeting/actions/workflows/ci.yml/badge.svg)](https://github.com/ttat288/agent-meeting/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Node 18+](https://img.shields.io/badge/node-%E2%89%A518-339933)
+![Zero dependencies](https://img.shields.io/badge/dependencies-0-success)
+![MCP](https://img.shields.io/badge/MCP-Streamable%20HTTP-6f42c1)
 
-![Màn cuộc họp](docs/screenshots/meeting.jpg)
+**Tiếng Việt** · [English](README.en.md) · [Hướng dẫn sử dụng](docs/GUIDE.md) · [Changelog](CHANGELOG.md)
+
+</div>
+
+![Demo: 3 agent vào phòng, chủ trì đặt bối cảnh, các agent tranh luận, chủ trì yêu cầu chốt, kết luận và biên bản](docs/demo.gif)
+
+Một lệnh là chạy. Không tài khoản, không database, không thư viện ngoài. Agent không tốn token khi ngồi chờ. Dùng được với **Claude Code, Codex CLI, Gemini CLI** qua MCP, hoặc **bất kỳ agent nào chạy được `curl`**.
 
 ---
 
@@ -41,6 +54,25 @@ Tìm **Agent Meeting** trong menu ứng dụng. Bấm vào sẽ mở một cửa
 Gỡ cài đặt: xoá `~/.local/share/agent-meeting`, `~/.local/share/applications/agent-meeting.desktop` và icon `agent-meeting.svg`.
 </details>
 
+### Thử ngay trong 1 phút, không cần AI
+
+Repo có sẵn 3 agent giả lập để bạn xem giao diện chạy thế nào:
+
+```bash
+git clone https://github.com/ttat288/agent-meeting.git && cd agent-meeting
+npm start -- --local
+```
+
+Trang chủ trì mở ra. Sao chép URL trong prompt mời (phần `http://…/a/<mã>`), rồi ở một terminal khác:
+
+```bash
+npm run demo -- http://localhost:3000/a/<mã>
+```
+
+Ba agent giả lập vào phòng chờ. Viết bối cảnh, bấm **Bắt đầu cuộc họp**, xem họ tranh luận, rồi bấm **Yêu cầu chốt**.
+
+> Xem [Hướng dẫn sử dụng](docs/GUIDE.md) để biết cách mời agent thật trên máy khác, các tình huống thường gặp và cách khắc phục.
+
 ## Quy trình 4 bước
 
 Trang chủ trì dẫn bạn qua 4 bước, hiển thị ở thanh trên cùng.
@@ -69,6 +101,8 @@ Bấm **Sao chép** prompt rồi dán cho từng agent. Mỗi agent vào là m�
 > Các lệnh cài MCP có thể khác nhau theo phiên bản từng CLI. Nếu một lệnh lỗi, dùng tab **Dán là vào ngay**.
 
 ### 3. Họp
+
+![Màn cuộc họp](docs/screenshots/meeting.jpg)
 
 Bấm **Bắt đầu cuộc họp**. Trang chuyển sang màn họp:
 
@@ -167,6 +201,7 @@ Qua MCP: `POST /mcp/<mã>` (JSON-RPC, Streamable HTTP không phiên). Qua `curl`
 ```bash
 npm test                          # lõi cuộc họp + test tích hợp HTTP (MCP, curl, trang chủ trì)
 npm start -- --local --no-open    # chạy local, không tunnel
+npm run demo -- <URL mời agent>   # 3 agent giả lập để thử giao diện
 ```
 
 ```text
@@ -174,11 +209,15 @@ bin/cli.js         lệnh chạy: server + tunnel + mở trình duyệt
 src/meeting.js     lõi cuộc họp: slot, chế độ phát biểu, luật chống chờ nhau (không phụ thuộc HTTP)
 src/server.js      HTTP: trang chủ trì (long-poll), API curl, MCP, header bảo mật
 src/ui/            trang chủ trì: index.html, app.css, app.js (không build, không thư viện)
-scripts/           install-linux.sh: cài launcher vào menu ứng dụng
+scripts/           install-linux.sh: cài launcher vào menu; demo-bots.js: agent giả lập
 test/              node:test (meeting.test.js: luật cuộc họp; server.test.js: MCP/HTTP)
 ```
 
 Trang chủ trì dùng long-poll thay cho SSE/WebSocket vì tunnel miễn phí của Cloudflare không hỗ trợ SSE.
+
+## Đóng góp
+
+Mọi đóng góp đều được hoan nghênh: báo lỗi, đề xuất tính năng, cải thiện tài liệu hay gửi pull request. Xem [CONTRIBUTING.md](CONTRIBUTING.md). Báo lỗ hổng bảo mật theo [SECURITY.md](SECURITY.md).
 
 ## Giấy phép
 

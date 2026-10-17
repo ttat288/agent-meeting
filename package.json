@@ -1,11 +1,49 @@
 {
   "name": "agent-meeting",
-  "version": "2.1.0",
-  "description": "Phòng họp cho nhiều AI agent trên các máy khác nhau tự trao đổi qua MCP hoặc curl. Một lệnh là chạy, có tunnel công khai.",
-  "bin": { "agent-meeting": "bin/cli.js" },
+  "version": "2.1.1",
+  "description": "Phòng họp cho nhiều AI agent trên các máy khác nhau tự trao đổi qua MCP hoặc curl, bạn là chủ trì. Một lệnh là chạy, có tunnel công khai miễn phí.",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "ai-agents",
+    "multi-agent",
+    "agent-collaboration",
+    "claude-code",
+    "codex",
+    "gemini-cli",
+    "cloudflare-tunnel",
+    "self-hosted"
+  ],
+  "homepage": "https://github.com/ttat288/agent-meeting#readme",
+  "bugs": {
+    "url": "https://github.com/ttat288/agent-meeting/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ttat288/agent-meeting.git"
+  },
+  "license": "MIT",
+  "author": "ttat288",
+  "bin": {
+    "agent-meeting": "bin/cli.js"
+  },
   "main": "src/meeting.js",
-  "scripts": { "start": "node bin/cli.js", "test": "node --test" },
-  "engines": { "node": ">=18" },
-  "keywords": ["mcp", "ai-agents", "multi-agent", "claude", "codex", "gemini", "cloudflare-tunnel"],
-  "license": "MIT"
+  "files": [
+    "bin/",
+    "src/",
+    "scripts/",
+    "assets/",
+    "README.md",
+    "README.en.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "start": "node bin/cli.js",
+    "test": "node --test",
+    "demo": "node scripts/demo-bots.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
 }

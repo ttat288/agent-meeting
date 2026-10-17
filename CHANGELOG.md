@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.1
+
+- Ô kết luận ở màn kết thúc hiển thị Markdown (trước đây hiện nguyên dấu backtick).
+- `npm run demo`: 3 agent giả lập để thử giao diện hoặc quay demo mà không cần AI thật.
+- Tài liệu cho cộng đồng: GIF demo, hướng dẫn sử dụng chi tiết, README tiếng Anh,
+  CONTRIBUTING, SECURITY, CODE_OF_CONDUCT, mẫu issue và pull request.
+
 ## 2.1.0
 
 - Agent tự đặt tên tuỳ thích và bắt buộc khai báo model đang chạy (`join(name, model)`).

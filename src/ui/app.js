@@ -106,9 +106,9 @@
   }
   function buildInvite(agentId, o) {
     const mcp = `${o}/mcp/${agentId}`, base = `${o}/a/${agentId}`;
-    const curlSteps = `Chạy lệnh sau (đổi TÊN thành tên ngắn của bạn, ví dụ GPT):\ncurl -s -X POST "${base}/join" --data-urlencode "name=TÊN"\nRồi làm đúng giao thức nó trả về (vòng lặp nghe/nói bằng curl) cho đến khi cuộc họp kết thúc.`;
+    const curlSteps = `Tự đặt cho mình một tên tuỳ thích và khai báo model bạn đang chạy (ví dụ Opus 5.5), rồi chạy:\ncurl -s -X POST "${base}/join" --data-urlencode "name=TÊN_BẠN_TỰ_ĐẶT" --data-urlencode "model=MODEL_BẠN_ĐANG_CHẠY"\nNếu bị báo trùng tên thì chọn tên khác và chạy lại. Sau đó làm đúng giao thức nó trả về (vòng lặp nghe/nói bằng curl) cho đến khi cuộc họp kết thúc.`;
     const curlPrompt = `Hãy tham gia một cuộc họp nhiều agent. ${curlSteps}`;
-    const combined = (cmd) => `Hãy tham gia một cuộc họp nhiều agent.\n\nCách 1 (MCP): chạy lệnh shell sau để cài MCP "agent-meeting":\n${cmd}\nNếu công cụ của bạn cần mở lại phiên để nạp MCP thì báo tôi mở lại, rồi gọi join(name="<tên ngắn của bạn, ví dụ Claude>"), làm đúng giao thức nó trả về và lặp wait/say cho đến khi cuộc họp kết thúc.\n\nCách 2 (dùng ngay, không cần cài, nếu MCP chưa dùng được): ${curlSteps}`;
+    const combined = (cmd) => `Hãy tham gia một cuộc họp nhiều agent.\n\nCách 1 (MCP): chạy lệnh shell sau để cài MCP "agent-meeting":\n${cmd}\nNếu công cụ của bạn cần mở lại phiên để nạp MCP thì báo tôi mở lại, rồi gọi join(name="<tên bạn tự đặt, tuỳ thích>", model="<model bạn đang chạy, ví dụ Opus 5.5>"). Nếu bị báo trùng tên thì đặt tên khác. Sau đó làm đúng giao thức nó trả về và lặp wait/say cho đến khi cuộc họp kết thúc.\n\nCách 2 (dùng ngay, không cần cài, nếu MCP chưa dùng được): ${curlSteps}`;
     const mcpTab = (cmd) => [
       codeBlock('Dán thẳng cho agent: nó tự cài MCP rồi vào họp, có đường lui bằng curl.', combined(cmd), true),
       codeBlock('Hoặc tự chạy lệnh cài trên máy có agent, rồi mở lại phiên agent:', cmd),
@@ -176,7 +176,7 @@
     return el('li', { class: 'person' + (gone ? ' gone' : '') },
       el('span', { class: 'av s-' + a.status, style: `background:${color}` }, initials(a.name), el('i')),
       el('div', { class: 'who' },
-        el('div', { class: 'nm' }, a.name, a.status === 'turn' ? el('span', { class: 'tag' }, 'đang lượt') : null),
+        el('div', { class: 'nm' }, a.name, a.model ? el('span', { class: 'model' }, a.model) : null, a.status === 'turn' ? el('span', { class: 'tag' }, 'đang lượt') : null),
         el('div', { class: 'st' }, `slot ${a.slot} · ${STATUS[a.status] || a.status}` + (opts.said && a.said ? ` · ${a.said} tin` : ''))),
       opts.kick && !gone ? el('button', { class: 'icon kick', type: 'button', title: 'Mời ra khỏi phòng', 'aria-label': 'Mời ' + a.name + ' ra khỏi phòng', onclick: () => kick(a.name) }, '⨯') : null);
   }
@@ -249,13 +249,14 @@
     const l = $('infoLeft'); if (l && snap.endsAt) l.textContent = fmtDur(snap.endsAt - serverNow());
   }, 1000);
 
+  const modelOf = (name) => snap?.agents.find(a => a.name === name)?.model || '';
   function entry(m, prev) {
     if (m.type === 'sys') return el('div', { class: 'sys' }, el('time', {}, fmtTime(m.t)), m.text);
     const host = m.type === 'host', name = host ? 'Chủ trì' : m.name, color = host ? 'var(--accent)' : colorOf(m.name);
     const first = !prev || prev.type === 'sys' || prev.type !== m.type || prev.name !== m.name || m.t - prev.t > 5 * 60000;
     return el('div', { class: 'msg' + (first ? ' first' : '') + (host ? ' host' : '') + (m.conclusion ? ' conclusion' : '') },
       el('span', { class: 'av', style: `background:${color}` }, host ? '★' : initials(m.name)),
-      el('div', { class: 'hd' }, el('b', { style: `color:${color}` }, name), el('time', { datetime: new Date(m.t).toISOString() }, fmtTime(m.t))),
+      el('div', { class: 'hd' }, el('b', { style: `color:${color}` }, name), !host && modelOf(m.name) ? el('span', { class: 'model' }, modelOf(m.name)) : null, el('time', { datetime: new Date(m.t).toISOString() }, fmtTime(m.t))),
       el('div', { class: 'bubble', html: md(m.text) }));
   }
   const nearBottom = () => { const f = $('feed'); return f.scrollHeight - f.scrollTop - f.clientHeight < 90; };
@@ -332,7 +333,7 @@
       `- **Bắt đầu:** ${dt(s.startedAt)}`, `- **Kết thúc:** ${s.endedAt ? dt(s.endedAt) + ' (' + s.endReason + ')' : 'đang họp'}`,
       `- **Thời lượng:** ${s.startedAt ? fmtDur((s.endedAt || serverNow()) - s.startedAt) : '—'}`,
       `- **Chế độ:** ${s.settings.mode === 'turns' ? 'lần lượt' : 'tự do'} · tối đa ${s.settings.maxMsgs} tin${s.settings.timeLimitMin ? ' · ' + s.settings.timeLimitMin + ' phút' : ''}`,
-      `- **Thành viên:** ${s.agents.map(a => `${a.name} (slot ${a.slot}, ${a.said} tin)`).join(', ') || '—'}`, '',
+      `- **Thành viên:** ${s.agents.map(a => `${a.name} (${a.model || '?'}, slot ${a.slot}, ${a.said} tin)`).join(', ') || '—'}`, '',
       '## Bối cảnh', '', s.context || '—', ''];
     if (s.endCondition) L.push(`**Điều kiện kết thúc:** ${s.endCondition}`, '');
     const cs = conclusions();
@@ -340,7 +341,7 @@
     L.push('## Diễn biến', '');
     for (const m of log) {
       if (m.type === 'sys') L.push(`*${fmtTime(m.t)} · ${m.text}*`, '');
-      else L.push(`**${m.type === 'host' ? 'Chủ trì' : m.name}** · ${fmtTime(m.t)}`, '', m.text, '');
+      else L.push(`**${m.type === 'host' ? 'Chủ trì' : m.name}**${m.type === 'chat' && modelOf(m.name) ? ` (${modelOf(m.name)})` : ''} · ${fmtTime(m.t)}`, '', m.text, '');
     }
     return L.join('\n');
   }

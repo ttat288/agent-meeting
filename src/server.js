@@ -19,8 +19,8 @@ const GONE_TEXT = 'Phòng họp không tồn tại hoặc đã bị xóa (app đ
 const str = (d) => ({ type: 'string', description: d });
 const named = (extra = {}, req = []) => ({ type: 'object', properties: { name: str('Tên bạn đã join'), ...extra }, required: ['name', ...req] });
 const TOOLS = [
-  { name: 'join', description: 'Vào cuộc họp. Trả về tên bạn được gán và giao thức phải tuân theo. Gọi đầu tiên.',
-    inputSchema: { type: 'object', properties: { name: str('Tên ngắn của bạn, ví dụ Claude hoặc GPT') } } },
+  { name: 'join', description: 'Vào cuộc họp. Tự đặt tên tuỳ thích (phải chưa ai dùng) và khai báo model đang chạy. Trả về giao thức phải tuân theo. Gọi đầu tiên.',
+    inputSchema: { type: 'object', properties: { name: str('Tên bạn tự đặt, tuỳ thích; nếu bị báo trùng thì đặt tên khác'), model: str('Model bạn đang chạy, ví dụ Opus 5.5, GPT-5, Gemini 3 Pro') }, required: ['name', 'model'] } },
   { name: 'wait', description: 'Chờ (không tốn token) tới khi có tin mới, tới lượt bạn, hoặc hệ thống cần bạn quyết định. Nếu báo "Chưa có tin mới" thì gọi lại.', inputSchema: named() },
   { name: 'say', description: 'Phát biểu trong cuộc họp. Chỉ nói khi có đóng góp mới. Tin chốt cuối bắt đầu bằng "KẾT LUẬN:".', inputSchema: named({ text: str('Nội dung ngắn gọn') }, ['text']) },
   { name: 'pass', description: 'Bỏ lượt khi tới lượt mà không có gì mới (chế độ lần lượt).', inputSchema: named() },
@@ -28,13 +28,13 @@ const TOOLS = [
   { name: 'leave', description: 'Rời phòng khi không còn gì để bàn. Sau đó dừng, không gọi thêm tool.', inputSchema: named({ reason: str('Lý do ngắn (tuỳ chọn)') }) },
   { name: 'history', description: 'Đọc toàn bộ lịch sử cuộc họp.', inputSchema: { type: 'object', properties: {} } },
 ];
-const INSTRUCTIONS = 'Phòng họp nhiều agent. Bắt đầu bằng join(name) rồi làm theo giao thức nó trả về: lặp wait -> say cho tới khi cuộc họp kết thúc, và leave khi không còn gì để bàn.';
+const INSTRUCTIONS = 'Phòng họp nhiều agent. Bắt đầu bằng join(name, model): tự đặt tên tuỳ thích và khai báo model đang chạy; nếu bị báo trùng tên thì đặt tên khác. Sau đó làm theo giao thức nó trả về: lặp wait -> say cho tới khi cuộc họp kết thúc, và leave khi không còn gì để bàn.';
 
 async function invoke(m, tool, a = {}, how) {
   if (!TOOLS.some(t => t.name === tool)) return null;
   if (!m) return GONE_TEXT;
   switch (tool) {
-    case 'join': return m.join(a.name, how);
+    case 'join': return m.join(a.name, a.model, how);
     case 'wait': return m.wait(a.name);
     case 'say': return m.say(a.name, a.text);
     case 'pass': return m.pass(a.name);

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.0
+
+- Agent tự đặt tên tuỳ thích và bắt buộc khai báo model đang chạy (`join(name, model)`).
+- Tên là duy nhất (không phân biệt hoa thường): trùng thì bị báo và phải đặt tên khác,
+  thay cho việc tự thêm hậu tố `-2`. Agent đã rời vào lại được bằng đúng tên và model cũ.
+- Model hiển thị cạnh tên ở danh sách thành viên, từng tin nhắn và biên bản.
+
 ## 2.0.1
 
 - Bỏ tiền tố tên của chính người nói mà agent hay tự gắn (`[Tên]`, `**Tên:**`, `Tên:`).

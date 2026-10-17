@@ -122,7 +122,7 @@ class Meeting {
     const mode = this.cfg.mode === 'turns'
       ? 'CHẾ ĐỘ LẦN LƯỢT: chỉ được say khi wait báo "TỚI LƯỢT BẠN". Tới lượt mà không có gì mới thì pass. Nếu cả vòng đều pass, cuộc họp tự kết thúc.'
       : 'CHẾ ĐỘ TỰ DO: ai có ý mới thì say, không cần chờ lượt.';
-    return `Bạn đã vào cuộc họp với tên "${a.name}" (slot ${a.slot}). Hiện có ${this._present().length} agent trong phòng.
+    return `Bạn đã vào cuộc họp với tên "${a.name}", model ${a.model} (slot ${a.slot}). Hiện có ${this._present().length} agent trong phòng.
 Trạng thái: ${this.state === 'LOBBY' ? 'chủ trì chưa bắt đầu, hãy gọi wait để chờ (nó sẽ báo khi bắt đầu).' : 'đang diễn ra, gọi wait để nhận toàn bộ nội dung từ đầu.'}
 
 GIAO THỨC CUỘC HỌP (đọc kỹ):
@@ -214,18 +214,23 @@ ${calls}`;
   stop(reason = 'chủ trì kết thúc') { this._end(reason); }
 
   // ---------- thao tác của agent ----------
-  join(name, how) {
+  join(name, model, how) {
     if (this.state === 'ENDED') return END_TEXT;
-    name = clean(name) || `Agent-${this.agents.size + 1}`;
-    if (this.agents.get(name)?.kicked) return KICK_TEXT;
-    // Tên đang có người dùng thì agent mới nhận tên riêng (Claude-2...), tránh hai agent bị gộp làm một.
-    // Tên của agent đã rời thì được dùng lại (vào lại phòng).
-    if (this.agents.get(name)?.present) { let k = 2; while (this.agents.has(`${name}-${k}`)) k++; name = `${name}-${k}`; }
+    name = clean(name); model = clean(model);
+    const retry = (why) => `${why} Gọi join lại với name=<tên bạn tự đặt, tuỳ thích> và model=<model bạn đang chạy, ví dụ Opus 5.5>.`;
+    if (!name) return retry('Thiếu tên: bạn phải tự đặt tên.');
+    if (!model) return retry('Thiếu model: hãy khai báo model bạn đang chạy.');
+    const same = [...this.agents.values()].find(x => x.name.toLowerCase() === name.toLowerCase());
+    if (same?.kicked) return KICK_TEXT;
+    // Tên là duy nhất: đang có người dùng (hoặc người đã rời nhưng khác model) thì phải đặt tên khác.
+    if (same && (same.present || same.model.toLowerCase() !== model.toLowerCase()))
+      return `Tên "${name}" đã có agent khác dùng (${same.name}, ${same.model}). ` + retry('Hãy chọn một tên KHÁC.').replace('KHÁC. Gọi', 'KHÁC rồi gọi');
+    if (same) name = same.name; // cùng tên + cùng model: là agent cũ vào lại
     let a = this.agents.get(name);
     if (!a) {
-      a = { slot: this.agents.size + 1, name, present: true, joinedAt: Date.now(), busyUntil: 0, cursor: 0, waiting: false, lastSeen: Date.now(), turnSeen: 0, said: 0 };
+      a = { slot: this.agents.size + 1, name, model, present: true, joinedAt: Date.now(), busyUntil: 0, cursor: 0, waiting: false, lastSeen: Date.now(), turnSeen: 0, said: 0 };
       this.agents.set(name, a);
-      this._sys(`${name} đã vào phòng (slot ${a.slot})`, name);
+      this._sys(`${name} (${model}) đã vào phòng (slot ${a.slot})`, name);
     } else {
       a.present = true; a.lastSeen = Date.now();
       this._sys(`${name} quay lại phòng`, name);
@@ -358,7 +363,7 @@ ${calls}`;
       turn: this.turn?.name || null,
       chatCount: this._chatCount(),
       agents: [...this.agents.values()].map(a => ({
-        slot: a.slot, name: a.name, said: a.said, kicked: !!a.kicked,
+        slot: a.slot, name: a.name, model: a.model, said: a.said, kicked: !!a.kicked,
         status: !a.present ? (a.kicked ? 'kicked' : 'left')
           : this.state === 'ENDED' ? 'ended'
           : this.turn?.name === a.name ? 'turn'

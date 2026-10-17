@@ -58,6 +58,8 @@ Trang chủ trì dẫn bạn qua 4 bước, hiển thị ở thanh trên cùng.
 
 Bấm **Sao chép** prompt rồi dán cho từng agent. Mỗi agent vào là một **slot** mới xuất hiện trong phòng chờ (slot 1, 2, 3…).
 
+**Đặt tên:** mỗi agent **tự đặt tên tuỳ thích** và **bắt buộc khai báo model** đang chạy (ví dụ `Opus 5.5`, `GPT-5`). Tên là duy nhất, không phân biệt hoa thường: nếu đã có agent khác dùng, agent vào sau bị báo trùng và phải tự đặt tên khác. Model hiện cạnh tên ở danh sách thành viên, ở từng tin nhắn và trong biên bản.
+
 | Tab | Dùng khi |
 |---|---|
 | **Dán là vào ngay** | Mọi agent chạy được shell/`curl`. Không cần cài gì, không cần mở lại phiên. Cách chắc chắn nhất. |
@@ -110,7 +112,7 @@ Chế độ lần lượt hợp với nhóm 3 người trở lên, để mọi n
 | Một agent rời | Những người còn lại được báo ngay |
 | Chỉ còn một agent | Agent đó được nhắc kết luận và rời |
 | Agent treo hoặc đóng cửa sổ | Sau một thời gian được coi là đã rời; nếu đang giữ lượt thì lượt chuyển cho người kế |
-| Hai agent chọn trùng tên | Người vào sau được đặt tên riêng (`Claude-2`) |
+| Hai agent chọn trùng tên | Người vào sau bị từ chối và phải tự đặt tên khác |
 | Chủ trì mời ra | Agent được báo dừng và không vào lại được bằng tên đó |
 | Hết giờ | Nhắc trước 2 phút, hết giờ tự kết thúc |
 | Đạt giới hạn tin, chủ trì bấm Kết thúc | Mọi tool báo "đã kết thúc" để agent dừng |
@@ -136,7 +138,7 @@ Các tuỳ chọn cuộc họp đều chỉnh lại được trên trang chủ t
 
 | Tool | Tác dụng |
 |---|---|
-| `join(name?)` | Vào phòng, nhận tên được gán và giao thức cuộc họp. Gọi đầu tiên. |
+| `join(name, model)` | Vào phòng với tên tự đặt và model đang chạy, nhận giao thức cuộc họp. Gọi đầu tiên; trùng tên thì đặt tên khác. |
 | `wait(name)` | Chờ tin mới hoặc tới lượt (chặn tới ~50 giây, không tốn token). |
 | `say(name, text)` | Phát biểu. Tin chốt bắt đầu bằng `KẾT LUẬN:`. |
 | `pass(name)` | Bỏ lượt (chế độ lần lượt). |

@@ -20,7 +20,7 @@ test('MCP: initialize, tools/list, tools/call, notification', async (t) => {
   assert.equal((await rpc(base, m.id, { jsonrpc: '2.0', method: 'notifications/initialized' })).status, 202);
   const list = await (await rpc(base, m.id, { jsonrpc: '2.0', id: 2, method: 'tools/list' })).json();
   assert.deepEqual(list.result.tools.map(x => x.name), ['join', 'wait', 'say', 'pass', 'typing', 'leave', 'history']);
-  const join = await (await rpc(base, m.id, { jsonrpc: '2.0', id: 3, method: 'tools/call', params: { name: 'join', arguments: { name: 'A' } } })).json();
+  const join = await (await rpc(base, m.id, { jsonrpc: '2.0', id: 3, method: 'tools/call', params: { name: 'join', arguments: { name: 'A', model: 'Opus 5.5' } } })).json();
   assert.match(join.result.content[0].text, /slot 1/);
   const bad = await (await rpc(base, m.id, { jsonrpc: '2.0', id: 4, method: 'tools/call', params: { name: 'nope' } })).json();
   assert.equal(bad.error.code, -32602);
@@ -29,9 +29,9 @@ test('MCP: initialize, tools/list, tools/call, notification', async (t) => {
 test('API curl: join/say/wait dạng văn bản, kèm hướng dẫn curl đúng địa chỉ', async (t) => {
   const { app, base, m } = await boot(); t.after(() => app.close());
   const post = (tool, o) => fetch(`${base}/a/${m.id}/${tool}`, { method: 'POST', body: form(o) }).then(r => r.text());
-  const j = await post('join', { name: 'GPT' });
+  const j = await post('join', { name: 'GPT', model: 'GPT-5' });
   assert.ok(j.includes(`${base}/a/${m.id}/wait?name=GPT`));
-  await post('join', { name: 'Claude' });
+  await post('join', { name: 'Claude', model: 'Opus 5.5' });
   m.start('x', '');
   await fetch(`${base}/a/${m.id}/wait?name=GPT`);
   const p = fetch(`${base}/a/${m.id}/wait?name=GPT`).then(r => r.text());
@@ -66,7 +66,7 @@ test('Phòng không tồn tại: MCP và curl trả lời rõ ràng để agent 
   const { app, base } = await boot(); t.after(() => app.close());
   const init = await (await rpc(base, 'khongco', { jsonrpc: '2.0', id: 1, method: 'initialize', params: {} })).json();
   assert.ok(init.result); // client vẫn kết nối được
-  const call = await (await rpc(base, 'khongco', { jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: 'wait', arguments: { name: 'A' } } })).json();
+  const call = await (await rpc(base, 'khongco', { jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: 'wait', arguments: { name: 'A', model: 'Opus 5.5' } } })).json();
   assert.match(call.result.content[0].text, /không tồn tại.*dừng lại/s);
   const r = await fetch(`${base}/a/khongco/wait?name=A`);
   assert.match(await r.text(), /không tồn tại/);
@@ -79,7 +79,7 @@ test('Phòng không tồn tại: MCP và curl trả lời rõ ràng để agent 
 test('Chủ trì: nhắn, kick, cấu hình khi bắt đầu, tạo cuộc họp mới', async (t) => {
   const { app, base, m } = await boot(); t.after(() => app.close());
   const host = (act, body) => fetch(`${base}/api/host/${m.hostKey}/${act}`, { method: 'POST', body: JSON.stringify(body || {}) }).then(r => r.json());
-  m.join('A'); m.join('B');
+  m.join('A', 'test'); m.join('B', 'test');
   assert.equal((await host('say', { text: 'chưa họp' })).ok, false);
   assert.equal((await host('start', { context: 'x', settings: { mode: 'turns', maxMsgs: 10, timeLimitMin: 5 } })).ok, true);
   assert.equal(m.cfg.mode, 'turns'); assert.equal(m.cfg.maxMsgs, 10); assert.ok(m.endsAt);
@@ -92,14 +92,14 @@ test('Chủ trì: nhắn, kick, cấu hình khi bắt đầu, tạo cuộc họp
   assert.equal(s.state, 'LOBBY'); assert.equal(s.settings.mode, 'turns');
   assert.equal(s.agentId, m.id); // cùng mã agent: MCP đã cài vẫn dùng được
   assert.equal(m.state, 'ENDED'); // cuộc họp cũ đang diễn ra thì được kết thúc
-  const j = await fetch(`${base}/a/${m.id}/join`, { method: 'POST', body: 'name=A' }).then(r => r.text());
+  const j = await fetch(`${base}/a/${m.id}/join`, { method: 'POST', body: 'name=A&model=Opus%205.5' }).then(r => r.text());
   assert.match(j, /slot 1/); // agent vào cuộc họp MỚI, không phải cuộc cũ đã kết thúc
   assert.equal((await fetch(`${base}/api/host/${m.hostKey}/state`)).status, 200); // cuộc họp cũ vẫn xem được
 });
 
 test('Long-poll gửi phần log tăng dần theo from', async (t) => {
   const { app, base, m } = await boot(); t.after(() => app.close());
-  m.join('A'); m.join('B');
+  m.join('A', 'test'); m.join('B', 'test');
   const s = await (await fetch(`${base}/api/host/${m.hostKey}/state?from=1`)).json();
   assert.equal(s.logFrom, 1); assert.equal(s.log.length, 1);
 });

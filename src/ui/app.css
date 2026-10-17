@@ -127,6 +127,8 @@ textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
 .s-turn i, i.s-turn { background: var(--accent); animation: pulse 1.2s infinite; }
 .s-left i, .s-kicked i, .s-ended i { background: var(--line-2); }
 .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; background: var(--mute); }
+.model { font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 99px; background: var(--surface-2); border: 1px solid var(--line); color: var(--mute); white-space: nowrap; }
+.msg .hd .model { align-self: center; }
 .tag { font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); }
 @keyframes pulse { 50% { opacity: .35; } }
 

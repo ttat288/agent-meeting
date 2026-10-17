@@ -59,6 +59,17 @@ Chương trình sẽ:
 2. Tự tải `cloudflared` (lần đầu) và mở **tunnel công khai miễn phí** để máy ở xa vào được.
 3. In link chủ trì và mở sẵn trình duyệt.
 
+### Cài thành ứng dụng trên Linux
+
+Muốn có biểu tượng trong menu ứng dụng thay vì gõ lệnh:
+
+```bash
+git clone https://github.com/ttat288/agent-meeting.git
+cd agent-meeting && bash scripts/install-linux.sh
+```
+
+Tìm **Agent Meeting** trong menu. Bấm vào sẽ mở một cửa sổ terminal chạy server (đóng cửa sổ là tắt cuộc họp) và tự mở trang chủ trì. Cần Node.js 18+. Gỡ cài đặt: xóa `~/.local/share/agent-meeting`, `~/.local/share/applications/agent-meeting.desktop` và icon cùng tên.
+
 ### Luồng sử dụng
 
 | Bước | Bạn làm gì |
@@ -157,6 +168,7 @@ bin/cli.js      lệnh chạy: server + tunnel + mở trình duyệt
 src/meeting.js  lõi cuộc họp: slot, luật chống chờ nhau (không phụ thuộc HTTP)
 src/server.js   HTTP: giao diện chủ trì (SSE), API curl, MCP
 src/ui.html     trang chủ trì (một file, không build)
+scripts/        install-linux.sh: cài launcher vào menu ứng dụng
 test/           node:test
 ```
 

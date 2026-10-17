@@ -88,7 +88,8 @@ function createApp(cfg = {}) {
         if (m[2] === 'start') { const d = parseArgs(u, await readBody(req)); return json(200, { ok: mt.start(d.context, d.endCondition) }); }
         if (m[2] === 'stop') { mt.stop(); return json(200, { ok: true }); }
         // long-poll thay cho SSE vì tunnel miễn phí của Cloudflare không hỗ trợ SSE
-        return json(200, await mt.changedSince(+u.searchParams.get('v') || -1, 25000));
+        const v = Number.parseInt(u.searchParams.get('v'), 10);
+        return json(200, await mt.changedSince(Number.isNaN(v) ? -1 : v, 25000));
       }
 
       // API cho agent dạng văn bản (curl)
@@ -111,7 +112,7 @@ function createApp(cfg = {}) {
       text(404, 'not found');
     } catch (e) { if (!res.headersSent) json(500, { error: String(e) }); }
   });
-  return { server, create, close: () => { clearInterval(sweep); server.close(); } };
+  return { server, create, close: () => { clearInterval(sweep); server.close(); server.closeAllConnections?.(); } };
 }
 
 module.exports = { createApp, TOOLS };

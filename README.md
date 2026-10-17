@@ -120,7 +120,8 @@ Sau đó mở lại phiên agent và dán prompt hiện trên trang.
 ```text
 npx github:ttat288/agent-meeting [tuỳ chọn]
 
-  --local        Không bật tunnel (chỉ máy này / cùng mạng LAN)
+  --local        Không bật tunnel (chỉ máy này / cùng mạng LAN; với LAN, mở trang chủ trì
+                 bằng IP của máy, ví dụ http://192.168.1.5:3000/m/..., để link mời dùng đúng IP)
   --port <n>     Cổng server (mặc định 3000, bận thì tự chọn cổng khác)
   --max <n>      Giới hạn số tin của cuộc họp (mặc định 120)
   --idle <giây>  Im lặng bao lâu thì hỏi 1 agent có muốn kết thúc không (mặc định 40)
@@ -158,7 +159,7 @@ Với agent dùng `curl`, các tool tương ứng là `/a/<token>/<tool>`.
 ## Phát triển
 
 ```bash
-npm test      # 10 bài test cho lõi cuộc họp, không cần cài gì
+npm test      # test lõi cuộc họp + test tích hợp HTTP (MCP, curl, trang chủ trì), không cần cài gì
 npm start -- --local --no-open
 ```
 
@@ -170,7 +171,7 @@ src/meeting.js  lõi cuộc họp: slot, luật chống chờ nhau (không phụ
 src/server.js   HTTP: giao diện chủ trì (long-poll), API curl, MCP
 src/ui.html     trang chủ trì (một file, không build)
 scripts/        install-linux.sh: cài launcher vào menu ứng dụng
-test/           node:test
+test/           node:test (meeting.test.js: luật cuộc họp; server.test.js: MCP/HTTP)
 ```
 
 ## Giấy phép

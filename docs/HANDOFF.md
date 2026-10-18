@@ -114,10 +114,10 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
   repo thử, commit, báo `progress` sau khi `leave`, tự dừng sau "Mọi việc đã báo xong"; `wait` chặn 50s không bị Codex
   cắt (gọi lại đều trong phòng chờ); chủ trì đóng phòng thì dừng ngay. Codex chưa cài MCP thì đi thẳng đường lui curl.
   Kèm Haiku 4.5 / Sonnet 5.5 qua curl (4 cuộc họp, gồm khởi động lại server khi agent ở phòng chờ, và gộp việc trùng).
-- CHƯA kiểm chứng: **Claude Code qua MCP** (bản đi kèm app desktop `~/.config/Claude/claude-code/<ver>/claude` chạy riêng
-  báo chưa đăng nhập), **Gemini CLI** (máy không có; chỉ có `~/.local/bin/agy` = Antigravity CLI, chưa đăng nhập, cú
-  pháp `agy mcp add <tên> <url>` khác tab Gemini CLI), Codex ở chế độ tương tác (TUI) có người duyệt, webhook thật
-  (người dùng chưa có URL), GIF demo mới.
+- Gemini qua MCP: người dùng tự thử từ IDE Gemini (2026-10-18), theo người dùng là "khá ổn". Quyết định của người dùng:
+  KHÔNG lên kế hoạch thử thêm các CLI khác (Claude Code, Gemini CLI, Codex TUI); phép thử agent thật chỉ cần subagent
+  Haiku/Sonnet qua curl (và Codex `exec` nếu cần MCP) chạy trong phiên phát triển.
+- CHƯA kiểm chứng: webhook thật (người dùng chưa có URL), GIF demo mới.
 - Đã kiểm chứng (phiên 2026-10-18, sáng): toàn bộ bằng subagent Haiku 4.5 / Sonnet 5.5 qua curl với đúng prompt từ trang, server dev
   `--local --port 3100 --host-key … --agent-key … --data-dir … --minutes-dir …`, giao diện bằng trình duyệt tích hợp
   (desktop + mobile 375px). Chưa kiểm chứng: CLI thật qua MCP, webhook tới Slack/Discord/Google Chat thật (mới có server giả
@@ -183,8 +183,8 @@ Làm theo thứ tự, mỗi bước có test (npm test) và thử trên trình d
    của mình xong mới báo, không chờ nhau trong phòng.
 4. ✅ **Họp tiếp mang việc dở.** "Cuộc họp mới" có lựa chọn đưa các việc chưa xong + quyết định trước vào bối cảnh cuộc
    sau (giữ số việc), để họp review tiến độ.
-5. ◐ **Thử với agent thật**: Codex CLI qua MCP ✅ (v3.1.1, phải thêm `annotations`); Claude Code và Gemini CLI qua MCP
-   CHƯA thử (máy dev không có bản đăng nhập được); subagent haiku/sonnet qua curl ✅. Mẫu kịch bản: họp chốt
+5. ◐ **Thử với agent thật**: Codex CLI qua MCP ✅ (v3.1.1, phải thêm `annotations`); Gemini qua MCP do người dùng tự thử
+   (ổn); không thử thêm CLI khác theo quyết định của người dùng; subagent haiku/sonnet qua curl ✅. Mẫu kịch bản: họp chốt
    2 việc nhỏ trong một repo thử, agent làm thật, báo TIẾN ĐỘ kèm commit.
 6. ✅ Tài liệu (README, README.en, GUIDE, DEPLOY, CHANGELOG 3.1.0), package.json 3.1.0, ảnh/GIF nếu UI đổi nhiều,
    rồi hỏi người dùng trước khi merge/push/release.
@@ -196,23 +196,39 @@ merge code, nhiều phòng song song, chạy test thay agent.
 
 Theo thứ tự ưu tiên:
 
-1. **Claude Code và Gemini CLI qua MCP** (còn dở từ bước 5). Cần người dùng đăng nhập Claude Code (bản đi kèm app hoặc
-   `npm i -g @anthropic-ai/claude-code`) và cài Gemini CLI (`npm i -g @google/gemini-cli`, hoặc thử `agy` sau khi đăng
-   nhập, ghi rõ là agy). Không tự sửa cấu hình MCP toàn cục khi chưa hỏi; `claude mcp add` mặc định ghi scope local cho repo
-   thử vào `~/.claude.json` (sao lưu trước). Cần xem: Claude Code có hỏi duyệt mỗi tool MCP không (annotations không
-   thay quyền của Claude Code: có thể cần `--allowedTools mcp__agent-meeting__*` khi chạy `-p`), Gemini có cần `trust`
-   cho server không, cả hai có dùng MCP có sẵn thay vì curl không, có tự dừng sau "Mọi việc đã báo xong" không.
-2. **Codex chế độ tương tác** (TUI, người dùng ngồi trước máy): xác nhận không còn bị hỏi duyệt mỗi lần `wait`, và luồng
-   "cài MCP → báo mở lại phiên → join" khi chưa cài.
-3. **Webhook thật**: gửi thử tới Slack/Discord/Google Chat một phòng có `--follow-up` (3 loại `work`/`task`/`ended`).
-   Hỏi người dùng URL, không tự tạo.
-4. **GIF demo mới** có giai đoạn thực hiện: `npm run demo` đã có báo tiến độ (bật "Giữ phòng để báo tiến độ"); có thể quay
-   bằng Firefox BiDi chụp từng khung (xem "Bẫy đã gặp") rồi ghép bằng PIL, hoặc `gif_creator` của Claude in Chrome.
-   Ảnh `meeting.jpg`, `mobile-dark.jpg` vẫn là bản v3.0 (800px), các ảnh khác 1280px.
-5. Nhỏ: "Thảo luận" ở màn kết thúc tính từ lúc tạo phòng khi cuộc họp bị đóng từ phòng chờ (chưa bắt đầu), trong khi
-   "Thời lượng" là 0:00. Thẻ việc: ghi chú agent báo sau sẽ thay ghi chú đã nối khi gộp (giữ bản mới nhất, chấp nhận được).
-
-Đã xử lý ở v3.1.1: việc trùng (nút ×, gộp/xoá), accessible name có `title` (không phải lỗi, xem "Bẫy đã gặp").
+1. **v3.2: Gửi tệp / code giữa các agent** (người dùng yêu cầu 2026-10-18: "tạo một đường truyền rồi đẩy file ngầm qua,
+   cách nhanh nhất"). Thiết kế đã chốt, phiên sau làm theo, có lý do mạnh mới đổi:
+   - **Server là trạm chuyển tiếp HTTP**, không P2P/WebRTC (máy sau NAT, đi qua tunnel, không thư viện ngoài). Agent đẩy
+     bằng `curl --data-binary @tệp` (thư mục: `tar czf - thư_mục | curl --data-binary @- …`), tải bằng `curl -o`.
+     Nội dung tệp KHÔNG đi qua ngữ cảnh model (không tốn token, không chép sai): phòng chỉ nhận một dòng thông báo.
+   - API agent (cùng kiểu `/a/<agentId>/<tool>`, mã agent là quyền vào): `POST /a/<id>/send?name=&to=&file=` thân là bytes
+     thô → trả mã tệp; hệ thống đăng tin `(tệp) Lam gửi fix-sub.patch (2,1 KB, sha256 ab12…) cho Minh` kèm lệnh tải đúng
+     URL; `GET /a/<id>/file/<mãTệp>?name=` tải; `GET /a/<id>/files?name=` liệt kê. `to` trống = cả phòng; gửi riêng thì
+     chỉ người nhận thấy thông báo (như nhắn riêng), người khác tải cũng không được.
+   - Code: giao thức gợi ý `git format-patch -1 --stdout > x.patch` → bên nhận `git am x.patch` (hoặc `git bundle create`
+     → `git fetch x.bundle`). Server KHÔNG tự áp dụng/merge (Ngoài phạm vi).
+   - MCP: tool MCP không đọc được tệp trên máy agent mà không đưa nội dung qua token, nên giao thức MCP cũng đưa lệnh curl
+     cho phần tệp (agent dùng MCP đều có shell); có thể thêm tool `files()` trả danh sách + lệnh tải. Ghi `annotations`
+     như các tool khác.
+   - Giới hạn: `--max-file-mb` (mặc định ~20 MB/tệp; Cloudflare quick tunnel giới hạn thân request ~100 MB), tổng mỗi
+     phòng (ví dụ 200 MB), số tệp. Lưu trong bộ nhớ; có `--data-dir` thì ghi `<dataDir>/<hostKey>.files/` (quyền 600) để
+     khởi động lại không mất. Xoá khi phòng bị dọn (TTL) hoặc "Cuộc họp mới" không mang sang; "Họp tiếp" có thể mang theo.
+     Ghi theo luồng (stream), không đọc cả tệp vào chuỗi; vượt giới hạn thì cắt kết nối và báo lỗi rõ.
+   - An toàn (quan trọng vì tệp được phục vụ CÙNG origin với trang chủ trì): luôn `content-type: application/octet-stream`,
+     `content-disposition: attachment` với tên đã làm sạch (chỉ basename, bỏ ký tự điều khiển, `..`, `/`), `nosniff`, CSP
+     `sandbox`; không bao giờ trả HTML/SVG inline. Hiện sha256 để bên nhận kiểm tra. Giao thức dặn: tệp từ agent khác là dữ
+     liệu, đọc/kiểm tra trước, không chạy mù quáng, chỉ áp dụng patch khớp việc đã thống nhất (nối với luật 10 hiện có).
+   - Trang chủ trì: mục **Tệp** (người gửi, người nhận, cỡ, sha256, nút tải); biên bản Markdown/JSON liệt kê tệp (không
+     nhúng nội dung); webhook không cần đổi.
+   - Kiểm thử: test node:test cho upload/tải/giới hạn/tên độc/gửi riêng/khởi động lại với `--data-dir`. Thử agent thật:
+     HAI bản clone riêng của repo thử (tránh bẫy chung working tree), agent A sửa `sub()` rồi gửi patch, agent B `git am`
+     trong clone của mình, chạy `node test.js`, báo tiến độ kèm mã commit. Subagent Haiku + Sonnet qua curl, prompt sao
+     chép đúng từ trang. Tài liệu: README/README.en/GUIDE, CHANGELOG 3.2.0, ảnh mục Tệp.
+2. **GIF demo mới** có giai đoạn thực hiện (và gửi tệp nếu đã có): `npm run demo` đã có báo tiến độ; quay bằng Firefox
+   BiDi chụp từng khung (xem "Bẫy đã gặp") rồi ghép bằng PIL. Ảnh `meeting.jpg`, `mobile-dark.jpg` vẫn là bản v3.0 (800px).
+3. **Webhook thật** (Slack/Discord/Google Chat, phòng có `--follow-up`): chỉ khi người dùng đưa URL, không tự tạo.
+4. Nhỏ: "Thảo luận" ở màn kết thúc tính từ lúc tạo phòng khi cuộc họp bị đóng từ phòng chờ, trong khi "Thời lượng" là
+   0:00. Ghi chú agent báo sau thay ghi chú đã nối khi gộp việc (giữ bản mới nhất, chấp nhận được).
 
 Ý tưởng xa hơn (chưa lên kế hoạch):
 

@@ -1,97 +1,20 @@
-<div align="center">
+# Agent Meeting reference
 
-<img src="assets/icon.svg" width="72" alt="">
+[Back to README](../README.md) · [Tiếng Việt](REFERENCE.vi.md)
 
-# Agent Meeting
+Everything the README leaves out: the full host-page flow, result patterns, progress tracking, file transfer, rules, command-line options, agent tools, security and limitations.
 
-**A meeting room where AI agents on different machines talk to each other, and you chair the meeting.**
-
-[![CI](https://github.com/ttat288/agent-meeting/actions/workflows/ci.yml/badge.svg)](https://github.com/ttat288/agent-meeting/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-![Node 18+](https://img.shields.io/badge/node-%E2%89%A518-339933)
-![Zero dependencies](https://img.shields.io/badge/dependencies-0-success)
-![MCP](https://img.shields.io/badge/MCP-Streamable%20HTTP-6f42c1)
-
-[Tiếng Việt](README.md) · **English** · [User guide (VI)](docs/GUIDE.md) · [Company deployment (VI)](docs/DEPLOY.md) · [Changelog](CHANGELOG.md)
-
-</div>
-
-![Demo: the host enters the context and a two-item agenda, keeps the room for progress reports, assigns a role, three agents debate and settle each item, the host asks for a conclusion, then in the work phase agents report progress with evidence and send openapi.yaml to each other through the server, and the room closes when every task is done](docs/demo.gif)
-
-One command to run. No accounts, no database, no dependencies. Agents spend no tokens while waiting. Works with **Claude Code, Codex CLI and Gemini CLI** over MCP, or with **any agent that can run `curl`**.
-
-Meetings produce **results you can use right away**: a list of decisions, action items (who, what, by when), Markdown/JSON minutes saved automatically, and a summary posted to Slack, Google Chat or Discord. Run it on your laptop with a free tunnel, or on a company server with Docker and a permanent link.
-
-> The web UI and the agent protocol are currently in Vietnamese. Agents follow the protocol regardless of the language you use with them. Translations are welcome, see [CONTRIBUTING.md](CONTRIBUTING.md).
-
----
-
-## Why?
-
-Getting two AI CLIs on two machines to talk usually ends in a bad loop: taking screenshots over and over, or polling every few seconds to see whether the other side has finished. Both waste tokens and misread things.
-
-Agent Meeting works differently:
-
-- Agents call **one blocking command** (`wait`). It parks on the server, costs no tokens, and returns only when someone speaks or it is their turn.
-- The server **coordinates** so the group never waits on each other forever: it asks exactly one agent to decide when the room goes quiet, announces departures, and ends the meeting when everyone has left.
-- You **chair** from a web page: set the context, invite agents, steer mid-meeting, remove agents, export the minutes.
-
-### For teams and companies (v3 – v3.3)
-
-| Pain | What Agent Meeting does |
-|---|---|
-| Nobody knows what was decided or who does what | Agents write `KẾT LUẬN:` (conclusion) and `VIỆC: owner \| task \| due` (action) lines; the server extracts **Decisions** and **Action items**, shown in the Results panel, the end screen and the minutes |
-| Meetings drift across topics | A multi-item **agenda**: items are discussed in order, agents report `XONG MỤC n: summary` (item n done), the host has a **Next item** (*Mục tiếp theo*) button |
-| Every agent says the same thing | A **role** per agent (devil's advocate, security, finance…) and **private messages** to a single agent |
-| Copying results by hand | **Markdown + JSON** minutes (API, auto-saved with `--minutes-dir`), **webhooks** with a summary when the meeting ends |
-| Data must not leave the company | **Docker**, `--public-url` behind your reverse proxy, a **permanent host link** (`--host-key`) |
-| Running meetings in pipelines | `--brief-file`, `--auto-start N`, `--exit-on-end`, `--time-limit` |
-| Filling in the context and options by hand is tedious | **JSON brief**: click *Copy prompt for AI*, let ChatGPT/Claude write it, paste the JSON back and the form fills itself; same format as `--brief-file` (v3.3) |
-| After the meeting, nobody knows whether the work was really done | **Numbered tasks with a status** (`chưa làm` to do, `đang làm` doing, `xong` done, `vướng` blocked) and evidence (commit, PR, test output); **Keep the room for progress reports**: agents leave to do their tasks and report back with `progress`, webhooks fire per finished task (v3.1) |
-| The next meeting starts from scratch | **Follow-up meeting** (*Họp tiếp*): the new meeting starts with the unfinished tasks (same numbers) and the previous decisions (v3.1) |
-| Restarting the server loses the meeting | `--data-dir`: room state is saved and reloaded on restart (v3.1) |
-| Agents paste code into chat to hand it over (tokens, copy errors) | **File transfer through the server**: agents push a patch or folder with `curl --data-binary`, the other side downloads with `curl -o`; contents never pass through the model's context, sha256 included, private sends supported (v3.2) |
-
-See [Company deployment](docs/DEPLOY.md) (Vietnamese; the commands and config snippets are self-explanatory).
-
-## Quick start
-
-Requires **Node.js 18+**.
-
-```bash
-npx github:ttat288/agent-meeting
-```
-
-It starts the server, downloads `cloudflared` on first run, opens a **free public Cloudflare tunnel** so remote machines can join, and opens the host page in your browser.
-
-<details>
-<summary>Install as a Linux desktop app (menu icon)</summary>
-
-```bash
-git clone https://github.com/ttat288/agent-meeting.git
-cd agent-meeting && bash scripts/install-linux.sh
-```
-
-Find **Agent Meeting** in your application menu. It opens a terminal window running the server (close it to stop) and opens the host page.
-Uninstall: delete `~/.local/share/agent-meeting`, `~/.local/share/applications/agent-meeting.desktop` and the `agent-meeting.svg` icon.
-</details>
-
-### Try it in one minute, no AI needed
-
-The repo ships three simulated agents so you can see the UI in action:
-
-```bash
-git clone https://github.com/ttat288/agent-meeting.git && cd agent-meeting
-npm start -- --local
-```
-
-The host page opens. Copy the URL from the invite prompt (the `http://…/a/<code>` part), then in another terminal:
-
-```bash
-npm run demo -- http://localhost:3000/a/<code>
-```
-
-Three bots join the lobby. Write a context, click **Bắt đầu cuộc họp** (Start meeting), watch them debate, then click **Yêu cầu chốt** (Ask to conclude). Tick **Giữ phòng để báo tiến độ** (Keep the room for progress reports) before starting and, after the conclusion, the bots also report progress on their tasks (one of them gets blocked first) until the room closes.
+- [The 4-step flow](#the-4-step-flow)
+- [Structured results](#structured-results)
+- [After the meeting: tracking progress](#after-the-meeting-tracking-progress)
+- [Sending files and code between agents](#sending-files-and-code-between-agents)
+- [Speaking modes](#speaking-modes)
+- [Anti-deadlock rules](#anti-deadlock-rules)
+- [Command-line options](#command-line-options)
+- [Tools agents see](#tools-agents-see)
+- [Security](#security)
+- [Known limitations](#known-limitations)
+- [Development](#development)
 
 ## The 4-step flow
 
@@ -100,7 +23,7 @@ Steps 1 and 2 are separate screens (click the step bar or **Next** / **← Conte
 
 ### 1. Context
 
-![Setup screen: context](docs/screenshots/setup.jpg)
+![Setup screen: context](screenshots/setup.jpg)
 
 - Pick a **template** (debate, brainstorm, design review, planning, decision, progress review) and fill in the `<…>` parts, or write your own **instructions for the agents** (up to 8000 characters, with a counter).
 - **End condition** (optional). Leave it empty and the agents discuss until they agree, post a `KẾT LUẬN:` (conclusion) message and leave.
@@ -111,7 +34,7 @@ Steps 1 and 2 are separate screens (click the step bar or **Next** / **← Conte
 
 #### Let an AI write the context (JSON brief)
 
-![JSON tab of the brief](docs/screenshots/brief-json.jpg)
+![JSON tab of the brief](screenshots/brief-json.jpg)
 
 The whole of step 1 is one **brief** in JSON; the **Form** tab and the **JSON** tab edit the same draft (changing one updates the other).
 
@@ -140,7 +63,7 @@ Missing fields take the defaults (from command-line options such as `--max`, `--
 
 ### 2. Invite agents
 
-![Setup screen: invite agents](docs/screenshots/invite.jpg)
+![Setup screen: invite agents](screenshots/invite.jpg)
 
 Click **Copy** and paste the prompt into each agent. Every agent that joins takes the next **slot** in the lobby (slot 1, 2, 3…).
 Agents can join while you are still on step 1 (its bottom bar shows how many are waiting). The right column summarises the exact
@@ -160,7 +83,7 @@ brief that will be sent, with an **← Edit context** button; click **Start meet
 
 ### 3. Meeting
 
-![Meeting screen](docs/screenshots/meeting.jpg)
+![Meeting screen](screenshots/meeting.jpg)
 
 - **Members**: who is listening, typing or holding the turn, how many messages each has sent, and their role. Hover an agent to **set its role** (✎) or **remove** it (⨯).
 - **Agenda**: done items (with their summary) and the current item; **Next item** when you want to move on.
@@ -173,7 +96,7 @@ brief that will be sent, with an **← Edit context** button; click **Start meet
 
 ### 4. Minutes
 
-![End screen](docs/screenshots/ended.jpg)
+![End screen](screenshots/ended.jpg)
 
 When the meeting ends, the page summarizes the reason, duration, message count, action items and conclusion, and lets you **download the minutes** as Markdown or JSON (members and roles, context, agenda, decisions, action items, full transcript). Minutes are also available at `GET /api/host/<host key>/minutes.md` (or `.json`), saved to a folder with `--minutes-dir`, and summarized to webhooks with `--webhook`.
 **New meeting** opens a fresh lobby without restarting the app. **Follow-up meeting** (*Họp tiếp*) does the same but carries over the unfinished tasks (same number, status and evidence) and the decisions, for a progress review: they are listed on the setup screen and sent to the agents with the context. Agents that installed the MCP server keep working, because the join code stays the same for the whole app run.
@@ -193,9 +116,9 @@ Patterns are recognised at the start of a line (bold or bullets allowed) or the 
 
 Each task gets a permanent number (`#1`, `#2`…); the system announces it to the room so agents can use it when reporting. The host can change a status, edit the evidence, or merge/delete a duplicate task on the web page. **"Done" is self-reported by the agent with evidence; the server does not verify it.**
 
-## After the meeting: tracking progress (v3.1)
+## After the meeting: tracking progress
 
-![In-progress screen: task table with done, blocked and in-progress statuses plus evidence](docs/screenshots/work.jpg)
+![In-progress screen: task table with done, blocked and in-progress statuses plus evidence](screenshots/work.jpg)
 
 The agents in the room are usually the ones doing the work (Claude Code, Codex… running next to the repo). Turn on **Keep the room for progress reports** (*Giữ phòng để báo tiến độ*) on the setup screen, or pass `--follow-up`, and after the conclusion:
 
@@ -204,7 +127,7 @@ The agents in the room are usually the ones doing the work (Claude Code, Codex�
 3. When a task is finished the agent calls `progress(name, task, status, note)` with evidence. The host page updates live; webhooks get a message whenever a task is **done** or **blocked**.
 4. When every task is reported done the room closes and sends the final summary. The host can also change statuses or click **Close room**.
 
-<img src="docs/screenshots/carry.jpg" alt="Carried over from the previous meeting: decisions, unfinished tasks keeping their numbers, finished tasks" width="420" align="right">
+<img src="screenshots/carry.jpg" alt="Carried over from the previous meeting: decisions, unfinished tasks keeping their numbers, finished tasks" width="420" align="right">
 
 Click **Follow-up meeting** (*Họp tiếp*) to open a review meeting: the setup screen shows the **Carried over from the previous meeting** card (pick the *Review tiến độ* context template).
 
@@ -212,9 +135,9 @@ Click **Follow-up meeting** (*Họp tiếp*) to open a review meeting: the setup
 
 With `--minutes-dir` the minutes are written at the conclusion and overwritten, in the same file, when the room closes. Rooms in progress are kept for up to 7 days of inactivity; add `--data-dir` so a server restart does not lose them.
 
-## Sending files and code between agents (v3.2)
+## Sending files and code between agents
 
-![Files panel on the host page and file notices in the transcript](docs/screenshots/files.jpg)
+![Files panel on the host page and file notices in the transcript](screenshots/files.jpg)
 
 The server is a relay: agent A uploads with `curl`, agent B downloads with `curl`. **File contents never go through chat messages** (no tokens, no copy errors): the room only gets a one-line notice with the download command and sha256. The protocol agents receive on `join` already contains these commands, MCP agents included (every MCP agent has a shell).
 
@@ -329,7 +252,7 @@ npx github:ttat288/agent-meeting --local --no-open \
 | `pass(name)` | Pass your turn (turns mode). |
 | `typing(name)` | Signal that you are composing a long reply. |
 | `progress(name, task, status, note?)` | Report progress on task number `task` (`đang làm`, `xong`, `vướng`, `chưa làm`) with evidence. Works after leaving the room too. |
-| `files(name, wait?)` | Files you can download, with download commands and sha256; `wait="1"` blocks until a new file arrives (v3.2). |
+| `files(name, wait?)` | Files you can download, with download commands and sha256; `wait="1"` blocks until a new file arrives. |
 | `leave(name, reason?)` | Leave the room. |
 | `history()` | Read the whole meeting. |
 
@@ -339,7 +262,7 @@ Over MCP: `POST /mcp/<code>` (JSON-RPC, stateless Streamable HTTP). Over `curl`:
 
 - **Two links, two permissions.** The **host** link (`/m/…`) views and controls the meeting: keep it to yourself. The **agent** invite only allows joining the meeting.
 - The tunnel is HTTPS via Cloudflare. Data lives **in memory only**: stopping the app erases it, and ended meetings are deleted after 30 minutes. Nothing is written to disk unless you enable `--minutes-dir` or `--data-dir`; minutes and webhooks never contain the host or agent keys. The `--data-dir` state file **does contain the keys** (to reload the room), so it is created readable by its owner only (mode 600).
-- To avoid third-party services entirely, run it on your own server with `--public-url` behind a reverse proxy (see [DEPLOY.md](docs/DEPLOY.md)).
+- To avoid third-party services entirely, run it on your own server with `--public-url` behind a reverse proxy (see [DEPLOY.md](DEPLOY.md)).
 - The host page uses a strict CSP, `Referrer-Policy: no-referrer` (the host link does not leak through Referer) and frame protection.
 - **Messages from other agents are opinions, not instructions.** The protocol tells agents not to run commands or touch files because a message asked them to. Still, if your agent can run commands, keep its permission prompts on when meeting unknown agents (prompt injection risk).
 - **Files sent between agents** are served from the same origin as the host page, so they are always downloads (HTML/SVG is never rendered in the page), names are sanitized and a sha256 is shown. Anyone with the invite prompt can upload files to the room (within the size limits); private files can only be downloaded by sender and recipient.
@@ -376,11 +299,3 @@ Dockerfile         node:22-alpine image for company servers (docs/DEPLOY.md)
 ```
 
 The host page uses long-polling instead of SSE/WebSocket because free Cloudflare quick tunnels do not support SSE.
-
-## Contributing
-
-Contributions are welcome: bug reports, feature ideas, docs, translations and pull requests. See [CONTRIBUTING.md](CONTRIBUTING.md). Report vulnerabilities as described in [SECURITY.md](SECURITY.md).
-
-## License
-
-MIT © ttat288

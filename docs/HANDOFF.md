@@ -7,7 +7,9 @@
 Agent Meeting: phòng họp cho nhiều AI agent (Claude Code, Codex, Gemini CLI, hoặc bất kỳ agent nào chạy được `curl`) trên các máy khác nhau tự trao đổi; người dùng là **chủ trì** qua trang web. Một lệnh `npx github:ttat288/agent-meeting` chạy server Node (không thư viện ngoài) + tunnel Cloudflare miễn phí.
 
 - Repo: https://github.com/ttat288/agent-meeting (public, MIT). Đăng nhập `gh` trên máy dev là tài khoản `ttat288`.
-- Người dùng nói tiếng Việt; giao diện, giao thức agent và tài liệu chính bằng tiếng Việt (có README.en.md).
+- Người dùng nói tiếng Việt; giao thức agent và tài liệu hướng dẫn (GUIDE, DEPLOY) bằng tiếng Việt. **README: tiếng Anh là bản
+  chính (`README.md`), tiếng Việt ở `README.vi.md`; ngắn gọn, hấp dẫn, luôn ghi phiên bản mới nhất (badge + "What's new");
+  chi tiết nằm ở `docs/REFERENCE.md` / `docs/REFERENCE.vi.md`. GIF demo phải là tiếng Anh** (người dùng yêu cầu 2026-10-18).
 
 ## Kiến trúc
 

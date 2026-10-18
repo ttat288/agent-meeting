@@ -28,6 +28,9 @@ vào phòng). Vẫn một lệnh là chạy, không thư viện ngoài, Node 18+
   `--auto-start` dùng cả tuỳ chọn và vai trò của brief; không có `--auto-start` thì brief là bản nháp ban đầu trên trang chủ trì
   (`--context-file`… cũng vậy). Bản nháp kiểu cũ trong trình duyệt (≤ 3.2) được chuyển sang tự động.
 - Ảnh mới: `docs/screenshots/setup.jpg` (bước 1), `invite.jpg` (bước 2), `brief-json.jpg` (tab JSON).
+- **README viết lại**: tiếng Anh là bản chính (`README.md`), tiếng Việt ở `README.vi.md`; ngắn, tập trung vào lợi ích, luôn
+  ghi phiên bản mới nhất. Phần chi tiết (luồng đầy đủ, mẫu kết quả, tham số dòng lệnh, tool, bảo mật, hạn chế) chuyển sang
+  `docs/REFERENCE.md` / `docs/REFERENCE.vi.md`. `README.en.md` bị bỏ.
 
 ## 3.2.0
 

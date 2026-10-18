@@ -132,8 +132,41 @@ function createApp(cfg = {}) {
     m.fixed = !!overrides.fixed;
     byAgent.set(m.id, m); byHost.set(m.hostKey, m);
     m.ev.once('ended', () => { onEnded(m).finally(() => app.ev.emit('ended', m)); });
+    if (cfg.dataDir && m.fixed) m.ev.on('change', () => saveSoon(m));
     return m;
   };
+
+  // --data-dir: trạng thái phòng có link cố định được ghi ra <hostKey>.json (gom ghi, tối đa ~1 lần/giây;
+  // ghi file tạm rồi rename để không bao giờ để lại file dở). File chứa mã chủ trì/agent nên chỉ chủ máy đọc được.
+  const pending = new Map();
+  const stateFile = (hostKey) => path.join(cfg.dataDir, hostKey + '.json');
+  function save(m) {
+    pending.delete(m.hostKey);
+    if (byHost.get(m.hostKey) !== m) return; // cuộc họp cũ đã bị "Cuộc họp mới" thay thế dưới cùng mã
+    try {
+      fs.mkdirSync(cfg.dataDir, { recursive: true, mode: 0o700 });
+      const f = stateFile(m.hostKey), tmp = `${f}.${process.pid}.tmp`;
+      fs.writeFileSync(tmp, JSON.stringify(m.toState()), { mode: 0o600 });
+      fs.renameSync(tmp, f);
+    } catch (e) { log(`⚠ Không lưu được trạng thái cuộc họp: ${e.message}`); }
+  }
+  function saveSoon(m) {
+    if (pending.has(m.hostKey)) return;
+    const t = setTimeout(() => save(m), 1000); t.unref();
+    pending.set(m.hostKey, t);
+  }
+  const flush = () => { for (const [k, t] of [...pending]) { clearTimeout(t); const m = byHost.get(k); if (m) save(m); } };
+  // Nạp lại cuộc họp đã lưu với mã chủ trì này; không có file thì trả về null
+  function restore(hostKey) {
+    if (!cfg.dataDir) return null;
+    let s;
+    try { s = JSON.parse(fs.readFileSync(stateFile(hostKey), 'utf8')); }
+    catch (e) { if (e.code !== 'ENOENT') log(`⚠ Không đọc được trạng thái đã lưu (${e.message}), bắt đầu phòng mới.`); return null; }
+    if (s?.schema !== 'agent-meeting/state@1' || s.hostKey !== hostKey) { log('⚠ File trạng thái không hợp lệ, bắt đầu phòng mới.'); return null; }
+    const m = create({ id: s.id, hostKey, fixed: true, ...s.cfg });
+    m.restore(s);
+    return m;
+  }
   // Cuộc họp nối tiếp dùng lại mã agent (agent đã cài MCP không phải cài lại) và các tuỳ chọn của cuộc trước
   const renew = (mt) => {
     const s = mt.cfg;
@@ -213,7 +246,7 @@ function createApp(cfg = {}) {
     } catch (e) { if (!res.headersSent) json(500, { error: String(e.message || e) }); else res.end(); }
   });
   server.requestTimeout = 0; // long-poll và wait giữ kết nối lâu
-  const app = { server, create, renew, meetings: byHost, ev: new EventEmitter(), setPublicOrigin: (o, fixed) => { publicOrigin = o; if (fixed) fixedOrigin = o; }, close: () => { clearInterval(sweep); server.close(); server.closeAllConnections?.(); } };
+  const app = { server, create, renew, meetings: byHost, ev: new EventEmitter(), setPublicOrigin: (o, fixed) => { publicOrigin = o; if (fixed) fixedOrigin = o; }, flush, restore, close: () => { clearInterval(sweep); flush(); server.close(); server.closeAllConnections?.(); } };
   return app;
 }
 

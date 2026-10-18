@@ -215,7 +215,7 @@ Trạng thái: ${this.state === 'LOBBY' ? 'chủ trì chưa bắt đầu, hãy g
 
 GIAO THỨC CUỘC HỌP (đọc kỹ):
 1. Luôn dùng đúng tên "${a.name}" ở mọi lệnh.
-2. Vòng lặp: wait -> đọc -> nếu có đóng góp MỚI thì say -> wait tiếp. wait chặn tới ~50 giây mà không tốn gì; nếu nó báo "Chưa có tin mới" thì gọi lại ngay.
+2. Vòng lặp: wait -> đọc -> nếu có đóng góp MỚI thì say -> wait tiếp. wait chặn tới ~50 giây mà không tốn gì; nếu nó báo "Chưa có tin mới" thì gọi lại ngay. Lệnh lỗi kết nối hoặc không trả về gì (máy chủ có thể đang khởi động lại): chờ ~10 giây rồi gọi wait lại, thử vài lần trước khi bỏ.
 3. ${mode}
 4. Chỉ nói khi có ý mới, phản biện, câu hỏi hoặc kết luận. Đồng ý thì không cần nhắc lại. Mỗi tin ngắn gọn (tối đa ${MAX_TEXT} ký tự).
 5. Cần suy nghĩ lâu: gọi typing để mọi người biết và chờ bạn.
@@ -282,18 +282,56 @@ ${calls}`;
       'Ví dụ: "XONG MỤC 1: dùng PostgreSQL managed". Hệ thống sẽ chuyển sang mục kế tiếp. Sau mục cuối, gửi tin KẾT LUẬN tổng hợp (kèm các dòng VIỆC nếu có).',
       '', `Bắt đầu với mục 1: ${this.agenda[0]}`);
     this._push('host', 'Chủ trì', lines.join('\n'));
-    if (lim) {
-      this.endsAt = this.startedAt + lim * 60000;
-      if (lim * 60000 > WARN_BEFORE_MS) this._timer(lim * 60000 - WARN_BEFORE_MS, () => {
-        if (this.state !== 'LIVE') return;
-        this._push('host', 'Chủ trì', 'Còn 2 phút. Hãy chốt kết luận ngay (tin "KẾT LUẬN: ...") rồi rời phòng.');
-        this._changed();
-      });
-      this._timer(lim * 60000, () => this._end('hết thời gian'));
-    }
+    if (lim) this.endsAt = this.startedAt + lim * 60000;
+    this._armTimers();
     if (this.cfg.mode === 'turns') this._setTurn(this._order()[0]);
     this._changed();
     return true;
+  }
+  // hẹn giờ nhắc chốt và kết thúc theo endsAt (gọi lại được sau khi nạp từ đĩa)
+  _armTimers() {
+    if (!this.endsAt || this.state !== 'LIVE') return;
+    const left = this.endsAt - Date.now();
+    if (left > WARN_BEFORE_MS && this.endsAt - this.startedAt > WARN_BEFORE_MS) this._timer(left - WARN_BEFORE_MS, () => {
+      if (this.state !== 'LIVE') return;
+      this._push('host', 'Chủ trì', 'Còn 2 phút. Hãy chốt kết luận ngay (tin "KẾT LUẬN: ...") rồi rời phòng.');
+      this._changed();
+    });
+    this._timer(left, () => this._end('hết thời gian'));
+  }
+
+  // ---------- lưu / nạp lại (--data-dir) ----------
+  // Không lưu: hẹn giờ, người nghe sự kiện, trạng thái "đang chờ" của từng kết nối.
+  toState() {
+    const { mode, maxMsgs, idleMs, timeLimitMin } = this.cfg;
+    return {
+      schema: 'agent-meeting/state@1', id: this.id, hostKey: this.hostKey, fixed: !!this.fixed,
+      cfg: { mode, maxMsgs, idleMs, timeLimitMin },
+      state: this.state, endReason: this.endReason, context: this.context, endCondition: this.endCondition,
+      version: this.version, createdAt: this.createdAt, startedAt: this.startedAt, endedAt: this.endedAt, endsAt: this.endsAt,
+      everLeft: this.everLeft, turn: this.turn?.name || null, turnSeq: this.turnSeq, passStreak: this.passStreak,
+      agenda: this.agenda, agendaIndex: this.agendaIndex, actions: this.actions, log: this.log,
+      agents: [...this.agents.values()].map(({ waiting, busyUntil, lastSeen, ...a }) => a),
+    };
+  }
+  restore(s) {
+    for (const k of ['state', 'endReason', 'context', 'endCondition', 'createdAt', 'startedAt', 'endedAt', 'endsAt',
+      'everLeft', 'turnSeq', 'passStreak', 'agenda', 'agendaIndex', 'actions', 'log']) if (s[k] !== undefined) this[k] = s[k];
+    Object.assign(this.cfg, s.cfg);
+    // trang chủ trì đang long-poll với số phiên bản cũ (có thể lớn hơn bản đã ghi nếu lần ghi cuối bị mất): nhảy hẳn lên
+    this.version = (s.version || 0) + 1000;
+    this.touched = this.lastActivity = Date.now();
+    // agent đang họp được coi là còn trong phòng: lệnh wait kế tiếp của nó chạy tiếp như chưa có gì xảy ra;
+    // không quay lại trong staleMs thì tự bị tính là mất kết nối
+    for (const a of s.agents || []) this.agents.set(a.name, { ...a, waiting: false, busyUntil: 0, lastSeen: Date.now() });
+    const t = s.turn && this.agents.get(s.turn);
+    this.turn = t ? { name: t.name, seq: this.turnSeq, since: Date.now() } : null;
+    if (this.state === 'LIVE') {
+      this._sys('Máy chủ đã khởi động lại, cuộc họp tiếp tục.');
+      if (this.endsAt && this.endsAt <= Date.now()) return this._end('hết thời gian');
+      this._armTimers();
+    }
+    this._changed();
   }
 
   hostSay(text, to) {

@@ -155,3 +155,59 @@ test('Chủ trì: nhắn riêng, chuyển mục, gán vai trò, tải biên bả
   const s = await (await fetch(`${base}/api/host/${m.hostKey}/state`)).json();
   assert.deepEqual(s.agenda, ['Mục một', 'Mục hai']);
 });
+
+test('--data-dir: tắt server giữa cuộc họp, bật lại thì họp tiếp, biên bản đủ', async (t) => {
+  const fs = require('fs'), os = require('os'), path = require('path');
+  const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'am-data-'));
+  t.after(() => fs.rmSync(dataDir, { recursive: true, force: true }));
+  const keys = { hostKey: 'host_key_persist_0001', id: 'agent_key_persist_0001', fixed: true };
+  const cfg = { waitMs: 400, idleMs: 60000, tick: 30, dataDir };
+  const a1 = createApp(cfg);
+  const m1 = a1.create(keys);
+  m1.join('A', 'Haiku 4.5'); m1.join('B', 'Sonnet 5.5');
+  m1.start('Chọn database', '', { agenda: ['DB', 'Chia việc'], timeLimitMin: 30 });
+  await m1.wait('A'); await m1.wait('B');
+  m1.say('A', 'XONG MỤC 1: PostgreSQL\nVIỆC: B | viết migration | thứ 6');
+  a1.close(); // ghi nốt phần chưa ghi
+  const file = path.join(dataDir, keys.hostKey + '.json');
+  if (process.platform !== 'win32') assert.equal(fs.statSync(file).mode & 0o777, 0o600);
+
+  const a2 = createApp(cfg); t.after(() => a2.close());
+  await new Promise(r => a2.server.listen(0, r));
+  const base = `http://127.0.0.1:${a2.server.address().port}`;
+  assert.equal(a2.restore('khong_co_ma_nay_0000'), null);
+  const m2 = a2.restore(keys.hostKey);
+  assert.equal(m2.state, 'LIVE'); assert.equal(m2.id, keys.id); assert.equal(m2.agendaIndex, 1);
+  assert.equal(m2.actions[0].task, 'viết migration');
+  assert.equal(m2.createdAt, m1.createdAt); // trang chủ trì không tự tải lại
+  assert.ok(m2.version > m1.version);
+  assert.ok(m2.endsAt > Date.now() && m2.timers.length); // giới hạn thời gian vẫn chạy tiếp
+  // B đang họp: lệnh wait kế tiếp nhận đúng phần chưa đọc, không phải toàn bộ từ đầu
+  const w = await fetch(`${base}/a/${keys.id}/wait?name=B`).then(r => r.text());
+  assert.match(w, /\[A\] XONG MỤC 1/); assert.match(w, /khởi động lại/); assert.doesNotMatch(w, /Chọn database/);
+  const say = await fetch(`${base}/a/${keys.id}/say`, { method: 'POST', body: form({ name: 'B', text: 'KẾT LUẬN: xong' }) }).then(r => r.text());
+  assert.match(say, /Đã gửi/);
+  const md = await fetch(`${base}/api/host/${keys.hostKey}/minutes.md`).then(r => r.text());
+  assert.match(md, /PostgreSQL/); assert.match(md, /viết migration/); assert.match(md, /KẾT LUẬN: xong/);
+  assert.doesNotMatch(md, new RegExp(keys.hostKey + '|' + keys.id));
+  // "Cuộc họp mới": cuộc cũ không được ghi đè file của cuộc mới
+  await fetch(`${base}/api/host/${keys.hostKey}/new`, { method: 'POST' });
+  m2.ev.emit('change'); a2.flush();
+  assert.equal(JSON.parse(fs.readFileSync(file, 'utf8')).state, 'LOBBY');
+});
+
+test('--data-dir: hết giờ trong lúc server tắt thì kết thúc khi nạp lại', async (t) => {
+  const fs = require('fs'), os = require('os'), path = require('path');
+  const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'am-data-'));
+  t.after(() => fs.rmSync(dataDir, { recursive: true, force: true }));
+  const a1 = createApp({ dataDir });
+  const m1 = a1.create({ hostKey: 'host_key_persist_0002', fixed: true });
+  m1.join('A', 'x'); m1.start('x', '', { timeLimitMin: 1 });
+  m1.endsAt = Date.now() - 1; m1.ev.emit('change');
+  a1.close();
+  const a2 = createApp({ dataDir }); t.after(() => a2.close());
+  const ended = new Promise(r => a2.ev.once('ended', r));
+  const m2 = a2.restore('host_key_persist_0002');
+  assert.equal(m2.state, 'ENDED'); assert.equal(m2.endReason, 'hết thời gian');
+  await ended;
+});

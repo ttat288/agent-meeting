@@ -36,6 +36,8 @@ Lưu và chia sẻ kết quả
   --minutes-dir <thư mục>  Tự lưu biên bản .md + .json khi mỗi cuộc họp kết thúc
   --webhook <url>          Gửi tóm tắt (quyết định, việc cần làm) khi kết thúc; dùng nhiều lần được.
                            Hỗ trợ Slack, Discord, Google Chat; URL khác nhận JSON đầy đủ
+  --data-dir <thư mục>     Lưu trạng thái phòng (cần --host-key): tắt/khởi động lại server giữa cuộc họp
+                           thì nạp lại và họp tiếp. File chứa mã bí mật, chỉ chủ máy đọc được (quyền 600)
 
 Tự động hoá (chạy không cần người)
   --context <văn bản>      Bối cảnh cuộc họp
@@ -50,7 +52,7 @@ Khác
   -v, --version         In phiên bản
 
 Biến môi trường tương đương: PORT, AGENT_MEETING_MINUTES_DIR, AGENT_MEETING_WEBHOOK (nhiều URL cách nhau bởi dấu phẩy),
-AGENT_MEETING_PUBLIC_URL, AGENT_MEETING_HOST_KEY, AGENT_MEETING_AGENT_KEY.`);
+AGENT_MEETING_PUBLIC_URL, AGENT_MEETING_HOST_KEY, AGENT_MEETING_AGENT_KEY, AGENT_MEETING_DATA_DIR.`);
   process.exit(0);
 }
 
@@ -69,11 +71,14 @@ const agentKey = opt('--agent-key') || env.AGENT_MEETING_AGENT_KEY || '';
 for (const k of [hostKey, agentKey].filter(Boolean)) if (!/^\w{16,64}$/.test(k)) { console.error(`Lỗi: mã "${k}" phải dài 16-64 ký tự chữ, số hoặc _ (tạo bằng: openssl rand -hex 16).`); process.exit(1); }
 if (hostKey && hostKey === agentKey) { console.error('Lỗi: --host-key và --agent-key phải khác nhau (ai có mã agent không được điều khiển cuộc họp).'); process.exit(1); }
 for (const u of [publicUrl, ...webhooks].filter(Boolean)) if (!/^https?:\/\//.test(u)) { console.error(`Lỗi: "${u}" không phải URL http(s).`); process.exit(1); }
+const dataDir = opt('--data-dir') || env.AGENT_MEETING_DATA_DIR || '';
+if (dataDir && !hostKey) { console.error('Lỗi: --data-dir cần --host-key (link chủ trì phải cố định thì mới nạp lại được cuộc họp sau khi khởi động lại).'); process.exit(1); }
 if (auto.startAt && !auto.context) { console.error('Lỗi: --auto-start cần --context hoặc --context-file.'); process.exit(1); }
 const cfg = {
   maxMsgs: num('--max', 120), idleMs: num('--idle', 40) * 1000, timeLimitMin: num('--time-limit', 0),
   mode: flag('--turns') ? 'turns' : 'free',
   minutesDir: opt('--minutes-dir') || env.AGENT_MEETING_MINUTES_DIR || '',
+  dataDir,
   webhooks,
   log: (x) => console.log(x),
 };
@@ -123,8 +128,13 @@ function listen(server, port) {
 (async () => {
   const app = createApp(cfg);
   const port = await listen(app.server, +opt('--port', env.PORT || 3000));
-  const meeting = app.create({ hostKey: hostKey || undefined, id: agentKey || undefined, fixed: !!hostKey });
-  if (auto.agenda !== undefined) meeting.configure({ agenda: auto.agenda });
+  const restored = hostKey ? app.restore(hostKey) : null;
+  const meeting = restored || app.create({ hostKey: hostKey || undefined, id: agentKey || undefined, fixed: !!hostKey });
+  if (restored) {
+    console.log(`↻ Đã nạp lại cuộc họp đã lưu (${{ LOBBY: 'phòng chờ', LIVE: 'đang họp', ENDED: 'đã kết thúc' }[meeting.state]}, ${meeting.log.length} dòng diễn biến) từ ${path.resolve(dataDir)}`);
+    if (agentKey && agentKey !== meeting.id) console.log('⚠ Cuộc họp đã lưu dùng mã agent khác --agent-key: giữ mã cũ để agent đang họp vẫn vào được.');
+  }
+  if (auto.agenda !== undefined && !restored) meeting.configure({ agenda: auto.agenda });
   let origin = `http://localhost:${port}`, tunnel = null;
 
   if (publicUrl) { origin = publicUrl; app.setPublicOrigin(origin, true); }
@@ -140,7 +150,7 @@ function listen(server, port) {
     });
     app.setPublicOrigin(origin);
   }
-  ['SIGINT', 'SIGTERM'].forEach(s => process.on(s, () => { console.log('\nĐã tắt Agent Meeting.'); process.exit(0); }));
+  ['SIGINT', 'SIGTERM'].forEach(s => process.on(s, () => { app.flush(); console.log('\nĐã tắt Agent Meeting.'); process.exit(0); }));
 
   const host = `${origin}/m/${meeting.hostKey}`;
   const line = '─'.repeat(64);
@@ -154,7 +164,7 @@ function listen(server, port) {
   Mời agent (dán cho agent chạy được curl):
     ${origin}/a/${meeting.id}/join   (gửi kèm name=<tên> và model=<model>)
   MCP (Streamable HTTP):  ${origin}/mcp/${meeting.id}
-${cfg.minutesDir ? `\n  Biên bản sẽ tự lưu vào: ${path.resolve(cfg.minutesDir)}` : ''}${webhooks.length ? `\n  Gửi tóm tắt tới ${webhooks.length} webhook khi kết thúc` : ''}${auto.startAt ? `\n  Tự bắt đầu khi đủ ${auto.startAt} agent trong phòng chờ` : ''}
+${cfg.minutesDir ? `\n  Biên bản sẽ tự lưu vào: ${path.resolve(cfg.minutesDir)}` : ''}${dataDir ? `\n  Trạng thái phòng lưu ở: ${path.resolve(dataDir)} (khởi động lại thì họp tiếp)` : ''}${webhooks.length ? `\n  Gửi tóm tắt tới ${webhooks.length} webhook khi kết thúc` : ''}${auto.startAt ? `\n  Tự bắt đầu khi đủ ${auto.startAt} agent trong phòng chờ` : ''}
 
   Giữ cửa sổ này mở suốt cuộc họp. Ctrl+C để tắt.
   Link chủ trì chứa mã bí mật: đừng chia sẻ.\n${line}`);
@@ -172,7 +182,7 @@ ${cfg.minutesDir ? `\n  Biên bản sẽ tự lưu vào: ${path.resolve(cfg.minu
     };
     meeting.ev.on('change', check);
   }
-  if (flag('--exit-on-end')) app.ev.on('ended', () => { console.log('Cuộc họp đã kết thúc, thoát.'); setTimeout(() => process.exit(0), 200); });
+  if (flag('--exit-on-end')) app.ev.on('ended', () => { console.log('Cuộc họp đã kết thúc, thoát.'); app.flush(); setTimeout(() => process.exit(0), 200); });
   if (tunnel) {
     // Địa chỉ tunnel mới cần một lúc để DNS nhận ra; chờ ở đây rồi mới mở trình duyệt
     process.stdout.write('\nĐang chờ địa chỉ công khai có hiệu lực');

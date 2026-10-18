@@ -68,7 +68,7 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
 
 ## Trạng thái
 
-- Phiên bản: **v3.0.0** (bản cho doanh nghiệp). v2.1.1 là bản phát hành trước.
+- Phiên bản phát hành: **v3.0.0** (bản cho doanh nghiệp, đã có GitHub Release, main). Đang làm: v3.1 (dưới).
 
 ## Lộ trình v3: giải quyết nỗi đau doanh nghiệp (đã xong)
 
@@ -81,6 +81,37 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
 - [x] Tự động hoá: `--context-file`, `--agenda-file`, `--auto-start N`, `--exit-on-end`, `--time-limit`
 - [x] Màn hình hẹp: nút ☰ mở bảng chương trình/kết quả
 - [x] Thử với agent thật (Haiku 4.5 ×2 + Sonnet 5.5, 3 lần): chương trình 2 mục, vai trò, nhắn riêng
+
+## Lộ trình v3.1: từ "họp xong" sang "làm xong" (đang làm, nhánh v3.1-followup)
+
+Nhận định (sau bài đánh giá bên ngoài v3.0.0): agent trong phòng họp CHÍNH LÀ người thực thi (Claude Code/Codex trên
+máy có repo). Không cần server tự chạy agent; chỉ cần phòng họp theo dõi được tiến độ sau khi chốt và mang việc dở
+sang cuộc họp sau. Giữ nguyên: một lệnh là chạy, không thư viện ngoài, Node 18+.
+
+Làm theo thứ tự, mỗi bước có test (npm test) và thử trên trình duyệt / agent thật xong mới sang bước sau:
+
+1. **Không mất cuộc họp khi khởi động lại.** `--data-dir <thư mục>` (env `AGENT_MEETING_DATA_DIR`): ghi trạng thái
+   phòng ra `<hostKey>.json` khi có thay đổi (gom ghi, tối đa ~1 lần/giây, ghi file tạm rồi rename), nạp lại khi khởi
+   động nếu dùng `--host-key`. Agent vào lại bằng đúng tên + model (đã hỗ trợ). Không lưu mã bí mật vào biên bản
+   (file trạng thái thì cần mã: đặt quyền 600). Test: tắt server giữa cuộc họp, bật lại, họp tiếp, biên bản đủ.
+2. **Việc có trạng thái.** Mỗi việc có số (#1, #2…), trạng thái `chưa làm | đang làm | xong | vướng`, ghi chú/bằng chứng
+   (link commit, PR, kết quả test). Agent cập nhật bằng dòng `TIẾN ĐỘ VIỆC <số>: <trạng thái> | <bằng chứng>` và/hoặc
+   tool mới `progress(name, task, status, note)` (MCP + curl). Chủ trì đổi trạng thái trên web. Biên bản/webhook/JSON
+   có trạng thái. Ghi rõ trong UI: "xong" là agent tự báo, kèm bằng chứng, server KHÔNG tự kiểm chứng.
+3. **Giai đoạn thực hiện sau khi chốt.** Tuỳ chọn "Giữ phòng để báo tiến độ" (web + `--follow-up`): sau KẾT LUẬN,
+   agent rời họp để đi làm việc được giao, rồi gọi lại `progress` khi xong; phòng chuyển trạng thái riêng (ví dụ
+   WORK) thay vì ENDED; webhook gửi khi một việc xong và khi tất cả xong. Giao thức phải nói rõ cho agent: làm việc
+   của mình xong mới báo, không chờ nhau trong phòng.
+4. **Họp tiếp mang việc dở.** "Cuộc họp mới" có lựa chọn đưa các việc chưa xong + quyết định trước vào bối cảnh cuộc
+   sau (giữ số việc), để họp review tiến độ.
+5. **Thử với agent thật**: Claude Code, Codex CLI, Gemini CLI qua MCP (chưa từng thử, máy dev hiện KHÔNG cài các CLI
+   này: nhờ người dùng cài hoặc thử trên máy khác); subagent haiku/sonnet qua curl như trước. Mẫu kịch bản: họp chốt
+   2 việc nhỏ trong một repo thử, agent làm thật, báo TIẾN ĐỘ kèm commit.
+6. Tài liệu (README, README.en, GUIDE, DEPLOY, CHANGELOG 3.1.0), package.json 3.1.0, ảnh/GIF nếu UI đổi nhiều,
+   rồi hỏi người dùng trước khi merge/push/release.
+
+**Ngoài phạm vi (đừng làm):** tài khoản/phân quyền (dùng reverse proxy của công ty), server tự khởi chạy agent hay tự
+merge code, nhiều phòng song song, chạy test thay agent.
 
 ## Việc tiếp theo (ý tưởng chưa làm)
 

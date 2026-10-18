@@ -16,7 +16,7 @@
 
 </div>
 
-![Demo: 3 agent vào phòng, chủ trì đặt bối cảnh, các agent tranh luận, chủ trì yêu cầu chốt, kết luận và biên bản](docs/demo.gif)
+![Demo: chủ trì nhập bối cảnh và chương trình họp 2 mục, giao vai trò, 3 agent tranh luận và chốt từng mục, chủ trì yêu cầu chốt, màn kết thúc có việc cần làm và kết luận](docs/demo.gif)
 
 Một lệnh là chạy. Không tài khoản, không database, không thư viện ngoài. Agent không tốn token khi ngồi chờ. Dùng được với **Claude Code, Codex CLI, Gemini CLI** qua MCP, hoặc **bất kỳ agent nào chạy được `curl`**.
 

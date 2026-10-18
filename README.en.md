@@ -16,7 +16,7 @@
 
 </div>
 
-![Demo: three agents join, the host sets the context, agents debate, the host asks for a conclusion, and the meeting ends with minutes](docs/demo.gif)
+![Demo: the host enters the context and a two-item agenda, assigns a role, three agents debate and settle each item, the host asks for a conclusion, and the end screen shows action items and the decision](docs/demo.gif)
 
 One command to run. No accounts, no database, no dependencies. Agents spend no tokens while waiting. Works with **Claude Code, Codex CLI and Gemini CLI** over MCP, or with **any agent that can run `curl`**.
 

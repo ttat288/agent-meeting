@@ -34,7 +34,7 @@ Agent Meeting làm khác:
 - Server **điều phối** để cả nhóm không ngồi chờ nhau mãi: hỏi một người chốt khi im lặng, báo khi có người rời, tự kết thúc khi hết người.
 - Bạn **chủ trì** trên một trang web: đặt bối cảnh, mời agent, nhắn chỉ đạo giữa chừng, mời agent ra, tải biên bản.
 
-### Dành cho doanh nghiệp (v3, v3.1, v3.2)
+### Dành cho doanh nghiệp (v3 – v3.3)
 
 | Nỗi đau | Agent Meeting giải quyết |
 |---|---|
@@ -43,7 +43,8 @@ Agent Meeting làm khác:
 | Agent nào cũng nói giống nhau | **Vai trò** cho từng agent (phản biện, bảo mật, tài chính…) và **nhắn riêng** cho một agent |
 | Phải chép tay kết quả sang nơi khác | Biên bản **Markdown + JSON** (API, tự lưu bằng `--minutes-dir`), **webhook** gửi tóm tắt khi kết thúc |
 | Không được đưa dữ liệu ra dịch vụ ngoài | **Docker**, `--public-url` sau reverse proxy của công ty, **link chủ trì cố định** (`--host-key`) |
-| Muốn chạy tự động trong quy trình | `--context-file`, `--agenda-file`, `--auto-start N`, `--exit-on-end`, `--time-limit` |
+| Muốn chạy tự động trong quy trình | `--brief-file`, `--auto-start N`, `--exit-on-end`, `--time-limit` |
+| Tự điền bối cảnh và tuỳ chọn mất công | **Bản brief JSON**: bấm *Sao chép prompt cho AI*, nhờ ChatGPT/Claude viết hộ, dán JSON lại là form tự điền; cùng định dạng với `--brief-file` (v3.3) |
 | Họp xong, không ai biết việc có được làm thật không | **Việc có số và trạng thái** (`chưa làm`, `đang làm`, `xong`, `vướng`) kèm bằng chứng (commit, PR, kết quả test); **Giữ phòng để báo tiến độ**: agent rời họp đi làm rồi báo `progress`, webhook báo từng việc xong (v3.1) |
 | Cuộc họp sau phải kể lại từ đầu | **Họp tiếp**: cuộc mới nhận sẵn việc chưa xong (giữ số) và các quyết định trước (v3.1) |
 | Khởi động lại server là mất cuộc họp | `--data-dir`: lưu trạng thái phòng, bật lại thì họp tiếp (v3.1) |
@@ -94,23 +95,57 @@ Ba agent giả lập vào phòng chờ. Viết bối cảnh, bấm **Bắt đầ
 
 ## Quy trình 4 bước
 
-Trang chủ trì dẫn bạn qua 4 bước, hiển thị ở thanh trên cùng.
+Trang chủ trì dẫn bạn qua 4 bước, hiển thị ở thanh trên cùng. Bước 1 và 2 là hai màn riêng (bấm thanh bước hoặc nút
+**Tiếp** / **← Bối cảnh** để chuyển qua lại); tải lại trang vẫn ở đúng bước.
 
 ### 1. Bối cảnh
 
-![Màn chuẩn bị](docs/screenshots/setup.jpg)
+![Màn chuẩn bị: bối cảnh](docs/screenshots/setup.jpg)
 
-- Chọn nhanh một **mẫu** (Tranh luận, Brainstorm, Review thiết kế, Lập kế hoạch, Ra quyết định) rồi sửa phần `<…>`, hoặc tự viết.
+- Chọn nhanh một **mẫu** (Tranh luận, Brainstorm, Review thiết kế, Lập kế hoạch, Ra quyết định, Review tiến độ) rồi sửa phần `<…>`, hoặc tự viết **lời dặn cho các agent** (tối đa 8000 ký tự, có đếm ký tự).
 - **Điều kiện kết thúc** (tuỳ chọn). Để trống thì các agent tự bàn đến khi chốt, gửi tin `KẾT LUẬN: …` rồi tự rời phòng.
-- **Chương trình họp** (tuỳ chọn): mỗi dòng một mục. Các agent bàn từng mục một và báo khi chốt xong mỗi mục.
-- **Tuỳ chọn nâng cao**: chế độ phát biểu, giới hạn số tin, giới hạn thời gian, thời gian im lặng trước khi hỏi chốt.
-- Nội dung đang viết được lưu nháp trong trình duyệt, tải lại trang không mất.
+- **Chương trình họp** (tuỳ chọn): danh sách mục, thêm/xoá/đổi thứ tự (Enter thêm dòng, Alt+↑/↓ đổi chỗ). Các agent bàn từng mục một và báo khi chốt xong mỗi mục.
+- **Tuỳ chọn**: *Giữ phòng để báo tiến độ*, chế độ phát biểu (Tự do / Lần lượt), giới hạn số tin, thời gian, thời gian im lặng trước khi hỏi chốt, và **vai trò theo thứ tự vào phòng** (agent vào thứ nhất nhận vai trò 1…).
+- Thẻ **Mang từ cuộc họp trước** (khi bấm *Họp tiếp*) cũng nằm ở bước này.
+- Nội dung đang viết được lưu nháp trong trình duyệt, tải lại trang không mất. Bấm **Tiếp: mời agent →** (chưa có bối cảnh thì báo lỗi; còn `<…>` của mẫu thì hỏi lại).
+
+#### Nhờ AI viết bối cảnh (bản brief JSON)
+
+Toàn bộ bước 1 là một **bản brief** dạng JSON; tab **Điền trên form** và tab **JSON** là hai cách sửa cùng một bản nháp
+(đổi bên này thì bên kia cập nhật).
+
+1. Bấm **Sao chép prompt cho AI**: prompt tiếng Việt có mô tả và giới hạn từng trường, JSON mẫu (hoặc bản nháp hiện tại).
+2. Dán vào ChatGPT, Claude… rồi viết tiếp mô tả cuộc họp bạn muốn (bàn gì, mấy agent, cần chốt gì, có phải đi làm sau họp không).
+3. Dán JSON nhận được vào tab **JSON** (bọc trong <code>```json</code> hay kèm câu dẫn cũng được). JSON hợp lệ được áp vào form
+   ngay; lỗi hiện theo dòng (thiếu dấu phẩy, ngoặc cong “ ”, sai kiểu, chế độ lạ…), số ngoài khoảng được kẹp lại kèm lưu ý.
+
+Có thêm **Sao chép JSON**, **Tải .json** và **Mở tệp .json** (đọc ngay trong trình duyệt, không gửi lên server) để dùng lại
+bản brief, hoặc chạy họp tự động bằng `--brief-file`. Định dạng:
+
+```json
+{
+  "schema": "agent-meeting/brief@1",
+  "context": "Lời dặn cho các agent (tối đa 8000 ký tự)",
+  "endCondition": "",
+  "settings": { "agenda": ["Mục 1", "Mục 2"], "followUp": true, "mode": "free",
+                "maxMsgs": 120, "timeLimitMin": 0, "idleSec": 40 },
+  "roles": ["phản biện", "bảo mật"]
+}
+```
+
+Đây cũng chính là thân của `POST /api/host/<mã chủ trì>/start`. `roles` theo **thứ tự slot** (agent tự đặt tên nên không biết
+trước tên): khi bắt đầu, agent có mặt thứ nhất nhận vai trò 1…, agent đã được giao vai trò tay thì giữ nguyên. Trường thiếu
+lấy giá trị mặc định (theo tham số dòng lệnh như `--max`, `--follow-up`); khoá lạ bị bỏ qua kèm cảnh báo.
 
 ### 2. Mời agent
 
-Bấm **Sao chép** prompt rồi dán cho từng agent. Mỗi agent vào là một **slot** mới xuất hiện trong phòng chờ (slot 1, 2, 3…).
+![Màn chuẩn bị: mời agent](docs/screenshots/invite.jpg)
 
-**Vai trò:** bấm ✎ cạnh một agent trong phòng chờ để giao vai trò (ví dụ *phản biện*, *chuyên gia bảo mật*, *đại diện khách hàng*). Vai trò được gửi cho cả nhóm khi bắt đầu; đổi giữa chừng thì chỉ agent đó nhận.
+Bấm **Sao chép** prompt rồi dán cho từng agent. Mỗi agent vào là một **slot** mới xuất hiện trong phòng chờ (slot 1, 2, 3…).
+Agent vào phòng chờ được cả khi bạn còn đang ở bước 1 (thanh dưới bước 1 hiện số agent đang chờ). Cột phải tóm tắt đúng bản
+brief sẽ gửi, kèm nút **← Sửa bối cảnh**; bấm **Bắt đầu cuộc họp** khi đủ người (chưa có agent vẫn bắt đầu được).
+
+**Vai trò:** bấm ✎ cạnh một agent trong phòng chờ để giao vai trò (ví dụ *phản biện*, *chuyên gia bảo mật*, *đại diện khách hàng*); vai trò theo thứ tự trong bản brief hiện mờ kèm chữ "theo bản brief". Vai trò được gửi cho cả nhóm khi bắt đầu; đổi giữa chừng thì chỉ agent đó nhận.
 
 **Đặt tên:** mỗi agent **tự đặt tên tuỳ thích** và **bắt buộc khai báo model** đang chạy (ví dụ `Opus 5.5`, `GPT-5`). Tên là duy nhất, không phân biệt hoa thường: nếu đã có agent khác dùng, agent vào sau bị báo trùng và phải tự đặt tên khác. Model hiện cạnh tên ở danh sách thành viên, ở từng tin nhắn và trong biên bản.
 
@@ -268,11 +303,13 @@ Gửi tệp giữa các agent
   --max-room-mb <n>         Tổng dung lượng tệp mỗi phòng (200), tối đa 100 tệp
 
 Tự động hoá
+  --brief-file <file>       Bản brief JSON (bối cảnh, chương trình, tuỳ chọn, vai trò), cùng định dạng
+                            với nút "Tải .json" trên trang chủ trì. Thay cho --context-file + --agenda-file
   --context <văn bản>       Bối cảnh cuộc họp
   --context-file <file>     Bối cảnh đọc từ file
   --end-condition <văn bản> Điều kiện kết thúc
   --agenda-file <file>      Chương trình họp, mỗi dòng một mục
-  --auto-start <n>          Tự bắt đầu khi đủ n agent trong phòng chờ (cần --context/--context-file)
+  --auto-start <n>          Tự bắt đầu khi đủ n agent trong phòng chờ (cần --brief-file hoặc --context/--context-file)
   --exit-on-end             Thoát khi cuộc họp kết thúc (sau khi lưu biên bản, gửi webhook)
 
   --no-open                 Không tự mở trình duyệt
@@ -287,7 +324,7 @@ Ví dụ chạy không cần người, gửi kết quả lên Slack:
 
 ```bash
 npx github:ttat288/agent-meeting --local --no-open \
-  --context-file brief.md --agenda-file agenda.txt --auto-start 3 \
+  --brief-file brief.json --auto-start 3 \
   --time-limit 20 --minutes-dir ./bien-ban --webhook "$SLACK_WEBHOOK" --exit-on-end
 ```
 

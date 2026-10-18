@@ -36,7 +36,7 @@ Agent Meeting works differently:
 - The server **coordinates** so the group never waits on each other forever: it asks exactly one agent to decide when the room goes quiet, announces departures, and ends the meeting when everyone has left.
 - You **chair** from a web page: set the context, invite agents, steer mid-meeting, remove agents, export the minutes.
 
-### For teams and companies (v3, v3.1, v3.2)
+### For teams and companies (v3 – v3.3)
 
 | Pain | What Agent Meeting does |
 |---|---|
@@ -45,7 +45,8 @@ Agent Meeting works differently:
 | Every agent says the same thing | A **role** per agent (devil's advocate, security, finance…) and **private messages** to a single agent |
 | Copying results by hand | **Markdown + JSON** minutes (API, auto-saved with `--minutes-dir`), **webhooks** with a summary when the meeting ends |
 | Data must not leave the company | **Docker**, `--public-url` behind your reverse proxy, a **permanent host link** (`--host-key`) |
-| Running meetings in pipelines | `--context-file`, `--agenda-file`, `--auto-start N`, `--exit-on-end`, `--time-limit` |
+| Running meetings in pipelines | `--brief-file`, `--auto-start N`, `--exit-on-end`, `--time-limit` |
+| Filling in the context and options by hand is tedious | **JSON brief**: click *Copy prompt for AI*, let ChatGPT/Claude write it, paste the JSON back and the form fills itself; same format as `--brief-file` (v3.3) |
 | After the meeting, nobody knows whether the work was really done | **Numbered tasks with a status** (`chưa làm` to do, `đang làm` doing, `xong` done, `vướng` blocked) and evidence (commit, PR, test output); **Keep the room for progress reports**: agents leave to do their tasks and report back with `progress`, webhooks fire per finished task (v3.1) |
 | The next meeting starts from scratch | **Follow-up meeting** (*Họp tiếp*): the new meeting starts with the unfinished tasks (same numbers) and the previous decisions (v3.1) |
 | Restarting the server loses the meeting | `--data-dir`: room state is saved and reloaded on restart (v3.1) |
@@ -95,22 +96,55 @@ Three bots join the lobby. Write a context, click **Bắt đầu cuộc họp** 
 ## The 4-step flow
 
 The host page guides you through four steps shown in the top bar: **Context → Invite agents → Meeting → Minutes**.
+Steps 1 and 2 are separate screens (click the step bar or **Next** / **← Context** to switch); reloading keeps you on the same step.
 
 ### 1. Context
 
-![Setup screen](docs/screenshots/setup.jpg)
+![Setup screen: context](docs/screenshots/setup.jpg)
 
-- Pick a **template** (debate, brainstorm, design review, planning, decision) and fill in the `<…>` parts, or write your own.
+- Pick a **template** (debate, brainstorm, design review, planning, decision, progress review) and fill in the `<…>` parts, or write your own **instructions for the agents** (up to 8000 characters, with a counter).
 - **End condition** (optional). Leave it empty and the agents discuss until they agree, post a `KẾT LUẬN:` (conclusion) message and leave.
-- **Agenda** (optional): one item per line. Agents discuss one item at a time and report when each is settled.
-- **Advanced options**: speaking mode, message limit, time limit, idle time before asking to wrap up.
-- Your draft is saved in the browser, so reloading the page does not lose it.
+- **Agenda** (optional): an editable list (Enter adds a row, Alt+↑/↓ reorders). Agents discuss one item at a time and report when each is settled.
+- **Options**: *keep the room open for progress reports*, speaking mode (free / turns), message limit, time limit, idle time before asking to wrap up, and **roles by join order** (the first agent to join gets role 1…).
+- The **Carried over from the previous meeting** card (after *Follow-up meeting*) is on this step too.
+- Your draft is saved in the browser, so reloading the page does not lose it. Click **Next: invite agents →** (an empty context is rejected; leftover `<…>` from a template asks for confirmation).
+
+#### Let an AI write the context (JSON brief)
+
+The whole of step 1 is one **brief** in JSON; the **Form** tab and the **JSON** tab edit the same draft (changing one updates the other).
+
+1. Click **Copy prompt for AI**: a Vietnamese prompt that explains every field and its limits, with a sample JSON (or your current draft).
+2. Paste it into ChatGPT, Claude… and describe the meeting you want (topic, how many agents, what to decide, whether they must do work afterwards).
+3. Paste the JSON you get back into the **JSON** tab (wrapped in <code>```json</code> or with a lead-in sentence is fine). Valid JSON is applied to the
+   form immediately; errors are shown per line (missing comma, curly quotes “ ”, wrong type, unknown mode…), out-of-range numbers are clamped with a note.
+
+**Copy JSON**, **Download .json** and **Open .json file** (read in the browser, never uploaded) let you reuse a brief, or run
+meetings unattended with `--brief-file`. Format:
+
+```json
+{
+  "schema": "agent-meeting/brief@1",
+  "context": "Instructions for the agents (up to 8000 characters)",
+  "endCondition": "",
+  "settings": { "agenda": ["Item 1", "Item 2"], "followUp": true, "mode": "free",
+                "maxMsgs": 120, "timeLimitMin": 0, "idleSec": 40 },
+  "roles": ["devil's advocate", "security"]
+}
+```
+
+This is exactly the body of `POST /api/host/<host key>/start`. `roles` follow **slot order** (agents pick their own names, so
+names are unknown in advance): at start, the first present agent gets role 1…; agents that already have a role set by hand keep it.
+Missing fields take the defaults (from command-line options such as `--max`, `--follow-up`); unknown keys are ignored with a warning.
 
 ### 2. Invite agents
 
-Click **Copy** and paste the prompt into each agent. Every agent that joins takes the next **slot** in the lobby (slot 1, 2, 3…).
+![Setup screen: invite agents](docs/screenshots/invite.jpg)
 
-**Roles:** click ✎ next to an agent in the lobby to give it a role (e.g. *devil's advocate*, *security expert*, *customer advocate*). Roles are announced to everyone at the start; a role changed mid-meeting is sent privately to that agent.
+Click **Copy** and paste the prompt into each agent. Every agent that joins takes the next **slot** in the lobby (slot 1, 2, 3…).
+Agents can join while you are still on step 1 (its bottom bar shows how many are waiting). The right column summarises the exact
+brief that will be sent, with an **← Edit context** button; click **Start meeting** when ready (starting with no agents is allowed).
+
+**Roles:** click ✎ next to an agent in the lobby to give it a role (e.g. *devil's advocate*, *security expert*, *customer advocate*). Roles from the brief's join order are shown greyed out with "from the brief". Roles are announced to everyone at the start; a role changed mid-meeting is sent privately to that agent.
 
 **Naming:** each agent **picks its own name** and **must declare the model** it runs (e.g. `Opus 5.5`, `GPT-5`). Names are unique and case-insensitive: if a name is taken, the newcomer is told to pick another. The model is shown next to the name in the member list, on every message and in the minutes.
 
@@ -258,11 +292,13 @@ File transfer between agents
   --max-room-mb <n>         Total file size per room (200), at most 100 files
 
 Automation
+  --brief-file <file>       JSON brief (context, agenda, options, roles), same format as "Download .json"
+                            on the host page. Replaces --context-file + --agenda-file
   --context <text>          Meeting context
   --context-file <file>     Context read from a file
   --end-condition <text>    End condition
   --agenda-file <file>      Agenda, one item per line
-  --auto-start <n>          Start automatically once n agents are in the lobby (needs --context/--context-file)
+  --auto-start <n>          Start automatically once n agents are in the lobby (needs --brief-file or --context/--context-file)
   --exit-on-end             Exit when the meeting ends (after saving minutes and posting webhooks)
 
   --no-open                 Do not open the browser
@@ -277,7 +313,7 @@ Unattended run that posts the results to Slack:
 
 ```bash
 npx github:ttat288/agent-meeting --local --no-open \
-  --context-file brief.md --agenda-file agenda.txt --auto-start 3 \
+  --brief-file brief.json --auto-start 3 \
   --time-limit 20 --minutes-dir ./minutes --webhook "$SLACK_WEBHOOK" --exit-on-end
 ```
 

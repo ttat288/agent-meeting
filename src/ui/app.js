@@ -357,7 +357,7 @@
       $('ctxErr').hidden = false; $('ctxField').classList.add('invalid'); $('ctx').focus(); return false;
     }
     if (BR.PLACEHOLDER.test(draft.context) && placeholderOk !== draft.context) {
-      if (!(await confirmBox('Bối cảnh còn chỗ trống', `Bối cảnh còn phần ${BR.PLACEHOLDER.exec(draft.context)[0]} của mẫu chưa điền. ${yes}?`, yes))) {
+      if (!(await confirmBox('Bối cảnh còn chỗ trống', `Bối cảnh có đoạn ${BR.PLACEHOLDER.exec(draft.context)[0]} trông như chỗ trống của mẫu chưa điền. ${yes}?`, yes))) {
         goStep(1); setTab('form'); const i = draft.context.search(BR.PLACEHOLDER); $('ctx').focus(); $('ctx').setSelectionRange(i, draft.context.indexOf('>', i) + 1); return false;
       }
       placeholderOk = draft.context;

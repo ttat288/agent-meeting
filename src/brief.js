@@ -183,7 +183,7 @@
 
     if (!out.context) warn('context', 'Chưa có bối cảnh ("context" trống): các agent sẽ không biết cần bàn gì.');
     for (const [key, v] of [['context', out.context], ['endCondition', out.endCondition], ['settings.agenda', s.agenda.join('\n')], ['roles', out.roles.join('\n')]])
-      if (PLACEHOLDER.test(v)) warn(key, `"${key}" còn chỗ trống dạng <…> chưa điền: ${PLACEHOLDER.exec(v)[0]}`);
+      if (PLACEHOLDER.test(v)) warn(key, `"${key}" có đoạn ${PLACEHOLDER.exec(v)[0]} trông như chỗ trống của mẫu: nếu đúng thì hãy điền, nếu là nội dung thật thì bỏ qua lưu ý này.`);
     return out;
   }
 
@@ -222,12 +222,14 @@
   }
   const stringify = (brief) => JSON.stringify(brief, null, 2);
 
+  // Ví dụ cố ý không có số liệu/chi tiết riêng: Haiku từng chép "200 người dùng, đội 3 lập trình viên" của ví dụ cũ
+  // sang một cuộc họp không liên quan.
   const EXAMPLE = {
     schema: SCHEMA,
-    context: 'Hai bạn cùng chọn kiến trúc cho app quản lý công việc nội bộ (khoảng 200 người dùng, đội 3 lập trình viên, ngân sách hạ tầng thấp). Mỗi bạn đề xuất một phương án, phản biện phương án còn lại bằng lập luận cụ thể (chi phí, rủi ro, thời gian), rồi thống nhất một kiến trúc. Cuối cùng gửi KẾT LUẬN kèm các dòng VIỆC, ghi đúng tên agent phụ trách.',
+    context: 'Hai bạn cùng chọn thư viện vẽ biểu đồ cho trang báo cáo. Mỗi bạn đề xuất một lựa chọn, phản biện lựa chọn còn lại bằng lập luận cụ thể, rồi thống nhất một lựa chọn. Cuối cùng gửi KẾT LUẬN kèm các dòng VIỆC, ghi đúng tên agent phụ trách.',
     endCondition: '',
-    settings: { agenda: ['Chọn database', 'Chọn cách đăng nhập', 'Chia việc và hạn chót'], followUp: false, mode: 'free', maxMsgs: 80, timeLimitMin: 0, idleSec: 40 },
-    roles: ['đề xuất phương án', 'phản biện'],
+    settings: { agenda: ['So sánh các lựa chọn', 'Chốt lựa chọn và chia việc'], followUp: false, mode: 'free', maxMsgs: 60, timeLimitMin: 0, idleSec: 40 },
+    roles: ['đề xuất', 'phản biện'],
   };
   // Prompt tiếng Việt để người dùng dán cho ChatGPT/Claude… kèm mô tả cuộc họp, AI trả lại đúng một khối JSON.
   function aiPrompt(brief) {
@@ -239,16 +241,17 @@
       '',
       stringify(draft ? brief : EXAMPLE),
       '',
-      draft ? '(Trên là bản nháp hiện tại của tôi: giữ những gì còn đúng, sửa và bổ sung theo mô tả.)' : '(Trên chỉ là ví dụ minh hoạ cấu trúc: hãy thay toàn bộ nội dung theo mô tả của tôi.)',
+      draft ? '(Trên là bản nháp hiện tại của tôi: giữ những gì còn đúng, sửa và bổ sung theo mô tả.)' : '(Trên chỉ là ví dụ minh hoạ cấu trúc: hãy thay toàn bộ nội dung theo mô tả của tôi, không giữ lại chi tiết hay số liệu nào của ví dụ.)',
       '',
       'Ý nghĩa và giới hạn từng trường:',
       `- "schema": giữ nguyên "${SCHEMA}".`,
       `- "context" (bắt buộc, tối đa ${LIMITS.context} ký tự): lời dặn trực tiếp cho các agent: mục tiêu, thông tin nền (repo, đường dẫn, ràng buộc, số liệu), các bước cần làm, và kết quả mong muốn. Viết rõ ràng, cụ thể, xuống dòng bằng \\n.`,
       '  Các agent tự đặt tên khi vào phòng nên không biết trước tên: đừng gọi agent bằng tên riêng; nếu cần phân công thì dặn "mỗi dòng VIỆC ghi đúng tên agent phụ trách".',
       '  Nếu sau họp các agent phải đi làm thật (sửa code, viết tài liệu…), nói rõ bằng chứng cần báo khi xong (mã commit, kết quả test, link PR).',
-      `- "endCondition" (tối đa ${LIMITS.endCondition} ký tự, có thể để ""): khi nào thì dừng họp. "" nghĩa là các agent tự bàn đến khi chốt được kết luận.`,
+      `- "endCondition" (tối đa ${LIMITS.endCondition} ký tự, có thể để ""): khi nào thì dừng phần thảo luận. "" nghĩa là các agent tự bàn đến khi chốt được kết luận (thường nên để "").`,
       `- "settings.agenda": chương trình họp, các mục được bàn lần lượt (tối đa ${LIMITS.agenda} mục, mỗi mục tối đa ${LIMITS.item} ký tự, không đánh số). [] nếu chỉ có một chủ đề.`,
       '- "settings.followUp": true nếu sau khi chốt, các agent rời họp đi làm việc được giao rồi quay lại báo tiến độ kèm bằng chứng (phòng được giữ tới khi mọi việc xong); false nếu chỉ cần bàn và chốt.',
+      '  Khi followUp là true: việc làm và báo tiến độ diễn ra SAU khi chốt, ngoài cuộc họp (hệ thống tự hướng dẫn agent). Vì vậy "agenda" và "endCondition" chỉ nói về phần bàn bạc (phân tích, chia việc, chốt); đừng đưa "làm việc", "báo tiến độ" hay "đã commit xong" vào đó.',
       '- "settings.mode": "free" (tự do: ai có ý thì nói, nên dùng) hoặc "turns" (lần lượt theo thứ tự vào phòng).',
       `- "settings.maxMsgs": số tin tối đa của cả cuộc họp, ${LIMITS.maxMsgs[0]}-${LIMITS.maxMsgs[1]} (thường 40-150; để chống tốn tiền).`,
       `- "settings.timeLimitMin": giới hạn thời gian theo phút, ${LIMITS.timeLimitMin[0]}-${LIMITS.timeLimitMin[1]}; 0 = không giới hạn.`,

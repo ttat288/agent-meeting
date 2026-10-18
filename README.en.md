@@ -154,7 +154,7 @@ The server reads three line patterns in agent messages (the protocol tells agent
 
 Patterns are recognised at the start of a line (bold or bullets allowed) or the start of a sentence, because real agents often bury them in a long paragraph. Sentences that merely *mention* a pattern, like "I will send XONG MỤC 1", are ignored.
 
-Each task gets a permanent number (`#1`, `#2`…); the system announces it to the room so agents can use it when reporting. The host can change a status or edit the evidence on the web page. **"Done" is self-reported by the agent with evidence; the server does not verify it.**
+Each task gets a permanent number (`#1`, `#2`…); the system announces it to the room so agents can use it when reporting. The host can change a status, edit the evidence, or merge/delete a duplicate task on the web page. **"Done" is self-reported by the agent with evidence; the server does not verify it.**
 
 ## After the meeting: tracking progress (v3.1)
 
@@ -280,7 +280,7 @@ Over MCP: `POST /mcp/<code>` (JSON-RPC, stateless Streamable HTTP). Over `curl`:
 - One app run hosts **one meeting at a time**; for parallel meetings run several processes (or containers) with different keys.
 - History is not persisted after the app stops unless you use `--data-dir` (requires `--host-key`). Download the minutes or enable `--minutes-dir` to keep them.
 - Task status is self-reported; the server does not run tests or read the repo to verify it.
-- Two agents sending `KẾT LUẬN` with different wording can create duplicate tasks (e.g. #1 and #3 are the same). Mark the duplicate as done so a progress room can close.
+- Two agents sending `KẾT LUẬN` with different wording can create duplicate tasks (e.g. #1 and #3 are the same). Click **×** next to the duplicate to merge it into the task you keep (or delete it); agents repeating it do not recreate it.
 - Decisions and action items rely on the line patterns above. If an agent ignores them, the content stays in the transcript but not in Results; use *assign tasks* or *ask to conclude* to nudge.
 
 ## Development

@@ -467,6 +467,36 @@ test('Giữ phòng báo tiến độ: chốt xong thì sang WORK, agent rời đ
   assert.deepEqual(events, ['work', 'task#1:done', 'task#2:doing', 'task#2:done', 'task#3:done', 'ended']);
 });
 
+test('chủ trì gộp/xoá việc trùng: agent nhắc lại không tạo lại việc, báo tiến độ số cũ được chỉ sang số giữ lại', async () => {
+  const m = new Meeting({ ...fast, idleMs: 60000, followUp: true });
+  m.join('Lam', 'Sonnet 5.5'); m.join('Minh', 'Haiku 4.5'); m.start('x', '');
+  await m.wait('Lam'); await m.wait('Minh');
+  m.say('Lam', 'KẾT LUẬN: chia việc\nVIỆC: Lam | sửa sub() trong calc.js\nVIỆC: Minh | thêm mul() và test');
+  m.say('Minh', 'KẾT LUẬN: đồng ý\nVIỆC: Lam | Fix hàm trừ đang cộng nhầm\nVIỆC: Minh | viết README');
+  assert.deepEqual(m.actions.map(a => a.n), [1, 2, 3, 4]); // câu chữ khác hẳn: sameTask không gộp
+  m.progress('Lam', '3', 'đang làm', 'đã sửa a - b');
+  assert.equal(m.hostRemoveTask(3, '#1'), true);
+  assert.equal(m.actions.find(a => a.n === 1).note, '#3: đã sửa a - b'); // bằng chứng nối sang việc giữ lại
+  assert.match(m.log.at(-1).text, /Chủ trì gộp việc #3 \(Fix hàm trừ đang cộng nhầm\) vào việc #1/);
+  assert.equal(m.hostRemoveTask(4), true);
+  assert.match(m.log.at(-1).text, /Chủ trì xoá việc #4/);
+  assert.equal(m.hostRemoveTask(4), false); assert.equal(m.hostRemoveTask(2, 2), false); assert.equal(m.hostRemoveTask(2, 9), false);
+  m.say('Minh', 'Nhắc lại:\nVIỆC: Lam | Fix hàm trừ đang cộng nhầm\nVIỆC: Minh | viết README');
+  assert.deepEqual(m.actions.map(a => a.n), [1, 2]);
+  assert.match(m.progress('Lam', '3', 'xong', 'abc'), /đã được chủ trì gộp vào việc #1: hãy báo tiến độ cho việc #1/);
+  assert.match(m.progress('Minh', '4', 'xong'), /đã bị chủ trì xoá/);
+  // số việc không dùng lại, kể cả sau khi lưu/nạp lại trạng thái
+  const r = new Meeting({ ...fast, followUp: true }); r.restore(JSON.parse(JSON.stringify(m.toState())));
+  assert.deepEqual(r.removed.map(x => [x.n, x.into]), [[3, 1], [4, null]]);
+  r.say('Lam', 'VIỆC: Lam | viết changelog');
+  assert.deepEqual(r.actions.map(a => a.n), [1, 2, 5]);
+  m.leave('Lam'); m.leave('Minh');
+  assert.equal(m.state, 'WORK');
+  m.progress('Lam', '1', 'xong', 'commit 1'); m.progress('Minh', '2', 'đang làm');
+  assert.equal(m.hostRemoveTask(2), true); // xoá việc cuối chưa xong: phòng đóng
+  assert.equal(m.state, 'ENDED'); assert.equal(m.hostRemoveTask(1), false);
+});
+
 test('Giữ phòng báo tiến độ: không có việc thì kết thúc như thường; chủ trì đóng phòng; hết giờ cũng sang WORK', async () => {
   const a = new Meeting({ ...fast, followUp: true });
   a.join('A', 'x'); a.start('x', ''); a.leave('A');

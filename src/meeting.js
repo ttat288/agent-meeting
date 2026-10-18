@@ -99,6 +99,7 @@ class Meeting {
     this.agenda = [];      // chương trình họp: danh sách tiêu đề mục
     this.agendaIndex = 0;  // mục đang bàn (== agenda.length nghĩa là đã xong hết)
     this.actions = [];     // việc cần làm: { n, owner, task, due, by, t, item, status, note, updatedAt, updatedBy }
+    this.removed = [];     // việc chủ trì đã xoá/gộp: { n, owner, task, into } để agent nhắc lại không tạo lại việc trùng
     this.taskSeq = 0;      // số việc (#1, #2…) không bao giờ dùng lại, kể cả qua các cuộc họp nối tiếp
     this.carry = null;     // mang từ cuộc họp trước: { from, topic, decisions: [{item, text, by}], done: [{n, task, owner, note}], members: [tên] }
   }
@@ -198,7 +199,10 @@ class Meeting {
       if (!task) continue;
       const a = { owner: owner.slice(0, 60), task: task.slice(0, 300), due: (due || '').slice(0, 60), by: m.name, t: m.t, item: before };
       // agent hay nhắc lại cùng một việc với câu chữ hơi khác: coi là một việc, giữ bản mới nhất (giữ số và trạng thái)
-      const same = this.actions.find(y => !seen.has(y) && sameTask(y, a));
+      const gone = this.removed.find(y => sameTask(y, a));
+      if (gone && !gone.into) continue; // chủ trì đã xoá việc này
+      const same = gone ? this.actions.find(y => y.n === gone.into) : this.actions.find(y => !seen.has(y) && sameTask(y, a));
+      if (same && seen.has(same)) continue;
       if (same) { if (same.task.toLowerCase() !== a.task.toLowerCase()) same.task = a.task; if (a.owner) same.owner = a.owner; if (a.due) same.due = a.due; seen.add(same); }
       else { Object.assign(a, { n: ++this.taskSeq, status: 'todo', note: '', updatedAt: null, updatedBy: null }); this.actions.push(a); seen.add(a); added.push(a); }
     }
@@ -237,6 +241,9 @@ class Meeting {
     const num = Number(String(n ?? '').replace(/^\s*(?:việc|viec|task)?\s*#?/i, ''));
     const a = this.actions.find(x => x.n === num);
     const list = this.actions.length ? `Các việc hiện có: ${this.actions.map(x => '#' + x.n).join(', ')}.` : 'Chưa có việc nào được ghi.';
+    const gone = !a && this.removed.find(x => x.n === num);
+    if (gone) return gone.into ? `Việc #${num} đã được chủ trì gộp vào việc #${gone.into}: hãy báo tiến độ cho việc #${gone.into}.`
+      : `Việc #${num} đã bị chủ trì xoá, không cần báo nữa. ${list}`;
     if (!a) return `Không có việc #${String(n ?? '').trim() || '?'}. ${list}`;
     const st = parseStatus(status);
     if (!st) return `Không hiểu trạng thái "${String(status ?? '').trim()}" của việc #${a.n}: dùng một trong ${STATUS_HELP}.`;
@@ -411,16 +418,16 @@ ${calls}`;
       version: this.version, createdAt: this.createdAt, startedAt: this.startedAt, endedAt: this.endedAt, endsAt: this.endsAt,
       workSince: this.workSince, workReason: this.workReason,
       everLeft: this.everLeft, turn: this.turn?.name || null, turnSeq: this.turnSeq, passStreak: this.passStreak, taskSeq: this.taskSeq,
-      agenda: this.agenda, agendaIndex: this.agendaIndex, actions: this.actions, carry: this.carry, log: this.log,
+      agenda: this.agenda, agendaIndex: this.agendaIndex, actions: this.actions, removed: this.removed, carry: this.carry, log: this.log,
       agents: [...this.agents.values()].map(({ waiting, busyUntil, lastSeen, ...a }) => a),
     };
   }
   restore(s) {
     for (const k of ['state', 'endReason', 'context', 'endCondition', 'createdAt', 'startedAt', 'endedAt', 'endsAt',
-      'everLeft', 'workSince', 'workReason', 'turnSeq', 'passStreak', 'agenda', 'agendaIndex', 'actions', 'carry', 'log']) if (s[k] !== undefined) this[k] = s[k];
+      'everLeft', 'workSince', 'workReason', 'turnSeq', 'passStreak', 'agenda', 'agendaIndex', 'actions', 'removed', 'carry', 'log']) if (s[k] !== undefined) this[k] = s[k];
     Object.assign(this.cfg, s.cfg);
     for (const a of this.actions) { a.n ??= ++this.taskSeq; a.status ??= 'todo'; a.note ??= ''; }
-    this.taskSeq = Math.max(s.taskSeq || 0, ...this.actions.map(a => a.n), 0);
+    this.taskSeq = Math.max(s.taskSeq || 0, ...this.actions.map(a => a.n), ...this.removed.map(a => a.n), 0);
     // trang chủ trì đang long-poll với số phiên bản cũ (có thể lớn hơn bản đã ghi nếu lần ghi cuối bị mất): nhảy hẳn lên
     this.version = (s.version || 0) + 1000;
     this.touched = this.lastActivity = Date.now();
@@ -469,6 +476,20 @@ ${calls}`;
   hostTask(n, status, note) {
     if (!this.actions.some(x => x.n === Number(n)) || !parseStatus(status)) return false; // phòng chờ chỉ có việc mang từ cuộc trước
     this._setTask(n, status, note, 'Chủ trì');
+    this._changed();
+    return true;
+  }
+
+  // Chủ trì xoá một việc (thường là việc trùng), hoặc gộp vào việc `into`: bằng chứng được nối sang việc giữ lại.
+  hostRemoveTask(n, into) {
+    const a = this.actions.find(x => x.n === Number(n));
+    const to = into === undefined || into === null || into === '' ? null : this.actions.find(x => x.n === Number(String(into).replace(/^\s*#/, '')));
+    if (!a || this.state === 'ENDED' || (into !== undefined && into !== null && into !== '' && (!to || to === a))) return false;
+    this.actions = this.actions.filter(x => x !== a);
+    this.removed.push({ n: a.n, owner: a.owner, task: a.task, into: to ? to.n : null });
+    if (to && a.note && !to.note.includes(a.note)) to.note = (to.note ? to.note + ' · ' : '') + `#${a.n}: ${a.note}`.slice(0, 500);
+    this._sys(to ? `Chủ trì gộp việc #${a.n} (${a.task.slice(0, 80)}) vào việc #${to.n}.` : `Chủ trì xoá việc #${a.n} (${a.task.slice(0, 80)}).`);
+    if (this.state === 'WORK' && this.actions.every(t => t.status === 'done')) this._end('mọi việc đã báo xong', true);
     this._changed();
     return true;
   }

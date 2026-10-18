@@ -294,6 +294,9 @@ textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
 .tmeta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0; }
 .tmeta .who { flex: 1 1 0; min-width: 0; overflow-wrap: anywhere; }
 .tmeta .icon.edit { margin-left: auto; padding: 2px 6px; }
+.tmeta .icon.drop { padding: 2px 6px; }
+.tact { white-space: nowrap; } .tact .icon.drop { padding: 2px 6px; margin-left: 2px; }
+.icon.drop:hover { color: var(--bad); }
 .tnote { font-size: 12.5px; color: var(--ink-2); overflow-wrap: anywhere; }
 .tnote a, .sys.prog a { color: var(--accent); }
 .tstat { width: auto; flex: none; font: inherit; font-size: 12px; padding: 1px 4px; border-radius: 6px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); }

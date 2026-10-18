@@ -179,7 +179,7 @@ Bật ô **Giữ phòng để báo tiến độ** trước khi bắt đầu (ho�
 3. Agent làm xong thì báo `xong` kèm bằng chứng; gặp trở ngại thì báo `vướng`. Webhook nhận một tin cho mỗi việc xong hoặc vướng.
 4. Mọi việc xong thì phòng tự đóng và gửi tóm tắt cuối. Bạn cũng có thể tự đặt trạng thái, hoặc bấm **Đóng phòng**.
 
-Mẹo: trong bối cảnh, yêu cầu agent ghi `VIỆC:` với **đúng tên agent** phụ trách và nêu rõ bằng chứng cần có (ví dụ "chạy `npm test` và commit riêng, báo mã commit"). Nếu hai agent cùng chốt và tạo ra việc trùng, đánh dấu bản trùng là `xong`.
+Mẹo: trong bối cảnh, yêu cầu agent ghi `VIỆC:` với **đúng tên agent** phụ trách và nêu rõ bằng chứng cần có (ví dụ "chạy `npm test` và commit riêng, báo mã commit"). Nếu hai agent cùng chốt và tạo ra việc trùng, bấm **×** cạnh bản trùng rồi nhập số việc giữ lại để gộp (bằng chứng được nối sang), hoặc để trống để xoá. Agent nhắc lại việc đã gộp/xoá không tạo lại việc mới; báo tiến độ cho số cũ thì được chỉ sang số giữ lại.
 
 ## 7. Viết bối cảnh để có cuộc họp tốt
 
@@ -215,7 +215,7 @@ Mẹo:
 | Terminal đứng ở "Đang chờ địa chỉ công khai có hiệu lực…" | DNS của địa chỉ tunnel mới chưa lan tới | Chờ tới 1-2 phút. Nếu báo "Chưa truy cập được", chạy lại app. |
 | Trang chủ trì báo "Mất kết nối, đang thử lại…" | Mạng chập chờn hoặc tunnel bị ngắt | Trang tự kết nối lại. Nếu terminal báo tunnel đã ngắt, tắt và chạy lại app (link sẽ đổi). |
 | Trang báo "Không tìm thấy cuộc họp" | App đã tắt hoặc khởi động lại | Mở link mới in ra ở terminal. Lần sau chạy với `--host-key` và `--data-dir` để khởi động lại vẫn họp tiếp. |
-| Phòng "Đang thực hiện" mãi không đóng | Còn việc chưa báo xong (agent quên báo, hoặc việc trùng) | Xem bằng chứng rồi tự đặt trạng thái `xong`, hoặc bấm **Đóng phòng**. |
+| Phòng "Đang thực hiện" mãi không đóng | Còn việc chưa báo xong (agent quên báo, hoặc việc trùng) | Xem bằng chứng rồi tự đặt trạng thái `xong`, gộp/xoá việc trùng bằng nút **×**, hoặc bấm **Đóng phòng**. |
 | Agent báo không có tool `join` | Agent chưa nạp MCP | Mở lại phiên agent sau khi cài MCP, hoặc dùng cách "Dán là vào ngay". |
 | Agent báo việc `vướng` vì không ghi được `.git` hoặc không gọi được mạng | Sandbox của agent (ví dụ Codex chế độ `workspace-write`) chặn | Cho agent quyền khi nó hỏi, mở lại phiên với quyền phù hợp, hoặc tự commit rồi đặt trạng thái `xong`. |
 | `claude: command not found` (hoặc codex/gemini) | Máy đó không có CLI tương ứng | Dùng tab đúng công cụ hoặc cách "Dán là vào ngay". |

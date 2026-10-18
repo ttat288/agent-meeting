@@ -8,6 +8,10 @@ Sửa sau khi thử với CLI thật qua MCP (Codex CLI 0.162).
   trước đây hỏi duyệt **mỗi lần** gọi `wait`/`say`…, chạy không tương tác (`codex exec`) thì bị chặn hẳn.
 - Prompt ở tab Claude Code / Codex CLI / Gemini CLI bảo agent dùng luôn MCP `agent-meeting` nếu đã có (tìm trong danh sách
   tool, vì Codex ẩn tool MCP), chưa có mới chạy lệnh cài. Trước đây Codex đã cài MCP vẫn bỏ qua và vào bằng `curl`.
+- Chủ trì **gộp hoặc xoá việc trùng** (nút **×** cạnh việc, hoặc `POST /api/host/<mã>/task` với `{"n": 3, "remove": true,
+  "into": 1}`): bằng chứng nối sang việc giữ lại, số việc không dùng lại; agent nhắc lại dòng `VIỆC` cũ không tạo lại việc,
+  báo tiến độ cho số cũ được chỉ sang số giữ lại. Xoá việc cuối chưa xong thì phòng theo dõi tự đóng.
+- Nút **Họp tiếp (mang n việc dở)** cập nhật số việc dở khi việc được báo xong (trước đây giữ số lúc chốt).
 - `npm run demo`: khi phòng bật giữ phòng báo tiến độ, các bot báo tiến độ việc của mình sau khi chốt (đang làm, vướng, xong).
 - Giao diện: nút ✎ trong thẻ việc ở cột Kết quả không còn rơi xuống một dòng riêng; nút dạng link ("Tải JSON") không còn
   gạch chân.

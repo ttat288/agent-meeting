@@ -299,3 +299,17 @@ test('MCP: giữ phòng báo tiến độ, agent MCP được hướng dẫn g�
   assert.match(await call(4, 'progress', { name: 'Codex-1', task: '1', status: 'xong', note: 'commit 1a2b' }), /phòng đã đóng/);
   assert.equal(m.state, 'ENDED');
 });
+
+test('chủ trì đổi trạng thái, gộp và xoá việc qua API', async (t) => {
+  const { app, base, m } = await boot(); t.after(() => app.close());
+  m.join('A', 'x'); m.start('x', '');
+  m.say('A', 'KẾT LUẬN: ok\nVIỆC: A | viết parser\nVIỆC: A | viết test\nVIỆC: A | dựng CI');
+  const task = (body) => fetch(`${base}/api/host/${m.hostKey}/task`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }).then(r => r.json());
+  assert.deepEqual(await task({ n: 1, status: 'xong', note: 'PR #3' }), { ok: true });
+  assert.deepEqual(await task({ n: 2, remove: true, into: '1' }), { ok: true });
+  assert.deepEqual(await task({ n: 3, remove: true }), { ok: true });
+  assert.deepEqual(await task({ n: 9, remove: true }), { ok: false });
+  assert.deepEqual(m.actions.map(a => [a.n, a.status]), [[1, 'done']]);
+  const md = await fetch(`${base}/api/host/${m.hostKey}/minutes.md`).then(r => r.text());
+  assert.match(md, /Chủ trì gộp việc #2/); assert.match(md, /^\| 1 \| viết parser/m); assert.doesNotMatch(md, /^\| [23] \|/m);
+});

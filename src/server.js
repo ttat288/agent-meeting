@@ -244,7 +244,7 @@ function createApp(cfg = {}) {
         if (act === 'say') return json(200, { ok: mt.hostSay(d.text, d.to) });
         if (act === 'next') return json(200, { ok: mt.hostNextItem() });
         if (act === 'role') return json(200, { ok: mt.setRole(d.name, d.role) });
-        if (act === 'task') return json(200, { ok: mt.hostTask(d.n, d.status, d.note) });
+        if (act === 'task') return json(200, { ok: d.remove === true || d.remove === 'true' ? mt.hostRemoveTask(d.n, d.into) : mt.hostTask(d.n, d.status, d.note) });
         if (act === 'kick') return json(200, { ok: mt.kick(d.name) });
         if (act === 'new') {
           if (mt.state === 'LIVE' || mt.state === 'WORK') mt.stop('chủ trì mở cuộc họp mới', true);

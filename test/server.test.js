@@ -112,3 +112,20 @@ test('Header bảo mật và tài nguyên giao diện', async (t) => {
   assert.match(await page.text(), /assets\/app\.js/);
   for (const a of ['/assets/app.js', '/assets/app.css', '/favicon.svg']) assert.equal((await fetch(base + a)).status, 200, a);
 });
+
+test('Chủ trì: nhắn riêng, chuyển mục, gán vai trò, tải biên bản', async (t) => {
+  const { app, base, m } = await boot(); t.after(() => app.close());
+  const host = (act, body) => fetch(`${base}/api/host/${m.hostKey}/${act}`, { method: 'POST', body: JSON.stringify(body || {}) }).then(r => r.json());
+  m.join('A', 'x'); m.join('B', 'x');
+  assert.equal((await host('role', { name: 'A', role: 'phản biện' })).ok, true);
+  assert.equal((await host('start', { context: 'x', settings: { agenda: ['Mục một', 'Mục hai'] } })).ok, true);
+  assert.equal((await host('say', { text: 'riêng', to: 'B' })).ok, true);
+  assert.equal(m.log.at(-1).to, 'B');
+  assert.equal((await host('next')).ok, true);
+  assert.equal(m.agendaIndex, 1);
+  const j = await (await fetch(`${base}/api/host/${m.hostKey}/minutes.json`)).json();
+  assert.equal(j.members.find(x => x.name === 'A').role, 'phản biện');
+  assert.equal((await fetch(`${base}/api/host/${m.id}/minutes.json`)).status, 404); // mã agent không lấy được biên bản
+  const s = await (await fetch(`${base}/api/host/${m.hostKey}/state`)).json();
+  assert.deepEqual(s.agenda, ['Mục một', 'Mục hai']);
+});

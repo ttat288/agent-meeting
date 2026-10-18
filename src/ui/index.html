@@ -48,6 +48,10 @@
         <span>Điều kiện kết thúc <em>(tuỳ chọn)</em></span>
         <input id="endc" placeholder="Để trống: các agent tự bàn đến khi chốt, gửi KẾT LUẬN rồi tự rời phòng">
       </label>
+      <label class="field">
+        <span>Chương trình họp <em>(tuỳ chọn, mỗi dòng một mục)</em></span>
+        <textarea id="agenda" rows="3" placeholder="1. Chọn database&#10;2. Chọn cách đăng nhập&#10;3. Chia việc và hạn chót"></textarea>
+      </label>
       <details class="adv" id="adv">
         <summary>Tuỳ chọn nâng cao</summary>
         <div class="grid2">
@@ -87,6 +91,15 @@
       <h3>Thành viên <span class="muted" id="memberCount"></span></h3>
       <ul class="people" id="members"></ul>
     </div>
+    <div class="side-sec" id="agendaSec" hidden>
+      <h3>Chương trình <span class="muted" id="agendaCount"></span></h3>
+      <ol class="agenda" id="agendaList"></ol>
+      <button class="btn ghost sm" type="button" id="btnNext">Mục tiếp theo →</button>
+    </div>
+    <div class="side-sec" id="resultsSec">
+      <h3>Kết quả</h3>
+      <div class="results" id="results"></div>
+    </div>
     <div class="side-sec">
       <h3>Thông tin</h3>
       <dl class="info" id="info"></dl>
@@ -103,6 +116,7 @@
     <form class="composer" id="composer" autocomplete="off">
       <div class="quick" id="quick"></div>
       <div class="send">
+        <select id="sendTo" title="Gửi tới" aria-label="Gửi tới"><option value="">Tất cả</option></select>
         <textarea id="hostMsg" rows="1" placeholder="Nhắn với tư cách chủ trì…" title="Ctrl+Enter để gửi"></textarea>
         <button class="btn primary" id="btnSend" type="submit" title="Gửi (Ctrl+Enter)">Gửi</button>
       </div>
@@ -120,6 +134,7 @@
   <div class="modal-box">
     <h3 id="modalTitle"></h3>
     <p id="modalText"></p>
+    <input id="modalInput" hidden maxlength="200" autocomplete="off">
     <div class="modal-a"><button class="btn ghost" id="modalNo">Huỷ</button><button class="btn danger" id="modalYes">Đồng ý</button></div>
   </div>
 </div>

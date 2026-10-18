@@ -38,24 +38,29 @@ async function waitFor(name, pattern, maxMs) {
   return null;
 }
 
+const AGENDA_2 = [
+  ['Orion', 'Về xác thực: dùng **OAuth 2.0 + PKCE** qua nhà cung cấp có sẵn (Keycloak hoặc Auth0), không tự viết.'],
+  ['Lục Bình', 'Đồng ý. Thêm refresh token xoay vòng và thời hạn access token 15 phút.'],
+];
+
 (async () => {
   for (const [name, model] of BOTS) {
     console.log((await call('join', { name, model })).split('\n')[0]);
     await sleep(1800);
   }
   console.log('Đã vào phòng chờ. Hãy viết bối cảnh và bấm "Bắt đầu cuộc họp" trên trang chủ trì.');
-  await waitFor('Lục Bình', /\[CHỦ TRÌ\]/, 30 * 60000);
-  for (const [name, text] of SCRIPT) {
-    await call('typing', { name });
-    await sleep(2600);
-    await call('say', { name, text });
-    await sleep(1400);
+  const opening = await waitFor('Lục Bình', /\[CHỦ TRÌ\]/, 30 * 60000);
+  const agenda = /Chương trình họp/.test(opening || '');
+  const speak = async (name, text) => { await call('typing', { name }); await sleep(2600); await call('say', { name, text }); await sleep(1400); };
+  for (const [name, text] of SCRIPT) await speak(name, text);
+  if (agenda) {
+    await speak('Mây', 'XONG MỤC 1: Dùng REST + OpenAPI, thêm endpoint BFF `GET /home` cho màn cần gộp dữ liệu.');
+    for (const [name, text] of AGENDA_2) await speak(name, text);
   }
   console.log('Đã tranh luận xong. Bấm "Yêu cầu chốt" trên trang chủ trì (hoặc chờ ~30 giây).');
   await waitFor('Lục Bình', /\[CHỦ TRÌ\].*(chốt|KẾT LUẬN)/s, 30000);
-  await call('typing', { name: 'Lục Bình' });
-  await sleep(2400);
-  await call('say', { name: 'Lục Bình', text: 'KẾT LUẬN: Dùng REST + OpenAPI, thêm endpoint BFF `GET /home` cho màn cần gộp dữ liệu. Xem lại GraphQL khi có từ 2 client trở lên.' });
+  await speak('Lục Bình', 'KẾT LUẬN: Dùng REST + OpenAPI, thêm BFF `GET /home`' + (agenda ? '; xác thực bằng OAuth 2.0 + PKCE qua Keycloak.' : '.') +
+    '\nVIỆC: Lục Bình | Viết đặc tả OpenAPI cho 12 endpoint | thứ 6\nVIỆC: Orion | Dựng Keycloak và cấu hình PKCE | thứ 4 tuần sau\nVIỆC: Mây | Làm endpoint BFF `GET /home` | thứ 6');
   for (const [name] of [BOTS[1], BOTS[2], BOTS[0]]) { await sleep(1300); await call('leave', { name, reason: 'đã có kết luận' }); }
   console.log('Xong: cả ba bot đã rời phòng.');
 })().catch(e => { console.error('Lỗi:', e.message); process.exit(1); });

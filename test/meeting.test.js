@@ -272,3 +272,63 @@ test('bỏ tiền tố tên của chính người nói ([Tên], **Tên**:, Tên:
     ['Lập trường KHÔNG', 'ý hai', 'ý ba', '[GPT-5.1] không phải tên mình thì giữ nguyên']);
   assert.match(m.say('Haiku', '[Haiku]   '), /Tin trống/);
 });
+
+// ---------- v3: kết quả có cấu trúc, chương trình họp, vai trò, nhắn riêng ----------
+test('việc cần làm: đọc dòng VIỆC trong tin, gộp việc trùng', () => {
+  const m = new Meeting(fast);
+  m.join('A', 'x'); m.start('x', '');
+  m.say('A', 'KẾT LUẬN: chốt REST.\nVIỆC: Lan | Viết OpenAPI spec | thứ 6\n- **VIỆC:** Minh | Dựng CI\nVIỆC: Dọn backlog');
+  m.say('A', 'VIỆC: Hùng | viết openapi spec | thứ 5');
+  assert.deepEqual(m.actions.map(a => [a.owner, a.task, a.due]), [
+    ['Hùng', 'Viết OpenAPI spec', 'thứ 5'], ['Minh', 'Dựng CI', ''], ['', 'Dọn backlog', '']]);
+  assert.equal(m.log.find(x => x.type === 'chat').conclusion, true);
+});
+
+test('chương trình họp: XONG MỤC chuyển mục, hết mục thì nhắc kết luận tổng hợp', () => {
+  const m = new Meeting(fast);
+  m.join('A', 'x'); m.start('x', '', { agenda: '1. Chọn DB\n2. Chọn auth' });
+  assert.deepEqual(m.agenda, ['Chọn DB', 'Chọn auth']);
+  assert.match(m.log.find(x => x.type === 'host').text, /Chương trình họp \(2 mục.*Bắt đầu với mục 1: Chọn DB/s);
+  m.say('A', 'XONG MỤC 2: nhảy cóc'); // sai số mục thì bỏ qua
+  assert.equal(m.agendaIndex, 0);
+  m.say('A', 'XONG MỤC 1: dùng Postgres');
+  assert.equal(m.agendaIndex, 1);
+  assert.match(m.log.at(-1).text, /Chuyển sang mục 2\/2: Chọn auth/);
+  assert.equal(m.hostNextItem(), true);
+  assert.match(m.log.at(-1).text, /Đã bàn xong mọi mục/);
+  assert.equal(m.hostNextItem(), false);
+  assert.equal(m.log.find(x => x.itemDone === 0).summary, 'dùng Postgres');
+});
+
+test('vai trò: có trong tin mở đầu; đổi khi đang họp thì chỉ agent đó nhận', async () => {
+  const m = new Meeting({ ...fast, idleMs: 60000 });
+  m.join('A', 'x'); m.join('B', 'x');
+  assert.equal(m.setRole('A', 'phản biện'), true);
+  m.start('x', '');
+  assert.match(m.log.find(x => x.type === 'host').text, /Vai trò:\n- A: phản biện/);
+  await m.wait('A'); await m.wait('B');
+  m.setRole('B', 'thư ký');
+  assert.match(await m.wait('B'), /\[CHỦ TRÌ → riêng bạn\] Vai trò của bạn từ giờ: thư ký/);
+  assert.doesNotMatch(await m.wait('A'), /thư ký/);
+  assert.equal(m.snapshot().agents.find(a => a.name === 'B').role, 'thư ký');
+});
+
+test('nhắn riêng: chỉ người nhận thấy, history không lộ cho người khác', async () => {
+  const m = new Meeting({ ...fast, idleMs: 60000 });
+  m.join('A', 'x'); m.join('B', 'x'); m.start('x', '');
+  await m.wait('A'); await m.wait('B');
+  assert.equal(m.hostSay('chỉ cho B', 'B'), true);
+  assert.equal(m.hostSay('không ai', 'Z'), false);
+  assert.match(await m.wait('B'), /riêng bạn\] chỉ cho B/);
+  assert.match(await m.wait('A'), /Chưa có tin mới/);
+  assert.doesNotMatch(m.history('A'), /chỉ cho B/);
+  assert.match(m.history('B'), /chỉ cho B/);
+});
+
+test('sự kiện ended phát đúng một lần', () => {
+  const m = new Meeting(fast);
+  let n = 0; m.ev.on('ended', () => n++);
+  m.join('A', 'x'); m.start('x', '');
+  m.stop(); m.stop();
+  assert.equal(n, 1);
+});

@@ -177,6 +177,7 @@ textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
 .quick { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
 .send { display: flex; gap: 10px; align-items: flex-end; }
 .send textarea { flex: 1; max-height: 180px; }
+.send select { width: auto; max-width: 150px; flex: none; }
 .endcard { border-top: 1px solid var(--line); background: var(--surface); padding: 18px 24px; }
 .endcard-in { max-width: 920px; margin: 0 auto; display: grid; gap: 12px; }
 .endcard h3 { margin: 0; font-size: 16px; }
@@ -199,6 +200,7 @@ textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
 .modal-box { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; width: min(420px, 100%); box-shadow: var(--shadow-lg); }
 .modal-box h3 { margin: 0 0 6px; font-size: 16px; }
 .modal-box p { margin: 0 0 18px; color: var(--ink-2); }
+.modal-box input { margin: -6px 0 18px; }
 .modal-a { display: flex; gap: 10px; justify-content: flex-end; }
 .notfound { position: fixed; inset: 0; z-index: 40; background: var(--bg); display: grid; place-items: center; padding: 16px; }
 .notfound .card { max-width: 480px; }
@@ -246,3 +248,28 @@ textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
   .checks { font-size: 12.5px; gap: 10px; }
   .newpill { bottom: 150px; }
 }
+
+/* ---------- v3: chương trình, kết quả, vai trò, tin riêng ---------- */
+.agenda { margin: 0 0 10px; padding-left: 0; list-style: none; display: grid; gap: 4px; font-size: 13.5px; counter-reset: ag; }
+.agenda li { counter-increment: ag; display: flex; gap: 8px; padding: 5px 8px; border-radius: 8px; color: var(--mute); }
+.agenda li::before { content: counter(ag); width: 20px; height: 20px; flex: none; border-radius: 50%; display: grid; place-items: center; font-size: 11.5px; font-weight: 700; background: var(--surface-2); border: 1px solid var(--line-2); }
+.agenda li.done { color: var(--ink-2); }
+.agenda li.done::before { content: "✓"; background: var(--ok-soft); color: var(--ok); border-color: transparent; }
+.agenda li.now { background: var(--accent-soft); color: var(--ink); font-weight: 600; }
+.agenda li.now::before { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.agenda li small { display: block; font-weight: 400; color: var(--mute); }
+.results { display: grid; gap: 10px; font-size: 13.5px; }
+.results .empty { color: var(--mute); }
+.results h4 { margin: 0 0 4px; font-size: 12.5px; color: var(--ink-2); }
+.results ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.results .who { color: var(--mute); font-size: 12px; }
+.person .role { font-size: 12px; color: var(--accent); margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.person .edit { opacity: 0; transition: opacity .15s; }
+.person:hover .edit, .person:focus-within .edit { opacity: 1; }
+@media (hover: none) { .person .edit { opacity: 1; } }
+.msg.private .bubble { border: 1px dashed var(--accent); }
+.msg.itemdone .hd b::after { content: "Xong mục"; }
+.acts { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.acts th, .acts td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.acts th { color: var(--mute); font-weight: 600; font-size: 12.5px; }
+@media (max-width: 860px) { .side-sec#agendaSec, .side-sec#resultsSec { display: none; } }

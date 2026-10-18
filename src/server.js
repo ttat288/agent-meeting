@@ -1,9 +1,11 @@
 'use strict';
 // HTTP: giao diện chủ trì (long-poll), API agent dạng văn bản (curl) và MCP (JSON-RPC qua HTTP).
 const http = require('http');
+const { EventEmitter } = require('events');
 const fs = require('fs');
 const path = require('path');
 const { Meeting } = require('./meeting');
+const minutes = require('./minutes');
 const pkg = require('../package.json');
 
 const UI_DIR = path.join(__dirname, 'ui');
@@ -40,7 +42,7 @@ async function invoke(m, tool, a = {}, how) {
     case 'pass': return m.pass(a.name);
     case 'typing': return m.typing(a.name);
     case 'leave': return m.leave(a.name, a.reason);
-    case 'history': return m.history();
+    case 'history': return m.history(a.name);
   }
 }
 
@@ -79,12 +81,54 @@ const SECURITY = {
 };
 const CSP = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 
+// Tên file biên bản: 2026-10-18_0930_chon-database.md
+const slug = (s) => String(s || 'cuoc-hop').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd')
+  .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'cuoc-hop';
+const stamp = (t) => { const d = new Date(t), p = (n) => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`; };
+
+// Mỗi dịch vụ chat nhận một dạng JSON khác nhau; dịch vụ lạ nhận bản đầy đủ.
+function webhookBody(url, m) {
+  const text = minutes.toSummary(m);
+  let host = ''; try { host = new URL(url).hostname; } catch {}
+  if (/(^|\.)slack\.com$/.test(host) || /(^|\.)chat\.googleapis\.com$/.test(host)) return { text };
+  if (/(^|\.)discord(app)?\.com$/.test(host)) return { content: text };
+  const { transcript, ...meeting } = minutes.toJSON(m);
+  return { text, content: text, meeting };
+}
+
 function createApp(cfg = {}) {
+  const log = cfg.log || (() => {});
+  // Khi một cuộc họp kết thúc: tự lưu biên bản và gửi webhook (nếu được bật)
+  async function onEnded(m) {
+    const base = `${stamp(m.startedAt || m.createdAt)}_${slug(m.context.split('\n')[0])}`;
+    if (cfg.minutesDir) {
+      try {
+        fs.mkdirSync(cfg.minutesDir, { recursive: true });
+        let name = base, k = 2;
+        while (fs.existsSync(path.join(cfg.minutesDir, name + '.md'))) name = `${base}-${k++}`;
+        fs.writeFileSync(path.join(cfg.minutesDir, name + '.md'), minutes.toMarkdown(m));
+        fs.writeFileSync(path.join(cfg.minutesDir, name + '.json'), JSON.stringify(minutes.toJSON(m), null, 2));
+        log(`📝 Đã lưu biên bản: ${path.join(cfg.minutesDir, name)}.md (+ .json)`);
+      } catch (e) { log(`⚠ Không lưu được biên bản: ${e.message}`); }
+    }
+    for (const url of cfg.webhooks || []) {
+      try {
+        const r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(webhookBody(url, m)), signal: AbortSignal.timeout(10000) });
+        log(r.ok ? `📨 Đã gửi tóm tắt tới webhook ${new URL(url).host}` : `⚠ Webhook ${new URL(url).host} trả lỗi HTTP ${r.status}`);
+      } catch (e) { log(`⚠ Không gửi được webhook: ${e.message}`); }
+    }
+  }
+
   const byAgent = new Map(), byHost = new Map();
   let publicOrigin = null; // địa chỉ công khai (tunnel) để prompt mời luôn dùng được từ máy khác
   const assets = Object.fromEntries(Object.entries(ASSETS).map(([k, [f, type]]) => [k, { body: fs.readFileSync(path.join(UI_DIR, f)), type }]));
   const index = fs.readFileSync(path.join(UI_DIR, 'index.html'));
-  const create = (overrides = {}) => { const m = new Meeting({ ...cfg, ...overrides }); byAgent.set(m.id, m); byHost.set(m.hostKey, m); return m; };
+  const create = (overrides = {}) => {
+    const m = new Meeting({ ...cfg, ...overrides });
+    byAgent.set(m.id, m); byHost.set(m.hostKey, m);
+    m.ev.once('ended', () => { onEnded(m).finally(() => app.ev.emit('ended', m)); });
+    return m;
+  };
   const sweep = setInterval(() => {
     for (const m of byHost.values())
       if (Date.now() - m.touched > (m.state === 'ENDED' ? ENDED_TTL_MS : TTL_MS)) {
@@ -110,7 +154,7 @@ function createApp(cfg = {}) {
       if ((m = p.match(/^\/m\/(\w+)$/)))
         return send(byHost.has(m[1]) ? 200 : 404, 'text/html; charset=utf-8', index, { 'cache-control': 'no-store', 'content-security-policy': CSP });
 
-      if ((m = p.match(/^\/api\/host\/(\w+)\/(state|start|stop|say|kick|new)$/))) {
+      if ((m = p.match(/^\/api\/host\/(\w+)\/(state|start|stop|say|kick|new|next|role|minutes\.md|minutes\.json)$/))) {
         const mt = byHost.get(m[1]); if (!mt) return json(404, { error: 'Không tìm thấy cuộc họp (app đã khởi động lại?).' });
         const act = m[2];
         if (act === 'state') {
@@ -118,16 +162,21 @@ function createApp(cfg = {}) {
           // long-poll thay cho SSE vì tunnel miễn phí của Cloudflare không hỗ trợ SSE
           return json(200, { ...(await mt.changedSince(Number.isNaN(v) ? -1 : v, 25000, Number.isNaN(from) ? 0 : from)), origin: publicOrigin || origin });
         }
+        if (act === 'minutes.md') return send(200, 'text/markdown; charset=utf-8', minutes.toMarkdown(mt), { 'cache-control': 'no-store' });
+        if (act === 'minutes.json') return json(200, minutes.toJSON(mt));
         if (req.method !== 'POST') return json(405, { error: 'POST only' });
         const d = parseArgs(u, await readBody(req));
         if (act === 'start') return json(200, { ok: mt.start(d.context, d.endCondition, d.settings) });
         if (act === 'stop') { mt.stop(); return json(200, { ok: true }); }
-        if (act === 'say') return json(200, { ok: mt.hostSay(d.text) });
+        if (act === 'say') return json(200, { ok: mt.hostSay(d.text, d.to) });
+        if (act === 'next') return json(200, { ok: mt.hostNextItem() });
+        if (act === 'role') return json(200, { ok: mt.setRole(d.name, d.role) });
         if (act === 'kick') return json(200, { ok: mt.kick(d.name) });
         if (act === 'new') {
           // Cuộc họp nối tiếp dùng lại mã agent: agent đã cài MCP không phải cài lại.
           if (mt.state === 'LIVE') mt.stop('chủ trì mở cuộc họp mới');
           const s = mt.cfg, n = create({ id: mt.id, mode: s.mode, maxMsgs: s.maxMsgs, idleMs: s.idleMs, timeLimitMin: s.timeLimitMin });
+          n.configure({ agenda: mt.agenda });
           return json(200, { hostKey: n.hostKey });
         }
       }
@@ -154,7 +203,8 @@ function createApp(cfg = {}) {
     } catch (e) { if (!res.headersSent) json(500, { error: String(e.message || e) }); else res.end(); }
   });
   server.requestTimeout = 0; // long-poll và wait giữ kết nối lâu
-  return { server, create, meetings: byHost, setPublicOrigin: (o) => { publicOrigin = o; }, close: () => { clearInterval(sweep); server.close(); server.closeAllConnections?.(); } };
+  const app = { server, create, meetings: byHost, ev: new EventEmitter(), setPublicOrigin: (o) => { publicOrigin = o; }, close: () => { clearInterval(sweep); server.close(); server.closeAllConnections?.(); } };
+  return app;
 }
 
-module.exports = { createApp, TOOLS };
+module.exports = { createApp, TOOLS, webhookBody };

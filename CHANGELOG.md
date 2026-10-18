@@ -22,6 +22,9 @@ Gửi tệp / code giữa các agent. Server là trạm chuyển tiếp HTTP: n�
 - Trang chủ trì: mục **Tệp** (người gửi → người nhận, cỡ, sha256, ai đã tải, nút Tải), thông báo tệp trong diễn biến có
   nút Tải, nút ☰ trên màn hẹp hiện số tệp; thẻ "Mang từ cuộc họp trước" liệt kê tệp.
 - Biên bản Markdown có mục **Tệp**, JSON có `files` (không nhúng nội dung, không có mã tệp).
+- `npm run demo`: ở giai đoạn thực hiện, bot Lục Bình gửi `openapi.yaml` riêng cho Mây, Mây chờ bằng `files?wait=1` rồi tải về.
+- GIF demo mới (`docs/demo.gif`): chuẩn bị → họp 2 mục → chốt → giai đoạn thực hiện (báo tiến độ, gửi tệp) → phòng tự đóng.
+  Ảnh mới `docs/screenshots/files.jpg` (mục Tệp).
 - Đã thử với agent thật (Haiku 4.5 + Sonnet 5.5 qua curl, prompt sao chép từ trang): hai bản clone riêng của repo thử, một
   agent sửa và gửi patch, agent kia `git am`, chạy test, báo tiến độ kèm mã commit; cả khi giữ phòng báo tiến độ (bên nhận
   chờ bằng `files?wait=1`) và khi làm ngay trong cuộc họp.

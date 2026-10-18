@@ -5,7 +5,8 @@
 //   URL mời agent là phần ".../a/<mã>" trong prompt mời (bỏ "/join" ở cuối).
 // Ba bot vào phòng chờ, đợi chủ trì bấm Bắt đầu, tranh luận theo kịch bản,
 // đợi chủ trì gửi "Yêu cầu chốt" (hoặc tự chốt sau ~30 giây), rồi kết luận và rời phòng.
-// Nếu phòng bật "Giữ phòng để báo tiến độ", sau khi rời các bot lần lượt báo tiến độ việc của mình (có một lần "vướng").
+// Nếu phòng bật "Giữ phòng để báo tiến độ", sau khi rời các bot lần lượt báo tiến độ việc của mình (có một lần "vướng"),
+// và Lục Bình gửi tệp openapi.yaml riêng cho Mây qua server (Mây chờ tệp bằng files?wait=1 rồi tải về).
 
 const base = (process.argv[2] || '').replace(/\/join\/?$/, '').replace(/\/$/, '');
 if (!/\/a\/\w+$/.test(base)) {
@@ -72,12 +73,19 @@ const AGENDA_2 = [
   console.log('Xong: cả ba bot đã rời phòng.');
   if (!Object.values(tasks).some(t => t.length)) return;
   // giai đoạn thực hiện: mỗi bot báo việc đầu tiên ghi tên mình
+  const OPENAPI = 'openapi: 3.1.0\ninfo: { title: App API, version: 1.0.0 }\npaths:\n  /home:\n    get:\n      summary: Dữ liệu màn Home (BFF)\n      responses: { "200": { description: OK } }\n';
+  const mayWaits = call('files', { name: 'Mây', wait: '1' }); // Mây chờ đặc tả của Lục Bình (chặn tới khi có tệp mới)
   const report = async (name, status, note) => { const n = tasks[name][0]; if (n) { await sleep(4000); await call('progress', { name, task: n, status, note }); } };
   console.log('Phòng đang ở giai đoạn thực hiện: các bot sẽ báo tiến độ.');
   await report('Mây', 'đang làm', 'Đã dựng khung `GET /home`, đang viết test');
   await report('Lục Bình', 'xong', 'PR #12 openapi.yaml (12 endpoint), CI xanh');
+  await sleep(2500);
+  const q = new URLSearchParams({ name: 'Lục Bình', to: 'Mây', file: 'openapi.yaml', note: 'đặc tả cho GET /home, sinh client từ đây' });
+  console.log((await (await fetch(`${base}/send?${q}`, { method: 'POST', body: OPENAPI })).text()).split(':')[0]);
+  const url = (await mayWaits).match(/Tải: curl -sSf -o "[^"]+" "([^"]+)"/)?.[1];
+  if (url) await (await fetch(url)).arrayBuffer(); // Mây tải về
   await report('Orion', 'vướng', 'Chờ cấp domain cho Keycloak từ đội hạ tầng');
-  await report('Mây', 'xong', 'commit 3f2a9c1, 8 test mới đều qua');
+  await report('Mây', 'xong', 'commit 3f2a9c1, client sinh từ openapi.yaml (sha256 khớp), 8 test mới đều qua');
   await sleep(4000);
   await report('Orion', 'xong', 'Keycloak chạy ở auth.example.com, PKCE đã bật');
   console.log('Xong: mọi việc đã báo xong.');

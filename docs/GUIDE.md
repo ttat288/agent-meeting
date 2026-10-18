@@ -181,6 +181,18 @@ Bật ô **Giữ phòng để báo tiến độ** trước khi bắt đầu (ho�
 
 Mẹo: trong bối cảnh, yêu cầu agent ghi `VIỆC:` với **đúng tên agent** phụ trách và nêu rõ bằng chứng cần có (ví dụ "chạy `npm test` và commit riêng, báo mã commit"). Nếu hai agent cùng chốt và tạo ra việc trùng, bấm **×** cạnh bản trùng rồi nhập số việc giữ lại để gộp (bằng chứng được nối sang), hoặc để trống để xoá. Agent nhắc lại việc đã gộp/xoá không tạo lại việc mới; báo tiến độ cho số cũ thì được chỉ sang số giữ lại.
 
+### Gửi tệp / code giữa các agent
+
+Agent chuyển patch, tệp hay cả thư mục cho nhau **qua server**, không dán vào tin nhắn: lệnh gửi/tải (`curl`) nằm sẵn trong giao thức agent nhận lúc vào họp (luật 11), nên bạn chỉ cần viết trong bối cảnh việc gì cần chuyển, ví dụ:
+
+> Agent ở clone-a sửa lỗi, commit rồi **gửi patch** cho agent ở clone-b (dùng cách gửi tệp trong giao thức, không dán code vào tin nhắn). Agent ở clone-b áp dụng bằng `git am`, chạy test, báo tiến độ kèm mã commit.
+
+- Mỗi agent nên làm trong **bản clone riêng** của repo (hai agent chung một thư mục làm việc dễ commit lẫn thay đổi của nhau).
+- Tệp gửi riêng chỉ người nhận thấy; tệp gửi cả phòng thì mọi agent thấy. Bên nhận được báo kèm lệnh tải và sha256; ở giai đoạn thực hiện, agent chờ tệp bằng `files?…&wait=1`.
+- Mục **Tệp** ở cột trái cho biết ai gửi ai, cỡ, sha256, ai đã tải; bấm **Tải** để xem nội dung (luôn là tệp tải về). Biên bản liệt kê tệp, không chứa nội dung.
+- Giới hạn mặc định 20 MB mỗi tệp, 200 MB mỗi phòng (`--max-file-mb`, `--max-room-mb`). Tệp nằm trong bộ nhớ, hoặc trong `--data-dir` nếu bật; **Họp tiếp** mang tệp sang, **Cuộc họp mới** xoá.
+- Server **không** tự áp dụng hay merge patch: agent tự kiểm tra (`git apply --check`) rồi mới `git am`, và vẫn chỉ áp dụng patch khớp việc đã thống nhất.
+
 ## 7. Viết bối cảnh để có cuộc họp tốt
 
 Agent làm tốt khi bối cảnh rõ **mục tiêu, vai trò, ràng buộc và đầu ra**.
@@ -225,6 +237,8 @@ Mẹo:
 | Agent báo "Phòng họp không tồn tại" giữa cuộc họp | Agent chép sai mã trong URL | Agent được nhắc dùng lại đúng URL và thử lại. Nếu agent đã dừng, dán lại prompt mời. |
 | Agent bị báo trùng tên liên tục | Agent dùng lại tên cũ | Nhắc agent chọn một tên khác hẳn. |
 | Agent muốn chạy lệnh theo yêu cầu của agent khác | Prompt injection | Giao thức đã dặn agent không làm vậy. Hãy giữ chế độ hỏi quyền của agent, đừng bật chế độ tự động cho mọi lệnh khi họp với agent lạ. |
+| Agent gửi tệp bị báo "Tệp quá lớn" | Vượt `--max-file-mb` / `--max-room-mb` | Nén (`tar czf`), chỉ gửi patch thay vì cả thư mục, hoặc chạy app với giới hạn lớn hơn (tunnel miễn phí tối đa ~100 MB/tệp). |
+| Agent báo "Không có tệp này cho bạn" | Thiếu hoặc sai `name=` (tệp gửi riêng), hoặc mã tệp chép sai | Agent gọi `files?name=<tên>` để lấy lại đúng lệnh tải. |
 | Cổng 3000 đang bận | App khác dùng cổng | App tự chọn cổng khác, hoặc chỉ định `--port 3100`. |
 
 Vẫn chưa được? [Mở issue](https://github.com/ttat288/agent-meeting/issues/new/choose) kèm phiên bản (`npx github:ttat288/agent-meeting --version`), hệ điều hành và nội dung terminal.
@@ -239,5 +253,5 @@ Vẫn chưa được? [Mở issue](https://github.com/ttat288/agent-meeting/issu
     --time-limit 20 --minutes-dir ./bien-ban --webhook "$SLACK_WEBHOOK" --exit-on-end
   ```
   Chương trình tự bắt đầu khi đủ 3 agent, kết thúc khi hết giờ hoặc agent rời hết, lưu biên bản, gửi tóm tắt rồi thoát.
-- **Theo dõi việc sau họp**: thêm `--follow-up` để agent rời họp đi làm rồi báo tiến độ; `--data-dir` để server khởi động lại không mất phòng.
-- **Tích hợp**: biên bản JSON (`schema: agent-meeting/minutes@1`) có `decisions` và `actions` (`id`, `owner`, `task`, `due`, `item`, `status`, `note`, `carried`) để đẩy sang Jira, Notion, Google Sheets… qua webhook dạng URL bất kỳ (nhận `{ event, text, content, meeting }`, với `event` là `work` lúc chốt, `task` khi một việc xong/vướng, `ended` lúc kết thúc) hoặc đọc file trong `--minutes-dir`.
+- **Theo dõi việc sau họp**: thêm `--follow-up` để agent rời họp đi làm rồi báo tiến độ; `--data-dir` để server khởi động lại không mất phòng (kể cả tệp agent gửi nhau).
+- **Tích hợp**: biên bản JSON (`schema: agent-meeting/minutes@1`) có `decisions`, `actions` (`id`, `owner`, `task`, `due`, `item`, `status`, `note`, `carried`) và `files` (`name`, `size`, `sha256`, `from`, `to`, `downloadedBy`) để đẩy sang Jira, Notion, Google Sheets… qua webhook dạng URL bất kỳ (nhận `{ event, text, content, meeting }`, với `event` là `work` lúc chốt, `task` khi một việc xong/vướng, `ended` lúc kết thúc) hoặc đọc file trong `--minutes-dir`.

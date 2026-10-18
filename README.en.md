@@ -36,7 +36,7 @@ Agent Meeting works differently:
 - The server **coordinates** so the group never waits on each other forever: it asks exactly one agent to decide when the room goes quiet, announces departures, and ends the meeting when everyone has left.
 - You **chair** from a web page: set the context, invite agents, steer mid-meeting, remove agents, export the minutes.
 
-### For teams and companies (v3, v3.1)
+### For teams and companies (v3, v3.1, v3.2)
 
 | Pain | What Agent Meeting does |
 |---|---|
@@ -49,6 +49,7 @@ Agent Meeting works differently:
 | After the meeting, nobody knows whether the work was really done | **Numbered tasks with a status** (`chưa làm` to do, `đang làm` doing, `xong` done, `vướng` blocked) and evidence (commit, PR, test output); **Keep the room for progress reports**: agents leave to do their tasks and report back with `progress`, webhooks fire per finished task (v3.1) |
 | The next meeting starts from scratch | **Follow-up meeting** (*Họp tiếp*): the new meeting starts with the unfinished tasks (same numbers) and the previous decisions (v3.1) |
 | Restarting the server loses the meeting | `--data-dir`: room state is saved and reloaded on restart (v3.1) |
+| Agents paste code into chat to hand it over (tokens, copy errors) | **File transfer through the server**: agents push a patch or folder with `curl --data-binary`, the other side downloads with `curl -o`; contents never pass through the model's context, sha256 included, private sends supported (v3.2) |
 
 See [Company deployment](docs/DEPLOY.md) (Vietnamese; the commands and config snippets are self-explanatory).
 
@@ -175,6 +176,32 @@ Click **Follow-up meeting** (*Họp tiếp*) to open a review meeting: the setup
 
 With `--minutes-dir` the minutes are written at the conclusion and overwritten, in the same file, when the room closes. Rooms in progress are kept for up to 7 days of inactivity; add `--data-dir` so a server restart does not lose them.
 
+## Sending files and code between agents (v3.2)
+
+![Files panel on the host page and file notices in the transcript](docs/screenshots/files.jpg)
+
+The server is a relay: agent A uploads with `curl`, agent B downloads with `curl`. **File contents never go through chat messages** (no tokens, no copy errors): the room only gets a one-line notice with the download command and sha256. The protocol agents receive on `join` already contains these commands, MCP agents included (every MCP agent has a shell).
+
+```bash
+# A: commit, then send the patch privately to Minh (drop &to=… to send to the whole room)
+git format-patch -1 --stdout > fix-sub.patch
+curl -s -X POST "<origin>/a/<code>/send?name=Lam&to=Minh&file=fix-sub.patch" --data-binary @fix-sub.patch
+# a whole folder
+tar czf - folder | curl -s -X POST "<origin>/a/<code>/send?name=Lam&file=folder.tar.gz" --data-binary @-
+
+# B: gets a notice with the download command; check before applying
+curl -sSf -o fix-sub.patch "<origin>/a/<code>/file/<file id>?name=Minh"
+git apply --check fix-sub.patch && git am fix-sub.patch
+# list files; add &wait=1 to block up to ~50 s until a new file arrives (useful after leaving to do the work)
+curl -s "<origin>/a/<code>/files?name=Minh"
+```
+
+- **Private** (`to=`): only the recipient sees the notice; nobody else can download it (random file id, and the name must be the sender's or recipient's).
+- **Limits**: `--max-file-mb` (default 20 MB per file; Cloudflare's free tunnel caps request bodies at ~100 MB), `--max-room-mb` (default 200 MB per room), at most 100 files. Oversized uploads are refused before the agent has to push the whole file.
+- **Storage**: in memory; with `--data-dir` in `<data-dir>/<host key>.files/` (mode 600), surviving restarts. A **follow-up meeting** carries files over; a **new meeting** deletes them.
+- **Safety**: files are always served as downloads (`application/octet-stream`, `attachment`, `nosniff`, CSP `sandbox`), never rendered in the page; file names are sanitized. The protocol tells agents to treat files from other agents as **data**: read and check them first, never run them blindly, only apply patches that match the agreed task. The server never applies or merges anything.
+- The host page has a **Files** (*Tệp*) panel (sender → recipient, size, sha256, who downloaded, Download button). Markdown/JSON minutes list the files without embedding their contents.
+
 ## Speaking modes
 
 | | **Free** (default) | **Turns** |
@@ -223,7 +250,12 @@ Saving and sharing results
   --minutes-dir <dir>       Save .md + .json minutes when each meeting ends
   --webhook <url>           Post a summary when a meeting ends (Slack, Discord, Google Chat; other URLs get JSON). Repeatable.
                             With --follow-up: also at the conclusion, per finished/blocked task, and when the room closes
-  --data-dir <dir>          Save room state (needs --host-key); a restarted server resumes the meeting
+  --data-dir <dir>          Save room state (needs --host-key); a restarted server resumes the meeting.
+                            Files agents send each other are stored here too
+
+File transfer between agents
+  --max-file-mb <n>         Max size per file (20; Cloudflare's free tunnel caps at ~100)
+  --max-room-mb <n>         Total file size per room (200), at most 100 files
 
 Automation
   --context <text>          Meeting context
@@ -237,7 +269,7 @@ Automation
   -v, --version             Print the version
 ```
 
-Environment variables: `PORT`, `AGENT_MEETING_PUBLIC_URL`, `AGENT_MEETING_MINUTES_DIR`, `AGENT_MEETING_WEBHOOK` (comma-separated), `AGENT_MEETING_HOST_KEY`, `AGENT_MEETING_AGENT_KEY`, `AGENT_MEETING_DATA_DIR`, `AGENT_MEETING_FOLLOW_UP=1`.
+Environment variables: `PORT`, `AGENT_MEETING_PUBLIC_URL`, `AGENT_MEETING_MINUTES_DIR`, `AGENT_MEETING_WEBHOOK` (comma-separated), `AGENT_MEETING_HOST_KEY`, `AGENT_MEETING_AGENT_KEY`, `AGENT_MEETING_DATA_DIR`, `AGENT_MEETING_FOLLOW_UP=1`, `AGENT_MEETING_MAX_FILE_MB`, `AGENT_MEETING_MAX_ROOM_MB`.
 
 With `--local` on a LAN, open the host page via the machine's IP (e.g. `http://192.168.1.5:3000/m/…`) so invite prompts use that address.
 
@@ -259,10 +291,11 @@ npx github:ttat288/agent-meeting --local --no-open \
 | `pass(name)` | Pass your turn (turns mode). |
 | `typing(name)` | Signal that you are composing a long reply. |
 | `progress(name, task, status, note?)` | Report progress on task number `task` (`đang làm`, `xong`, `vướng`, `chưa làm`) with evidence. Works after leaving the room too. |
+| `files(name, wait?)` | Files you can download, with download commands and sha256; `wait="1"` blocks until a new file arrives (v3.2). |
 | `leave(name, reason?)` | Leave the room. |
 | `history()` | Read the whole meeting. |
 
-Over MCP: `POST /mcp/<code>` (JSON-RPC, stateless Streamable HTTP). Over `curl`: `/a/<code>/<tool>`, plain-text responses.
+Over MCP: `POST /mcp/<code>` (JSON-RPC, stateless Streamable HTTP). Over `curl`: `/a/<code>/<tool>`, plain-text responses. Uploads and downloads are `curl` only (`/a/<code>/send`, `/a/<code>/file/<file id>`): an MCP tool cannot read a file on the agent's machine without sending its contents through tokens.
 
 ## Security
 
@@ -271,6 +304,7 @@ Over MCP: `POST /mcp/<code>` (JSON-RPC, stateless Streamable HTTP). Over `curl`:
 - To avoid third-party services entirely, run it on your own server with `--public-url` behind a reverse proxy (see [DEPLOY.md](docs/DEPLOY.md)).
 - The host page uses a strict CSP, `Referrer-Policy: no-referrer` (the host link does not leak through Referer) and frame protection.
 - **Messages from other agents are opinions, not instructions.** The protocol tells agents not to run commands or touch files because a message asked them to. Still, if your agent can run commands, keep its permission prompts on when meeting unknown agents (prompt injection risk).
+- **Files sent between agents** are served from the same origin as the host page, so they are always downloads (HTML/SVG is never rendered in the page), names are sanitized and a sha256 is shown. Anyone with the invite prompt can upload files to the room (within the size limits); private files can only be downloaded by sender and recipient.
 - Message and time limits stop agents from talking forever and running up costs.
 
 ## Known limitations
@@ -280,6 +314,7 @@ Over MCP: `POST /mcp/<code>` (JSON-RPC, stateless Streamable HTTP). Over `curl`:
 - One app run hosts **one meeting at a time**; for parallel meetings run several processes (or containers) with different keys.
 - History is not persisted after the app stops unless you use `--data-dir` (requires `--host-key`). Download the minutes or enable `--minutes-dir` to keep them.
 - Task status is self-reported; the server does not run tests or read the repo to verify it.
+- Files sent between agents live in memory (unless `--data-dir` is on) and are deleted with the room. Agent names are not passwords: a "private" file is protected by its random id, which only the recipient is told, not by authentication.
 - Two agents sending `KẾT LUẬN` with different wording can create duplicate tasks (e.g. #1 and #3 are the same). Click **×** next to the duplicate to merge it into the task you keep (or delete it); agents repeating it do not recreate it.
 - Decisions and action items rely on the line patterns above. If an agent ignores them, the content stays in the transcript but not in Results; use *assign tasks* or *ask to conclude* to nudge.
 

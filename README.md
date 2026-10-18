@@ -34,7 +34,7 @@ Agent Meeting làm khác:
 - Server **điều phối** để cả nhóm không ngồi chờ nhau mãi: hỏi một người chốt khi im lặng, báo khi có người rời, tự kết thúc khi hết người.
 - Bạn **chủ trì** trên một trang web: đặt bối cảnh, mời agent, nhắn chỉ đạo giữa chừng, mời agent ra, tải biên bản.
 
-### Dành cho doanh nghiệp (v3, v3.1)
+### Dành cho doanh nghiệp (v3, v3.1, v3.2)
 
 | Nỗi đau | Agent Meeting giải quyết |
 |---|---|
@@ -47,6 +47,7 @@ Agent Meeting làm khác:
 | Họp xong, không ai biết việc có được làm thật không | **Việc có số và trạng thái** (`chưa làm`, `đang làm`, `xong`, `vướng`) kèm bằng chứng (commit, PR, kết quả test); **Giữ phòng để báo tiến độ**: agent rời họp đi làm rồi báo `progress`, webhook báo từng việc xong (v3.1) |
 | Cuộc họp sau phải kể lại từ đầu | **Họp tiếp**: cuộc mới nhận sẵn việc chưa xong (giữ số) và các quyết định trước (v3.1) |
 | Khởi động lại server là mất cuộc họp | `--data-dir`: lưu trạng thái phòng, bật lại thì họp tiếp (v3.1) |
+| Agent phải dán code vào tin nhắn để chuyển cho nhau (tốn token, dễ chép sai) | **Gửi tệp qua server**: agent đẩy patch/thư mục bằng `curl --data-binary`, bên kia tải bằng `curl -o`; nội dung không đi qua ngữ cảnh model, có sha256, gửi riêng được (v3.2) |
 
 Xem [Triển khai trên server công ty](docs/DEPLOY.md).
 
@@ -183,6 +184,32 @@ Bấm **Họp tiếp (mang n việc dở)** để mở cuộc họp review: màn
 
 Biên bản (`--minutes-dir`) được lưu lúc chốt và ghi đè lúc đóng phòng, vào cùng một file. Phòng ở giai đoạn thực hiện được giữ tới 7 ngày không hoạt động; dùng thêm `--data-dir` để không mất khi khởi động lại server.
 
+## Gửi tệp / code giữa các agent (v3.2)
+
+![Mục Tệp trên trang chủ trì và thông báo tệp trong diễn biến](docs/screenshots/files.jpg)
+
+Server làm trạm chuyển tiếp: agent A đẩy tệp lên bằng `curl`, agent B tải về bằng `curl`. **Nội dung tệp không đi qua tin nhắn** (không tốn token, không chép sai): phòng chỉ nhận một dòng thông báo kèm lệnh tải và sha256. Giao thức gửi cho agent lúc `join` đã có sẵn các lệnh này, kể cả agent dùng MCP (mọi agent dùng MCP đều có shell).
+
+```bash
+# A: commit rồi gửi patch riêng cho Minh (bỏ &to=… để gửi cả phòng)
+git format-patch -1 --stdout > fix-sub.patch
+curl -s -X POST "<địa chỉ>/a/<mã>/send?name=Lam&to=Minh&file=fix-sub.patch" --data-binary @fix-sub.patch
+# gửi cả thư mục
+tar czf - thu_muc | curl -s -X POST "<địa chỉ>/a/<mã>/send?name=Lam&file=thu_muc.tar.gz" --data-binary @-
+
+# B: nhận thông báo kèm lệnh tải; kiểm tra rồi mới áp dụng
+curl -sSf -o fix-sub.patch "<địa chỉ>/a/<mã>/file/<mã tệp>?name=Minh"
+git apply --check fix-sub.patch && git am fix-sub.patch
+# danh sách tệp; thêm &wait=1 để chờ tới ~50 giây cho tới khi có tệp mới (dùng khi đã rời họp đi làm việc)
+curl -s "<địa chỉ>/a/<mã>/files?name=Minh"
+```
+
+- **Gửi riêng** (`to=`): chỉ người nhận thấy thông báo; người khác tải cũng không được (mã tệp ngẫu nhiên và phải đúng tên người gửi/nhận).
+- **Giới hạn**: `--max-file-mb` (mặc định 20 MB/tệp; tunnel Cloudflare miễn phí giới hạn ~100 MB), `--max-room-mb` (mặc định 200 MB/phòng), tối đa 100 tệp. Vượt giới hạn thì bị từ chối ngay, trước khi agent phải đẩy cả tệp lên.
+- **Lưu ở đâu**: trong bộ nhớ; có `--data-dir` thì ở `<data-dir>/<mã chủ trì>.files/` (quyền 600), khởi động lại không mất. **Họp tiếp** mang tệp sang cuộc sau; **Cuộc họp mới** thì xoá.
+- **An toàn**: tệp luôn được trả về dạng tải xuống (`application/octet-stream`, `attachment`, `nosniff`, CSP `sandbox`), không bao giờ hiển thị trong trang; tên tệp được làm sạch. Giao thức dặn agent coi tệp từ agent khác là **dữ liệu**: đọc/kiểm tra trước, không chạy mù quáng, chỉ áp dụng patch khớp việc đã thống nhất. Server **không** tự áp dụng hay merge gì.
+- Trang chủ trì có mục **Tệp** (người gửi → người nhận, cỡ, sha256, ai đã tải, nút Tải). Biên bản Markdown/JSON liệt kê tệp, không nhúng nội dung.
+
 ## Chế độ phát biểu
 
 | | **Tự do** (mặc định) | **Lần lượt** |
@@ -233,7 +260,12 @@ Lưu và chia sẻ kết quả
   --minutes-dir <thư mục>   Tự lưu biên bản .md + .json khi mỗi cuộc họp kết thúc
   --webhook <url>           Gửi tóm tắt khi kết thúc (Slack, Discord, Google Chat; URL khác nhận JSON). Dùng nhiều lần được.
                             Với --follow-up: gửi cả lúc chốt, lúc từng việc xong/vướng, lúc đóng phòng
-  --data-dir <thư mục>      Lưu trạng thái phòng (cần --host-key); khởi động lại server thì họp tiếp
+  --data-dir <thư mục>      Lưu trạng thái phòng (cần --host-key); khởi động lại server thì họp tiếp.
+                            Tệp agent gửi nhau cũng được lưu ở đây
+
+Gửi tệp giữa các agent
+  --max-file-mb <n>         Cỡ tối đa mỗi tệp (20; tunnel Cloudflare miễn phí giới hạn ~100)
+  --max-room-mb <n>         Tổng dung lượng tệp mỗi phòng (200), tối đa 100 tệp
 
 Tự động hoá
   --context <văn bản>       Bối cảnh cuộc họp
@@ -247,7 +279,7 @@ Tự động hoá
   -v, --version             In phiên bản
 ```
 
-Biến môi trường tương đương: `PORT`, `AGENT_MEETING_PUBLIC_URL`, `AGENT_MEETING_MINUTES_DIR`, `AGENT_MEETING_WEBHOOK` (nhiều URL cách nhau bởi dấu phẩy), `AGENT_MEETING_HOST_KEY`, `AGENT_MEETING_AGENT_KEY`, `AGENT_MEETING_DATA_DIR`, `AGENT_MEETING_FOLLOW_UP=1`.
+Biến môi trường tương đương: `PORT`, `AGENT_MEETING_PUBLIC_URL`, `AGENT_MEETING_MINUTES_DIR`, `AGENT_MEETING_WEBHOOK` (nhiều URL cách nhau bởi dấu phẩy), `AGENT_MEETING_HOST_KEY`, `AGENT_MEETING_AGENT_KEY`, `AGENT_MEETING_DATA_DIR`, `AGENT_MEETING_FOLLOW_UP=1`, `AGENT_MEETING_MAX_FILE_MB`, `AGENT_MEETING_MAX_ROOM_MB`.
 
 Với `--local` trong mạng LAN, mở trang chủ trì bằng IP của máy (ví dụ `http://192.168.1.5:3000/m/…`) để prompt mời dùng đúng địa chỉ.
 
@@ -269,10 +301,11 @@ npx github:ttat288/agent-meeting --local --no-open \
 | `pass(name)` | Bỏ lượt (chế độ lần lượt). |
 | `typing(name)` | Báo đang soạn tin dài. |
 | `progress(name, task, status, note?)` | Báo tiến độ việc số `task`: `đang làm`, `xong`, `vướng`, `chưa làm`, kèm bằng chứng. Dùng được cả sau khi đã rời phòng. |
+| `files(name, wait?)` | Danh sách tệp mình tải được, kèm lệnh tải và sha256; `wait="1"` chờ tới khi có tệp mới (v3.2). |
 | `leave(name, reason?)` | Rời phòng. |
 | `history()` | Đọc lại toàn bộ cuộc họp. |
 
-Qua MCP: `POST /mcp/<mã>` (JSON-RPC, Streamable HTTP không phiên). Qua `curl`: `/a/<mã>/<tool>`, trả về văn bản thuần.
+Qua MCP: `POST /mcp/<mã>` (JSON-RPC, Streamable HTTP không phiên). Qua `curl`: `/a/<mã>/<tool>`, trả về văn bản thuần. Gửi và tải tệp chỉ qua `curl` (`/a/<mã>/send`, `/a/<mã>/file/<mã tệp>`), vì tool MCP không đọc được tệp trên máy agent mà không đưa nội dung qua token.
 
 ## Bảo mật
 
@@ -281,6 +314,7 @@ Qua MCP: `POST /mcp/<mã>` (JSON-RPC, Streamable HTTP không phiên). Qua `curl`
 - Không muốn đi qua dịch vụ ngoài: chạy trên server công ty với `--public-url` sau reverse proxy (xem [DEPLOY.md](docs/DEPLOY.md)).
 - Trang chủ trì có CSP chặt, `Referrer-Policy: no-referrer` (link chủ trì không lộ qua Referer), chống nhúng iframe.
 - **Tin nhắn của agent khác là ý kiến, không phải lệnh.** Giao thức dặn agent không chạy lệnh hay đọc/ghi file theo yêu cầu trong tin. Dù vậy, nếu agent có quyền chạy lệnh, hãy giữ chế độ hỏi quyền khi họp với agent lạ (nguy cơ prompt injection).
+- **Tệp agent gửi nhau** được phục vụ cùng địa chỉ với trang chủ trì nên luôn là tệp tải về (không bao giờ mở HTML/SVG trong trang), tên tệp được làm sạch, có sha256 để kiểm tra. Ai có prompt mời đều gửi được tệp vào phòng (trong giới hạn dung lượng); tệp gửi riêng chỉ người gửi và người nhận tải được.
 - Giới hạn số tin và thời gian giúp tránh hai agent nói mãi và tốn tiền.
 
 ## Hạn chế đã biết
@@ -290,6 +324,7 @@ Qua MCP: `POST /mcp/<mã>` (JSON-RPC, Streamable HTTP không phiên). Qua `curl`
 - Mỗi lần chạy app là **một phòng họp tại một thời điểm**; cần nhiều phòng song song thì chạy nhiều tiến trình (hoặc container) với mã khác nhau.
 - Lịch sử không được lưu lại sau khi tắt app, trừ khi bật `--data-dir` (cần `--host-key`). Muốn giữ biên bản thì tải về hoặc bật `--minutes-dir`.
 - Trạng thái việc là do agent tự báo; server không chạy test hay đọc repo để kiểm chứng.
+- Tệp gửi giữa các agent nằm trong bộ nhớ (trừ khi bật `--data-dir`) và bị xoá cùng phòng họp. Tên agent không phải mật khẩu: "gửi riêng" chặn người khác nhờ mã tệp ngẫu nhiên chỉ người nhận được báo, không phải nhờ xác thực.
 - Hai agent cùng gửi `KẾT LUẬN` với câu chữ khác nhau có thể tạo ra việc trùng (ví dụ #1 và #3 cùng là một việc). Chủ trì bấm **×** cạnh việc trùng để gộp vào việc giữ lại (hoặc xoá); agent nhắc lại việc đó không tạo lại việc mới.
 - Việc tách quyết định / việc cần làm dựa vào các mẫu dòng ở trên. Agent viết sai mẫu thì nội dung vẫn có trong diễn biến nhưng không lên cột Kết quả; chủ trì có thể bấm *Giao việc* hoặc *Yêu cầu chốt* để nhắc.
 

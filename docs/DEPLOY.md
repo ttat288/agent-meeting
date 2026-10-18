@@ -52,6 +52,7 @@ docker logs agent-meeting   # in ra link chủ trì và lệnh mời agent
 - Image có `HEALTHCHECK` gọi `/healthz`; `docker ps` sẽ hiện `healthy`.
 - `AGENT_MEETING_DATA_DIR`: trạng thái phòng (`<mã chủ trì>.json`, quyền 600, **chứa mã bí mật**: đừng sao lưu ra nơi người khác đọc được). Cần mã chủ trì cố định.
 - `AGENT_MEETING_FOLLOW_UP=1`: mặc định bật "Giữ phòng để báo tiến độ" (chủ trì vẫn tắt được trên web trước khi bắt đầu).
+- `AGENT_MEETING_MAX_FILE_MB` / `AGENT_MEETING_MAX_ROOM_MB`: giới hạn tệp agent gửi nhau (mặc định 20 MB mỗi tệp, 200 MB mỗi phòng). Có `AGENT_MEETING_DATA_DIR` thì tệp được ghi vào `<data-dir>/<mã chủ trì>.files/`.
 
 Docker Compose tương đương:
 
@@ -98,7 +99,7 @@ File `/etc/agent-meeting.env` chứa các biến `AGENT_MEETING_*` như ở ph�
 
 ## 4. Reverse proxy (HTTPS)
 
-Agent Meeting dùng **long-poll**: lệnh `wait` của agent giữ kết nối tới ~50 giây, trang chủ trì giữ ~25 giây. Proxy phải cho phép kết nối chờ ít nhất 90 giây và không gom (buffer) phản hồi.
+Agent Meeting dùng **long-poll**: lệnh `wait` của agent giữ kết nối tới ~50 giây, trang chủ trì giữ ~25 giây. Proxy phải cho phép kết nối chờ ít nhất 90 giây và không gom (buffer) phản hồi. Agent gửi tệp cho nhau qua `POST /a/<mã>/send` (thân là nội dung tệp, mặc định tối đa 20 MB, đổi bằng `--max-file-mb`): giới hạn thân request của proxy phải lớn hơn mức này.
 
 ### Nginx
 
@@ -116,7 +117,8 @@ server {
     proxy_read_timeout 120s;
     proxy_send_timeout 120s;
     proxy_buffering off;
-    client_max_body_size 1m;
+    proxy_request_buffering off;   # chuyển tệp agent gửi theo luồng, không ghi tạm ra đĩa của proxy
+    client_max_body_size 25m;      # > --max-file-mb (mặc định 20)
   }
 }
 ```
@@ -162,6 +164,7 @@ location ~ ^/(m|api/host)/ {
 
 ## 6. Vận hành
 
+- Tệp agent gửi nhau nằm trong bộ nhớ (tối đa `--max-room-mb`, mặc định 200 MB mỗi phòng), hoặc trong `<data-dir>/<mã chủ trì>.files/` (quyền 600) nếu bật `AGENT_MEETING_DATA_DIR`; bị xoá khi mở "Cuộc họp mới" hoặc khi phòng được tự làm mới. Biên bản chỉ liệt kê tên, cỡ, sha256. Tệp luôn được trả về dạng tải xuống (`application/octet-stream`, `attachment`, CSP `sandbox`), không hiển thị trong trang.
 - Dữ liệu cuộc họp nằm trong bộ nhớ. Có `AGENT_MEETING_DATA_DIR` thì trạng thái được ghi ra đĩa (tối đa khoảng 1 lần/giây) và nạp lại khi khởi động: cuộc họp, phòng chờ hay giai đoạn thực hiện đều tiếp tục, agent gọi lại `wait` là họp tiếp. Không có thì khởi động lại sẽ mất cuộc họp đang diễn ra (biên bản đã lưu thì còn). Với mã cố định, link chủ trì và prompt mời vẫn dùng được sau khi khởi động lại.
 - Mỗi server chạy **một phòng họp tại một thời điểm**. "Cuộc họp mới" trên trang chủ trì mở cuộc kế tiếp ngay tại link cũ. Cần nhiều phòng song song thì chạy nhiều container với các mã khác nhau.
 - Cuộc họp đã kết thúc quá 30 phút, đang họp mà im lặng quá 3 giờ, hoặc đang ở giai đoạn thực hiện mà không ai báo tiến độ trong 7 ngày, được tự làm mới thành phòng chờ trống (cuộc đang họp sẽ được kết thúc và lưu biên bản trước).

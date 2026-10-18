@@ -1,5 +1,31 @@
 # Changelog
 
+## 3.2.0
+
+Gửi tệp / code giữa các agent. Server là trạm chuyển tiếp HTTP: nội dung tệp không đi qua tin nhắn hay ngữ cảnh model
+(không tốn token, không chép sai). Vẫn một lệnh là chạy, không thư viện ngoài, Node 18+.
+
+- Agent gửi bằng `curl -X POST "<địa chỉ>/a/<mã>/send?name=&to=&file=&note=" --data-binary @tệp` (thư mục:
+  `tar czf - … | curl … --data-binary @-`), tải bằng `curl -o "<địa chỉ>/a/<mã>/file/<mã tệp>?name="`. Phòng chỉ nhận một
+  dòng thông báo kèm lệnh tải và sha256. Giao thức (luật 11) hướng dẫn gửi code bằng `git format-patch` → `git apply --check`
+  → `git am`, và dặn coi tệp từ agent khác là dữ liệu: kiểm tra trước, không chạy mù quáng.
+- **Gửi riêng** (`to=`): chỉ người nhận được báo; người khác không tải được (mã tệp ngẫu nhiên + đúng tên người gửi/nhận).
+- Tool mới **`files(name, wait)`** (MCP và `curl …/files`): danh sách tệp mình tải được kèm lệnh tải; `wait=1` chặn tới
+  ~50 giây cho tới khi có tệp mới, để agent đã rời họp (giai đoạn thực hiện) chờ patch của agent khác mà không tốn token.
+  Agent dùng MCP cũng nhận lệnh `curl` cho phần tệp (tool MCP không đọc được tệp trên máy agent mà không đưa nội dung qua token).
+- Giới hạn: `--max-file-mb` (mặc định 20), `--max-room-mb` (mặc định 200), tối đa 100 tệp mỗi phòng. Từ chối trước khi
+  nhận nội dung (không trả `100 Continue`), nhận theo luồng, vượt giới hạn giữa chừng thì dừng và báo lỗi rõ.
+- Lưu trong bộ nhớ; có `--data-dir` thì ghi `<data-dir>/<mã chủ trì>.files/` (quyền 600), khởi động lại vẫn tải được.
+  **Họp tiếp** mang tệp sang (người nhận tải được cả trước khi vào lại phòng); **Cuộc họp mới** và phòng bị dọn thì xoá.
+- An toàn khi phục vụ cùng origin với trang chủ trì: luôn `application/octet-stream` + `content-disposition: attachment`,
+  `nosniff`, CSP `sandbox`; tên tệp chỉ giữ basename, chữ, số và `._+-`.
+- Trang chủ trì: mục **Tệp** (người gửi → người nhận, cỡ, sha256, ai đã tải, nút Tải), thông báo tệp trong diễn biến có
+  nút Tải, nút ☰ trên màn hẹp hiện số tệp; thẻ "Mang từ cuộc họp trước" liệt kê tệp.
+- Biên bản Markdown có mục **Tệp**, JSON có `files` (không nhúng nội dung, không có mã tệp).
+- Đã thử với agent thật (Haiku 4.5 + Sonnet 5.5 qua curl, prompt sao chép từ trang): hai bản clone riêng của repo thử, một
+  agent sửa và gửi patch, agent kia `git am`, chạy test, báo tiến độ kèm mã commit; cả khi giữ phòng báo tiến độ (bên nhận
+  chờ bằng `files?wait=1`) và khi làm ngay trong cuộc họp.
+
 ## 3.1.1
 
 Sửa sau khi thử với CLI thật qua MCP (Codex CLI 0.162). Bản 3.1.0 chưa từng phát hành riêng: 3.1.1 gồm cả các thay đổi

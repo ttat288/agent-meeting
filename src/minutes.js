@@ -9,7 +9,7 @@ const fmtDur = (ms) => {
   return h ? `${h} giờ ${m} phút` : m ? `${m} phút ${s % 60} giây` : `${s} giây`;
 };
 const cell = (x) => String(x ?? '').replace(/\|/g, '\\|').replace(/\n/g, ' ') || '—';
-const stripTag = (text) => text.replace(/^\s*(\*\*)?\s*KẾT LUẬN\s*(\*\*)?\s*:\s*/i, '');
+const { decisionText } = require('./meeting');
 
 function toJSON(m) {
   const msgs = m.log.filter(x => x.type === 'chat');
@@ -29,8 +29,8 @@ function toJSON(m) {
     })),
     decisions: m.log.filter(x => x.conclusion || x.itemDone !== undefined).map(x => ({
       by: x.name, t: x.t, item: x.itemDone !== undefined ? x.itemDone + 1 : (x.item ?? null) !== null ? x.item + 1 : null,
-      text: x.itemDone !== undefined ? x.summary : stripTag(x.text),
-    })),
+      text: x.itemDone !== undefined ? x.summary : (x.decision ?? decisionText(x.text)),
+    })).filter(d => d.text),
     actions: m.actions.map(a => ({ owner: a.owner || null, task: a.task, due: a.due || null, proposedBy: a.by, item: a.item !== null ? a.item + 1 : null })),
     stats: { messages: msgs.length, members: m.agents.size },
     transcript: m.log.map(x => ({ t: x.t, type: x.type, name: x.type === 'host' ? 'Chủ trì' : x.name, to: x.to || null, text: x.text })),

@@ -309,7 +309,7 @@
 
   function renderEnded(s) {
     if (endedBuilt) return; endedBuilt = true;
-    const v = log.filter(m => m.conclusion).at(-1);
+    const v = log.filter(m => m.conclusion && decisionOf(m)).at(-1);
     $('ended').replaceChildren(el('div', { class: 'endcard-in' },
       el('h3', {}, 'Cuộc họp đã kết thúc'),
       el('div', { class: 'stats' },
@@ -321,7 +321,7 @@
         el('thead', {}, el('tr', {}, el('th', {}, '#'), el('th', {}, 'Việc cần làm'), el('th', {}, 'Phụ trách'), el('th', {}, 'Hạn'))),
         el('tbody', {}, ...s.actions.map((x, i) => el('tr', {}, el('td', {}, String(i + 1)), el('td', {}, x.task), el('td', {}, x.owner || '—'), el('td', {}, x.due || '—'))))) : null,
       v ? el('div', { class: 'verdict' }, el('b', {}, `Kết luận (${v.name}${modelOf(v.name) ? ', ' + modelOf(v.name) : ''})`),
-        el('div', { class: 'bubble-md', html: md(v.text.replace(/^\s*(\*\*)?\s*KẾT LUẬN\s*(\*\*)?\s*:\s*/i, '')) })) : null,
+        el('div', { class: 'bubble-md', html: md(decisionOf(v)) })) : null,
       el('div', { class: 'row' },
         el('button', { class: 'btn primary', type: 'button', onclick: downloadMinutes }, 'Tải biên bản .md'),
         el('button', { class: 'btn ghost', type: 'button', onclick: async () => copy(await (await fetch(`/api/host/${key}/minutes.md`)).text(), 'Đã sao chép biên bản') }, 'Sao chép biên bản'),
@@ -343,13 +343,15 @@
     $('btnNext').hidden = s.state !== 'LIVE' || s.agendaIndex >= s.agenda.length;
     $('btnNext').textContent = s.agendaIndex === s.agenda.length - 1 ? 'Kết thúc chương trình →' : 'Mục tiếp theo →';
   }
-  const decisions = () => log.filter(m => m.conclusion || m.itemDone !== undefined);
+  // server đã tách sẵn nội dung quyết định (bỏ nhãn KẾT LUẬN và các dòng VIỆC)
+  const decisionOf = (m) => m.itemDone !== undefined ? m.summary || '' : m.decision ?? m.text.replace(/^\s*(\*\*)?\s*KẾT LUẬN\s*(\*\*)?\s*:\s*/i, '');
+  const decisions = () => log.filter(m => (m.conclusion || m.itemDone !== undefined) && decisionOf(m));
   function renderResults(s) {
     const ds = decisions();
     if (!ds.length && !s.actions.length) { $('results').replaceChildren(el('div', { class: 'empty' }, 'Chưa có quyết định hay việc cần làm. Tin "KẾT LUẬN:" và dòng "VIỆC:" sẽ hiện ở đây.')); return; }
     $('results').replaceChildren(...[
       ds.length ? el('div', {}, el('h4', {}, `Quyết định (${ds.length})`), el('ul', {}, ...ds.map(d => el('li', {},
-        (d.itemDone !== undefined ? d.summary : d.text.replace(/^\s*(\*\*)?\s*KẾT LUẬN\s*(\*\*)?\s*:\s*/i, '').split('\n')[0]).slice(0, 140), ' ', el('span', { class: 'who' }, '· ' + d.name))))) : null,
+        decisionOf(d).replace(/\*\*/g, '').split('\n').find(l => l.trim()).slice(0, 140), ' ', el('span', { class: 'who' }, '· ' + d.name))))) : null,
       s.actions.length ? el('div', {}, el('h4', {}, `Việc cần làm (${s.actions.length})`), el('ul', {}, ...s.actions.map(x => el('li', {},
         x.task, ' ', el('span', { class: 'who' }, [x.owner && '· ' + x.owner, x.due && '· hạn ' + x.due].filter(Boolean).join(' ')))))) : null].filter(Boolean));
   }
@@ -364,8 +366,20 @@
     sel.value = names.includes(cur) ? cur : '';
   }
 
+  // ---------- màn hẹp: bảng chi tiết ----------
+  const setPanel = (open) => { $('side').classList.toggle('open', open); $('btnPanel').setAttribute('aria-expanded', open); renderPanelBtn(); };
+  function renderPanelBtn() {
+    const b = $('btnPanel'); if (!snap) return;
+    if ($('side').classList.contains('open')) { b.textContent = '✕ Đóng chi tiết'; b.classList.remove('has'); return; }
+    const n = decisions().length + snap.actions.length;
+    b.textContent = '☰ ' + [snap.agenda.length ? `Mục ${Math.min(snap.agendaIndex + 1, snap.agenda.length)}/${snap.agenda.length}` : '', n ? `Kết quả ${n}` : 'Chi tiết'].filter(Boolean).join(' · ');
+    b.classList.toggle('has', n > 0);
+  }
+  $('btnPanel').onclick = () => setPanel(!$('side').classList.contains('open'));
+  matchMedia('(max-width: 860px)').addEventListener('change', (e) => { if (!e.matches) setPanel(false); });
+
   function renderRoom(s, fresh) {
-    renderAgenda(s); renderResults(s); renderSendTo(s);
+    renderAgenda(s); renderResults(s); renderSendTo(s); renderPanelBtn();
     $('members').replaceChildren(...s.agents.map(a => person(a, { kick: s.state === 'LIVE', said: true })));
     const present = s.agents.filter(a => !['left', 'kicked', 'ended'].includes(a.status)).length;
     $('memberCount').textContent = s.state === 'LIVE' ? `${present}/${s.agents.length}` : String(s.agents.length);
@@ -395,7 +409,7 @@
   const openDrawer = () => { $('drawerBody').append($('invite')); $('drawer').hidden = $('scrim').hidden = false; };
   const closeDrawer = () => { $('drawer').hidden = $('scrim').hidden = true; $('inviteHome').append($('invite')); };
   $('btnInvite').onclick = openDrawer; $('drawerClose').onclick = closeDrawer; $('scrim').onclick = closeDrawer;
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (!$('modal').hidden) closeModal(false); else if (!$('drawer').hidden) closeDrawer(); } });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (!$('modal').hidden) closeModal(false); else if (!$('drawer').hidden) closeDrawer(); else if ($('side').classList.contains('open')) setPanel(false); } });
 
   // ---------- khung chung ----------
   function renderSteps() {

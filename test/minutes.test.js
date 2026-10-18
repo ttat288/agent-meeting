@@ -26,10 +26,24 @@ test('JSON biên bản: đủ phần, không chứa mã bí mật', () => {
   const m = sample(), j = minutes.toJSON(m), raw = JSON.stringify(j);
   assert.equal(j.schema, 'agent-meeting/minutes@1');
   assert.deepEqual(j.agenda.map(a => [a.title, a.done, a.summary]), [['Chọn DB', true, 'dùng Postgres'], ['Chọn auth', false, null]]);
-  assert.deepEqual(j.decisions.map(d => [d.item, d.text]), [[1, 'dùng Postgres'], [2, 'Postgres + OAuth.\nVIỆC: Lan | Dựng DB | thứ 6']]);
+  assert.deepEqual(j.decisions.map(d => [d.item, d.text]), [[1, 'dùng Postgres'], [2, 'Postgres + OAuth.']]);
   assert.deepEqual(j.actions, [{ owner: 'Lan', task: 'Dựng DB', due: 'thứ 6', proposedBy: 'Lan', item: 2 }]);
   assert.equal(j.members.find(a => a.name === 'Minh').role, 'phản biện');
   assert.ok(!raw.includes(m.hostKey) && !raw.includes(m.id));
+});
+
+test('Quyết định không dính các dòng VIỆC (kể cả định dạng Markdown, XONG MỤC)', () => {
+  const m = new Meeting({ waitMs: 300, idleMs: 60000, tick: 30 });
+  m.join('Lan', 'Opus 5.5');
+  m.start('x', '', { agenda: ['A', 'B'] });
+  m.say('Lan', 'XONG MỤC 1: chọn A\n- VIỆC: Lan | Viết đặc tả | thứ 2');
+  m.say('Lan', '**KẾT LUẬN:** Làm B trước.\n\n**VIỆC:** Minh | Dựng CI | 20/10\nLý do: rẻ hơn.');
+  m.say('Lan', 'KẾT LUẬN:\nVIỆC: Lan | Gửi báo cáo | mai');
+  const j = minutes.toJSON(m);
+  assert.deepEqual(j.decisions.map(d => d.text), ['chọn A', 'Làm B trước.\n\nLý do: rẻ hơn.']);
+  assert.deepEqual(j.actions.map(a => a.task), ['Viết đặc tả', 'Dựng CI', 'Gửi báo cáo']);
+  assert.equal(m.log.find(x => x.itemDone === 0).summary, 'chọn A');
+  assert.ok(!minutes.toMarkdown(m).split('## Việc cần làm')[0].includes('VIỆC:'));
 });
 
 test('Markdown biên bản và tóm tắt webhook', () => {

@@ -26,6 +26,9 @@ const ACTION = /^\s*(?:[-*•]\s*)?(?:\*\*)?\s*VIỆC\s*(?:\*\*)?\s*:\s*(?:\*\*)
 // "XONG MỤC 2: tóm tắt" để báo đã chốt một mục trong chương trình họp
 const ITEM_DONE = /^\s*(?:\*\*)?\s*XONG MỤC\s*(\d+)\s*(?:\*\*)?\s*:?\s*([\s\S]*)$/i;
 const MAX_AGENDA = 20;
+// Nội dung quyết định của tin KẾT LUẬN: bỏ nhãn "KẾT LUẬN:" và các dòng "VIỆC:" (đã tách riêng thành việc cần làm)
+const decisionText = (text) => String(text ?? '').replace(/^\s*(\*\*)?\s*KẾT LUẬN\s*(\*\*)?\s*:\s*(\*\*)?\s*/i, '')
+  .split('\n').filter(l => !ACTION.test(l)).join('\n').replace(/\n{3,}/g, '\n\n').trim();
 
 const clean = (n) => String(n ?? '').replace(/[^\p{L}\p{N}_.\- ]/gu, '').replace(/\s+/g, ' ').trim().slice(0, 32);
 const reEsc = (x) => x.replace(/[.*+?^${}()|[\]\\-]/g, '\\$&');
@@ -103,7 +106,7 @@ class Meeting {
   // ---------- kết quả có cấu trúc ----------
   _currentItem() { return this.agenda.length && this.agendaIndex < this.agenda.length ? this.agendaIndex : null; }
   _extract(m) {
-    if (CONCLUSION.test(m.text)) { m.conclusion = true; m.item = this._currentItem(); }
+    if (CONCLUSION.test(m.text)) { m.conclusion = true; m.item = this._currentItem(); m.decision = decisionText(m.text); }
     for (const line of m.text.split('\n')) {
       const x = line.match(ACTION); if (!x) continue;
       const parts = x[1].replace(/\*\*/g, '').split('|').map(p => p.trim());
@@ -116,7 +119,7 @@ class Meeting {
     }
     const d = m.type === 'chat' && m.text.match(ITEM_DONE);
     if (d && this.agenda.length && Number(d[1]) === this.agendaIndex + 1) {
-      m.itemDone = this.agendaIndex; m.summary = d[2].trim();
+      m.itemDone = this.agendaIndex; m.summary = decisionText(d[2]);
       this._nextItem();
     }
   }
@@ -450,4 +453,4 @@ ${calls}`;
   }
 }
 
-module.exports = { Meeting, clean, DEFAULTS };
+module.exports = { Meeting, clean, decisionText, DEFAULTS };

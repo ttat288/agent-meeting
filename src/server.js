@@ -122,6 +122,7 @@ function createApp(cfg = {}) {
 
   const byAgent = new Map(), byHost = new Map();
   let publicOrigin = null; // địa chỉ công khai (tunnel) để prompt mời luôn dùng được từ máy khác
+  let fixedOrigin = null;  // --public-url: người vận hành đã khai báo, dùng cho cả lệnh trong giao thức (proxy có thể đổi header Host)
   const assets = Object.fromEntries(Object.entries(ASSETS).map(([k, [f, type]]) => [k, { body: fs.readFileSync(path.join(UI_DIR, f)), type }]));
   const index = fs.readFileSync(path.join(UI_DIR, 'index.html'));
   const create = (overrides = {}) => {
@@ -186,7 +187,7 @@ function createApp(cfg = {}) {
       if ((m = p.match(/^\/a\/(\w+)\/(\w+)$/))) {
         const mt = byAgent.get(m[1]);
         const raw = req.method === 'POST' ? await readBody(req) : '';
-        const out = await invoke(mt, m[2], parseArgs(u, raw), { base: `${origin}/a/${m[1]}` });
+        const out = await invoke(mt, m[2], parseArgs(u, raw), { base: `${fixedOrigin || origin}/a/${m[1]}` });
         return out === null ? text(404, `Không có lệnh "${m[2]}". Các lệnh: ${TOOLS.map(t => t.name).join(', ')}.`) : text(200, out);
       }
 
@@ -204,7 +205,7 @@ function createApp(cfg = {}) {
     } catch (e) { if (!res.headersSent) json(500, { error: String(e.message || e) }); else res.end(); }
   });
   server.requestTimeout = 0; // long-poll và wait giữ kết nối lâu
-  const app = { server, create, meetings: byHost, ev: new EventEmitter(), setPublicOrigin: (o) => { publicOrigin = o; }, close: () => { clearInterval(sweep); server.close(); server.closeAllConnections?.(); } };
+  const app = { server, create, meetings: byHost, ev: new EventEmitter(), setPublicOrigin: (o, fixed) => { publicOrigin = o; if (fixed) fixedOrigin = o; }, close: () => { clearInterval(sweep); server.close(); server.closeAllConnections?.(); } };
   return app;
 }
 

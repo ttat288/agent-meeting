@@ -31,8 +31,9 @@ const findConclusion = (text) => {
 };
 // "VIỆC: người phụ trách | việc | hạn" (một dòng một việc, có thể nằm trong bất kỳ tin nào)
 const ACTION = /^\s*(?:[-*•]\s*)?(?:\*\*)?\s*VIỆC\s*(?:\*\*)?\s*:\s*(?:\*\*)?\s*(.+)$/i;
-// "XONG MỤC 2: tóm tắt" để báo đã chốt một mục; nhận cả khi nằm giữa đoạn văn, nhiều mục trong một tin
-const ITEM_DONE = /(?:^|[\s(.!?;,])(?:\*\*)?XONG MỤC\s*#?(\d+)\s*(?:\*\*)?\s*(?:[:.\-–]|(?=[ \t]*(?:\n|$)))\s*(?:\*\*)?[ \t]*([^\n]*)/gi;
+// "XONG MỤC 2: tóm tắt" để báo đã chốt một mục. Nhận ở đầu dòng hoặc đầu câu (agent thật hay viết giữa đoạn),
+// nhiều mục trong một tin. Không nhận câu kiểu "tôi sẽ gửi XONG MỤC 1." hay "trước khi XONG MỤC 2, ...".
+const ITEM_DONE = /(?:^|\n|[.!?)][ \t]+)[ \t]*(?:[-*•][ \t]*)?(?:\*\*)?XONG MỤC[ \t]*#?(\d+)[ \t]*(?:\*\*)?[ \t]*(?:[:\-–][ \t]*(?:\*\*)?[ \t]*([^\n]*)|(?=[ \t]*(?:\n|$)))/gi;
 const ITEM_DONE_LINE = /^\s*(?:[-*•]\s*)?(?:\*\*)?XONG MỤC/i;
 const MAX_AGENDA = 20;
 // Nội dung quyết định của tin KẾT LUẬN: bỏ nhãn "KẾT LUẬN:" và các dòng "VIỆC:" (đã tách riêng thành việc cần làm)
@@ -141,16 +142,21 @@ class Meeting {
     if (m.type === 'chat' && this.agenda.length) {
       for (const d of m.text.matchAll(ITEM_DONE)) {
         const idx = Number(d[1]) - 1;
-        // bỏ qua số mục đã xong hoặc không tồn tại; số lớn hơn mục đang bàn nghĩa là nhóm đã chốt luôn các mục trước
-        if (idx < this.agendaIndex || idx >= this.agenda.length) continue;
-        firstDone = Math.min(firstDone, d.index);
-        let summary = d[2].split(/(?:\*\*)?\s*KẾT LUẬN\s*(?:\*\*)?\s*:/i)[0].split(/(?:\*\*)?XONG MỤC\s*#?\d/i)[0];
+        // số lớn hơn mục đang bàn nghĩa là nhóm đã chốt luôn các mục trước; mục đã qua chỉ nhận nếu chưa có tóm tắt
+        // (chủ trì bấm "Mục tiếp theo" trước khi agent kịp báo); số không tồn tại thì bỏ qua
+        if (idx >= this.agenda.length || idx < 0) continue;
+        const late = idx < this.agendaIndex;
+        if (late && this.log.some(x => x.itemsDone?.some(y => y.item === idx && y.summary))) continue;
+        if (!late) firstDone = Math.min(firstDone, d.index);
+        let summary = (d[2] || '').split(/(?:\*\*)?\s*KẾT LUẬN\s*(?:\*\*)?\s*:/i)[0].split(/(?:\*\*)?XONG MỤC\s*#?\d/i)[0];
         if (!summary.trim()) { // "XONG MỤC 1" đứng một mình: lấy dòng kế tiếp (không phải VIỆC / KẾT LUẬN)
           const rest = m.text.slice(d.index + d[0].length).split('\n').map(l => l.trim()).filter(Boolean);
           summary = rest.find(l => !ACTION.test(l) && findConclusion(l) < 0 && !ITEM_DONE_LINE.test(l)) || '';
         }
-        (m.itemsDone ||= []).push({ item: idx, summary: summary.replace(/\*\*/g, '').trim().slice(0, 500) });
-        this._nextItem(idx + 1);
+        summary = summary.replace(/\*\*/g, '').trim().slice(0, 500);
+        if (late && !summary) continue;
+        (m.itemsDone ||= []).push({ item: idx, summary });
+        if (!late) this._nextItem(idx + 1);
       }
     }
     if (c >= 0) {

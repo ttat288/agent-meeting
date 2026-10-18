@@ -120,7 +120,7 @@ function listen(server, port) {
   if (auto.agenda !== undefined) meeting.configure({ agenda: auto.agenda });
   let origin = `http://localhost:${port}`, tunnel = null;
 
-  if (publicUrl) { origin = publicUrl; app.setPublicOrigin(origin); }
+  if (publicUrl) { origin = publicUrl; app.setPublicOrigin(origin, true); }
   else if (!flag('--local')) {
     const bin = await findCloudflared();
     const cf = tunnel = spawn(bin, ['tunnel', '--url', `http://localhost:${port}`, '--no-autoupdate'], { stdio: ['ignore', 'ignore', 'pipe'] });

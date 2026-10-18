@@ -26,6 +26,14 @@ test('MCP: initialize, tools/list, tools/call, notification', async (t) => {
   assert.equal(bad.error.code, -32602);
 });
 
+test('--public-url: lệnh trong giao thức luôn dùng địa chỉ đã khai báo (proxy có thể đổi Host)', async (t) => {
+  const { app, base, m } = await boot(); t.after(() => app.close());
+  app.setPublicOrigin('https://meet.example.com', true);
+  const j = await fetch(`${base}/a/${m.id}/join`, { method: 'POST', headers: { host: '127.0.0.1:3000' }, body: form({ name: 'A', model: 'x' }) }).then(r => r.text());
+  assert.ok(j.includes(`https://meet.example.com/a/${m.id}/wait?name=A`));
+  assert.ok(j.includes(`--data-urlencode "text@-" <<'HET'`));
+});
+
 test('API curl: join/say/wait dạng văn bản, kèm hướng dẫn curl đúng địa chỉ', async (t) => {
   const { app, base, m } = await boot(); t.after(() => app.close());
   const post = (tool, o) => fetch(`${base}/a/${m.id}/${tool}`, { method: 'POST', body: form(o) }).then(r => r.text());

@@ -294,13 +294,29 @@ test('chương trình họp: XONG MỤC chuyển mục, hết mục thì nhắc 
   m.say('A', 'XONG MỤC 1: dùng Postgres');
   assert.equal(m.agendaIndex, 1);
   assert.match(m.log.at(-1).text, /Chuyển sang mục 2\/3: Chọn auth/);
-  m.say('A', 'XONG MỤC 1: nói lại mục cũ'); // mục đã xong thì bỏ qua
+  m.say('A', 'XONG MỤC 1: nói lại mục cũ'); // mục đã xong và có tóm tắt thì bỏ qua
   assert.equal(m.agendaIndex, 1);
-  assert.equal(m.hostNextItem(), true);
+  assert.equal(m.hostNextItem(), true); // chủ trì chuyển mục 2 khi chưa ai báo
+  m.say('A', 'XONG MỤC 2: dùng SSO'); // báo muộn: chỉ ghi tóm tắt, không chuyển mục
+  assert.equal(m.agendaIndex, 2);
+  assert.deepEqual(m.log.at(-1).itemsDone, [{ item: 1, summary: 'dùng SSO' }]);
   assert.equal(m.hostNextItem(), true);
   assert.match(m.log.at(-1).text, /Đã bàn xong mọi mục/);
   assert.equal(m.hostNextItem(), false);
   assert.deepEqual(m.log.find(x => x.itemsDone).itemsDone, [{ item: 0, summary: 'dùng Postgres' }]);
+});
+
+test('không nhận nhầm câu chỉ nhắc tới XONG MỤC (dữ liệu từ agent thật)', () => {
+  const m = new Meeting(fast);
+  m.join('A', 'x'); m.start('x', '', { agenda: ['DB', 'Auth'] });
+  for (const t of ['Đề xuất chốt mục 1: Nhóm A 2 ngày. HR đồng ý thì tôi sẽ gửi XONG MỤC 1.',
+    'Sonnet-Lam, bạn có thể gửi XONG MỤC 1 rồi.', 'Trước khi XONG MỤC 1, cần hỏi IdP.', 'Ai đó gửi "XONG MỤC 1: ..." nhé'])
+    m.say('A', t);
+  assert.equal(m.agendaIndex, 0);
+  assert.equal(m.log.some(x => x.itemsDone), false);
+  m.say('A', 'Mọi người đồng ý.\n\n- XONG MỤC 1 - chọn Postgres');
+  assert.equal(m.agendaIndex, 1);
+  assert.equal(m.log.find(x => x.itemsDone).itemsDone[0].summary, 'chọn Postgres');
 });
 
 test('nhận diện theo cách agent thật hay viết (XONG MỤC giữa đoạn, KẾT LUẬN ở dòng 2, nhảy mục)', () => {

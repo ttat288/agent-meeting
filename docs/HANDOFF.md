@@ -280,17 +280,85 @@ Thiết kế dưới đây đã làm đúng như chốt, chỉ BỔ SUNG `files?
 3. ✅ Nhỏ: "Thảo luận" ở màn kết thúc khi đóng từ phòng chờ (đã sửa). Ghi chú agent báo sau thay ghi chú đã nối khi gộp
    việc: giữ nguyên (chấp nhận được).
 
+## Lộ trình v3.3: màn chuẩn bị tách 2 bước + bối cảnh dạng JSON để nhờ AI viết (nhánh v3.3-brief)
+
+Người dùng yêu cầu 2026-10-18: tự điền bối cảnh và tuỳ chọn trên UI "hơi mệt", muốn chuyển sang JSON để gửi cho AI viết
+hộ; trang bối cảnh cần thiết kế đẹp hơn; bước 1 (Bối cảnh) và bước 2 (Mời agent) đang chung một màn, phải tách ra: xong
+bước 1 bấm "Tiếp" sang bước 2, chờ agent vào rồi mới Bắt đầu. Làm theo thứ tự, mỗi bước test xong mới sang bước sau.
+
+1. **Định dạng "bản brief" JSON + module dùng chung `src/brief.js`.**
+   - Một object khớp đúng thân `POST /api/host/<k>/start` để dùng lại được, thêm `schema` và (tuỳ chọn) `roles`:
+     ```json
+     {
+       "schema": "agent-meeting/brief@1",
+       "context": "Chủ đề và yêu cầu cho các agent…",
+       "endCondition": "",
+       "settings": { "agenda": ["Mục 1", "Mục 2"], "followUp": true, "mode": "free",
+                     "maxMsgs": 120, "timeLimitMin": 0, "idleSec": 40 },
+       "roles": ["phản biện", "bảo mật"]
+     }
+     ```
+     `roles` theo THỨ TỰ SLOT (agent tự đặt tên nên không biết trước tên): khi bắt đầu, agent slot 1 nhận vai trò 1…
+     (chỉ gán cho agent chưa có vai trò do chủ trì giao tay). Có lý do mạnh thì đổi, nhưng nói với người dùng trước.
+   - `src/brief.js`: `parseBrief(text)` → `{ ok, brief, errors[] }` (JSON.parse; chấp nhận cả khi AI bọc trong ```json …```;
+     kiểm kiểu từng trường, clamp theo `BOUNDS` như `Meeting.configure`, cắt độ dài như `start()`; khoá lạ → cảnh báo
+     chứ không lỗi), `toBrief(form)`, `aiPrompt(brief)`. Viết dạng chạy được cả Node (`module.exports`) lẫn trình duyệt
+     (`window.AgentMeetingBrief`), phục vụ tĩnh ở `/assets/brief.js` (thêm vào `ASSETS` trong server.js; CSP `script-src
+     'self'` vẫn đúng). Test node:test `test/brief.test.js`: JSON hợp lệ, bọc ```json, sai kiểu, số ngoài khoảng, quá
+     dài, khoá lạ, có `<…>` chưa điền, chuỗi rất lớn (giới hạn ~64 KB).
+   - Dữ liệu dán vào là DỮ LIỆU: chỉ `JSON.parse`, gán bằng `.value`/`textContent`, không bao giờ `innerHTML`.
+   - Tuỳ chọn: CLI `--brief-file brief.json` (thay cho `--context-file` + `--agenda-file`, dùng cùng `parseBrief`), cập
+     nhật `--help`, README, DEPLOY (ví dụ họp tự động).
+
+2. **"Nhờ AI viết" trên bước 1.** Hai chế độ (tab) cho cùng một bản nháp: **Điền trên form** | **JSON**.
+   - Nút **Sao chép prompt cho AI**: chép một prompt tiếng Việt gồm mô tả từng trường, giới hạn, JSON mẫu (bản nháp hiện
+     tại), và câu "chỉ trả về JSON". Người dùng dán vào ChatGPT/Claude kèm mô tả cuộc họp, rồi dán kết quả lại.
+   - Ô **Dán JSON** + nút **Áp dụng**: hiện lỗi theo từng trường (dòng/khoá), áp vào form khi hợp lệ; form và JSON đồng bộ
+     hai chiều (đổi form → JSON cập nhật; sửa JSON hợp lệ → form cập nhật). Nút **Sao chép JSON** / **Tải .json** /
+     **Mở tệp .json** (FileReader, không gửi lên server).
+   - Bản nháp vẫn lưu localStorage như hiện tại (`draftKey`), giờ lưu cả bản brief.
+   - Thử thật: đưa prompt sao chép từ trang (không dặn thêm) + một mô tả cuộc họp cho subagent Haiku và Sonnet, dán JSON
+     chúng trả về vào trang, kiểm tra form điền đúng và lỗi hiện rõ khi JSON sai.
+
+3. **Tách bước 1 và bước 2 thành hai màn** (trạng thái server vẫn là LOBBY cho cả hai; bước là trạng thái phía trình
+   duyệt, lưu trong `location.hash` (`#boi-canh` / `#moi-agent`) để tải lại trang vẫn đúng bước).
+   - Bước 1 "Bối cảnh": chỉ có soạn bối cảnh (form/JSON, mẫu, chương trình họp, tuỳ chọn). Thanh dưới: **Tiếp: mời
+     agent →** (chưa có bối cảnh thì báo lỗi như nút Bắt đầu hiện nay; còn `<…>` của mẫu thì hỏi lại).
+   - Bước 2 "Mời agent": thẻ mời (các tab prompt), phòng chờ (giao vai trò, mời ra), tóm tắt bối cảnh chỉ đọc kèm nút
+     **← Sửa bối cảnh**, nút **Bắt đầu cuộc họp** (gửi đúng bản brief của bước 1). Có thể hiện "chưa có agent: vẫn bắt
+     đầu được" như hiện tại.
+   - Thanh bước (`#steps`) bấm được để chuyển 1 ↔ 2 khi đang LOBBY; bước 3/4 vẫn theo trạng thái server.
+   - Agent vào phòng chờ ngay cả khi chủ trì đang ở bước 1 (server đã cho phép): bước 1 nên có một chỉ báo nhỏ "n agent
+     đang chờ". "Họp tiếp": thẻ "Mang từ cuộc họp trước" nằm ở bước 1.
+   - Kiểm tra lại các test giao diện thủ công cũ: đổi `renderSteps()` (hiện tại bước 2 = "đã có chữ trong bối cảnh"),
+     `initForm`, `renderSetup`, ngăn kéo "Mời agent" lúc đang họp (dùng lại `#invite`, đừng phá `inviteHome`).
+
+4. **Thiết kế lại trang bối cảnh cho đẹp** (vẫn không build, không thư viện, CSP chặt, tự xử lý sáng/tối):
+   - Mẫu bối cảnh thành thẻ có biểu tượng + một dòng mô tả (thay cho chip), ô bối cảnh lớn có đếm ký tự (giới hạn 8000),
+     chương trình họp dạng danh sách sửa được (thêm/xoá/kéo thứ tự hoặc nút ↑↓) thay cho textarea, nhóm tuỳ chọn thành
+     các khối rõ ràng (công tắc "Giữ phòng để báo tiến độ", chế độ phát biểu dạng nút chọn, giới hạn).
+   - Kiểm tra ở desktop 1280, tablet 768, mobile 375, chế độ tối; không lỗi console; bàn phím (Tab/Enter) dùng được.
+   - Chụp lại `docs/screenshots/setup.jpg` (+ ảnh bước 2), quay lại `docs/demo.gif` theo luồng mới (script quay ở
+     "Cách lặp lại phép thử" phải sửa: bấm "Tiếp" trước khi chờ bot, rồi Bắt đầu ở bước 2).
+
+5. Tài liệu: README/README.en (Quy trình 4 bước, phần nhờ AI viết bối cảnh, định dạng brief), GUIDE (mục 5 "Trước khi
+   bắt đầu", mục 7 viết bối cảnh), CHANGELOG 3.3.0, package.json 3.3.0. Hỏi người dùng trước khi merge/push/tag/release.
+
+Không đổi giao thức agent trong v3.3 (trừ `roles` theo slot, nếu làm). Nếu phải đổi văn bản gửi agent thì thử lại bằng
+subagent Haiku + Sonnet như các phiên trước.
+
 ## Việc tiếp theo
 
 Theo thứ tự ưu tiên:
 
-1. **Người dùng kiểm tra giao diện v3.2** (bản trong menu), sửa nếu có góp ý; rồi (khi được đồng ý) tag `v3.2.0` và
-   GitHub Release (nội dung từ CHANGELOG 3.2.0). KHÔNG tự tag/release khi chưa hỏi.
-2. **Thử gửi tệp qua tunnel Cloudflare thật** (bỏ `--local`): tệp vài MB và ~20 MB, kiểm tra Expect 100-continue và
+1. **Hỏi người dùng kết quả kiểm tra giao diện v3.2** (bản trong menu đã là 3.2.0, main đã push), sửa nếu có góp ý; rồi
+   (khi được đồng ý) tag `v3.2.0` + GitHub Release (nội dung từ CHANGELOG 3.2.0). KHÔNG tự tag/release khi chưa hỏi.
+2. **v3.3** theo "Lộ trình v3.3" ở trên, làm trên nhánh `v3.3-brief` (đã tạo từ main, chỉ có commit HANDOFF này).
+3. **Thử gửi tệp qua tunnel Cloudflare thật** (bỏ `--local`): tệp vài MB và ~20 MB, kiểm tra Expect 100-continue và
    thông báo "Tệp quá lớn" qua tunnel. Tunnel là công khai: hỏi người dùng trước.
-3. **Webhook thật** (Slack/Discord/Google Chat, phòng có `--follow-up`): chỉ khi người dùng đưa URL, không tự tạo.
-4. Ảnh `meeting.jpg`, `mobile-dark.jpg` vẫn là bản v3.0 (800px): chụp lại bằng Firefox BiDi nếu cần.
-5. Có thể cân nhắc (chưa làm, cần người dùng đồng ý): chủ trì xoá một tệp trên trang; giới hạn tốc độ gửi tệp theo agent.
+4. **Webhook thật** (Slack/Discord/Google Chat, phòng có `--follow-up`): chỉ khi người dùng đưa URL, không tự tạo.
+5. Ảnh `meeting.jpg`, `mobile-dark.jpg` vẫn là bản v3.0 (800px): chụp lại cùng lúc với ảnh v3.3.
+6. Có thể cân nhắc (chưa làm, cần người dùng đồng ý): chủ trì xoá một tệp trên trang; giới hạn tốc độ gửi tệp theo agent.
 
 Ý tưởng xa hơn (chưa lên kế hoạch):
 

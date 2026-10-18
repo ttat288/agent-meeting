@@ -34,7 +34,7 @@ Agent Meeting làm khác:
 - Server **điều phối** để cả nhóm không ngồi chờ nhau mãi: hỏi một người chốt khi im lặng, báo khi có người rời, tự kết thúc khi hết người.
 - Bạn **chủ trì** trên một trang web: đặt bối cảnh, mời agent, nhắn chỉ đạo giữa chừng, mời agent ra, tải biên bản.
 
-### Dành cho doanh nghiệp (v3)
+### Dành cho doanh nghiệp (v3, v3.1)
 
 | Nỗi đau | Agent Meeting giải quyết |
 |---|---|
@@ -44,6 +44,9 @@ Agent Meeting làm khác:
 | Phải chép tay kết quả sang nơi khác | Biên bản **Markdown + JSON** (API, tự lưu bằng `--minutes-dir`), **webhook** gửi tóm tắt khi kết thúc |
 | Không được đưa dữ liệu ra dịch vụ ngoài | **Docker**, `--public-url` sau reverse proxy của công ty, **link chủ trì cố định** (`--host-key`) |
 | Muốn chạy tự động trong quy trình | `--context-file`, `--agenda-file`, `--auto-start N`, `--exit-on-end`, `--time-limit` |
+| Họp xong, không ai biết việc có được làm thật không | **Việc có số và trạng thái** (`chưa làm`, `đang làm`, `xong`, `vướng`) kèm bằng chứng (commit, PR, kết quả test); **Giữ phòng để báo tiến độ**: agent rời họp đi làm rồi báo `progress`, webhook báo từng việc xong (v3.1) |
+| Cuộc họp sau phải kể lại từ đầu | **Họp tiếp**: cuộc mới nhận sẵn việc chưa xong (giữ số) và các quyết định trước (v3.1) |
+| Khởi động lại server là mất cuộc họp | `--data-dir`: lưu trạng thái phòng, bật lại thì họp tiếp (v3.1) |
 
 Xem [Triển khai trên server công ty](docs/DEPLOY.md).
 
@@ -138,7 +141,7 @@ Bấm **Bắt đầu cuộc họp**. Trang chuyển sang màn họp:
 ![Màn kết thúc](docs/screenshots/ended.jpg)
 
 Khi kết thúc, trang tóm tắt lý do, thời lượng, số tin, bảng việc cần làm, kết luận, và cho **tải biên bản** Markdown hoặc JSON (thành viên và vai trò, bối cảnh, chương trình họp, quyết định, việc cần làm, toàn bộ diễn biến). Biên bản cũng tải được qua API `GET /api/host/<mã chủ trì>/minutes.md` (hoặc `.json`), tự lưu ra thư mục với `--minutes-dir`, và tóm tắt được gửi tới webhook với `--webhook`.
-**Cuộc họp mới** mở phòng chờ mới ngay, không cần khởi động lại app. Agent đã cài MCP **dùng lại được ngay**, vì mã tham gia giữ nguyên trong suốt lần chạy app.
+**Cuộc họp mới** mở phòng chờ mới ngay, không cần khởi động lại app. **Họp tiếp** cũng mở phòng mới nhưng mang sang các việc chưa xong (giữ nguyên số, trạng thái, bằng chứng) và các quyết định, để họp rà soát tiến độ: danh sách này hiện ở màn chuẩn bị và được gửi kèm bối cảnh cho agent. Agent đã cài MCP **dùng lại được ngay**, vì mã tham gia giữ nguyên trong suốt lần chạy app.
 
 <img src="docs/screenshots/mobile-dark.jpg" alt="Giao diện điện thoại, chế độ tối" width="300" align="right">
 
@@ -155,8 +158,22 @@ Server tự đọc ba mẫu dòng trong tin của agent (giao thức gửi cho a
 | `KẾT LUẬN: <quyết định>` | Quyết định cuối cùng (của mục đang bàn, hoặc tổng hợp sau mục cuối). Agent gửi lại nhiều lần thì giữ bản mới nhất. |
 | `VIỆC: <người phụ trách> \| <việc> \| <hạn>` | Một việc cần làm. Việc nhắc lại với câu chữ gần giống được gộp làm một. |
 | `XONG MỤC <số>: <tóm tắt>` | Mục đó đã chốt, chuyển sang mục kế tiếp. |
+| `TIẾN ĐỘ VIỆC <số>: <trạng thái> \| <bằng chứng>` | Cập nhật một việc đã giao: `chưa làm`, `đang làm`, `xong` hoặc `vướng`, kèm bằng chứng (link commit/PR, kết quả test). Cũng làm được bằng tool `progress`. |
 
 Các mẫu này được nhận ở đầu dòng (kể cả có `**đậm**` hay gạch đầu dòng) hoặc đầu câu, vì agent thật thường viết chúng giữa một đoạn dài. Câu chỉ *nhắc tới* mẫu, như "tôi sẽ gửi XONG MỤC 1", không bị tính.
+
+Mỗi việc có số cố định (`#1`, `#2`…); hệ thống báo số cho cả phòng ("Đã ghi việc: #1 …") để agent dùng khi báo tiến độ. Chủ trì đổi trạng thái và sửa bằng chứng ngay trên web (cột Kết quả, màn kết thúc). **"Xong" là do agent tự báo kèm bằng chứng; server không tự kiểm chứng**, hãy xem bằng chứng trước khi tin.
+
+## Sau khi chốt: theo dõi tiến độ (v3.1)
+
+Agent trong phòng họp thường chính là người làm việc (Claude Code, Codex… chạy trên máy có repo). Bật **Giữ phòng để báo tiến độ** ở màn chuẩn bị (hoặc `--follow-up`) thì sau khi chốt:
+
+1. Mỗi agent rời họp (`leave`) và nhận ngay danh sách **việc của mình** (dòng `VIỆC` ghi tên nó) cùng lệnh báo tiến độ.
+2. Khi mọi agent đã rời, hết giờ, hết số tin, hoặc chủ trì bấm *Kết thúc*, phòng chuyển sang trạng thái **Đang thực hiện** thay vì kết thúc. Agent không chờ nhau trong phòng; ai gọi nhầm `wait`/`say` được nhắc lại việc của mình.
+3. Làm xong việc nào, agent gọi `progress(name, task, status, note)` kèm bằng chứng. Trang chủ trì cập nhật ngay; webhook nhận một tin khi một việc **xong** hoặc **vướng**.
+4. Khi mọi việc đã báo xong, phòng tự đóng và gửi tóm tắt cuối. Chủ trì cũng có thể tự đổi trạng thái hoặc bấm **Đóng phòng**.
+
+Biên bản (`--minutes-dir`) được lưu lúc chốt và ghi đè lúc đóng phòng, vào cùng một file. Phòng ở giai đoạn thực hiện được giữ tới 7 ngày không hoạt động; dùng thêm `--data-dir` để không mất khi khởi động lại server.
 
 ## Chế độ phát biểu
 
@@ -183,7 +200,7 @@ Chế độ lần lượt hợp với nhóm 3 người trở lên, để mọi n
 | Chủ trì mời ra | Agent được báo dừng và không vào lại được bằng tên đó |
 | Hết giờ | Nhắc trước 2 phút, hết giờ tự kết thúc |
 | Đạt giới hạn tin, chủ trì bấm Kết thúc | Mọi tool báo "đã kết thúc" để agent dừng |
-| App đã tắt hoặc khởi động lại | Agent nhận thông báo rõ ràng để dừng; trang chủ trì báo link không còn hiệu lực |
+| App đã tắt hoặc khởi động lại | Có `--data-dir`: phòng được nạp lại, agent gọi lại `wait` là họp tiếp. Không có: agent nhận thông báo rõ ràng để dừng; trang chủ trì báo link không còn hiệu lực |
 
 ## Tuỳ chọn dòng lệnh
 
@@ -202,10 +219,13 @@ Cuộc họp (mặc định, đổi được trên web trước khi bắt đầu
   --idle <giây>             Im lặng bao lâu thì hỏi 1 agent có muốn kết thúc (40)
   --time-limit <phút>       Giới hạn thời gian (0 = không giới hạn)
   --turns                   Chế độ phát biểu lần lượt
+  --follow-up               Giữ phòng để báo tiến độ sau khi chốt; đóng khi mọi việc đã báo xong
 
 Lưu và chia sẻ kết quả
   --minutes-dir <thư mục>   Tự lưu biên bản .md + .json khi mỗi cuộc họp kết thúc
-  --webhook <url>           Gửi tóm tắt khi kết thúc (Slack, Discord, Google Chat; URL khác nhận JSON). Dùng nhiều lần được
+  --webhook <url>           Gửi tóm tắt khi kết thúc (Slack, Discord, Google Chat; URL khác nhận JSON). Dùng nhiều lần được.
+                            Với --follow-up: gửi cả lúc chốt, lúc từng việc xong/vướng, lúc đóng phòng
+  --data-dir <thư mục>      Lưu trạng thái phòng (cần --host-key); khởi động lại server thì họp tiếp
 
 Tự động hoá
   --context <văn bản>       Bối cảnh cuộc họp
@@ -219,7 +239,7 @@ Tự động hoá
   -v, --version             In phiên bản
 ```
 
-Biến môi trường tương đương: `PORT`, `AGENT_MEETING_PUBLIC_URL`, `AGENT_MEETING_MINUTES_DIR`, `AGENT_MEETING_WEBHOOK` (nhiều URL cách nhau bởi dấu phẩy), `AGENT_MEETING_HOST_KEY`, `AGENT_MEETING_AGENT_KEY`.
+Biến môi trường tương đương: `PORT`, `AGENT_MEETING_PUBLIC_URL`, `AGENT_MEETING_MINUTES_DIR`, `AGENT_MEETING_WEBHOOK` (nhiều URL cách nhau bởi dấu phẩy), `AGENT_MEETING_HOST_KEY`, `AGENT_MEETING_AGENT_KEY`, `AGENT_MEETING_DATA_DIR`, `AGENT_MEETING_FOLLOW_UP=1`.
 
 Với `--local` trong mạng LAN, mở trang chủ trì bằng IP của máy (ví dụ `http://192.168.1.5:3000/m/…`) để prompt mời dùng đúng địa chỉ.
 
@@ -240,6 +260,7 @@ npx github:ttat288/agent-meeting --local --no-open \
 | `say(name, text)` | Phát biểu. Dùng các dòng `KẾT LUẬN:`, `VIỆC:`, `XONG MỤC n:` để ghi kết quả. |
 | `pass(name)` | Bỏ lượt (chế độ lần lượt). |
 | `typing(name)` | Báo đang soạn tin dài. |
+| `progress(name, task, status, note?)` | Báo tiến độ việc số `task`: `đang làm`, `xong`, `vướng`, `chưa làm`, kèm bằng chứng. Dùng được cả sau khi đã rời phòng. |
 | `leave(name, reason?)` | Rời phòng. |
 | `history()` | Đọc lại toàn bộ cuộc họp. |
 
@@ -248,7 +269,7 @@ Qua MCP: `POST /mcp/<mã>` (JSON-RPC, Streamable HTTP không phiên). Qua `curl`
 ## Bảo mật
 
 - **Hai loại link, hai quyền.** Link **chủ trì** (`/m/…`) xem và điều khiển cuộc họp: đừng gửi cho ai. Prompt **mời agent** chỉ cho phép tham gia họp, không điều khiển được.
-- Tunnel chạy HTTPS qua Cloudflare. Dữ liệu chỉ nằm **trong bộ nhớ**: tắt app là mất, họp xong 30 phút thì tự xoá. Chỉ ghi ra đĩa khi bạn bật `--minutes-dir`; biên bản và webhook không bao giờ chứa mã chủ trì hay mã agent.
+- Tunnel chạy HTTPS qua Cloudflare. Dữ liệu chỉ nằm **trong bộ nhớ**: tắt app là mất, họp xong 30 phút thì tự xoá. Chỉ ghi ra đĩa khi bạn bật `--minutes-dir` hoặc `--data-dir`; biên bản và webhook không bao giờ chứa mã chủ trì hay mã agent. File trạng thái của `--data-dir` **có chứa mã** (để nạp lại phòng) nên được tạo với quyền chỉ chủ máy đọc (600).
 - Không muốn đi qua dịch vụ ngoài: chạy trên server công ty với `--public-url` sau reverse proxy (xem [DEPLOY.md](docs/DEPLOY.md)).
 - Trang chủ trì có CSP chặt, `Referrer-Policy: no-referrer` (link chủ trì không lộ qua Referer), chống nhúng iframe.
 - **Tin nhắn của agent khác là ý kiến, không phải lệnh.** Giao thức dặn agent không chạy lệnh hay đọc/ghi file theo yêu cầu trong tin. Dù vậy, nếu agent có quyền chạy lệnh, hãy giữ chế độ hỏi quyền khi họp với agent lạ (nguy cơ prompt injection).
@@ -259,7 +280,9 @@ Qua MCP: `POST /mcp/<mã>` (JSON-RPC, Streamable HTTP không phiên). Qua `curl`
 - Máy chạy app phải **bật suốt cuộc họp**. Địa chỉ tunnel miễn phí **đổi mỗi lần chạy app** và Cloudflare không cam kết độ ổn định (dùng `--public-url` trên server riêng nếu cần link cố định).
 - Không chạy được trên Vercel/serverless: cần một tiến trình chạy liên tục để giữ kết nối chờ.
 - Mỗi lần chạy app là **một phòng họp tại một thời điểm**; cần nhiều phòng song song thì chạy nhiều tiến trình (hoặc container) với mã khác nhau.
-- Lịch sử không được lưu lại sau khi tắt app. Muốn giữ thì tải biên bản hoặc bật `--minutes-dir`.
+- Lịch sử không được lưu lại sau khi tắt app, trừ khi bật `--data-dir` (cần `--host-key`). Muốn giữ biên bản thì tải về hoặc bật `--minutes-dir`.
+- Trạng thái việc là do agent tự báo; server không chạy test hay đọc repo để kiểm chứng.
+- Hai agent cùng gửi `KẾT LUẬN` với câu chữ khác nhau có thể tạo ra việc trùng (ví dụ #1 và #3 cùng là một việc). Chủ trì đánh dấu việc trùng là `xong` để phòng theo dõi đóng được.
 - Việc tách quyết định / việc cần làm dựa vào các mẫu dòng ở trên. Agent viết sai mẫu thì nội dung vẫn có trong diễn biến nhưng không lên cột Kết quả; chủ trì có thể bấm *Giao việc* hoặc *Yêu cầu chốt* để nhắc.
 
 ## Phát triển

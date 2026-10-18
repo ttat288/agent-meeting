@@ -13,11 +13,13 @@ Agent Meeting: phòng họp cho nhiều AI agent (Claude Code, Codex, Gemini CLI
 
 ```text
 bin/cli.js        tham số dòng lệnh, tải cloudflared, bật tunnel, tạo cuộc họp, mở trình duyệt
-src/meeting.js    lõi: class Meeting (trạng thái LOBBY→LIVE→ENDED, slot, chế độ free/turns,
-                  luật chống chờ nhau, kick, giới hạn tin/thời gian). Không phụ thuộc HTTP.
+src/meeting.js    lõi: class Meeting (trạng thái LOBBY→LIVE→ENDED, hoặc LIVE→WORK→ENDED khi giữ phòng báo tiến độ;
+                  slot, chế độ free/turns, luật chống chờ nhau, kick, giới hạn tin/thời gian, việc có số/trạng thái,
+                  toState()/restore() cho --data-dir, carryIn() cho "Họp tiếp"). Không phụ thuộc HTTP.
 src/server.js     HTTP thuần: /m/<hostKey> (trang chủ trì), /api/host/<hostKey>/* (điều khiển,
                   long-poll state, minutes.md|json), /a/<agentId>/<tool> (API văn bản cho curl),
-                  /mcp/<agentId> (MCP JSON-RPC); lưu biên bản (--minutes-dir), gửi webhook
+                  /mcp/<agentId> (MCP JSON-RPC); lưu biên bản (--minutes-dir), gửi webhook (work/task/ended),
+                  ghi/nạp trạng thái phòng (--data-dir), renew(mt, carry)
 src/minutes.js    biên bản Markdown / JSON (agent-meeting/minutes@1) / tóm tắt webhook
 src/ui/           trang chủ trì: index.html + app.css + app.js, không build, CSP chặt
 scripts/          install-linux.sh (launcher menu), demo-bots.js (3 agent giả lập)
@@ -31,7 +33,16 @@ Quyết định kỹ thuật quan trọng (đừng đảo ngược nếu không 
 - **`wait` chặn ~50 giây** rồi trả "Chưa có tin mới, gọi lại": vừa dưới timeout tool của các CLI (Codex ~60s), vừa không tốn token.
 - **Hai token**: `hostKey` (điều khiển) tách khỏi `id` agent (chỉ tham gia). "Cuộc họp mới" **giữ nguyên id agent** để MCP đã cài vẫn dùng được.
 - **Không phụ thuộc thư viện**, Node 18+. CI chạy Node 18/20/22.
-- Dữ liệu trong bộ nhớ. Lưu ra đĩa chỉ khi người dùng bật (`--minutes-dir`).
+- Dữ liệu trong bộ nhớ. Lưu ra đĩa chỉ khi người dùng bật (`--minutes-dir`, `--data-dir`).
+- `--data-dir` chỉ cho phòng `fixed` (bắt buộc `--host-key`): file `<hostKey>.json` chứa mã nên quyền 600; chỉ phòng đang
+  nằm trong `byHost` được ghi (phòng cũ bị "Cuộc họp mới" thay thế không được ghi đè file). Khi nạp lại: agent đang họp được
+  coi là còn trong phòng (wait kế tiếp chạy tiếp từ `cursor`), `version` +1000 để long-poll của trang chủ trì không bị kẹt.
+- Giữ phòng báo tiến độ (`cfg.followUp`): `_end(reason)` khi LIVE mà còn việc chưa xong thì sang WORK; `_end(reason, true)`
+  mới kết thúc hẳn (sweep, "Cuộc họp mới", Đóng phòng). Trong WORK mọi tool trừ progress/history trả `_workText` ngay,
+  KHÔNG chặn chờ. Việc "của" agent = dòng VIỆC có tên agent (so khớp theo ranh giới từ, `owns()`), nên giao thức/bối cảnh
+  phải dặn ghi đúng tên agent. Phòng tự đóng khi mọi việc `done`.
+- "Họp tiếp": việc chưa xong mang sang giữ nguyên số (`taskSeq` không bao giờ dùng lại); `carry.members` cho phép agent của
+  các cuộc trước báo `progress` dù chưa join cuộc mới.
 - Văn bản gửi agent phải **rất rõ ràng**: agent thật (Haiku, Sonnet…) đã từng bỏ cuộc ở phòng chờ, tự gắn tiền tố "[Tên]", nhầm định dạng. Mọi thay đổi giao thức nên thử với agent thật.
 - **Nhận diện kết quả khoan dung nhưng không nhận nhầm** (`_extract` trong src/meeting.js, test lấy từ tin agent thật):
   `KẾT LUẬN:` ở đầu dòng (giữa đoạn chỉ khi viết HOA sau dấu hết câu); `XONG MỤC n` ở đầu dòng hoặc đầu câu,
@@ -64,11 +75,18 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
   - Agent thật hay chép sai mã phòng (cắt bớt ký tự) giữa cuộc họp: thông báo 404 phải bảo kiểm tra URL, thử lại.
   - Agent nói "tôi sẽ gửi XONG MỤC 1." nghĩa là CHƯA xong: đừng nới regex cho dấu chấm sau số mục.
   - Docker: container chạy UTC, cần `TZ=Asia/Ho_Chi_Minh` (Node có sẵn dữ liệu múi giờ, alpine không cần tzdata).
+  - Regex có cờ `u` KHÔNG cho escape `-` ngoài `[]` (SyntaxError): tên agent như `Haiku-Agent` từng làm `leave` và state
+    của chủ trì trả 500. Dùng `reEscFold` (không escape `-`) cho regex cờ `u`.
+  - Mẫu bối cảnh không được chứa `<…>` thật (trang chủ trì coi là chỗ trống chưa điền và hỏi lại trước khi bắt đầu).
+  - Agent hay vào lại cuộc họp sau với TÊN KHÁC (Haiku-Agent → Haiku-Analyst); nó tự nhắc lại dòng VIỆC và `sameTask`
+    gộp vào việc cũ (đổi người phụ trách, giữ số). Hai agent cùng gửi KẾT LUẬN với câu chữ khác nhau vẫn có thể tạo việc
+    trùng: chưa nới `sameTask` (gộp nhầm làm mất việc), chủ trì đánh dấu bản trùng là xong.
 - Commit kết thúc bằng dòng `Co-Authored-By` theo hướng dẫn của phiên; cập nhật CHANGELOG + README/GUIDE cho thay đổi người dùng thấy được; `bash scripts/install-linux.sh` để cập nhật bản trong menu.
 
 ## Trạng thái
 
-- Phiên bản phát hành: **v3.0.0** (bản cho doanh nghiệp, đã có GitHub Release, main). Đang làm: v3.1 (dưới).
+- Phiên bản phát hành: **v3.0.0** (main, đã có GitHub Release). **v3.1.0** xong trên nhánh `v3.1-followup` (package.json,
+  CHANGELOG, tài liệu đã cập nhật), CHƯA merge/push/release: chờ người dùng đồng ý.
 
 ## Lộ trình v3: giải quyết nỗi đau doanh nghiệp (đã xong)
 
@@ -82,7 +100,12 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
 - [x] Màn hình hẹp: nút ☰ mở bảng chương trình/kết quả
 - [x] Thử với agent thật (Haiku 4.5 ×2 + Sonnet 5.5, 3 lần): chương trình 2 mục, vai trò, nhắn riêng
 
-## Lộ trình v3.1: từ "họp xong" sang "làm xong" (đang làm, nhánh v3.1-followup)
+## Lộ trình v3.1: từ "họp xong" sang "làm xong" (nhánh v3.1-followup)
+
+Kết quả: bước 1-4 và 6 xong, có test (65 test) và đã thử bằng subagent Haiku 4.5 / Sonnet 5.5 qua curl: khởi động lại server
+giữa cuộc họp; báo tiến độ; WORK trên repo git thử (agent sửa code, commit thật, báo progress, phòng tự đóng) ×2; họp lập
+kế hoạch → "Họp tiếp" → họp review → WORK → đóng. Bước 5 còn thiếu: Claude Code / Codex CLI / Gemini CLI qua MCP (máy dev
+không có các CLI này; luồng MCP mới chỉ có test JSON-RPC). Ảnh/GIF chưa cập nhật cho màn WORK và bảng việc.
 
 Nhận định (sau bài đánh giá bên ngoài v3.0.0): agent trong phòng họp CHÍNH LÀ người thực thi (Claude Code/Codex trên
 máy có repo). Không cần server tự chạy agent; chỉ cần phòng họp theo dõi được tiến độ sau khi chốt và mang việc dở
@@ -90,24 +113,24 @@ sang cuộc họp sau. Giữ nguyên: một lệnh là chạy, không thư việ
 
 Làm theo thứ tự, mỗi bước có test (npm test) và thử trên trình duyệt / agent thật xong mới sang bước sau:
 
-1. **Không mất cuộc họp khi khởi động lại.** `--data-dir <thư mục>` (env `AGENT_MEETING_DATA_DIR`): ghi trạng thái
+1. ✅ **Không mất cuộc họp khi khởi động lại.** `--data-dir <thư mục>` (env `AGENT_MEETING_DATA_DIR`): ghi trạng thái
    phòng ra `<hostKey>.json` khi có thay đổi (gom ghi, tối đa ~1 lần/giây, ghi file tạm rồi rename), nạp lại khi khởi
    động nếu dùng `--host-key`. Agent vào lại bằng đúng tên + model (đã hỗ trợ). Không lưu mã bí mật vào biên bản
    (file trạng thái thì cần mã: đặt quyền 600). Test: tắt server giữa cuộc họp, bật lại, họp tiếp, biên bản đủ.
-2. **Việc có trạng thái.** Mỗi việc có số (#1, #2…), trạng thái `chưa làm | đang làm | xong | vướng`, ghi chú/bằng chứng
+2. ✅ **Việc có trạng thái.** Mỗi việc có số (#1, #2…), trạng thái `chưa làm | đang làm | xong | vướng`, ghi chú/bằng chứng
    (link commit, PR, kết quả test). Agent cập nhật bằng dòng `TIẾN ĐỘ VIỆC <số>: <trạng thái> | <bằng chứng>` và/hoặc
    tool mới `progress(name, task, status, note)` (MCP + curl). Chủ trì đổi trạng thái trên web. Biên bản/webhook/JSON
    có trạng thái. Ghi rõ trong UI: "xong" là agent tự báo, kèm bằng chứng, server KHÔNG tự kiểm chứng.
-3. **Giai đoạn thực hiện sau khi chốt.** Tuỳ chọn "Giữ phòng để báo tiến độ" (web + `--follow-up`): sau KẾT LUẬN,
+3. ✅ **Giai đoạn thực hiện sau khi chốt.** Tuỳ chọn "Giữ phòng để báo tiến độ" (web + `--follow-up`): sau KẾT LUẬN,
    agent rời họp để đi làm việc được giao, rồi gọi lại `progress` khi xong; phòng chuyển trạng thái riêng (ví dụ
    WORK) thay vì ENDED; webhook gửi khi một việc xong và khi tất cả xong. Giao thức phải nói rõ cho agent: làm việc
    của mình xong mới báo, không chờ nhau trong phòng.
-4. **Họp tiếp mang việc dở.** "Cuộc họp mới" có lựa chọn đưa các việc chưa xong + quyết định trước vào bối cảnh cuộc
+4. ✅ **Họp tiếp mang việc dở.** "Cuộc họp mới" có lựa chọn đưa các việc chưa xong + quyết định trước vào bối cảnh cuộc
    sau (giữ số việc), để họp review tiến độ.
-5. **Thử với agent thật**: Claude Code, Codex CLI, Gemini CLI qua MCP (chưa từng thử, máy dev hiện KHÔNG cài các CLI
+5. ◐ **Thử với agent thật**: Claude Code, Codex CLI, Gemini CLI qua MCP (chưa từng thử, máy dev hiện KHÔNG cài các CLI
    này: nhờ người dùng cài hoặc thử trên máy khác); subagent haiku/sonnet qua curl như trước. Mẫu kịch bản: họp chốt
    2 việc nhỏ trong một repo thử, agent làm thật, báo TIẾN ĐỘ kèm commit.
-6. Tài liệu (README, README.en, GUIDE, DEPLOY, CHANGELOG 3.1.0), package.json 3.1.0, ảnh/GIF nếu UI đổi nhiều,
+6. ✅ Tài liệu (README, README.en, GUIDE, DEPLOY, CHANGELOG 3.1.0), package.json 3.1.0, ảnh/GIF nếu UI đổi nhiều,
    rồi hỏi người dùng trước khi merge/push/release.
 
 **Ngoài phạm vi (đừng làm):** tài khoản/phân quyền (dùng reverse proxy của công ty), server tự khởi chạy agent hay tự
@@ -116,7 +139,10 @@ merge code, nhiều phòng song song, chạy test thay agent.
 ## Việc tiếp theo (ý tưởng chưa làm)
 
 - Nhiều phòng họp song song trên một server (hiện mỗi tiến trình một phòng tại một thời điểm), trang quản trị có mật khẩu.
-- Chưa thử với Codex CLI / Gemini CLI thật cho các mẫu `KẾT LUẬN`/`VIỆC`/`XONG MỤC` (mới thử Claude Haiku/Sonnet).
+- Chưa thử với Claude Code / Codex CLI / Gemini CLI thật qua MCP cho các mẫu `KẾT LUẬN`/`VIỆC`/`XONG MỤC`/`TIẾN ĐỘ VIỆC`
+  và giai đoạn WORK (mới thử Claude Haiku/Sonnet qua curl).
+- Ảnh chụp màn hình/GIF cho bảng việc có trạng thái, màn "Đang thực hiện", thẻ "Mang từ cuộc họp trước".
+- Chủ trì gộp/xoá việc trùng trên web (hiện chỉ đánh dấu xong được).
 - Webhook Microsoft Teams (Adaptive Card); hiện Teams nhận JSON chung.
 - Bản dịch giao diện/giao thức sang tiếng Anh (i18n).
 - Bản đóng gói có cửa sổ riêng (Electron/Tauri) hoặc launcher cho macOS/Windows.

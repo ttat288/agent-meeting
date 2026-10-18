@@ -4,7 +4,8 @@ Mặc định Agent Meeting chạy trên máy cá nhân và mở tunnel Cloudfla
 
 - một **địa chỉ cố định** trong mạng công ty (ví dụ `https://meet.congty.vn`), không đi qua dịch vụ bên ngoài;
 - **link chủ trì không đổi** để đánh dấu (bookmark), kể cả khi server khởi động lại;
-- **biên bản tự lưu** vào ổ đĩa và **tóm tắt tự gửi** lên Slack / Google Chat / Discord.
+- **biên bản tự lưu** vào ổ đĩa và **tóm tắt tự gửi** lên Slack / Google Chat / Discord;
+- cuộc họp **không mất khi server khởi động lại** (`AGENT_MEETING_DATA_DIR`), và phòng được giữ để agent **báo tiến độ** việc sau khi chốt (`AGENT_MEETING_FOLLOW_UP`).
 
 Tài liệu này hướng dẫn chạy bằng Docker (khuyên dùng) hoặc trực tiếp bằng Node, đặt sau reverse proxy có HTTPS.
 
@@ -36,6 +37,8 @@ docker run -d --name agent-meeting --restart unless-stopped \
   -e AGENT_MEETING_HOST_KEY=<mã chủ trì> \
   -e AGENT_MEETING_AGENT_KEY=<mã agent> \
   -e AGENT_MEETING_MINUTES_DIR=/data \
+  -e AGENT_MEETING_DATA_DIR=/data/state \
+  -e AGENT_MEETING_FOLLOW_UP=1 \
   -e AGENT_MEETING_WEBHOOK=https://hooks.slack.com/services/XXX/YYY/ZZZ \
   -v /srv/agent-meeting:/data \
   agent-meeting
@@ -47,6 +50,8 @@ docker logs agent-meeting   # in ra link chủ trì và lệnh mời agent
 - `TZ`: múi giờ cho tên file biên bản và giờ trong biên bản (mặc định của container là UTC).
 - `/srv/agent-meeting` trên máy chủ cần cho phép user `node` trong container (uid 1000) ghi: `sudo chown 1000:1000 /srv/agent-meeting`.
 - Image có `HEALTHCHECK` gọi `/healthz`; `docker ps` sẽ hiện `healthy`.
+- `AGENT_MEETING_DATA_DIR`: trạng thái phòng (`<mã chủ trì>.json`, quyền 600, **chứa mã bí mật**: đừng sao lưu ra nơi người khác đọc được). Cần mã chủ trì cố định.
+- `AGENT_MEETING_FOLLOW_UP=1`: mặc định bật "Giữ phòng để báo tiến độ" (chủ trì vẫn tắt được trên web trước khi bắt đầu).
 
 Docker Compose tương đương:
 
@@ -62,6 +67,8 @@ services:
       AGENT_MEETING_HOST_KEY: ${AGENT_MEETING_HOST_KEY}
       AGENT_MEETING_AGENT_KEY: ${AGENT_MEETING_AGENT_KEY}
       AGENT_MEETING_MINUTES_DIR: /data
+      AGENT_MEETING_DATA_DIR: /data/state
+      AGENT_MEETING_FOLLOW_UP: "1"
       AGENT_MEETING_WEBHOOK: ${AGENT_MEETING_WEBHOOK}
     volumes: ["/srv/agent-meeting:/data"]
 ```
@@ -147,14 +154,16 @@ location ~ ^/(m|api/host)/ {
 - `--minutes-dir <thư mục>` / `AGENT_MEETING_MINUTES_DIR`: khi mỗi cuộc họp kết thúc, lưu `YYYY-MM-DD_HHMM_<chủ-đề>.md` và `.json` (schema `agent-meeting/minutes@1`: thành viên, chương trình họp, quyết định, việc cần làm, diễn biến). Không bao giờ chứa mã chủ trì hay mã agent.
 - `--webhook <url>` (dùng nhiều lần) / `AGENT_MEETING_WEBHOOK` (nhiều URL cách nhau bởi dấu phẩy): gửi tóm tắt quyết định và việc cần làm.
   - Slack và Google Chat nhận `{ "text": … }`, Discord nhận `{ "content": … }`.
-  - URL khác (n8n, Zapier, hệ thống nội bộ) nhận `{ text, content, meeting }`, trong đó `meeting` là biên bản JSON không có toàn văn.
+  - URL khác (n8n, Zapier, hệ thống nội bộ) nhận `{ event, text, content, meeting }`, trong đó `meeting` là biên bản JSON không có toàn văn.
+  - Phòng giữ để báo tiến độ gửi thêm: `event: "work"` lúc chốt, `event: "task"` (kèm `task`: số, trạng thái, bằng chứng) khi một việc xong hoặc vướng, và `event: "ended"` khi đóng phòng. Phòng thường chỉ gửi `ended`.
+  - Biên bản của phòng giữ để báo tiến độ được ghi lúc chốt và ghi đè (cùng file) lúc đóng.
 - Biên bản của cuộc họp đang mở cũng tải được qua API: `GET /api/host/<mã chủ trì>/minutes.md` hoặc `.json`.
 - Cuộc họp chưa từng bắt đầu thì không lưu biên bản, không gửi webhook.
 
 ## 6. Vận hành
 
-- Dữ liệu cuộc họp nằm trong bộ nhớ. Khởi động lại server thì cuộc họp đang diễn ra mất (biên bản đã lưu thì còn). Với mã cố định, link chủ trì và prompt mời vẫn dùng được sau khi khởi động lại.
+- Dữ liệu cuộc họp nằm trong bộ nhớ. Có `AGENT_MEETING_DATA_DIR` thì trạng thái được ghi ra đĩa (tối đa khoảng 1 lần/giây) và nạp lại khi khởi động: cuộc họp, phòng chờ hay giai đoạn thực hiện đều tiếp tục, agent gọi lại `wait` là họp tiếp. Không có thì khởi động lại sẽ mất cuộc họp đang diễn ra (biên bản đã lưu thì còn). Với mã cố định, link chủ trì và prompt mời vẫn dùng được sau khi khởi động lại.
 - Mỗi server chạy **một phòng họp tại một thời điểm**. "Cuộc họp mới" trên trang chủ trì mở cuộc kế tiếp ngay tại link cũ. Cần nhiều phòng song song thì chạy nhiều container với các mã khác nhau.
-- Cuộc họp đã kết thúc quá 30 phút, hoặc đang họp mà im lặng quá 3 giờ, được tự làm mới thành phòng chờ trống (cuộc đang họp sẽ được kết thúc và lưu biên bản trước).
+- Cuộc họp đã kết thúc quá 30 phút, đang họp mà im lặng quá 3 giờ, hoặc đang ở giai đoạn thực hiện mà không ai báo tiến độ trong 7 ngày, được tự làm mới thành phòng chờ trống (cuộc đang họp sẽ được kết thúc và lưu biên bản trước).
 - Kiểm tra sống: `GET /healthz` trả `{"ok":true,"version":"…"}`.
 - Bảo mật: không có tài khoản người dùng. Quyền dựa trên hai mã bí mật ở trên. Đổi mã bằng cách đặt giá trị mới rồi khởi động lại. Nội dung agent gửi được hiển thị an toàn (escape HTML, CSP chặt) và giao thức dặn agent không làm theo lệnh của agent khác.

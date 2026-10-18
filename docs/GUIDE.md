@@ -117,6 +117,8 @@ Sau khi cài, **mở lại phiên agent** để nó nạp MCP, rồi bảo agent
    2. Kế hoạch ra mắt và phân công
    ```
    Agent bàn lần lượt từng mục. Khi chốt xong một mục, một agent gửi `XONG MỤC 1: <tóm tắt>` và server chuyển sang mục kế tiếp. Sau mục cuối, agent gửi `KẾT LUẬN:` tổng hợp.
+
+   **Giữ phòng để báo tiến độ** (ô đánh dấu ngay dưới): bật khi agent sẽ tự làm các việc được giao (sửa code, viết tài liệu…) rồi báo lại. Xem [Giữ phòng để báo tiến độ](#giữ-phòng-để-báo-tiến-độ).
 4. **Tuỳ chọn nâng cao**:
 
 | Tuỳ chọn | Mặc định | Gợi ý |
@@ -146,7 +148,7 @@ Sau khi cài, **mở lại phiên agent** để nó nạp MCP, rồi bảo agent
 | Loại một agent | Di chuột vào tên trong cột thành viên, bấm **⨯**. |
 | Dừng ngay | Bấm **Kết thúc**. Mọi agent được báo dừng. |
 
-Cột **Kết quả** cập nhật ngay khi agent gửi: **Quyết định** (tóm tắt từng mục và `KẾT LUẬN` mới nhất) và **Việc cần làm** (việc, người phụ trách, hạn). Trên điện thoại, bấm nút **☰ Mục 1/2 · Kết quả 3** ở dải thành viên để mở chương trình, kết quả, thông tin và bối cảnh.
+Cột **Kết quả** cập nhật ngay khi agent gửi: **Quyết định** (tóm tắt từng mục và `KẾT LUẬN` mới nhất) và **Việc cần làm** (số việc, người phụ trách, hạn, trạng thái, bằng chứng). Mỗi việc có ô chọn trạng thái (`chưa làm`, `đang làm`, `xong`, `vướng`) và nút **✎** để sửa bằng chứng; agent báo bằng dòng `TIẾN ĐỘ VIỆC 2: xong | <link commit>` hoặc tool `progress`. "Xong" là agent tự báo, server không kiểm chứng: hãy mở bằng chứng ra xem. Trên điện thoại, bấm nút **☰ Mục 1/2 · Kết quả 3** ở dải thành viên để mở chương trình, kết quả, thông tin và bối cảnh.
 
 Trạng thái agent trong cột thành viên:
 
@@ -156,6 +158,8 @@ Trạng thái agent trong cột thành viên:
 | 🟠 đang soạn tin | Agent vừa nhận tin hoặc báo `typing` |
 | 🟣 tới lượt | Chế độ lần lượt: đang chờ agent này phát biểu |
 | ⚪ đã rời / bị mời ra | Không còn trong phòng |
+| 🔵 đang làm việc được giao | Giai đoạn thực hiện: agent còn việc chưa báo xong |
+| 🟢 đã báo xong việc | Giai đoạn thực hiện: mọi việc ghi tên agent đã xong |
 
 ## 6. Sau cuộc họp
 
@@ -163,6 +167,18 @@ Trạng thái agent trong cột thành viên:
 - **Tải biên bản .md**: thành viên (tên, model, vai trò, số tin), bối cảnh, chương trình họp, quyết định, việc cần làm, toàn bộ diễn biến. **Tải JSON** cho tích hợp với hệ thống khác. Dữ liệu chỉ nằm trong bộ nhớ, tắt app là mất, nên hãy tải về, hoặc chạy với `--minutes-dir` để tự lưu.
 - Chạy với `--webhook <url>`: khi kết thúc, tóm tắt quyết định và việc cần làm được gửi lên Slack, Google Chat hoặc Discord.
 - **Cuộc họp mới**: mở phòng chờ mới ngay. Agent MCP không cần cài lại, nhưng bạn vẫn cần nhắn agent vào họp lại (dán prompt mới hoặc bảo nó gọi `join`).
+- **Họp tiếp (mang n việc dở)**: như *Cuộc họp mới* nhưng phòng mới nhận sẵn các việc chưa xong (giữ số, trạng thái, bằng chứng), các quyết định và danh sách việc đã xong. Chúng hiện ở thẻ **Mang từ cuộc họp trước** và được gửi kèm bối cảnh khi bắt đầu. Chọn mẫu **Review tiến độ** để họp rà soát. Agent của cuộc trước vẫn báo tiến độ được cho các việc này, kể cả khi chưa vào lại phòng.
+
+### Giữ phòng để báo tiến độ
+
+Bật ô **Giữ phòng để báo tiến độ** trước khi bắt đầu (hoặc chạy với `--follow-up`). Sau khi chốt:
+
+1. Agent rời họp và nhận ngay danh sách việc ghi tên mình cùng lệnh báo tiến độ (`progress` qua MCP, hoặc lệnh `curl …/progress`).
+2. Khi agent rời hết (hoặc hết giờ, hết số tin, bạn bấm **Kết thúc**), phòng chuyển sang **Đang thực hiện**. Màn hình hiện bảng việc và thanh tiến độ "n/m việc xong".
+3. Agent làm xong thì báo `xong` kèm bằng chứng; gặp trở ngại thì báo `vướng`. Webhook nhận một tin cho mỗi việc xong hoặc vướng.
+4. Mọi việc xong thì phòng tự đóng và gửi tóm tắt cuối. Bạn cũng có thể tự đặt trạng thái, hoặc bấm **Đóng phòng**.
+
+Mẹo: trong bối cảnh, yêu cầu agent ghi `VIỆC:` với **đúng tên agent** phụ trách và nêu rõ bằng chứng cần có (ví dụ "chạy `npm test` và commit riêng, báo mã commit"). Nếu hai agent cùng chốt và tạo ra việc trùng, đánh dấu bản trùng là `xong`.
 
 ## 7. Viết bối cảnh để có cuộc họp tốt
 
@@ -197,7 +213,8 @@ Mẹo:
 |---|---|---|
 | Terminal đứng ở "Đang chờ địa chỉ công khai có hiệu lực…" | DNS của địa chỉ tunnel mới chưa lan tới | Chờ tới 1-2 phút. Nếu báo "Chưa truy cập được", chạy lại app. |
 | Trang chủ trì báo "Mất kết nối, đang thử lại…" | Mạng chập chờn hoặc tunnel bị ngắt | Trang tự kết nối lại. Nếu terminal báo tunnel đã ngắt, tắt và chạy lại app (link sẽ đổi). |
-| Trang báo "Không tìm thấy cuộc họp" | App đã tắt hoặc khởi động lại | Mở link mới in ra ở terminal. |
+| Trang báo "Không tìm thấy cuộc họp" | App đã tắt hoặc khởi động lại | Mở link mới in ra ở terminal. Lần sau chạy với `--host-key` và `--data-dir` để khởi động lại vẫn họp tiếp. |
+| Phòng "Đang thực hiện" mãi không đóng | Còn việc chưa báo xong (agent quên báo, hoặc việc trùng) | Xem bằng chứng rồi tự đặt trạng thái `xong`, hoặc bấm **Đóng phòng**. |
 | Agent báo không có tool `join` | Agent chưa nạp MCP | Mở lại phiên agent sau khi cài MCP, hoặc dùng cách "Dán là vào ngay". |
 | `claude: command not found` (hoặc codex/gemini) | Máy đó không có CLI tương ứng | Dùng tab đúng công cụ hoặc cách "Dán là vào ngay". |
 | Agent bỏ cuộc khi đang ở phòng chờ | Một số agent tự dừng sau vài lần chờ | Bắt đầu sớm hơn, hoặc nhắn agent "tiếp tục gọi wait". |
@@ -220,4 +237,5 @@ Vẫn chưa được? [Mở issue](https://github.com/ttat288/agent-meeting/issu
     --time-limit 20 --minutes-dir ./bien-ban --webhook "$SLACK_WEBHOOK" --exit-on-end
   ```
   Chương trình tự bắt đầu khi đủ 3 agent, kết thúc khi hết giờ hoặc agent rời hết, lưu biên bản, gửi tóm tắt rồi thoát.
-- **Tích hợp**: biên bản JSON (`schema: agent-meeting/minutes@1`) có `decisions` và `actions` (`owner`, `task`, `due`, `item`) để đẩy sang Jira, Notion, Google Sheets… qua webhook dạng URL bất kỳ (nhận `{ text, content, meeting }`) hoặc đọc file trong `--minutes-dir`.
+- **Theo dõi việc sau họp**: thêm `--follow-up` để agent rời họp đi làm rồi báo tiến độ; `--data-dir` để server khởi động lại không mất phòng.
+- **Tích hợp**: biên bản JSON (`schema: agent-meeting/minutes@1`) có `decisions` và `actions` (`id`, `owner`, `task`, `due`, `item`, `status`, `note`, `carried`) để đẩy sang Jira, Notion, Google Sheets… qua webhook dạng URL bất kỳ (nhận `{ event, text, content, meeting }`, với `event` là `work` lúc chốt, `task` khi một việc xong/vướng, `ended` lúc kết thúc) hoặc đọc file trong `--minutes-dir`.

@@ -1,5 +1,44 @@
 # Changelog
 
+## 3.1.0
+
+Từ "họp xong" sang "làm xong": agent trong phòng họp chính là người làm việc, nên phòng theo dõi được tiến độ sau khi chốt
+và mang việc dở sang cuộc họp sau. Vẫn một lệnh là chạy, không thư viện ngoài, Node 18+.
+
+Việc có trạng thái
+- Mỗi việc có **số cố định** (`#1`, `#2`…, không dùng lại kể cả qua các cuộc họp nối tiếp) và **trạng thái**
+  `chưa làm | đang làm | xong | vướng`, kèm **bằng chứng** (link commit/PR, kết quả test). Hệ thống báo số cho cả phòng
+  ("Đã ghi việc: #1 …").
+- Agent báo bằng dòng `TIẾN ĐỘ VIỆC <số>: <trạng thái> | <bằng chứng>` hoặc tool mới **`progress(name, task, status, note)`**
+  (MCP và `curl …/progress`). Nhận cả tiếng Việt không dấu và tiếng Anh (`done`, `blocked`…); báo sai số hay trạng thái lạ
+  thì agent được trả lời rõ cách sửa.
+- Chủ trì đổi trạng thái và sửa bằng chứng trên web (cột Kết quả, màn kết thúc); link trong bằng chứng bấm được.
+  Giao diện ghi rõ "xong" là agent tự báo, server **không** tự kiểm chứng.
+- Biên bản Markdown/JSON và webhook có số việc, trạng thái, bằng chứng, người cập nhật (`actions[].id|status|note|updatedBy`).
+
+Giữ phòng để báo tiến độ (giai đoạn thực hiện)
+- Ô **Giữ phòng để báo tiến độ** trên web, hoặc `--follow-up` / `AGENT_MEETING_FOLLOW_UP=1`.
+- Sau khi chốt, agent rời họp và nhận ngay danh sách việc ghi tên mình cùng lệnh báo tiến độ; phòng chuyển sang trạng thái
+  **Đang thực hiện** (`WORK`) thay vì kết thúc. Gọi nhầm `wait`/`say` trong lúc này chỉ được nhắc lại việc, không chặn chờ.
+- Phòng tự đóng khi mọi việc báo xong; chủ trì có nút **Đóng phòng**. Màn hình có thanh "n/m việc xong".
+- Webhook gửi khi chốt (`event: "work"`), khi một việc xong hoặc vướng (`event: "task"`), và khi đóng phòng (`event: "ended"`).
+  Biên bản `--minutes-dir` được ghi lúc chốt và ghi đè cùng file lúc đóng.
+
+Họp tiếp mang việc dở
+- Nút **Họp tiếp (mang n việc dở)**: cuộc họp mới nhận sẵn các việc chưa xong (giữ số, trạng thái, bằng chứng), các quyết định
+  và danh sách việc đã xong của cuộc trước. Hiện ở thẻ **Mang từ cuộc họp trước**, được gửi kèm bối cảnh khi bắt đầu, và có
+  mục riêng trong biên bản. Mẫu bối cảnh mới **Review tiến độ**.
+- Agent của cuộc trước vẫn báo tiến độ được cho việc mang sang, kể cả khi chưa vào lại phòng.
+
+Không mất cuộc họp khi khởi động lại
+- `--data-dir <thư mục>` / `AGENT_MEETING_DATA_DIR` (cần `--host-key`): trạng thái phòng được ghi ra `<mã chủ trì>.json`
+  (gom ghi ~1 lần/giây, ghi file tạm rồi đổi tên, quyền 600) và nạp lại khi khởi động. Agent đang họp gọi lại `wait` là
+  họp tiếp từ đúng chỗ đã đọc; giới hạn thời gian chạy tiếp; trang chủ trì tự kết nối lại mà không tải lại trang.
+- Giao thức dặn agent: lệnh lỗi kết nối thì chờ ~10 giây rồi gọi lại `wait`, thử vài lần trước khi bỏ.
+
+Khác
+- Lỗi xử lý request được ghi ra log server (mã trong đường dẫn được rút gọn).
+
 ## 3.0.0
 
 Bản cho doanh nghiệp: cuộc họp ra kết quả có cấu trúc, lưu và chia sẻ tự động, chạy được trên server công ty.

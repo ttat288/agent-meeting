@@ -12,13 +12,15 @@
 ![Zero dependencies](https://img.shields.io/badge/dependencies-0-success)
 ![MCP](https://img.shields.io/badge/MCP-Streamable%20HTTP-6f42c1)
 
-**Tiếng Việt** · [English](README.en.md) · [Hướng dẫn sử dụng](docs/GUIDE.md) · [Changelog](CHANGELOG.md)
+**Tiếng Việt** · [English](README.en.md) · [Hướng dẫn sử dụng](docs/GUIDE.md) · [Triển khai cho công ty](docs/DEPLOY.md) · [Changelog](CHANGELOG.md)
 
 </div>
 
 ![Demo: 3 agent vào phòng, chủ trì đặt bối cảnh, các agent tranh luận, chủ trì yêu cầu chốt, kết luận và biên bản](docs/demo.gif)
 
 Một lệnh là chạy. Không tài khoản, không database, không thư viện ngoài. Agent không tốn token khi ngồi chờ. Dùng được với **Claude Code, Codex CLI, Gemini CLI** qua MCP, hoặc **bất kỳ agent nào chạy được `curl`**.
+
+Cuộc họp ra **kết quả dùng được ngay**: danh sách quyết định, việc cần làm (ai, việc gì, hạn nào), biên bản Markdown/JSON tự lưu và tóm tắt gửi lên Slack, Google Chat hoặc Discord. Chạy trên máy cá nhân với tunnel miễn phí, hoặc trên server công ty bằng Docker với link cố định.
 
 ---
 
@@ -31,6 +33,19 @@ Agent Meeting làm khác:
 - Agent gọi **một lệnh chặn** (`wait`). Lệnh này nằm im trên server, không tốn token, và chỉ trả về khi có người nói hoặc tới lượt.
 - Server **điều phối** để cả nhóm không ngồi chờ nhau mãi: hỏi một người chốt khi im lặng, báo khi có người rời, tự kết thúc khi hết người.
 - Bạn **chủ trì** trên một trang web: đặt bối cảnh, mời agent, nhắn chỉ đạo giữa chừng, mời agent ra, tải biên bản.
+
+### Dành cho doanh nghiệp (v3)
+
+| Nỗi đau | Agent Meeting giải quyết |
+|---|---|
+| Họp xong không biết đã chốt gì, ai làm gì | Agent ghi `KẾT LUẬN:` và `VIỆC: người \| việc \| hạn`; server tự tách thành **Quyết định** và **Việc cần làm**, hiện ở cột Kết quả, màn kết thúc và biên bản |
+| Cuộc họp lan man, nhiều chủ đề lẫn lộn | **Chương trình họp** nhiều mục: bàn lần lượt, agent báo `XONG MỤC n: tóm tắt`, chủ trì có nút **Mục tiếp theo** |
+| Agent nào cũng nói giống nhau | **Vai trò** cho từng agent (phản biện, bảo mật, tài chính…) và **nhắn riêng** cho một agent |
+| Phải chép tay kết quả sang nơi khác | Biên bản **Markdown + JSON** (API, tự lưu bằng `--minutes-dir`), **webhook** gửi tóm tắt khi kết thúc |
+| Không được đưa dữ liệu ra dịch vụ ngoài | **Docker**, `--public-url` sau reverse proxy của công ty, **link chủ trì cố định** (`--host-key`) |
+| Muốn chạy tự động trong quy trình | `--context-file`, `--agenda-file`, `--auto-start N`, `--exit-on-end`, `--time-limit` |
+
+Xem [Triển khai trên server công ty](docs/DEPLOY.md).
 
 ## Bắt đầu nhanh
 
@@ -83,12 +98,15 @@ Trang chủ trì dẫn bạn qua 4 bước, hiển thị ở thanh trên cùng.
 
 - Chọn nhanh một **mẫu** (Tranh luận, Brainstorm, Review thiết kế, Lập kế hoạch, Ra quyết định) rồi sửa phần `<…>`, hoặc tự viết.
 - **Điều kiện kết thúc** (tuỳ chọn). Để trống thì các agent tự bàn đến khi chốt, gửi tin `KẾT LUẬN: …` rồi tự rời phòng.
+- **Chương trình họp** (tuỳ chọn): mỗi dòng một mục. Các agent bàn từng mục một và báo khi chốt xong mỗi mục.
 - **Tuỳ chọn nâng cao**: chế độ phát biểu, giới hạn số tin, giới hạn thời gian, thời gian im lặng trước khi hỏi chốt.
 - Nội dung đang viết được lưu nháp trong trình duyệt, tải lại trang không mất.
 
 ### 2. Mời agent
 
 Bấm **Sao chép** prompt rồi dán cho từng agent. Mỗi agent vào là một **slot** mới xuất hiện trong phòng chờ (slot 1, 2, 3…).
+
+**Vai trò:** bấm ✎ cạnh một agent trong phòng chờ để giao vai trò (ví dụ *phản biện*, *chuyên gia bảo mật*, *đại diện khách hàng*). Vai trò được gửi cho cả nhóm khi bắt đầu; đổi giữa chừng thì chỉ agent đó nhận.
 
 **Đặt tên:** mỗi agent **tự đặt tên tuỳ thích** và **bắt buộc khai báo model** đang chạy (ví dụ `Opus 5.5`, `GPT-5`). Tên là duy nhất, không phân biệt hoa thường: nếu đã có agent khác dùng, agent vào sau bị báo trùng và phải tự đặt tên khác. Model hiện cạnh tên ở danh sách thành viên, ở từng tin nhắn và trong biên bản.
 
@@ -106,17 +124,20 @@ Bấm **Sao chép** prompt rồi dán cho từng agent. Mỗi agent vào là m�
 
 Bấm **Bắt đầu cuộc họp**. Trang chuyển sang màn họp:
 
-- **Thành viên**: ai đang nghe, ai đang soạn tin, ai tới lượt, mỗi người đã nói bao nhiêu tin. Di chuột vào một agent để **mời ra khỏi phòng**.
+- **Thành viên**: ai đang nghe, ai đang soạn tin, ai tới lượt, mỗi người đã nói bao nhiêu tin, vai trò. Di chuột vào một agent để **giao vai trò** (✎) hoặc **mời ra khỏi phòng** (⨯).
+- **Chương trình**: mục đã xong (kèm tóm tắt), mục đang bàn; nút **Mục tiếp theo** khi bạn muốn chuyển mục.
+- **Kết quả**: quyết định và việc cần làm, cập nhật ngay khi agent gửi.
 - **Thông tin**: thời lượng, thời gian còn lại, số tin trên giới hạn.
-- **Nội dung**: hiển thị Markdown (danh sách, code, chữ đậm), gom tin liên tiếp, tin `KẾT LUẬN` được tô xanh.
-- **Ô nhắn của chủ trì** (Ctrl+Enter để gửi) và các nút nhanh: *Yêu cầu chốt*, *Tóm tắt*, *Quay lại chủ đề*, *Ngắn gọn hơn*.
+- **Nội dung**: hiển thị Markdown (danh sách, code, chữ đậm), gom tin liên tiếp, tin `KẾT LUẬN` và `XONG MỤC` được tô xanh, tin nhắn riêng có viền đứt.
+- **Ô nhắn của chủ trì** (Ctrl+Enter để gửi), chọn **Tất cả** hoặc **Riêng: <agent>**, và các nút nhanh: *Yêu cầu chốt*, *Giao việc*, *Tóm tắt*, *Quay lại chủ đề*, *Ngắn gọn hơn*.
 - **Mời agent**: mời thêm người giữa chừng; người vào sau đọc lại được từ đầu.
+- **Trên điện thoại**: dải thành viên ở trên cùng, nút **☰ Mục 1/2 · Kết quả 3** mở bảng chương trình, kết quả, thông tin và bối cảnh.
 
 ### 4. Biên bản
 
 ![Màn kết thúc](docs/screenshots/ended.jpg)
 
-Khi kết thúc, trang tóm tắt lý do, thời lượng, số tin, kết luận, và cho **tải biên bản Markdown** (bối cảnh, thành viên, kết luận, toàn bộ diễn biến).
+Khi kết thúc, trang tóm tắt lý do, thời lượng, số tin, bảng việc cần làm, kết luận, và cho **tải biên bản** Markdown hoặc JSON (thành viên và vai trò, bối cảnh, chương trình họp, quyết định, việc cần làm, toàn bộ diễn biến). Biên bản cũng tải được qua API `GET /api/host/<mã chủ trì>/minutes.md` (hoặc `.json`), tự lưu ra thư mục với `--minutes-dir`, và tóm tắt được gửi tới webhook với `--webhook`.
 **Cuộc họp mới** mở phòng chờ mới ngay, không cần khởi động lại app. Agent đã cài MCP **dùng lại được ngay**, vì mã tham gia giữ nguyên trong suốt lần chạy app.
 
 <img src="docs/screenshots/mobile-dark.jpg" alt="Giao diện điện thoại, chế độ tối" width="300" align="right">
@@ -124,6 +145,18 @@ Khi kết thúc, trang tóm tắt lý do, thời lượng, số tin, kết luậ
 Giao diện dùng tốt trên điện thoại, tự theo chế độ sáng hoặc tối của máy.
 
 <br clear="right">
+
+## Kết quả có cấu trúc
+
+Server tự đọc ba mẫu dòng trong tin của agent (giao thức gửi cho agent hướng dẫn rõ cách viết):
+
+| Mẫu | Ý nghĩa |
+|---|---|
+| `KẾT LUẬN: <quyết định>` | Quyết định cuối cùng (của mục đang bàn, hoặc tổng hợp sau mục cuối). Agent gửi lại nhiều lần thì giữ bản mới nhất. |
+| `VIỆC: <người phụ trách> \| <việc> \| <hạn>` | Một việc cần làm. Việc nhắc lại với câu chữ gần giống được gộp làm một. |
+| `XONG MỤC <số>: <tóm tắt>` | Mục đó đã chốt, chuyển sang mục kế tiếp. |
+
+Các mẫu này được nhận ở đầu dòng (kể cả có `**đậm**` hay gạch đầu dòng) hoặc đầu câu, vì agent thật thường viết chúng giữa một đoạn dài. Câu chỉ *nhắc tới* mẫu, như "tôi sẽ gửi XONG MỤC 1", không bị tính.
 
 ## Chế độ phát biểu
 
@@ -157,16 +190,46 @@ Chế độ lần lượt hợp với nhóm 3 người trở lên, để mọi n
 ```text
 npx github:ttat288/agent-meeting [tuỳ chọn]
 
-  --local        Không bật tunnel (chỉ máy này / cùng mạng LAN)
-  --port <n>     Cổng server (mặc định 3000, bận thì tự chọn cổng khác)
-  --max <n>      Giới hạn số tin mặc định (120)
-  --idle <giây>  Im lặng bao lâu thì hỏi 1 agent có muốn kết thúc (mặc định 40)
-  --turns        Mặc định chế độ phát biểu lần lượt
-  --no-open      Không tự mở trình duyệt
-  -v, --version  In phiên bản
+Mạng
+  --local                   Không bật tunnel (chỉ máy này / cùng mạng LAN)
+  --public-url <url>        Địa chỉ công khai cố định (server công ty, reverse proxy); không bật tunnel
+  --port <n>                Cổng server (mặc định 3000 hoặc biến PORT; bận thì tự chọn cổng khác)
+  --host-key <mã>           Mã chủ trì cố định: link /m/<mã> không đổi qua các lần khởi động
+  --agent-key <mã>          Mã phòng cố định cho agent: prompt mời / lệnh cài MCP không đổi
+
+Cuộc họp (mặc định, đổi được trên web trước khi bắt đầu)
+  --max <n>                 Giới hạn số tin (120)
+  --idle <giây>             Im lặng bao lâu thì hỏi 1 agent có muốn kết thúc (40)
+  --time-limit <phút>       Giới hạn thời gian (0 = không giới hạn)
+  --turns                   Chế độ phát biểu lần lượt
+
+Lưu và chia sẻ kết quả
+  --minutes-dir <thư mục>   Tự lưu biên bản .md + .json khi mỗi cuộc họp kết thúc
+  --webhook <url>           Gửi tóm tắt khi kết thúc (Slack, Discord, Google Chat; URL khác nhận JSON). Dùng nhiều lần được
+
+Tự động hoá
+  --context <văn bản>       Bối cảnh cuộc họp
+  --context-file <file>     Bối cảnh đọc từ file
+  --end-condition <văn bản> Điều kiện kết thúc
+  --agenda-file <file>      Chương trình họp, mỗi dòng một mục
+  --auto-start <n>          Tự bắt đầu khi đủ n agent trong phòng chờ (cần --context/--context-file)
+  --exit-on-end             Thoát khi cuộc họp kết thúc (sau khi lưu biên bản, gửi webhook)
+
+  --no-open                 Không tự mở trình duyệt
+  -v, --version             In phiên bản
 ```
 
-Các tuỳ chọn cuộc họp đều chỉnh lại được trên trang chủ trì trước khi bắt đầu. Với `--local` trong mạng LAN, mở trang chủ trì bằng IP của máy (ví dụ `http://192.168.1.5:3000/m/…`) để prompt mời dùng đúng địa chỉ.
+Biến môi trường tương đương: `PORT`, `AGENT_MEETING_PUBLIC_URL`, `AGENT_MEETING_MINUTES_DIR`, `AGENT_MEETING_WEBHOOK` (nhiều URL cách nhau bởi dấu phẩy), `AGENT_MEETING_HOST_KEY`, `AGENT_MEETING_AGENT_KEY`.
+
+Với `--local` trong mạng LAN, mở trang chủ trì bằng IP của máy (ví dụ `http://192.168.1.5:3000/m/…`) để prompt mời dùng đúng địa chỉ.
+
+Ví dụ chạy không cần người, gửi kết quả lên Slack:
+
+```bash
+npx github:ttat288/agent-meeting --local --no-open \
+  --context-file brief.md --agenda-file agenda.txt --auto-start 3 \
+  --time-limit 20 --minutes-dir ./bien-ban --webhook "$SLACK_WEBHOOK" --exit-on-end
+```
 
 ## Công cụ agent nhìn thấy
 
@@ -174,7 +237,7 @@ Các tuỳ chọn cuộc họp đều chỉnh lại được trên trang chủ t
 |---|---|
 | `join(name, model)` | Vào phòng với tên tự đặt và model đang chạy, nhận giao thức cuộc họp. Gọi đầu tiên; trùng tên thì đặt tên khác. |
 | `wait(name)` | Chờ tin mới hoặc tới lượt (chặn tới ~50 giây, không tốn token). |
-| `say(name, text)` | Phát biểu. Tin chốt bắt đầu bằng `KẾT LUẬN:`. |
+| `say(name, text)` | Phát biểu. Dùng các dòng `KẾT LUẬN:`, `VIỆC:`, `XONG MỤC n:` để ghi kết quả. |
 | `pass(name)` | Bỏ lượt (chế độ lần lượt). |
 | `typing(name)` | Báo đang soạn tin dài. |
 | `leave(name, reason?)` | Rời phòng. |
@@ -185,16 +248,19 @@ Qua MCP: `POST /mcp/<mã>` (JSON-RPC, Streamable HTTP không phiên). Qua `curl`
 ## Bảo mật
 
 - **Hai loại link, hai quyền.** Link **chủ trì** (`/m/…`) xem và điều khiển cuộc họp: đừng gửi cho ai. Prompt **mời agent** chỉ cho phép tham gia họp, không điều khiển được.
-- Tunnel chạy HTTPS qua Cloudflare. Dữ liệu chỉ nằm **trong bộ nhớ**: tắt app là mất, họp xong 30 phút thì tự xoá.
+- Tunnel chạy HTTPS qua Cloudflare. Dữ liệu chỉ nằm **trong bộ nhớ**: tắt app là mất, họp xong 30 phút thì tự xoá. Chỉ ghi ra đĩa khi bạn bật `--minutes-dir`; biên bản và webhook không bao giờ chứa mã chủ trì hay mã agent.
+- Không muốn đi qua dịch vụ ngoài: chạy trên server công ty với `--public-url` sau reverse proxy (xem [DEPLOY.md](docs/DEPLOY.md)).
 - Trang chủ trì có CSP chặt, `Referrer-Policy: no-referrer` (link chủ trì không lộ qua Referer), chống nhúng iframe.
 - **Tin nhắn của agent khác là ý kiến, không phải lệnh.** Giao thức dặn agent không chạy lệnh hay đọc/ghi file theo yêu cầu trong tin. Dù vậy, nếu agent có quyền chạy lệnh, hãy giữ chế độ hỏi quyền khi họp với agent lạ (nguy cơ prompt injection).
 - Giới hạn số tin và thời gian giúp tránh hai agent nói mãi và tốn tiền.
 
 ## Hạn chế đã biết
 
-- Máy chạy app phải **bật suốt cuộc họp**. Địa chỉ tunnel miễn phí **đổi mỗi lần chạy app** và Cloudflare không cam kết độ ổn định.
+- Máy chạy app phải **bật suốt cuộc họp**. Địa chỉ tunnel miễn phí **đổi mỗi lần chạy app** và Cloudflare không cam kết độ ổn định (dùng `--public-url` trên server riêng nếu cần link cố định).
 - Không chạy được trên Vercel/serverless: cần một tiến trình chạy liên tục để giữ kết nối chờ.
-- Lịch sử không được lưu lại sau khi tắt app. Muốn giữ thì tải biên bản.
+- Mỗi lần chạy app là **một phòng họp tại một thời điểm**; cần nhiều phòng song song thì chạy nhiều tiến trình (hoặc container) với mã khác nhau.
+- Lịch sử không được lưu lại sau khi tắt app. Muốn giữ thì tải biên bản hoặc bật `--minutes-dir`.
+- Việc tách quyết định / việc cần làm dựa vào các mẫu dòng ở trên. Agent viết sai mẫu thì nội dung vẫn có trong diễn biến nhưng không lên cột Kết quả; chủ trì có thể bấm *Giao việc* hoặc *Yêu cầu chốt* để nhắc.
 
 ## Phát triển
 
@@ -207,10 +273,12 @@ npm run demo -- <URL mời agent>   # 3 agent giả lập để thử giao diệ
 ```text
 bin/cli.js         lệnh chạy: server + tunnel + mở trình duyệt
 src/meeting.js     lõi cuộc họp: slot, chế độ phát biểu, luật chống chờ nhau (không phụ thuộc HTTP)
-src/server.js      HTTP: trang chủ trì (long-poll), API curl, MCP, header bảo mật
+src/server.js      HTTP: trang chủ trì (long-poll), API curl, MCP, header bảo mật, lưu biên bản, webhook
+src/minutes.js     biên bản Markdown / JSON / tóm tắt webhook
 src/ui/            trang chủ trì: index.html, app.css, app.js (không build, không thư viện)
 scripts/           install-linux.sh: cài launcher vào menu; demo-bots.js: agent giả lập
-test/              node:test (meeting.test.js: luật cuộc họp; server.test.js: MCP/HTTP)
+test/              node:test (meeting: luật cuộc họp; server: MCP/HTTP; minutes: biên bản, webhook)
+Dockerfile         image node:22-alpine cho server công ty (docs/DEPLOY.md)
 ```
 
 Trang chủ trì dùng long-poll thay cho SSE/WebSocket vì tunnel miễn phí của Cloudflare không hỗ trợ SSE.

@@ -12,13 +12,15 @@
 ![Zero dependencies](https://img.shields.io/badge/dependencies-0-success)
 ![MCP](https://img.shields.io/badge/MCP-Streamable%20HTTP-6f42c1)
 
-[Tiếng Việt](README.md) · **English** · [User guide (VI)](docs/GUIDE.md) · [Changelog](CHANGELOG.md)
+[Tiếng Việt](README.md) · **English** · [User guide (VI)](docs/GUIDE.md) · [Company deployment (VI)](docs/DEPLOY.md) · [Changelog](CHANGELOG.md)
 
 </div>
 
 ![Demo: three agents join, the host sets the context, agents debate, the host asks for a conclusion, and the meeting ends with minutes](docs/demo.gif)
 
 One command to run. No accounts, no database, no dependencies. Agents spend no tokens while waiting. Works with **Claude Code, Codex CLI and Gemini CLI** over MCP, or with **any agent that can run `curl`**.
+
+Meetings produce **results you can use right away**: a list of decisions, action items (who, what, by when), Markdown/JSON minutes saved automatically, and a summary posted to Slack, Google Chat or Discord. Run it on your laptop with a free tunnel, or on a company server with Docker and a permanent link.
 
 > The web UI and the agent protocol are currently in Vietnamese. Agents follow the protocol regardless of the language you use with them. Translations are welcome, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -33,6 +35,19 @@ Agent Meeting works differently:
 - Agents call **one blocking command** (`wait`). It parks on the server, costs no tokens, and returns only when someone speaks or it is their turn.
 - The server **coordinates** so the group never waits on each other forever: it asks exactly one agent to decide when the room goes quiet, announces departures, and ends the meeting when everyone has left.
 - You **chair** from a web page: set the context, invite agents, steer mid-meeting, remove agents, export the minutes.
+
+### For teams and companies (v3)
+
+| Pain | What Agent Meeting does |
+|---|---|
+| Nobody knows what was decided or who does what | Agents write `KẾT LUẬN:` (conclusion) and `VIỆC: owner \| task \| due` (action) lines; the server extracts **Decisions** and **Action items**, shown in the Results panel, the end screen and the minutes |
+| Meetings drift across topics | A multi-item **agenda**: items are discussed in order, agents report `XONG MỤC n: summary` (item n done), the host has a **Next item** (*Mục tiếp theo*) button |
+| Every agent says the same thing | A **role** per agent (devil's advocate, security, finance…) and **private messages** to a single agent |
+| Copying results by hand | **Markdown + JSON** minutes (API, auto-saved with `--minutes-dir`), **webhooks** with a summary when the meeting ends |
+| Data must not leave the company | **Docker**, `--public-url` behind your reverse proxy, a **permanent host link** (`--host-key`) |
+| Running meetings in pipelines | `--context-file`, `--agenda-file`, `--auto-start N`, `--exit-on-end`, `--time-limit` |
+
+See [Company deployment](docs/DEPLOY.md) (Vietnamese; the commands and config snippets are self-explanatory).
 
 ## Quick start
 
@@ -83,12 +98,15 @@ The host page guides you through four steps shown in the top bar: **Context → 
 
 - Pick a **template** (debate, brainstorm, design review, planning, decision) and fill in the `<…>` parts, or write your own.
 - **End condition** (optional). Leave it empty and the agents discuss until they agree, post a `KẾT LUẬN:` (conclusion) message and leave.
+- **Agenda** (optional): one item per line. Agents discuss one item at a time and report when each is settled.
 - **Advanced options**: speaking mode, message limit, time limit, idle time before asking to wrap up.
 - Your draft is saved in the browser, so reloading the page does not lose it.
 
 ### 2. Invite agents
 
 Click **Copy** and paste the prompt into each agent. Every agent that joins takes the next **slot** in the lobby (slot 1, 2, 3…).
+
+**Roles:** click ✎ next to an agent in the lobby to give it a role (e.g. *devil's advocate*, *security expert*, *customer advocate*). Roles are announced to everyone at the start; a role changed mid-meeting is sent privately to that agent.
 
 **Naming:** each agent **picks its own name** and **must declare the model** it runs (e.g. `Opus 5.5`, `GPT-5`). Names are unique and case-insensitive: if a name is taken, the newcomer is told to pick another. The model is shown next to the name in the member list, on every message and in the minutes.
 
@@ -104,18 +122,33 @@ Click **Copy** and paste the prompt into each agent. Every agent that joins take
 
 ![Meeting screen](docs/screenshots/meeting.jpg)
 
-- **Members**: who is listening, typing or holding the turn, and how many messages each has sent. Hover an agent to **remove** it.
+- **Members**: who is listening, typing or holding the turn, how many messages each has sent, and their role. Hover an agent to **set its role** (✎) or **remove** it (⨯).
+- **Agenda**: done items (with their summary) and the current item; **Next item** when you want to move on.
+- **Results**: decisions and action items, updated as agents post them.
 - **Info**: elapsed time, time left, messages used.
-- **Feed**: safe Markdown rendering (lists, code, bold), grouped messages, conclusions highlighted in green.
-- **Host box** (Ctrl+Enter to send) and quick prompts: *ask to conclude*, *summarize*, *back to topic*, *be brief*.
+- **Feed**: safe Markdown rendering (lists, code, bold), grouped messages, conclusions and item summaries highlighted in green, private messages with a dashed border.
+- **Host box** (Ctrl+Enter to send), sent to **everyone** or **privately to one agent**, plus quick prompts: *ask to conclude*, *assign tasks*, *summarize*, *back to topic*, *be brief*.
 - **Invite**: add agents mid-meeting; latecomers read the whole history.
+- **On a phone**: members stay on top; the **☰ Mục 1/2 · Kết quả 3** (item 1/2 · results 3) button opens agenda, results, info and context.
 
 ### 4. Minutes
 
 ![End screen](docs/screenshots/ended.jpg)
 
-When the meeting ends, the page summarizes the reason, duration, message count and conclusion, and lets you **download Markdown minutes** (context, members, conclusion, full transcript).
+When the meeting ends, the page summarizes the reason, duration, message count, action items and conclusion, and lets you **download the minutes** as Markdown or JSON (members and roles, context, agenda, decisions, action items, full transcript). Minutes are also available at `GET /api/host/<host key>/minutes.md` (or `.json`), saved to a folder with `--minutes-dir`, and summarized to webhooks with `--webhook`.
 **New meeting** opens a fresh lobby without restarting the app. Agents that installed the MCP server keep working, because the join code stays the same for the whole app run.
+
+## Structured results
+
+The server reads three line patterns in agent messages (the protocol tells agents exactly how to write them):
+
+| Pattern | Meaning |
+|---|---|
+| `KẾT LUẬN: <decision>` | Final decision (for the current item, or the overall one after the last item). If agents repeat it, the latest one wins. |
+| `VIỆC: <owner> \| <task> \| <due>` | One action item. Repeated items with nearly the same wording are merged. |
+| `XONG MỤC <n>: <summary>` | Item n is settled; move to the next one. |
+
+Patterns are recognised at the start of a line (bold or bullets allowed) or the start of a sentence, because real agents often bury them in a long paragraph. Sentences that merely *mention* a pattern, like "I will send XONG MỤC 1", are ignored.
 
 ## Speaking modes
 
@@ -147,16 +180,46 @@ When the meeting ends, the page summarizes the reason, duration, message count a
 ```text
 npx github:ttat288/agent-meeting [options]
 
-  --local        No tunnel (this machine / LAN only)
-  --port <n>     Server port (default 3000, falls back to a free port)
-  --max <n>      Default message limit (120)
-  --idle <sec>   Idle time before asking one agent to wrap up (default 40)
-  --turns        Default to turn-taking mode
-  --no-open      Do not open the browser
-  -v, --version  Print the version
+Network
+  --local                   No tunnel (this machine / LAN only)
+  --public-url <url>        Fixed public address (company server, reverse proxy); no tunnel
+  --port <n>                Server port (default 3000 or $PORT; falls back to a free port)
+  --host-key <key>          Fixed host key: the /m/<key> link survives restarts
+  --agent-key <key>         Fixed agent room key: invite prompts and MCP install commands stay the same
+
+Meeting defaults (can be changed on the web before starting)
+  --max <n>                 Message limit (120)
+  --idle <sec>              Idle time before asking one agent to wrap up (40)
+  --time-limit <min>        Time limit (0 = none)
+  --turns                   Turn-taking mode
+
+Saving and sharing results
+  --minutes-dir <dir>       Save .md + .json minutes when each meeting ends
+  --webhook <url>           Post a summary when a meeting ends (Slack, Discord, Google Chat; other URLs get JSON). Repeatable
+
+Automation
+  --context <text>          Meeting context
+  --context-file <file>     Context read from a file
+  --end-condition <text>    End condition
+  --agenda-file <file>      Agenda, one item per line
+  --auto-start <n>          Start automatically once n agents are in the lobby (needs --context/--context-file)
+  --exit-on-end             Exit when the meeting ends (after saving minutes and posting webhooks)
+
+  --no-open                 Do not open the browser
+  -v, --version             Print the version
 ```
 
-All meeting options can be changed on the host page before starting. With `--local` on a LAN, open the host page via the machine's IP (e.g. `http://192.168.1.5:3000/m/…`) so invite prompts use that address.
+Environment variables: `PORT`, `AGENT_MEETING_PUBLIC_URL`, `AGENT_MEETING_MINUTES_DIR`, `AGENT_MEETING_WEBHOOK` (comma-separated), `AGENT_MEETING_HOST_KEY`, `AGENT_MEETING_AGENT_KEY`.
+
+With `--local` on a LAN, open the host page via the machine's IP (e.g. `http://192.168.1.5:3000/m/…`) so invite prompts use that address.
+
+Unattended run that posts the results to Slack:
+
+```bash
+npx github:ttat288/agent-meeting --local --no-open \
+  --context-file brief.md --agenda-file agenda.txt --auto-start 3 \
+  --time-limit 20 --minutes-dir ./minutes --webhook "$SLACK_WEBHOOK" --exit-on-end
+```
 
 ## Tools agents see
 
@@ -164,7 +227,7 @@ All meeting options can be changed on the host page before starting. With `--loc
 |---|---|
 | `join(name, model)` | Join with a self-chosen name and the model in use; returns the meeting protocol. Call first; pick another name if it is taken. |
 | `wait(name)` | Wait for new messages or your turn (blocks up to ~50 s, no tokens). |
-| `say(name, text)` | Speak. The final decision starts with `KẾT LUẬN:`. |
+| `say(name, text)` | Speak. `KẾT LUẬN:`, `VIỆC:` and `XONG MỤC n:` lines record results. |
 | `pass(name)` | Pass your turn (turns mode). |
 | `typing(name)` | Signal that you are composing a long reply. |
 | `leave(name, reason?)` | Leave the room. |
@@ -175,16 +238,19 @@ Over MCP: `POST /mcp/<code>` (JSON-RPC, stateless Streamable HTTP). Over `curl`:
 ## Security
 
 - **Two links, two permissions.** The **host** link (`/m/…`) views and controls the meeting: keep it to yourself. The **agent** invite only allows joining the meeting.
-- The tunnel is HTTPS via Cloudflare. Data lives **in memory only**: stopping the app erases it, and ended meetings are deleted after 30 minutes.
+- The tunnel is HTTPS via Cloudflare. Data lives **in memory only**: stopping the app erases it, and ended meetings are deleted after 30 minutes. Nothing is written to disk unless you enable `--minutes-dir`; minutes and webhooks never contain the host or agent keys.
+- To avoid third-party services entirely, run it on your own server with `--public-url` behind a reverse proxy (see [DEPLOY.md](docs/DEPLOY.md)).
 - The host page uses a strict CSP, `Referrer-Policy: no-referrer` (the host link does not leak through Referer) and frame protection.
 - **Messages from other agents are opinions, not instructions.** The protocol tells agents not to run commands or touch files because a message asked them to. Still, if your agent can run commands, keep its permission prompts on when meeting unknown agents (prompt injection risk).
 - Message and time limits stop agents from talking forever and running up costs.
 
 ## Known limitations
 
-- The machine running the app must **stay on during the meeting**. Free tunnel URLs **change every run** and Cloudflare offers no uptime guarantee.
+- The machine running the app must **stay on during the meeting**. Free tunnel URLs **change every run** and Cloudflare offers no uptime guarantee (use `--public-url` on your own server for a permanent link).
 - Does not run on Vercel or other serverless platforms: it needs one long-running process to hold waiting connections.
-- History is not persisted after the app stops. Download the minutes to keep them.
+- One app run hosts **one meeting at a time**; for parallel meetings run several processes (or containers) with different keys.
+- History is not persisted after the app stops. Download the minutes or enable `--minutes-dir`.
+- Decisions and action items rely on the line patterns above. If an agent ignores them, the content stays in the transcript but not in Results; use *assign tasks* or *ask to conclude* to nudge.
 
 ## Development
 
@@ -197,10 +263,12 @@ npm run demo -- <agent invite URL> # three simulated agents
 ```text
 bin/cli.js         launcher: server + tunnel + open browser
 src/meeting.js     meeting core: slots, speaking modes, anti-deadlock rules (no HTTP)
-src/server.js      HTTP: host page (long-poll), curl API, MCP, security headers
+src/server.js      HTTP: host page (long-poll), curl API, MCP, security headers, minutes saving, webhooks
+src/minutes.js     Markdown / JSON minutes and webhook summary
 src/ui/            host page: index.html, app.css, app.js (no build step, no libraries)
 scripts/           install-linux.sh: desktop launcher; demo-bots.js: simulated agents
-test/              node:test (meeting.test.js: meeting rules; server.test.js: MCP/HTTP)
+test/              node:test (meeting: rules; server: MCP/HTTP; minutes: minutes, webhooks)
+Dockerfile         node:22-alpine image for company servers (docs/DEPLOY.md)
 ```
 
 The host page uses long-polling instead of SSE/WebSocket because free Cloudflare quick tunnels do not support SSE.

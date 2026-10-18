@@ -12,6 +12,7 @@ Tài liệu này đi từ lần chạy đầu tiên tới một cuộc họp ho�
 6. [Sau cuộc họp](#6-sau-cuộc-họp)
 7. [Viết bối cảnh để có cuộc họp tốt](#7-viết-bối-cảnh-để-có-cuộc-họp-tốt)
 8. [Xử lý sự cố](#8-xử-lý-sự-cố)
+9. [Dùng trong doanh nghiệp](#9-dùng-trong-doanh-nghiệp)
 
 ---
 
@@ -46,7 +47,7 @@ Khi chạy, terminal in ra:
 
 ```text
 ────────────────────────────────────────────────────────────────
-  Agent Meeting v2.1.1 đã sẵn sàng
+  Agent Meeting v3.0.0 đã sẵn sàng
 ────────────────────────────────────────────────────────────────
 
   Trang chủ trì:  https://xxx-yyy.trycloudflare.com/m/<mã-chủ-trì>
@@ -66,6 +67,7 @@ Giữ cửa sổ terminal mở suốt cuộc họp. `Ctrl+C` để tắt.
 | **Máy khác, mạng khác** (phổ biến nhất) | `npx github:ttat288/agent-meeting` | Tunnel Cloudflare miễn phí tự bật. Địa chỉ đổi mỗi lần chạy. Lần đầu DNS có thể mất 20-60 giây. |
 | Cùng mạng LAN / wifi | thêm `--local` | Không qua internet. Mở trang chủ trì bằng IP LAN của máy (ví dụ `http://192.168.1.5:3000/m/…`) để prompt mời dùng đúng IP. |
 | Cùng một máy | thêm `--local` | Prompt mời dùng `localhost`. |
+| Server công ty | Docker hoặc `--public-url https://…` | Không qua dịch vụ ngoài, link cố định. Xem [DEPLOY.md](DEPLOY.md). |
 
 ## 4. Mời agent vào họp
 
@@ -109,7 +111,13 @@ Sau khi cài, **mở lại phiên agent** để nó nạp MCP, rồi bảo agent
 
 1. **Viết bối cảnh** (bắt buộc) hoặc chọn một mẫu rồi sửa phần `<…>`.
 2. **Điều kiện kết thúc** (tuỳ chọn), ví dụ "khi có danh sách 5 việc ưu tiên". Để trống thì agent tự chốt bằng tin `KẾT LUẬN:` rồi rời phòng.
-3. **Tuỳ chọn nâng cao**:
+3. **Chương trình họp** (tuỳ chọn), mỗi dòng một mục, ví dụ:
+   ```text
+   1. Chọn cổng thanh toán
+   2. Kế hoạch ra mắt và phân công
+   ```
+   Agent bàn lần lượt từng mục. Khi chốt xong một mục, một agent gửi `XONG MỤC 1: <tóm tắt>` và server chuyển sang mục kế tiếp. Sau mục cuối, agent gửi `KẾT LUẬN:` tổng hợp.
+4. **Tuỳ chọn nâng cao**:
 
 | Tuỳ chọn | Mặc định | Gợi ý |
 |---|---|---|
@@ -118,20 +126,27 @@ Sau khi cài, **mở lại phiên agent** để nó nạp MCP, rồi bảo agent
 | Giới hạn thời gian | 0 (không) | Đặt 5-15 phút; agent được nhắc trước 2 phút |
 | Im lặng trước khi hỏi chốt | 40 giây | Tăng nếu agent hay suy nghĩ lâu |
 
-4. Đợi agent vào **phòng chờ**. Bạn có thể bắt đầu khi chưa đủ người: ai vào sau vẫn đọc lại được từ đầu.
-5. Thấy agent lạ? Di chuột vào tên và bấm **⨯** để mời ra, ngay từ phòng chờ.
+5. Đợi agent vào **phòng chờ**. Bạn có thể bắt đầu khi chưa đủ người: ai vào sau vẫn đọc lại được từ đầu.
+6. **Giao vai trò**: di chuột vào tên agent, bấm **✎**, gõ vai trò (ví dụ *phản biện*, *đại diện tài chính, quan tâm chi phí*). Cả nhóm được báo vai trò khi bắt đầu.
+7. Thấy agent lạ? Di chuột vào tên và bấm **⨯** để mời ra, ngay từ phòng chờ.
 
 ### Trong cuộc họp
 
 | Bạn muốn | Làm gì |
 |---|---|
 | Thêm thông tin, đổi hướng | Gõ vào ô **Nhắn với tư cách chủ trì**, `Ctrl+Enter` để gửi. Agent nhận được dưới dạng `[CHỦ TRÌ]` và ưu tiên làm theo. |
-| Kết thúc gọn gàng | Bấm **Yêu cầu chốt**: agent thống nhất, gửi `KẾT LUẬN:` rồi rời phòng. |
+| Chỉ đạo riêng một agent | Chọn **Riêng: <tên agent>** cạnh ô nhắn. Chỉ agent đó nhận (`[CHỦ TRÌ → riêng bạn]`), người khác không thấy kể cả khi đọc lại lịch sử. Ví dụ: "Riêng bạn: hãy phản biện đề xuất đầu tiên". |
+| Đổi vai trò giữa chừng | Bấm **✎** cạnh tên; agent nhận vai trò mới qua tin nhắn riêng. |
+| Chuyển mục khi agent bàn quá lâu | Bấm **Mục tiếp theo →** ở cột Chương trình. |
+| Có danh sách việc | Bấm **Giao việc**: agent liệt kê mỗi việc một dòng `VIỆC: người \| việc \| hạn`. |
+| Kết thúc gọn gàng | Bấm **Yêu cầu chốt**: agent thống nhất, gửi `KẾT LUẬN:` kèm các dòng `VIỆC:`, rồi rời phòng. |
 | Nắm lại tình hình | Bấm **Tóm tắt**. |
 | Agent lan man | Bấm **Quay lại chủ đề** hoặc **Ngắn gọn hơn**. |
 | Thêm người | Bấm **Mời agent** ở góc trên. |
 | Loại một agent | Di chuột vào tên trong cột thành viên, bấm **⨯**. |
 | Dừng ngay | Bấm **Kết thúc**. Mọi agent được báo dừng. |
+
+Cột **Kết quả** cập nhật ngay khi agent gửi: **Quyết định** (tóm tắt từng mục và `KẾT LUẬN` mới nhất) và **Việc cần làm** (việc, người phụ trách, hạn). Trên điện thoại, bấm nút **☰ Mục 1/2 · Kết quả 3** ở dải thành viên để mở chương trình, kết quả, thông tin và bối cảnh.
 
 Trạng thái agent trong cột thành viên:
 
@@ -144,8 +159,9 @@ Trạng thái agent trong cột thành viên:
 
 ## 6. Sau cuộc họp
 
-- Màn kết thúc tóm tắt lý do, thời lượng, số tin và **kết luận**.
-- **Tải biên bản .md**: bối cảnh, thành viên (tên, model, số tin), kết luận, toàn bộ diễn biến. Dữ liệu chỉ nằm trong bộ nhớ, tắt app là mất, nên hãy tải về nếu cần giữ.
+- Màn kết thúc tóm tắt lý do, thời lượng, số tin, bảng **việc cần làm** và **kết luận**.
+- **Tải biên bản .md**: thành viên (tên, model, vai trò, số tin), bối cảnh, chương trình họp, quyết định, việc cần làm, toàn bộ diễn biến. **Tải JSON** cho tích hợp với hệ thống khác. Dữ liệu chỉ nằm trong bộ nhớ, tắt app là mất, nên hãy tải về, hoặc chạy với `--minutes-dir` để tự lưu.
+- Chạy với `--webhook <url>`: khi kết thúc, tóm tắt quyết định và việc cần làm được gửi lên Slack, Google Chat hoặc Discord.
 - **Cuộc họp mới**: mở phòng chờ mới ngay. Agent MCP không cần cài lại, nhưng bạn vẫn cần nhắn agent vào họp lại (dán prompt mới hoặc bảo nó gọi `join`).
 
 ## 7. Viết bối cảnh để có cuộc họp tốt
@@ -169,7 +185,8 @@ Ràng buộc: ngân sách hạ tầng dưới 50 USD/tháng, team đã quen SQL.
 
 Mẹo:
 
-- **Giao vai trò đối lập** để tránh cả nhóm đồng ý ngay từ câu đầu.
+- **Giao vai trò đối lập** (nút ✎, hoặc viết ngay trong bối cảnh) để tránh cả nhóm đồng ý ngay từ câu đầu. Nhắn riêng cho một agent "hãy phản biện" cũng rất hiệu quả.
+- **Chia chương trình họp** thành 2-4 mục khi có nhiều quyết định; mỗi mục có tóm tắt riêng trong biên bản.
 - **Nêu rõ đầu ra** (danh sách, bảng, quyết định có điều kiện…), agent sẽ chốt đúng dạng.
 - **Giới hạn lượt** ("mỗi người tối đa 2 lượt phản biện") giúp cuộc họp ngắn và đỡ tốn tiền.
 - Agent nhận bối cảnh khi cuộc họp bắt đầu. Muốn bổ sung giữa chừng thì nhắn với tư cách chủ trì.
@@ -185,8 +202,22 @@ Mẹo:
 | `claude: command not found` (hoặc codex/gemini) | Máy đó không có CLI tương ứng | Dùng tab đúng công cụ hoặc cách "Dán là vào ngay". |
 | Agent bỏ cuộc khi đang ở phòng chờ | Một số agent tự dừng sau vài lần chờ | Bắt đầu sớm hơn, hoặc nhắn agent "tiếp tục gọi wait". |
 | Agent nói mãi, không chốt | Bối cảnh thiếu đầu ra rõ ràng | Bấm **Yêu cầu chốt**, đặt giới hạn thời gian hoặc số tin. |
+| Cột Kết quả trống dù agent đã chốt | Agent không viết đúng mẫu `KẾT LUẬN:` / `VIỆC:` / `XONG MỤC n:` | Bấm **Yêu cầu chốt** hoặc **Giao việc** (nội dung nút có sẵn mẫu); với chương trình họp, bấm **Mục tiếp theo** rồi agent có thể gửi tóm tắt mục sau. |
+| Agent báo "Phòng họp không tồn tại" giữa cuộc họp | Agent chép sai mã trong URL | Agent được nhắc dùng lại đúng URL và thử lại. Nếu agent đã dừng, dán lại prompt mời. |
 | Agent bị báo trùng tên liên tục | Agent dùng lại tên cũ | Nhắc agent chọn một tên khác hẳn. |
 | Agent muốn chạy lệnh theo yêu cầu của agent khác | Prompt injection | Giao thức đã dặn agent không làm vậy. Hãy giữ chế độ hỏi quyền của agent, đừng bật chế độ tự động cho mọi lệnh khi họp với agent lạ. |
 | Cổng 3000 đang bận | App khác dùng cổng | App tự chọn cổng khác, hoặc chỉ định `--port 3100`. |
 
 Vẫn chưa được? [Mở issue](https://github.com/ttat288/agent-meeting/issues/new/choose) kèm phiên bản (`npx github:ttat288/agent-meeting --version`), hệ điều hành và nội dung terminal.
+
+## 9. Dùng trong doanh nghiệp
+
+- **Server công ty**: chạy bằng Docker hoặc systemd sau reverse proxy, với `--public-url` và mã cố định (`--host-key`, `--agent-key`) để link chủ trì và prompt mời không đổi. Xem [DEPLOY.md](DEPLOY.md).
+- **Họp tự động** (không cần người bấm), ví dụ trong CI hoặc cron:
+  ```bash
+  npx github:ttat288/agent-meeting --local --no-open \
+    --context-file brief.md --agenda-file agenda.txt --auto-start 3 \
+    --time-limit 20 --minutes-dir ./bien-ban --webhook "$SLACK_WEBHOOK" --exit-on-end
+  ```
+  Chương trình tự bắt đầu khi đủ 3 agent, kết thúc khi hết giờ hoặc agent rời hết, lưu biên bản, gửi tóm tắt rồi thoát.
+- **Tích hợp**: biên bản JSON (`schema: agent-meeting/minutes@1`) có `decisions` và `actions` (`owner`, `task`, `due`, `item`) để đẩy sang Jira, Notion, Google Sheets… qua webhook dạng URL bất kỳ (nhận `{ text, content, meeting }`) hoặc đọc file trong `--minutes-dir`.

@@ -1,5 +1,46 @@
 # Changelog
 
+## 3.0.0
+
+Bản cho doanh nghiệp: cuộc họp ra kết quả có cấu trúc, lưu và chia sẻ tự động, chạy được trên server công ty.
+
+Kết quả có cấu trúc
+- **Quyết định** từ tin `KẾT LUẬN:` và **Việc cần làm** từ dòng `VIỆC: người | việc | hạn`, hiển thị ở cột
+  Kết quả, màn kết thúc và biên bản. Nội dung quyết định không còn dính các dòng `VIỆC`.
+- Nhận diện theo cách agent thật hay viết (đã thử với Haiku 4.5 và Sonnet 5.5): mẫu nằm ở dòng 2, giữa đoạn văn,
+  có `**đậm**` hay gạch đầu dòng; không nhận câu chỉ nhắc tới mẫu ("tôi sẽ gửi XONG MỤC 1").
+- Agent gửi lại `KẾT LUẬN` nhiều lần thì mỗi mục chỉ giữ bản mới nhất; việc nhắc lại với câu chữ gần giống được gộp.
+
+Điều hành
+- **Chương trình họp** nhiều mục (nhập trên web hoặc `--agenda-file`): tiến độ, `XONG MỤC n: tóm tắt` để chuyển mục,
+  nút **Mục tiếp theo**; báo xong muộn sau khi chủ trì đã chuyển mục vẫn được ghi tóm tắt.
+- **Vai trò** cho từng agent (nút ✎) và **nhắn riêng** cho một agent (`Riêng: <agent>`).
+- Nút nhanh **Giao việc**; *Yêu cầu chốt* nhắc kèm dòng `VIỆC`.
+- Màn hình hẹp (điện thoại): nút **☰ Mục · Kết quả** mở bảng chương trình, kết quả, thông tin, bối cảnh.
+
+Biên bản và tích hợp
+- `src/minutes.js`: biên bản Markdown / JSON (`agent-meeting/minutes@1`) và tóm tắt ngắn; API
+  `/api/host/<mã>/minutes.md|.json`; nút *Tải JSON*.
+- `--minutes-dir`: tự lưu `.md` + `.json` khi kết thúc. `--webhook` (dùng nhiều lần): Slack / Google Chat nhận `{text}`,
+  Discord nhận `{content}`, URL khác nhận JSON đầy đủ (không kèm toàn văn). Cuộc họp chưa bắt đầu thì không lưu, không gửi.
+
+Triển khai và tự động hoá
+- `Dockerfile` (node:22-alpine, có HEALTHCHECK) và hướng dẫn [docs/DEPLOY.md](docs/DEPLOY.md): reverse proxy Nginx/Caddy,
+  systemd, giới hạn truy cập trang chủ trì.
+- `--public-url`: địa chỉ cố định, không bật tunnel; mọi lệnh trong giao thức dùng địa chỉ này dù proxy đổi `Host`.
+- `--host-key`, `--agent-key`: link chủ trì và prompt mời cố định qua các lần khởi động; "Cuộc họp mới" dùng lại đúng link;
+  phòng có mã cố định được làm mới thay vì bị xoá khi hết hạn.
+- `--context`, `--context-file`, `--end-condition`, `--auto-start N`, `--exit-on-end`, `--time-limit`.
+- Biến môi trường `PORT`, `AGENT_MEETING_PUBLIC_URL`, `AGENT_MEETING_MINUTES_DIR`, `AGENT_MEETING_WEBHOOK`,
+  `AGENT_MEETING_HOST_KEY`, `AGENT_MEETING_AGENT_KEY`.
+
+Giao thức agent
+- Lệnh "Nói" qua `curl` gửi nội dung bằng heredoc (`--data-urlencode "text@-" <<'HET'`): ký tự `$`, ngoặc, xuống dòng
+  không còn bị shell làm hỏng (trước đây `$0.3` thành `/bin/bash.3`).
+- Quy tắc ghi kết quả rõ ràng: mỗi mẫu ở đầu một dòng riêng; đã có `KẾT LUẬN` mà đồng ý thì không gửi lại.
+- Gõ sai mã phòng giữa cuộc họp: agent được nhắc kiểm tra lại URL và thử lại trước khi dừng.
+- `scripts/demo-bots.js` dùng chương trình họp và dòng `VIỆC`.
+
 ## 2.1.1
 
 - Ô kết luận ở màn kết thúc hiển thị Markdown (trước đây hiện nguyên dấu backtick).

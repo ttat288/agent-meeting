@@ -85,8 +85,29 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
 
 ## Trạng thái
 
-- Phiên bản phát hành: **v3.0.0** (main, đã có GitHub Release). **v3.1.0** xong trên nhánh `v3.1-followup` (package.json,
-  CHANGELOG, tài liệu đã cập nhật), CHƯA merge/push/release: chờ người dùng đồng ý.
+- Phiên bản phát hành: **v3.0.0** (main, đã có GitHub Release).
+- **v3.1.0** xong trên nhánh `v3.1-followup` (đã push lên origin, CHƯA merge vào main, CHƯA tag/release): code bước 1-4,
+  65 test xanh, package.json 3.1.0, CHANGELOG, README/README.en/GUIDE/DEPLOY đã cập nhật. Merge/release phải hỏi người dùng.
+- Đã kiểm chứng (phiên 2026-10-18): toàn bộ bằng subagent Haiku 4.5 / Sonnet 5.5 qua curl với đúng prompt từ trang, server dev
+  `--local --port 3100 --host-key … --agent-key … --data-dir … --minutes-dir …`, giao diện bằng trình duyệt tích hợp
+  (desktop + mobile 375px). Chưa kiểm chứng: CLI thật qua MCP, webhook tới Slack/Discord/Google Chat thật (mới có server giả
+  trong test), `npm run demo` sau thay đổi, `scripts/install-linux.sh`.
+
+### Cách lặp lại phép thử agent thật của v3.1
+
+```bash
+# repo thử: calc.js có sub() sai (a + b), test.js kiểm add/sub; git init + commit "khởi tạo"
+npm start -- --local --no-open --port 3100 --host-key <mã> --agent-key <mã> --data-dir <tmp>/data --minutes-dir <tmp>/minutes
+```
+
+1. Chạy 2 subagent (haiku + sonnet, nền) với prompt "Dán là vào ngay" sao chép từ trang, không dặn thêm.
+2. `POST /api/host/<k>/start` với `{"context": "...repo <đường dẫn>... (1) sửa sub() (2) thêm mul() + test. Mỗi agent một
+   việc, VIỆC ghi đúng tên agent, chạy node test.js và git commit riêng, bằng chứng: mã commit + kết quả test",
+   "settings": {"followUp": true}}`.
+3. Theo dõi `GET /api/host/<k>/state?v=-1` tới khi `state` là `ENDED` (lý do "mọi việc đã báo xong"), rồi `git log` và
+   `node test.js` trong repo thử. Muốn thử "Họp tiếp": họp đầu không bật followUp và dặn "chỉ chốt phân công", rồi
+   `POST /api/host/<k>/new {"carry": true}`, mời lại chính các agent đó (SendMessage tới subagent cũ với cùng prompt).
+4. Khởi động lại giữa chừng: kill theo PID (`ss -ltnp | grep :3100`, SIGTERM để kịp ghi), chạy lại đúng lệnh trên.
 
 ## Lộ trình v3: giải quyết nỗi đau doanh nghiệp (đã xong)
 
@@ -136,13 +157,26 @@ Làm theo thứ tự, mỗi bước có test (npm test) và thử trên trình d
 **Ngoài phạm vi (đừng làm):** tài khoản/phân quyền (dùng reverse proxy của công ty), server tự khởi chạy agent hay tự
 merge code, nhiều phòng song song, chạy test thay agent.
 
-## Việc tiếp theo (ý tưởng chưa làm)
+## Việc tiếp theo
 
-- Nhiều phòng họp song song trên một server (hiện mỗi tiến trình một phòng tại một thời điểm), trang quản trị có mật khẩu.
-- Chưa thử với Claude Code / Codex CLI / Gemini CLI thật qua MCP cho các mẫu `KẾT LUẬN`/`VIỆC`/`XONG MỤC`/`TIẾN ĐỘ VIỆC`
-  và giai đoạn WORK (mới thử Claude Haiku/Sonnet qua curl).
-- Ảnh chụp màn hình/GIF cho bảng việc có trạng thái, màn "Đang thực hiện", thẻ "Mang từ cuộc họp trước".
-- Chủ trì gộp/xoá việc trùng trên web (hiện chỉ đánh dấu xong được).
+Theo thứ tự ưu tiên:
+
+1. **Thử MCP với CLI thật** (bước 5 còn dở). Cần người dùng cài Claude Code / Codex CLI / Gemini CLI (máy dev không có).
+   Kịch bản như mục "Cách lặp lại" nhưng agent vào bằng tab Claude Code / Codex CLI / Gemini CLI trên trang. Cần xem:
+   agent có gọi `progress` (tool MCP) sau khi `leave` không, có tự dừng sau "Bạn đã báo xong mọi việc" không, Codex có bị
+   timeout tool ~60s với `wait` không, Gemini có đọc đúng `TIẾN ĐỘ VIỆC` không. Sửa văn bản giao thức nếu agent hiểu sai.
+2. **Webhook thật**: gửi thử tới Slack/Discord/Google Chat một phòng có `--follow-up` (3 loại `work`/`task`/`ended`).
+3. **Ảnh/GIF**: chụp lại `docs/screenshots/` cho bảng việc có trạng thái, màn "Đang thực hiện", thẻ "Mang từ cuộc họp
+   trước"; cân nhắc GIF demo mới (`npm run demo` chưa dùng `progress`/follow-up: có thể thêm vào `scripts/demo-bots.js`).
+4. **Phát hành v3.1.0** (khi người dùng đồng ý): merge `v3.1-followup` vào main, tag `v3.1.0`, GitHub Release lấy nội dung
+   từ CHANGELOG, `bash scripts/install-linux.sh` để cập nhật bản trong menu.
+5. **Việc trùng**: nút cho chủ trì gộp/xoá một việc trên web (hiện chỉ đánh dấu xong). Không nới `sameTask` nếu chưa có
+   tin agent thật làm bằng chứng gộp đúng (gộp nhầm làm mất việc).
+6. Nhỏ: tên nút có `title` làm accessible name khác chữ hiển thị ("Họp tiếp…"); có thể dùng `aria-describedby`.
+
+Ý tưởng xa hơn (chưa lên kế hoạch):
+
+- Nhiều phòng họp song song trên một server, trang quản trị có mật khẩu (đang nằm trong "Ngoài phạm vi" của v3.1).
 - Webhook Microsoft Teams (Adaptive Card); hiện Teams nhận JSON chung.
 - Bản dịch giao diện/giao thức sang tiếng Anh (i18n).
 - Bản đóng gói có cửa sổ riêng (Electron/Tauri) hoặc launcher cho macOS/Windows.

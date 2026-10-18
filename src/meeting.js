@@ -203,7 +203,8 @@ class Meeting {
       if (gone && !gone.into) continue; // chủ trì đã xoá việc này
       const same = gone ? this.actions.find(y => y.n === gone.into) : this.actions.find(y => !seen.has(y) && sameTask(y, a));
       if (same && seen.has(same)) continue;
-      if (same) { if (same.task.toLowerCase() !== a.task.toLowerCase()) same.task = a.task; if (a.owner) same.owner = a.owner; if (a.due) same.due = a.due; seen.add(same); }
+      if (same && gone) seen.add(same); // nhắc lại bản trùng đã gộp: giữ nguyên việc giữ lại
+      else if (same) { if (same.task.toLowerCase() !== a.task.toLowerCase()) same.task = a.task; if (a.owner) same.owner = a.owner; if (a.due) same.due = a.due; seen.add(same); }
       else { Object.assign(a, { n: ++this.taskSeq, status: 'todo', note: '', updatedAt: null, updatedBy: null }); this.actions.push(a); seen.add(a); added.push(a); }
     }
     // agent cần biết số việc để báo TIẾN ĐỘ sau này: báo cho cả phòng
@@ -241,9 +242,7 @@ class Meeting {
     const num = Number(String(n ?? '').replace(/^\s*(?:việc|viec|task)?\s*#?/i, ''));
     const a = this.actions.find(x => x.n === num);
     const list = this.actions.length ? `Các việc hiện có: ${this.actions.map(x => '#' + x.n).join(', ')}.` : 'Chưa có việc nào được ghi.';
-    const gone = !a && this.removed.find(x => x.n === num);
-    if (gone) return gone.into ? `Việc #${num} đã được chủ trì gộp vào việc #${gone.into}: hãy báo tiến độ cho việc #${gone.into}.`
-      : `Việc #${num} đã bị chủ trì xoá, không cần báo nữa. ${list}`;
+    if (!a && this._goneText(num)) return this._goneText(num);
     if (!a) return `Không có việc #${String(n ?? '').trim() || '?'}. ${list}`;
     const st = parseStatus(status);
     if (!st) return `Không hiểu trạng thái "${String(status ?? '').trim()}" của việc #${a.n}: dùng một trong ${STATUS_HELP}.`;
@@ -256,6 +255,14 @@ class Meeting {
     if (prev !== st) this.ev.emit('task', a, this);
     if (this.state === 'WORK' && this.actions.every(t => t.status === 'done')) this._end('mọi việc đã báo xong', true);
     return `Đã cập nhật việc #${a.n}: ${TASK_STATUS[st]}.`;
+  }
+  // agent báo tiến độ cho việc chủ trì đã gộp/xoá (thường vì trùng): chỉ sang việc giữ lại
+  _goneText(num) {
+    const g = this.removed.find(x => x.n === num); if (!g) return '';
+    const to = g.into && this.actions.find(x => x.n === g.into);
+    if (!to) return `Việc #${num} đã bị chủ trì xoá (trùng hoặc không cần nữa): không cần làm hay báo cho việc này.`;
+    return `Việc #${num} đã được chủ trì gộp vào việc #${to.n} (${to.task.slice(0, 80)}, ${TASK_STATUS[to.status]}): `
+      + (to.status === 'done' ? 'việc đó đã xong, không cần báo thêm.' : `làm xong thì báo tiến độ cho việc #${to.n}, không báo cho #${num} nữa.`);
   }
   _nextItem(to = this.agendaIndex + 1) {
     if (!this.agenda.length || this.agendaIndex >= this.agenda.length) return false;
@@ -589,16 +596,17 @@ ${calls}`;
     if (!a && !prev) return 'Bạn không có trong cuộc họp này. Dùng đúng tên bạn đã join.';
     if (a?.kicked) return KICK_TEXT;
     if (a) a.lastSeen = Date.now();
-    const r = this._setTask(task, status, note, a ? a.name : prev);
-    if (!r.startsWith('Đã')) return r;
-    this._changed();
+    const gone = this._goneText(Number(String(task ?? '').replace(/^\s*(?:việc|viec|task)?\s*#?/i, '')));
+    const r = gone || this._setTask(task, status, note, a ? a.name : prev);
+    if (!gone && !r.startsWith('Đã')) return r;
+    if (!gone) this._changed();
     if (this.state === 'ENDED') return r + ' Mọi việc đã báo xong, phòng đã đóng. Hãy dừng lại, không gọi thêm tool.';
     if (!a) return r + ' Cuộc họp trước đã đóng; việc vẫn được theo dõi ở cuộc họp tiếp theo. Hãy dừng lại, không gọi thêm tool.';
     if (a.present && this.state === 'LIVE') return r + ' Gọi wait để nghe tiếp.';
     if (a.present && this.state === 'LOBBY') return r + ' Gọi wait để chờ chủ trì bắt đầu.';
     const open = this._mine(a).filter(t => t.status !== 'done');
     return r + (open.length ? ` Việc của bạn còn lại: ${open.map(t => `#${t.n} (${TASK_STATUS[t.status]})`).join(', ')}. Làm tiếp rồi báo tiến độ, không cần gọi wait.`
-      : ' Bạn đã báo xong mọi việc ghi tên mình. Hãy dừng lại, không gọi thêm tool.');
+      : this._mine(a).length || !gone ? ' Bạn đã báo xong mọi việc ghi tên mình. Hãy dừng lại, không gọi thêm tool.' : ' Bạn không còn việc nào. Hãy dừng lại, không gọi thêm tool.');
   }
 
   typing(name) {

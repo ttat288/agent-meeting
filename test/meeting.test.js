@@ -483,8 +483,11 @@ test('chủ trì gộp/xoá việc trùng: agent nhắc lại không tạo lại
   assert.equal(m.hostRemoveTask(4), false); assert.equal(m.hostRemoveTask(2, 2), false); assert.equal(m.hostRemoveTask(2, 9), false);
   m.say('Minh', 'Nhắc lại:\nVIỆC: Lam | Fix hàm trừ đang cộng nhầm\nVIỆC: Minh | viết README');
   assert.deepEqual(m.actions.map(a => a.n), [1, 2]);
-  assert.match(m.progress('Lam', '3', 'xong', 'abc'), /đã được chủ trì gộp vào việc #1: hãy báo tiến độ cho việc #1/);
+  assert.equal(m.actions[0].task, 'sửa sub() trong calc.js'); // việc giữ lại không bị đổi tên theo bản trùng
+  assert.match(m.progress('Lam', '3', 'xong', 'abc'), /đã được chủ trì gộp vào việc #1 \(sửa sub\(\) trong calc.js, chưa làm\): làm xong thì báo tiến độ cho việc #1/);
+  assert.match(m.say('Lam', 'TIẾN ĐỘ VIỆC 3: xong'), /gộp vào việc #1/);
   assert.match(m.progress('Minh', '4', 'xong'), /đã bị chủ trì xoá/);
+  m.progress('Lam', '1', 'xong'); assert.match(m.progress('Lam', '3', 'xong'), /việc đó đã xong, không cần báo thêm/); m.hostTask(1, 'đang làm');
   // số việc không dùng lại, kể cả sau khi lưu/nạp lại trạng thái
   const r = new Meeting({ ...fast, followUp: true }); r.restore(JSON.parse(JSON.stringify(m.toState())));
   assert.deepEqual(r.removed.map(x => [x.n, x.into]), [[3, 1], [4, null]]);

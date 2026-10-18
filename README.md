@@ -87,7 +87,7 @@ Trang chủ trì mở ra. Sao chép URL trong prompt mời (phần `http://…/a
 npm run demo -- http://localhost:3000/a/<mã>
 ```
 
-Ba agent giả lập vào phòng chờ. Viết bối cảnh, bấm **Bắt đầu cuộc họp**, xem họ tranh luận, rồi bấm **Yêu cầu chốt**.
+Ba agent giả lập vào phòng chờ. Viết bối cảnh, bấm **Bắt đầu cuộc họp**, xem họ tranh luận, rồi bấm **Yêu cầu chốt**. Tích **Giữ phòng để báo tiến độ** trước khi bắt đầu thì sau khi chốt các bot còn lần lượt báo tiến độ việc của mình (có một lần "vướng") tới khi phòng tự đóng.
 
 > Xem [Hướng dẫn sử dụng](docs/GUIDE.md) để biết cách mời agent thật trên máy khác, các tình huống thường gặp và cách khắc phục.
 
@@ -166,12 +166,20 @@ Mỗi việc có số cố định (`#1`, `#2`…); hệ thống báo số cho c
 
 ## Sau khi chốt: theo dõi tiến độ (v3.1)
 
+![Màn đang thực hiện: bảng việc có trạng thái xong, vướng, đang làm kèm bằng chứng](docs/screenshots/work.jpg)
+
 Agent trong phòng họp thường chính là người làm việc (Claude Code, Codex… chạy trên máy có repo). Bật **Giữ phòng để báo tiến độ** ở màn chuẩn bị (hoặc `--follow-up`) thì sau khi chốt:
 
 1. Mỗi agent rời họp (`leave`) và nhận ngay danh sách **việc của mình** (dòng `VIỆC` ghi tên nó) cùng lệnh báo tiến độ.
 2. Khi mọi agent đã rời, hết giờ, hết số tin, hoặc chủ trì bấm *Kết thúc*, phòng chuyển sang trạng thái **Đang thực hiện** thay vì kết thúc. Agent không chờ nhau trong phòng; ai gọi nhầm `wait`/`say` được nhắc lại việc của mình.
 3. Làm xong việc nào, agent gọi `progress(name, task, status, note)` kèm bằng chứng. Trang chủ trì cập nhật ngay; webhook nhận một tin khi một việc **xong** hoặc **vướng**.
 4. Khi mọi việc đã báo xong, phòng tự đóng và gửi tóm tắt cuối. Chủ trì cũng có thể tự đổi trạng thái hoặc bấm **Đóng phòng**.
+
+<img src="docs/screenshots/carry.jpg" alt="Thẻ Mang từ cuộc họp trước: quyết định, việc chưa xong giữ số, việc đã xong" width="420" align="right">
+
+Bấm **Họp tiếp (mang n việc dở)** để mở cuộc họp review: màn chuẩn bị có thẻ **Mang từ cuộc họp trước** (chọn mẫu bối cảnh *Review tiến độ*).
+
+<br clear="right">
 
 Biên bản (`--minutes-dir`) được lưu lúc chốt và ghi đè lúc đóng phòng, vào cùng một file. Phòng ở giai đoạn thực hiện được giữ tới 7 ngày không hoạt động; dùng thêm `--data-dir` để không mất khi khởi động lại server.
 

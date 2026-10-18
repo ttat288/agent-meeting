@@ -44,7 +44,7 @@ svg .fill { fill: currentColor; stroke: none; }
 .conn.ok span { display: none; }
 
 /* ---------- buttons ---------- */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid transparent; border-radius: var(--r-sm); padding: 8px 14px; font-weight: 600; font-size: 14px; cursor: pointer; transition: background .15s, border-color .15s, opacity .15s; white-space: nowrap; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid transparent; border-radius: var(--r-sm); padding: 8px 14px; font-weight: 600; font-size: 14px; cursor: pointer; transition: background .15s, border-color .15s, opacity .15s; white-space: nowrap; text-decoration: none; }
 .btn.primary { background: var(--accent); color: var(--accent-ink); }
 .btn.primary:hover { filter: brightness(1.08); }
 .btn.ghost { background: var(--surface); border-color: var(--line-2); color: var(--ink-2); }
@@ -292,7 +292,8 @@ textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
 .task.s-doing { border-left-color: var(--accent); } .task.s-done { border-left-color: var(--ok); } .task.s-blocked { border-left-color: var(--bad); }
 .task .tn { color: var(--mute); font-variant-numeric: tabular-nums; }
 .tmeta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0; }
-.tmeta .icon.edit { margin-left: auto; }
+.tmeta .who { flex: 1 1 0; min-width: 0; overflow-wrap: anywhere; }
+.tmeta .icon.edit { margin-left: auto; padding: 2px 6px; }
 .tnote { font-size: 12.5px; color: var(--ink-2); overflow-wrap: anywhere; }
 .tnote a, .sys.prog a { color: var(--accent); }
 .tstat { width: auto; flex: none; font: inherit; font-size: 12px; padding: 1px 4px; border-radius: 6px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); }

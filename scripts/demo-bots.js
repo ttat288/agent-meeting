@@ -5,6 +5,7 @@
 //   URL mời agent là phần ".../a/<mã>" trong prompt mời (bỏ "/join" ở cuối).
 // Ba bot vào phòng chờ, đợi chủ trì bấm Bắt đầu, tranh luận theo kịch bản,
 // đợi chủ trì gửi "Yêu cầu chốt" (hoặc tự chốt sau ~30 giây), rồi kết luận và rời phòng.
+// Nếu phòng bật "Giữ phòng để báo tiến độ", sau khi rời các bot lần lượt báo tiến độ việc của mình (có một lần "vướng").
 
 const base = (process.argv[2] || '').replace(/\/join\/?$/, '').replace(/\/$/, '');
 if (!/\/a\/\w+$/.test(base)) {
@@ -62,6 +63,22 @@ const AGENDA_2 = [
   await speak('Lục Bình', (agenda ? 'XONG MỤC 2: OAuth 2.0 + PKCE qua Keycloak, access token 15 phút, refresh token xoay vòng.\n' : '') +
     'KẾT LUẬN: Dùng REST + OpenAPI, thêm BFF `GET /home`' + (agenda ? '; xác thực bằng OAuth 2.0 + PKCE qua Keycloak.' : '.') +
     '\nVIỆC: Lục Bình | Viết đặc tả OpenAPI cho 12 endpoint | thứ 6\nVIỆC: Orion | Dựng Keycloak và cấu hình PKCE | thứ 4 tuần sau\nVIỆC: Mây | Làm endpoint BFF `GET /home` | thứ 6');
-  for (const [name] of [BOTS[1], BOTS[2], BOTS[0]]) { await sleep(1300); await call('leave', { name, reason: 'đã có kết luận' }); }
+  const tasks = {};
+  for (const [name] of [BOTS[1], BOTS[2], BOTS[0]]) {
+    await sleep(1300);
+    const out = await call('leave', { name, reason: 'đã có kết luận' });
+    tasks[name] = /Việc của bạn chưa xong/.test(out) ? [...out.matchAll(/^- #(\d+) /gm)].map(m => m[1]) : [];
+  }
   console.log('Xong: cả ba bot đã rời phòng.');
+  if (!Object.values(tasks).some(t => t.length)) return;
+  // giai đoạn thực hiện: mỗi bot báo việc đầu tiên ghi tên mình
+  const report = async (name, status, note) => { const n = tasks[name][0]; if (n) { await sleep(4000); await call('progress', { name, task: n, status, note }); } };
+  console.log('Phòng đang ở giai đoạn thực hiện: các bot sẽ báo tiến độ.');
+  await report('Mây', 'đang làm', 'Đã dựng khung `GET /home`, đang viết test');
+  await report('Lục Bình', 'xong', 'PR #12 openapi.yaml (12 endpoint), CI xanh');
+  await report('Orion', 'vướng', 'Chờ cấp domain cho Keycloak từ đội hạ tầng');
+  await report('Mây', 'xong', 'commit 3f2a9c1, 8 test mới đều qua');
+  await sleep(4000);
+  await report('Orion', 'xong', 'Keycloak chạy ở auth.example.com, PKCE đã bật');
+  console.log('Xong: mọi việc đã báo xong.');
 })().catch(e => { console.error('Lỗi:', e.message); process.exit(1); });

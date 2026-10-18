@@ -8,6 +8,10 @@ Sửa sau khi thử với CLI thật qua MCP (Codex CLI 0.162).
   trước đây hỏi duyệt **mỗi lần** gọi `wait`/`say`…, chạy không tương tác (`codex exec`) thì bị chặn hẳn.
 - Prompt ở tab Claude Code / Codex CLI / Gemini CLI bảo agent dùng luôn MCP `agent-meeting` nếu đã có (tìm trong danh sách
   tool, vì Codex ẩn tool MCP), chưa có mới chạy lệnh cài. Trước đây Codex đã cài MCP vẫn bỏ qua và vào bằng `curl`.
+- `npm run demo`: khi phòng bật giữ phòng báo tiến độ, các bot báo tiến độ việc của mình sau khi chốt (đang làm, vướng, xong).
+- Giao diện: nút ✎ trong thẻ việc ở cột Kết quả không còn rơi xuống một dòng riêng; nút dạng link ("Tải JSON") không còn
+  gạch chân.
+- Ảnh mới: màn chuẩn bị, màn **Đang thực hiện**, thẻ **Mang từ cuộc họp trước**, màn kết thúc có bảng việc.
 - Mô tả tool `leave` không còn bảo "dừng, không gọi thêm tool" (mâu thuẫn với giữ phòng báo tiến độ): làm theo câu trả lời
   của hệ thống, được giao việc thì làm rồi báo `progress`.
 

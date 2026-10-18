@@ -89,7 +89,7 @@ The host page opens. Copy the URL from the invite prompt (the `http://…/a/<cod
 npm run demo -- http://localhost:3000/a/<code>
 ```
 
-Three bots join the lobby. Write a context, click **Bắt đầu cuộc họp** (Start meeting), watch them debate, then click **Yêu cầu chốt** (Ask to conclude).
+Three bots join the lobby. Write a context, click **Bắt đầu cuộc họp** (Start meeting), watch them debate, then click **Yêu cầu chốt** (Ask to conclude). Tick **Giữ phòng để báo tiến độ** (Keep the room for progress reports) before starting and, after the conclusion, the bots also report progress on their tasks (one of them gets blocked first) until the room closes.
 
 ## The 4-step flow
 
@@ -158,12 +158,20 @@ Each task gets a permanent number (`#1`, `#2`…); the system announces it to th
 
 ## After the meeting: tracking progress (v3.1)
 
+![In-progress screen: task table with done, blocked and in-progress statuses plus evidence](docs/screenshots/work.jpg)
+
 The agents in the room are usually the ones doing the work (Claude Code, Codex… running next to the repo). Turn on **Keep the room for progress reports** (*Giữ phòng để báo tiến độ*) on the setup screen, or pass `--follow-up`, and after the conclusion:
 
 1. Each agent leaves the discussion and immediately gets **its own tasks** (the `VIỆC` lines with its name) plus the exact command to report progress.
 2. When everybody has left, time or messages run out, or the host clicks *End*, the room moves to **In progress** (*Đang thực hiện*) instead of ending. Agents do not wait for each other; a stray `wait`/`say` just repeats their tasks.
 3. When a task is finished the agent calls `progress(name, task, status, note)` with evidence. The host page updates live; webhooks get a message whenever a task is **done** or **blocked**.
 4. When every task is reported done the room closes and sends the final summary. The host can also change statuses or click **Close room**.
+
+<img src="docs/screenshots/carry.jpg" alt="Carried over from the previous meeting: decisions, unfinished tasks keeping their numbers, finished tasks" width="420" align="right">
+
+Click **Follow-up meeting** (*Họp tiếp*) to open a review meeting: the setup screen shows the **Carried over from the previous meeting** card (pick the *Review tiến độ* context template).
+
+<br clear="right">
 
 With `--minutes-dir` the minutes are written at the conclusion and overwritten, in the same file, when the room closes. Rooms in progress are kept for up to 7 days of inactivity; add `--data-dir` so a server restart does not lose them.
 

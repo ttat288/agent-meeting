@@ -395,3 +395,37 @@ test('sự kiện ended phát đúng một lần', () => {
   m.stop(); m.stop();
   assert.equal(n, 1);
 });
+
+test('Việc có số và trạng thái: TIẾN ĐỘ VIỆC trong tin, tool progress, chủ trì đổi trạng thái', async () => {
+  const m = new Meeting({ ...fast, idleMs: 60000 });
+  m.join('A', 'x'); m.join('B', 'x'); m.start('x', '');
+  await m.wait('A'); await m.wait('B');
+  const r = m.say('A', 'KẾT LUẬN: làm\nVIỆC: A | viết parser | thứ 6\nVIỆC: B | viết test | thứ 7');
+  assert.deepEqual(m.actions.map(a => [a.n, a.owner, a.status]), [[1, 'A', 'todo'], [2, 'B', 'todo']]);
+  assert.match(m.log.at(-1).text, /Đã ghi việc: #1 A — viết parser; #2 B — viết test/);
+  assert.match(await m.wait('A'), /#1 A — viết parser/); // người ghi cũng được báo số việc
+  // nhắc lại cùng việc với câu chữ khác: giữ số cũ, không tạo việc mới
+  m.say('B', 'VIỆC: B | Viết test. | thứ 7');
+  assert.deepEqual(m.actions.map(a => a.n), [1, 2]);
+  assert.match(m.say('B', 'TIẾN ĐỘ VIỆC 2: đang làm | đã có 3 test\n**TIẾN ĐỘ VIỆC #1**: xong'), /Đã cập nhật việc #2: đang làm\. Đã cập nhật việc #1: xong\./);
+  assert.equal(m.actions[1].status, 'doing'); assert.equal(m.actions[1].note, 'đã có 3 test');
+  assert.equal(m.actions[0].status, 'done'); assert.equal(m.actions[0].updatedBy, 'B');
+  assert.equal(m.log.filter(x => x.progress).length, 2);
+  assert.match(m.say('A', 'TIẾN ĐỘ VIỆC 9: xong'), /Không có việc #9\. Các việc hiện có: #1, #2\./);
+  assert.match(m.progress('A', '#2', 'gần xong', ''), /Không hiểu trạng thái "gần xong".*đang làm \| xong \| vướng \| chưa làm/);
+  assert.match(m.progress('A', '2', 'vướng', 'thiếu quyền repo'), /Đã cập nhật việc #2: vướng/);
+  assert.equal(m.actions[1].note, 'thiếu quyền repo');
+  m.leave('B');
+  assert.match(m.progress('B', 'việc 2', 'xong', 'PR #7'), /^Đã cập nhật việc #2: xong\.$/); // đã rời phòng vẫn báo được
+  assert.match(m.progress('Z', '2', 'xong'), /không có trong cuộc họp/);
+  assert.equal(m.hostTask(2, 'đang làm'), true);
+  assert.equal(m.actions[1].status, 'doing'); assert.equal(m.actions[1].note, 'PR #7'); // không gửi ghi chú thì giữ ghi chú cũ
+  m.progress('A', '2', 'đang làm', '');
+  assert.equal(m.actions[1].note, 'PR #7'); // agent gửi ghi chú trống cũng giữ
+  m.hostTask(2, 'đang làm', '');
+  assert.equal(m.actions[1].note, ''); // chủ trì xoá ghi chú
+  assert.equal(m.hostTask(5, 'xong'), false); assert.equal(m.hostTask(1, 'lung tung'), false);
+  assert.doesNotMatch(require('../src/meeting').decisionText('KẾT LUẬN: ok\nTIẾN ĐỘ VIỆC 1: xong'), /TIẾN ĐỘ/);
+  m.stop();
+  assert.match(m.progress('A', '1', 'xong'), /đã kết thúc/);
+});

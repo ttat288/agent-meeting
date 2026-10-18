@@ -28,6 +28,8 @@ const TOOLS = [
   { name: 'say', description: 'Phát biểu trong cuộc họp. Chỉ nói khi có đóng góp mới. Tin chốt cuối bắt đầu bằng "KẾT LUẬN:".', inputSchema: named({ text: str('Nội dung ngắn gọn') }, ['text']) },
   { name: 'pass', description: 'Bỏ lượt khi tới lượt mà không có gì mới (chế độ lần lượt).', inputSchema: named() },
   { name: 'typing', description: 'Báo mọi người biết bạn đang soạn câu trả lời dài, để không ai tưởng cuộc họp đã im.', inputSchema: named() },
+  { name: 'progress', description: 'Báo tiến độ một việc đã được giao (số việc do hệ thống báo, ví dụ #2). Chỉ báo "xong" khi đã làm thật, kèm bằng chứng (link commit/PR, kết quả test). Dùng được cả sau khi đã rời phòng.',
+    inputSchema: named({ task: str('Số việc, ví dụ 2'), status: str('đang làm | xong | vướng | chưa làm'), note: str('Bằng chứng hoặc ghi chú: link commit/PR, kết quả test, đang vướng gì') }, ['task', 'status']) },
   { name: 'leave', description: 'Rời phòng khi không còn gì để bàn. Sau đó dừng, không gọi thêm tool.', inputSchema: named({ reason: str('Lý do ngắn (tuỳ chọn)') }) },
   { name: 'history', description: 'Đọc toàn bộ lịch sử cuộc họp.', inputSchema: { type: 'object', properties: {} } },
 ];
@@ -42,6 +44,7 @@ async function invoke(m, tool, a = {}, how) {
     case 'say': return m.say(a.name, a.text);
     case 'pass': return m.pass(a.name);
     case 'typing': return m.typing(a.name);
+    case 'progress': return m.progress(a.name, a.task, a.status, a.note);
     case 'leave': return m.leave(a.name, a.reason);
     case 'history': return m.history(a.name);
   }
@@ -200,7 +203,7 @@ function createApp(cfg = {}) {
       if ((m = p.match(/^\/m\/(\w+)$/)))
         return send(byHost.has(m[1]) ? 200 : 404, 'text/html; charset=utf-8', index, { 'cache-control': 'no-store', 'content-security-policy': CSP });
 
-      if ((m = p.match(/^\/api\/host\/(\w+)\/(state|start|stop|say|kick|new|next|role|minutes\.md|minutes\.json)$/))) {
+      if ((m = p.match(/^\/api\/host\/(\w+)\/(state|start|stop|say|kick|new|next|role|task|minutes\.md|minutes\.json)$/))) {
         const mt = byHost.get(m[1]); if (!mt) return json(404, { error: 'Không tìm thấy cuộc họp (app đã khởi động lại?).' });
         const act = m[2];
         if (act === 'state') {
@@ -217,6 +220,7 @@ function createApp(cfg = {}) {
         if (act === 'say') return json(200, { ok: mt.hostSay(d.text, d.to) });
         if (act === 'next') return json(200, { ok: mt.hostNextItem() });
         if (act === 'role') return json(200, { ok: mt.setRole(d.name, d.role) });
+        if (act === 'task') return json(200, { ok: mt.hostTask(d.n, d.status, d.note) });
         if (act === 'kick') return json(200, { ok: mt.kick(d.name) });
         if (act === 'new') {
           if (mt.state === 'LIVE') mt.stop('chủ trì mở cuộc họp mới');

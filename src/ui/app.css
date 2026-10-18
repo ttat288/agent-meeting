@@ -282,6 +282,25 @@ textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
 .acts { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .acts th, .acts td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
 .acts th { color: var(--mute); font-weight: 600; font-size: 12.5px; }
+.acts-wrap { overflow-x: auto; }
+.acts .tnote { margin-top: 2px; } .acts .tnote .icon { padding: 0 4px; }
+/* việc cần làm có trạng thái */
+.results ul.tasks { list-style: none; padding: 0; gap: 8px; }
+.task { padding: 6px 8px; border: 1px solid var(--line); border-left: 3px solid var(--line-2); border-radius: var(--r-sm); display: grid; gap: 4px; min-width: 0; }
+.task.s-doing { border-left-color: var(--accent); } .task.s-done { border-left-color: var(--ok); } .task.s-blocked { border-left-color: var(--bad); }
+.task .tn { color: var(--mute); font-variant-numeric: tabular-nums; }
+.tmeta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0; }
+.tmeta .icon.edit { margin-left: auto; }
+.tnote { font-size: 12.5px; color: var(--ink-2); overflow-wrap: anywhere; }
+.tnote a, .sys.prog a { color: var(--accent); }
+.tstat { width: auto; flex: none; font: inherit; font-size: 12px; padding: 1px 4px; border-radius: 6px; border: 1px solid var(--line-2); background: var(--surface); color: var(--ink); }
+.tstat.s-doing { background: var(--accent-soft); border-color: var(--accent); }
+.tstat.s-done { background: var(--ok-soft); border-color: var(--ok); }
+.tstat.s-blocked { background: var(--bad-soft); border-color: var(--bad); }
+.note.verify { font-size: 12px; margin: 4px 0 0; }
+.sys.prog { color: var(--ink-2); max-width: 100%; }
+.sys.prog span { min-width: 0; overflow-wrap: anywhere; }
+.sys.prog.s-done { color: var(--ok); } .sys.prog.s-blocked { color: var(--bad); }
 /* Màn hẹp: dải thành viên + nút mở bảng chi tiết (chương trình, kết quả, thông tin, bối cảnh) phủ toàn màn hình */
 .panel-toggle { display: none; }
 @media (max-width: 860px) {

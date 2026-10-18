@@ -37,6 +37,8 @@
   const inline = (s) => esc(s)
     .replace(/`([^`\n]+)`/g, '<code>$1</code>')
     .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+  // link commit/PR trong bằng chứng: bấm được (văn bản đã escape trước)
+  const linkify = (h) => h.replace(/https?:\/\/[^\s<]+?(?=&quot;|&#39;|[.,;:!?)]*(?:\s|<|$))/g, u => `<a href="${u}" target="_blank" rel="noopener noreferrer">${u}</a>`);
   function blocks(text) {
     const out = []; let para = [], list = null;
     const flushPara = () => { if (para.length) out.push('<p>' + para.map(inline).join('<br>') + '</p>'); para = []; };
@@ -272,7 +274,7 @@
 
   const modelOf = (name) => snap?.agents.find(a => a.name === name)?.model || '';
   function entry(m, prev) {
-    if (m.type === 'sys') return el('div', { class: 'sys' }, el('time', {}, fmtTime(m.t)), m.text);
+    if (m.type === 'sys') return el('div', { class: 'sys' + (m.progress ? ' prog s-' + m.progress.status : '') }, el('time', {}, fmtTime(m.t)), m.progress ? el('span', { html: linkify(esc(m.text)) }) : m.text);
     const host = m.type === 'host', name = host ? (m.to ? `Chủ trì → ${m.to} (riêng)` : 'Chủ trì') : m.name, color = host ? 'var(--accent)' : colorOf(m.name);
     const first = !prev || prev.type === 'sys' || prev.type !== m.type || prev.name !== m.name || m.t - prev.t > 5 * 60000;
     return el('div', { class: 'msg' + (first ? ' first' : '') + (host ? ' host' : '') + (m.conclusion || m.itemsDone ? ' conclusion' : '') + (m.itemsDone && !m.conclusion ? ' itemdone' : '') + (m.to ? ' private' : '') },
@@ -317,9 +319,7 @@
         el('span', {}, 'Thời lượng: ', el('b', {}, fmtDur((s.endedAt || serverNow()) - (s.startedAt || s.createdAt)))),
         el('span', {}, 'Tin nhắn: ', el('b', {}, String(s.chatCount))),
         el('span', {}, 'Thành viên: ', el('b', {}, String(s.agents.length)))),
-      s.actions.length ? el('table', { class: 'acts' },
-        el('thead', {}, el('tr', {}, el('th', {}, '#'), el('th', {}, 'Việc cần làm'), el('th', {}, 'Phụ trách'), el('th', {}, 'Hạn'))),
-        el('tbody', {}, ...s.actions.map((x, i) => el('tr', {}, el('td', {}, String(i + 1)), el('td', { html: inline(x.task) }), el('td', {}, x.owner || '—'), el('td', {}, x.due || '—'))))) : null,
+      el('div', { id: 'endActs' }),
       v ? el('div', { class: 'verdict' }, el('b', {}, `Kết luận (${v.name}${modelOf(v.name) ? ', ' + modelOf(v.name) : ''})`),
         el('div', { class: 'bubble-md', html: md(v.decision) })) : null,
       el('div', { class: 'row' },
@@ -327,6 +327,15 @@
         el('button', { class: 'btn ghost', type: 'button', onclick: async () => copy(await (await fetch(`/api/host/${key}/minutes.md`)).text(), 'Đã sao chép biên bản') }, 'Sao chép biên bản'),
         el('a', { class: 'btn ghost', href: `/api/host/${key}/minutes.json`, download: 'bien-ban-hop.json' }, 'Tải JSON'),
         el('button', { class: 'btn ghost', type: 'button', onclick: newMeeting }, 'Cuộc họp mới'))));
+  }
+  function renderEndActs(s) {
+    const box = $('endActs'); if (!box || !changed('endActs', s.actions)) return;
+    box.replaceChildren(...(s.actions.length ? [el('div', { class: 'acts-wrap' }, el('table', { class: 'acts' },
+      el('thead', {}, el('tr', {}, el('th', {}, '#'), el('th', {}, 'Việc cần làm · bằng chứng'), el('th', {}, 'Phụ trách'), el('th', {}, 'Hạn'), el('th', {}, 'Trạng thái'))),
+      el('tbody', {}, ...s.actions.map(x => el('tr', { class: 's-' + x.status }, el('td', {}, '#' + x.n),
+        el('td', {}, el('div', { html: inline(x.task) }), el('div', { class: 'tnote' }, x.note ? el('span', { html: linkify(inline(x.note)) }) : el('span', { class: 'muted' }, 'chưa có bằng chứng'), ' ', noteBtn(x))),
+        el('td', {}, x.owner || '—'), el('td', {}, x.due || '—'), el('td', {}, statusSelect(x))))))),
+      verifyNote()] : []));
   }
   async function newMeeting() {
     try { const { hostKey } = await post('new'); location.href = '/m/' + hostKey; }
@@ -353,15 +362,41 @@
       ...(last.get(m.item ?? null) === m ? [{ name: m.name, item: m.item, text: m.decision }] : []),
     ]).filter(d => d.text);
   };
+  // ---------- việc cần làm: trạng thái do agent báo hoặc chủ trì đặt ----------
+  const TASK_STATUS = { todo: 'chưa làm', doing: 'đang làm', done: 'xong', blocked: 'vướng' };
+  const sigs = {};
+  // chỉ vẽ lại khi dữ liệu đổi: tránh đóng ô chọn trạng thái đang mở mỗi lần long-poll trả về
+  const changed = (k, v) => { const j = JSON.stringify(v); if (sigs[k] === j) return false; sigs[k] = j; return true; };
+  async function setTask(x, status, note) {
+    try { await post('task', { n: x.n, status, note }); toast(`Việc #${x.n}: ${TASK_STATUS[status]}`); }
+    catch (e) { toast('Không cập nhật được: ' + e.message, true); }
+  }
+  function statusSelect(x) {
+    const sel = el('select', { class: 'tstat s-' + x.status, title: x.updatedBy ? `Cập nhật bởi ${x.updatedBy}${x.updatedAt ? ' lúc ' + fmtTime(x.updatedAt) : ''}` : 'Đổi trạng thái', 'aria-label': `Trạng thái việc #${x.n}` },
+      ...Object.entries(TASK_STATUS).map(([k, v]) => el('option', { value: k, selected: k === x.status }, v)));
+    sel.onchange = () => setTask(x, sel.value);
+    return sel;
+  }
+  const noteBtn = (x) => el('button', { class: 'icon edit', type: 'button', title: 'Sửa bằng chứng / ghi chú', 'aria-label': `Sửa ghi chú việc #${x.n}`, onclick: async () => {
+    const note = await promptBox(`Bằng chứng / ghi chú cho việc #${x.n}`, 'Ví dụ: link commit hoặc PR, kết quả test, đang vướng gì. Để trống để xoá.', x.note || '');
+    if (note !== null) setTask(x, x.status, note);
+  } }, '✎');
+  const verifyNote = () => el('p', { class: 'note verify' }, 'ⓘ', 'Trạng thái "xong" do agent tự báo kèm bằng chứng (hoặc bạn tự đặt). Server KHÔNG tự kiểm chứng: hãy xem bằng chứng trước khi tin.');
+  const taskItem = (x) => el('li', { class: 'task s-' + x.status },
+    el('div', {}, el('b', { class: 'tn' }, '#' + x.n), ' ', el('span', { html: inline(x.task) })),
+    el('div', { class: 'tmeta' }, statusSelect(x), el('span', { class: 'who' }, [x.owner, x.due && 'hạn ' + x.due].filter(Boolean).join(' · ')), noteBtn(x)),
+    x.note ? el('div', { class: 'tnote', html: linkify(inline(x.note)) }) : null);
+
   function renderResults(s) {
     const ds = decisions();
+    if (!changed('results', [ds, s.actions, s.agenda.length])) return;
     if (!ds.length && !s.actions.length) { $('results').replaceChildren(el('div', { class: 'empty' }, 'Chưa có quyết định hay việc cần làm. Tin "KẾT LUẬN:" và dòng "VIỆC:" sẽ hiện ở đây.')); return; }
     $('results').replaceChildren(...[
       ds.length ? el('div', {}, el('h4', {}, `Quyết định (${ds.length})`), el('ul', {}, ...ds.map(d => el('li', {},
         d.item != null && s.agenda.length ? el('b', {}, `Mục ${d.item + 1}: `) : null,
         el('span', { html: inline(d.text.split('\n').find(l => l.trim()).slice(0, 160)) }), ' ', el('span', { class: 'who' }, '· ' + d.name))))) : null,
-      s.actions.length ? el('div', {}, el('h4', {}, `Việc cần làm (${s.actions.length})`), el('ul', {}, ...s.actions.map(x => el('li', {},
-        el('span', { html: inline(x.task) }), ' ', el('span', { class: 'who' }, [x.owner && '· ' + x.owner, x.due && '· hạn ' + x.due].filter(Boolean).join(' ')))))) : null].filter(Boolean));
+      s.actions.length ? el('div', {}, el('h4', {}, `Việc cần làm (${s.actions.filter(x => x.status === 'done').length}/${s.actions.length} xong)`),
+        el('ul', { class: 'tasks' }, ...s.actions.map(taskItem)), verifyNote()) : null].filter(Boolean));
   }
   function renderSendTo(s) {
     const sel = $('sendTo'), cur = sel.value;
@@ -399,7 +434,7 @@
     const stick = fresh || nearBottom();
     $('composer').hidden = s.state !== 'LIVE';
     $('ended').hidden = s.state !== 'ENDED';
-    if (s.state === 'ENDED') renderEnded(s);
+    if (s.state === 'ENDED') { renderEnded(s); renderEndActs(s); }
     renderFeed(stick);
     renderTyping(s);
   }

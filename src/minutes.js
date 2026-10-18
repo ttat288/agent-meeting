@@ -9,7 +9,10 @@ const fmtDur = (ms) => {
   return h ? `${h} giờ ${m} phút` : m ? `${m} phút ${s % 60} giây` : `${s} giây`;
 };
 const cell = (x) => String(x ?? '').replace(/\|/g, '\\|').replace(/\n/g, ' ') || '—';
-const { decisionText } = require('./meeting');
+const { decisionText, TASK_STATUS } = require('./meeting');
+const ICON = { todo: '⬜', doing: '🔄', done: '✅', blocked: '⛔' };
+const statusText = (st) => `${ICON[st] || ''} ${TASK_STATUS[st] || st}`.trim();
+const VERIFY_NOTE = 'Trạng thái do agent tự báo (kèm bằng chứng) hoặc chủ trì cập nhật; server KHÔNG tự kiểm chứng.';
 
 // Tóm tắt từng mục (XONG MỤC) + KẾT LUẬN. Agent hay gửi lại KẾT LUẬN nhiều lần: mỗi mục chỉ giữ bản mới nhất.
 function decisions(log) {
@@ -38,7 +41,10 @@ function toJSON(m) {
       slot: a.slot, name: a.name, model: a.model, role: a.role || null, messages: a.said, kicked: !!a.kicked,
     })),
     decisions: decisions(m.log),
-    actions: m.actions.map(a => ({ owner: a.owner || null, task: a.task, due: a.due || null, proposedBy: a.by, item: a.item !== null ? a.item + 1 : null })),
+    actions: m.actions.map(a => ({
+      id: a.n, owner: a.owner || null, task: a.task, due: a.due || null, proposedBy: a.by, item: a.item != null ? a.item + 1 : null,
+      status: a.status || 'todo', note: a.note || null, updatedAt: a.updatedAt || null, updatedBy: a.updatedBy || null,
+    })),
     stats: { messages: msgs.length, members: m.agents.size },
     transcript: m.log.map(x => ({ t: x.t, type: x.type, name: x.type === 'host' ? 'Chủ trì' : x.name, to: x.to || null, text: x.text })),
   };
@@ -68,8 +74,9 @@ function toMarkdown(m) {
   else L.push('*Chưa có quyết định nào được ghi nhận.*');
   L.push('', '## Việc cần làm', '');
   if (j.actions.length) {
-    L.push('| # | Việc | Phụ trách | Hạn | Đề xuất bởi |', '|---|---|---|---|---|');
-    j.actions.forEach((a, i) => L.push(`| ${i + 1} | ${cell(a.task)} | ${cell(a.owner)} | ${cell(a.due)} | ${cell(a.proposedBy)} |`));
+    L.push('| # | Việc | Phụ trách | Hạn | Trạng thái | Bằng chứng / ghi chú | Đề xuất bởi |', '|---|---|---|---|---|---|---|');
+    for (const a of j.actions) L.push(`| ${a.id} | ${cell(a.task)} | ${cell(a.owner)} | ${cell(a.due)} | ${statusText(a.status)}${a.updatedBy ? ` (${cell(a.updatedBy)})` : ''} | ${cell(a.note)} | ${cell(a.proposedBy)} |`);
+    L.push('', `*${VERIFY_NOTE}*`);
   } else L.push('*Không có việc nào được giao.*');
 
   L.push('', '## Diễn biến', '');
@@ -90,9 +97,12 @@ function toSummary(m) {
   const L = [`🤝 Cuộc họp agent đã kết thúc: ${topic}`,
     `⏱ ${fmtDur(j.durationMs)} · ${j.stats.messages} tin · ${j.members.map(a => `${a.name} (${a.model})`).join(', ') || 'không có thành viên'} · ${j.endReason || ''}`];
   if (j.decisions.length) { L.push('', '✅ Quyết định:'); j.decisions.slice(-5).forEach(d => L.push(`• ${d.item ? `[Mục ${d.item}] ` : ''}${d.text.replace(/\s+/g, ' ').slice(0, 300)}`)); }
-  if (j.actions.length) { L.push('', '📋 Việc cần làm:'); j.actions.slice(0, 10).forEach(a => L.push(`• ${a.task}${a.owner ? ` — ${a.owner}` : ''}${a.due ? ` (hạn: ${a.due})` : ''}`)); }
+  if (j.actions.length) {
+    L.push('', `📋 Việc cần làm (${j.actions.filter(a => a.status === 'done').length}/${j.actions.length} xong):`);
+    j.actions.slice(0, 10).forEach(a => L.push(`${ICON[a.status] || '•'} #${a.id} ${a.task}${a.owner ? ` — ${a.owner}` : ''}${a.due ? ` (hạn: ${a.due})` : ''}${a.note ? ` · ${a.note.slice(0, 160)}` : ''}`));
+  }
   const text = L.join('\n');
   return text.length > 1900 ? text.slice(0, 1890) + '…' : text;
 }
 
-module.exports = { toJSON, toMarkdown, toSummary, fmtDur };
+module.exports = { toJSON, toMarkdown, toSummary, fmtDur, statusText, VERIFY_NOTE };

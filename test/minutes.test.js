@@ -27,7 +27,7 @@ test('JSON biên bản: đủ phần, không chứa mã bí mật', () => {
   assert.equal(j.schema, 'agent-meeting/minutes@1');
   assert.deepEqual(j.agenda.map(a => [a.title, a.done, a.summary]), [['Chọn DB', true, 'dùng Postgres'], ['Chọn auth', false, null]]);
   assert.deepEqual(j.decisions.map(d => [d.item, d.text]), [[1, 'dùng Postgres'], [2, 'Postgres + OAuth.']]);
-  assert.deepEqual(j.actions, [{ owner: 'Lan', task: 'Dựng DB', due: 'thứ 6', proposedBy: 'Lan', item: 2 }]);
+  assert.deepEqual(j.actions, [{ id: 1, owner: 'Lan', task: 'Dựng DB', due: 'thứ 6', proposedBy: 'Lan', item: 2, status: 'todo', note: null, updatedAt: null, updatedBy: null }]);
   assert.equal(j.members.find(a => a.name === 'Minh').role, 'phản biện');
   assert.ok(!raw.includes(m.hostKey) && !raw.includes(m.id));
 });
@@ -62,10 +62,11 @@ test('Markdown biên bản và tóm tắt webhook', () => {
   const m = sample(), md = minutes.toMarkdown(m), sum = minutes.toSummary(m);
   for (const h of ['## Thành viên', '## Chương trình họp', '## Quyết định', '## Việc cần làm', '## Diễn biến']) assert.ok(md.includes(h), h);
   assert.match(md, /1\. ✅ Chọn DB — dùng Postgres/);
-  assert.match(md, /\| 1 \| Dựng DB \| Lan \| thứ 6 \| Lan \|/);
+  assert.match(md, /\| 1 \| Dựng DB \| Lan \| thứ 6 \| ⬜ chưa làm \| — \| Lan \|/);
+  assert.match(md, /server KHÔNG tự kiểm chứng/);
   assert.match(md, /Chủ trì → Lan \(riêng\)/);
   assert.match(sum, /^🤝 Cuộc họp agent đã kết thúc: Chọn DB cho app/);
-  assert.match(sum, /📋 Việc cần làm:\n• Dựng DB — Lan \(hạn: thứ 6\)/);
+  assert.match(sum, /📋 Việc cần làm \(0\/1 xong\):\n⬜ #1 Dựng DB — Lan \(hạn: thứ 6\)/);
   assert.ok(sum.length <= 1900);
 });
 
@@ -119,4 +120,13 @@ test('Webhook: Slack/Google Chat nhận {text}, Discord nhận {content}, dịch
   const generic = webhookBody('https://example.com/hook', m);
   assert.deepEqual(Object.keys(generic).sort(), ['content', 'meeting', 'text']);
   assert.equal(generic.meeting.transcript, undefined);
+});
+
+test('Việc có trạng thái: biên bản, JSON và tóm tắt ghi trạng thái + bằng chứng', () => {
+  const m = sample();
+  assert.equal(m.hostTask(1, 'xong', 'commit abc123, 12/12 test xanh'), true); // chủ trì vẫn cập nhật được sau khi họp xong
+  const j = minutes.toJSON(m);
+  assert.equal(j.actions[0].status, 'done'); assert.equal(j.actions[0].note, 'commit abc123, 12/12 test xanh'); assert.equal(j.actions[0].updatedBy, 'Chủ trì');
+  assert.match(minutes.toMarkdown(m), /\| 1 \| Dựng DB \| Lan \| thứ 6 \| ✅ xong \(Chủ trì\) \| commit abc123, 12\/12 test xanh \| Lan \|/);
+  assert.match(minutes.toSummary(m), /\(1\/1 xong\):\n✅ #1 Dựng DB — Lan \(hạn: thứ 6\) · commit abc123/);
 });

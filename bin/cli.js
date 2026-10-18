@@ -40,7 +40,12 @@ Lưu và chia sẻ kết quả
                            khi từng việc xong/vướng, khi đóng phòng); dùng nhiều lần được.
                            Hỗ trợ Slack, Discord, Google Chat; URL khác nhận JSON đầy đủ
   --data-dir <thư mục>     Lưu trạng thái phòng (cần --host-key): tắt/khởi động lại server giữa cuộc họp
-                           thì nạp lại và họp tiếp. File chứa mã bí mật, chỉ chủ máy đọc được (quyền 600)
+                           thì nạp lại và họp tiếp. File chứa mã bí mật, chỉ chủ máy đọc được (quyền 600).
+                           Tệp agent gửi nhau cũng được ghi ở đây (<mã chủ trì>.files/)
+
+Gửi tệp giữa các agent (curl --data-binary; nội dung không đi qua tin nhắn)
+  --max-file-mb <n>        Cỡ tối đa mỗi tệp (mặc định 20; tunnel Cloudflare miễn phí giới hạn ~100)
+  --max-room-mb <n>        Tổng dung lượng tệp mỗi phòng (mặc định 200), tối đa 100 tệp
 
 Tự động hoá (chạy không cần người)
   --context <văn bản>      Bối cảnh cuộc họp
@@ -55,7 +60,8 @@ Khác
   -v, --version         In phiên bản
 
 Biến môi trường tương đương: PORT, AGENT_MEETING_MINUTES_DIR, AGENT_MEETING_WEBHOOK (nhiều URL cách nhau bởi dấu phẩy),
-AGENT_MEETING_PUBLIC_URL, AGENT_MEETING_HOST_KEY, AGENT_MEETING_AGENT_KEY, AGENT_MEETING_DATA_DIR, AGENT_MEETING_FOLLOW_UP=1.`);
+AGENT_MEETING_PUBLIC_URL, AGENT_MEETING_HOST_KEY, AGENT_MEETING_AGENT_KEY, AGENT_MEETING_DATA_DIR, AGENT_MEETING_FOLLOW_UP=1,
+AGENT_MEETING_MAX_FILE_MB, AGENT_MEETING_MAX_ROOM_MB.`);
   process.exit(0);
 }
 
@@ -83,6 +89,8 @@ const cfg = {
   followUp: flag('--follow-up') || /^(1|true|yes)$/i.test(env.AGENT_MEETING_FOLLOW_UP || ''),
   minutesDir: opt('--minutes-dir') || env.AGENT_MEETING_MINUTES_DIR || '',
   dataDir,
+  maxFileMb: num('--max-file-mb', Number(env.AGENT_MEETING_MAX_FILE_MB) || 20),
+  maxRoomMb: num('--max-room-mb', Number(env.AGENT_MEETING_MAX_ROOM_MB) || 200),
   webhooks,
   log: (x) => console.log(x),
 };

@@ -20,7 +20,7 @@ test('MCP: initialize, tools/list, tools/call, notification', async (t) => {
   assert.equal(init.result.protocolVersion, '2025-06-18');
   assert.equal((await rpc(base, m.id, { jsonrpc: '2.0', method: 'notifications/initialized' })).status, 202);
   const list = await (await rpc(base, m.id, { jsonrpc: '2.0', id: 2, method: 'tools/list' })).json();
-  assert.deepEqual(list.result.tools.map(x => x.name), ['join', 'wait', 'say', 'pass', 'typing', 'progress', 'leave', 'history']);
+  assert.deepEqual(list.result.tools.map(x => x.name), ['join', 'wait', 'say', 'pass', 'typing', 'progress', 'files', 'leave', 'history']);
   // Codex CLI chỉ chạy không cần duyệt khi readOnlyHint, hoặc destructiveHint=false + openWorldHint=false
   for (const x of list.result.tools)
     assert.ok(x.annotations.readOnlyHint === true || (x.annotations.destructiveHint === false && x.annotations.openWorldHint === false), x.name);
@@ -295,7 +295,8 @@ test('MCP: giữ phòng báo tiến độ, agent MCP được hướng dẫn g�
   const left = await call(3, 'leave', { name: 'Codex-1' });
   assert.equal(m.state, 'WORK');
   assert.match(left, /Tool MCP: progress\(name="Codex-1", task="<số việc>", status="xong", note="<bằng chứng>"\)/);
-  assert.doesNotMatch(left, /curl/);
+  assert.doesNotMatch(left, /\/progress"/); // báo tiến độ bằng tool; chỉ phần tệp mới dùng curl
+  assert.match(left, new RegExp(`curl -s -X POST "${base}/a/${m.id}/send\\?name=Codex-1`));
   assert.match(await call(4, 'progress', { name: 'Codex-1', task: '1', status: 'xong', note: 'commit 1a2b' }), /phòng đã đóng/);
   assert.equal(m.state, 'ENDED');
 });

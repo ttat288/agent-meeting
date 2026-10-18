@@ -9,7 +9,7 @@ const fmtDur = (ms) => {
   return h ? `${h} giờ ${m} phút` : m ? `${m} phút ${s % 60} giây` : `${s} giây`;
 };
 const cell = (x) => String(x ?? '').replace(/\|/g, '\\|').replace(/\n/g, ' ') || '—';
-const { decisionText, TASK_STATUS } = require('./meeting');
+const { decisionText, fmtSize, TASK_STATUS } = require('./meeting');
 const ICON = { todo: '⬜', doing: '🔄', done: '✅', blocked: '⛔' };
 const statusText = (st) => `${ICON[st] || ''} ${TASK_STATUS[st] || st}`.trim();
 const VERIFY_NOTE = 'Trạng thái do agent tự báo (kèm bằng chứng) hoặc chủ trì cập nhật; server KHÔNG tự kiểm chứng.';
@@ -46,6 +46,9 @@ function toJSON(m) {
       id: a.n, owner: a.owner || null, task: a.task, due: a.due || null, proposedBy: a.by, item: a.item != null ? a.item + 1 : null,
       status: a.status || 'todo', note: a.note || null, updatedAt: a.updatedAt || null, updatedBy: a.updatedBy || null, carried: !!a.carried,
     })),
+    // tệp agent gửi nhau: chỉ thông tin, không nhúng nội dung, không có mã tệp (mã là quyền tải)
+    files: (m.files || []).map(f => ({ name: f.name, size: f.size, sha256: f.sha256, from: f.from, to: f.to || null, note: f.note || null,
+      sentAt: f.t, downloadedBy: [...f.got], carried: !!f.carried })),
     carriedFrom: m.carry ? { startedAt: m.carry.from || null, topic: m.carry.topic || null, decisions: m.carry.decisions, done: m.carry.done } : null,
     stats: { messages: msgs.length, members: m.agents.size },
     transcript: m.log.map(x => ({ t: x.t, type: x.type, name: x.type === 'host' ? 'Chủ trì' : x.name, to: x.to || null, text: x.text })),
@@ -88,6 +91,12 @@ function toMarkdown(m) {
     for (const a of j.actions) L.push(`| ${a.id}${a.carried ? ' ↩' : ''} | ${cell(a.task)} | ${cell(a.owner)} | ${cell(a.due)} | ${statusText(a.status)}${a.updatedBy ? ` (${cell(a.updatedBy)})` : ''} | ${cell(a.note)} | ${cell(a.proposedBy)} |`);
     L.push('', `*${VERIFY_NOTE}*${j.actions.some(a => a.carried) ? ' ↩ = việc mang từ cuộc họp trước.' : ''}`);
   } else L.push('*Không có việc nào được giao.*');
+
+  if (j.files.length) {
+    L.push('', '## Tệp', '', '| Tệp | Cỡ | Gửi | Nhận | Lúc | sha256 | Đã tải |', '|---|---|---|---|---|---|---|');
+    for (const f of j.files) L.push(`| ${cell(f.name)}${f.carried ? ' ↩' : ''} | ${fmtSize(f.size)} | ${cell(f.from)} | ${cell(f.to || 'cả phòng')} | ${fmtTime(f.sentAt)} | \`${f.sha256.slice(0, 16)}…\` | ${cell(f.downloadedBy.join(', ') || 'chưa ai')} |`);
+    L.push('', '*Nội dung tệp không nằm trong biên bản: tải ở trang chủ trì khi phòng còn mở. Kiểm tra bằng sha256.*');
+  }
 
   L.push('', '## Diễn biến', '');
   for (const x of m.log) {

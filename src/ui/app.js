@@ -27,6 +27,7 @@
     const s = Math.max(0, Math.floor(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, x = s % 60;
     return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0');
   };
+  const fmtSize = (n) => n < 1024 ? `${n} B` : `${(n / (n < 1048576 ? 1024 : 1048576)).toFixed(1).replace('.', ',')} ${n < 1048576 ? 'KB' : 'MB'}`;
   const store = {
     get: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
     set: (k, v) => { try { localStorage.setItem(k, v); } catch {} },
@@ -200,12 +201,13 @@
   // "Họp tiếp": việc chưa xong và quyết định mang từ cuộc họp trước (hệ thống tự gửi kèm khi bắt đầu)
   function renderCarry(s) {
     const c = s.carry; $('carryCard').hidden = !c;
-    if (!c || !changed('carry', [c, s.actions, s.state === 'ENDED'])) return;
+    if (!c || !changed('carry', [c, s.actions, s.files, s.state === 'ENDED'])) return;
     const open = s.actions.filter(x => x.status !== 'done');
     $('carry').replaceChildren(...[
       el('p', { class: 'hint' }, `Từ: ${c.topic || 'cuộc họp trước'}${c.from ? ' · ' + new Date(c.from).toLocaleString('vi-VN') : ''}. Danh sách này được gửi kèm bối cảnh khi bắt đầu; số việc giữ nguyên.`),
       c.decisions.length ? el('div', {}, el('h4', {}, `Quyết định (${c.decisions.length})`), el('ul', {}, ...c.decisions.map(d => el('li', {}, d.item ? el('b', {}, `Mục ${d.item}: `) : null, el('span', { html: inline(d.text) }))))) : null,
       el('div', {}, el('h4', {}, `Việc chưa xong (${open.length})`), open.length ? el('ul', { class: 'tasks' }, ...open.map(taskItem)) : el('p', { class: 'muted' }, 'Mọi việc mang sang đã báo xong.')),
+      s.files.length ? el('div', {}, el('h4', {}, `Tệp (${s.files.length})`), el('ul', {}, ...s.files.map(f => el('li', {}, f.name, el('span', { class: 'who' }, ` · ${f.from} → ${f.to || 'cả phòng'} · ${fmtSize(f.size)}`))))) : null,
       c.done.length ? el('div', {}, el('h4', {}, `Đã xong (${c.done.length})`), el('ul', {}, ...c.done.map(t => el('li', {}, `#${t.n} `, el('span', { html: inline(t.task) }), t.note ? el('span', { class: 'who' }, ' · ' + t.note) : null)))) : null].filter(Boolean)); // replaceChildren(null) in ra chữ "null"
   }
   function renderSetup(s) {
@@ -292,7 +294,11 @@
   }, 1000);
 
   const modelOf = (name) => snap?.agents.find(a => a.name === name)?.model || '';
+  const fileUrl = (f) => `/api/host/${key}/file/${f.id}`;
   function entry(m, prev) {
+    const f = m.file && snap?.files.find(x => x.id === m.file);
+    if (m.file) return el('div', { class: 'sys filemsg' }, el('time', {}, fmtTime(m.t)), el('span', {}, '📎 ' + m.text),
+      f && !f.gone ? el('a', { href: fileUrl(f), download: f.name }, 'Tải') : null);
     if (m.type === 'sys') return el('div', { class: 'sys' + (m.progress ? ' prog s-' + m.progress.status : '') }, el('time', {}, fmtTime(m.t)), m.progress ? el('span', { html: linkify(esc(m.text)) }) : m.text);
     const host = m.type === 'host', name = host ? (m.to ? `Chủ trì → ${m.to} (riêng)` : 'Chủ trì') : m.name, color = host ? 'var(--accent)' : colorOf(m.name);
     const first = !prev || prev.type === 'sys' || prev.type !== m.type || prev.name !== m.name || m.t - prev.t > 5 * 60000;
@@ -439,6 +445,18 @@
       s.actions.length ? el('div', {}, el('h4', {}, `Việc cần làm (${s.actions.filter(x => x.status === 'done').length}/${s.actions.length} xong)`),
         el('ul', { class: 'tasks' }, ...s.actions.map(taskItem)), verifyNote()) : null].filter(Boolean));
   }
+  // tệp agent gửi nhau: chủ trì xem ai gửi ai, cỡ, sha256, ai đã tải, và tải về (luôn là tệp đính kèm, không mở trong trang)
+  function renderFiles(s) {
+    $('filesSec').hidden = !s.files.length;
+    if (!s.files.length || !changed('files', s.files)) return;
+    $('filesCount').textContent = String(s.files.length);
+    $('files').replaceChildren(...s.files.map(f => el('li', { class: 'file' + (f.gone ? ' fgone' : '') },
+      el('div', { class: 'fhd' }, el('b', { class: 'fname' }, f.name), el('span', { class: 'who' }, fmtSize(f.size)),
+        f.gone ? el('span', { class: 'muted' }, 'đã xoá') : el('a', { class: 'btn sm ghost', href: fileUrl(f), download: f.name, title: 'Tải về ' + f.name }, 'Tải')),
+      el('div', { class: 'who' }, `${f.from} → ${f.to ? f.to + ' (riêng)' : 'cả phòng'} · ${fmtTime(f.t)}${f.carried ? ' · từ cuộc trước' : ''} · ${f.got.length ? 'đã tải: ' + f.got.join(', ') : 'chưa ai tải'}`),
+      f.note ? el('div', { class: 'tnote' }, f.note) : null,
+      el('code', { class: 'sha', title: 'sha256: ' + f.sha256 }, 'sha256 ' + f.sha256.slice(0, 16) + '…'))));
+  }
   function renderSendTo(s) {
     const sel = $('sendTo'), cur = sel.value;
     const names = s.agents.filter(a => !['left', 'kicked', 'ended'].includes(a.status)).map(a => a.name);
@@ -456,14 +474,15 @@
     const b = $('btnPanel'); if (!snap) return;
     if ($('side').classList.contains('open')) { b.textContent = '✕ Đóng chi tiết'; b.classList.remove('has'); return; }
     const n = decisions().length + snap.actions.length;
-    b.textContent = '☰ ' + [snap.agenda.length ? `Mục ${Math.min(snap.agendaIndex + 1, snap.agenda.length)}/${snap.agenda.length}` : '', n ? `Kết quả ${n}` : 'Chi tiết'].filter(Boolean).join(' · ');
+    const parts = [snap.agenda.length ? `Mục ${Math.min(snap.agendaIndex + 1, snap.agenda.length)}/${snap.agenda.length}` : '', n ? `Kết quả ${n}` : '', snap.files.length ? `Tệp ${snap.files.length}` : ''].filter(Boolean);
+    b.textContent = '☰ ' + (parts.join(' · ') || 'Chi tiết');
     b.classList.toggle('has', n > 0);
   }
   $('btnPanel').onclick = () => setPanel(!$('side').classList.contains('open'));
   matchMedia('(max-width: 860px)').addEventListener('change', (e) => { if (!e.matches) setPanel(false); });
 
   function renderRoom(s, fresh) {
-    renderAgenda(s); renderResults(s); renderSendTo(s); renderPanelBtn();
+    renderAgenda(s); renderResults(s); renderFiles(s); renderSendTo(s); renderPanelBtn();
     $('members').replaceChildren(...s.agents.map(a => person(a, { kick: s.state === 'LIVE', said: true })));
     const present = s.agents.filter(a => !['left', 'kicked', 'ended'].includes(a.status)).length;
     $('memberCount').textContent = s.state === 'LIVE' ? `${present}/${s.agents.length}` : String(s.agents.length);

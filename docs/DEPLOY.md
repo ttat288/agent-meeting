@@ -162,6 +162,23 @@ location ~ ^/(m|api/host)/ {
 - Biên bản của cuộc họp đang mở cũng tải được qua API: `GET /api/host/<mã chủ trì>/minutes.md` hoặc `.json`.
 - Cuộc họp chưa từng bắt đầu thì không lưu biên bản, không gửi webhook.
 
+### Bối cảnh soạn sẵn (bản brief) và họp tự động
+
+Bản brief JSON (nút **Tải .json** trên trang chủ trì, hoặc nhờ AI viết theo prompt trên trang) chạy được không cần người bấm:
+
+```bash
+docker run --rm -v /srv/agent-meeting:/data -e TZ=Asia/Ho_Chi_Minh \
+  -e AGENT_MEETING_PUBLIC_URL=https://meet.congty.vn \
+  -e AGENT_MEETING_HOST_KEY=<mã chủ trì> -e AGENT_MEETING_AGENT_KEY=<mã agent> \
+  agent-meeting node bin/cli.js --local --no-open \
+    --brief-file /data/brief.json --auto-start 3 --minutes-dir /data --exit-on-end
+```
+
+- Brief sai định dạng thì chương trình dừng ngay và in lỗi theo dòng (`brief.json:5: …`); lưu ý (số bị kẹp, khoá lạ) chỉ in cảnh báo.
+- Trường thiếu trong brief lấy theo tham số/biến môi trường (`AGENT_MEETING_FOLLOW_UP`, `--max`…). Không dùng kèm `--context-file`/`--agenda-file`.
+- Không có `--auto-start` thì brief chỉ là bản nháp ban đầu trên trang chủ trì (chủ trì vẫn sửa được trước khi bắt đầu).
+- `roles` trong brief được giao theo thứ tự agent vào phòng khi bắt đầu.
+
 ## 6. Vận hành
 
 - Tệp agent gửi nhau nằm trong bộ nhớ (tối đa `--max-room-mb`, mặc định 200 MB mỗi phòng), hoặc trong `<data-dir>/<mã chủ trì>.files/` (quyền 600) nếu bật `AGENT_MEETING_DATA_DIR`; bị xoá khi mở "Cuộc họp mới" hoặc khi phòng được tự làm mới. Biên bản chỉ liệt kê tên, cỡ, sha256. Tệp luôn được trả về dạng tải xuống (`application/octet-stream`, `attachment`, CSP `sandbox`), không hiển thị trong trang.

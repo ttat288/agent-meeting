@@ -22,9 +22,11 @@ src/server.js     HTTP thuần: /m/<hostKey> (trang chủ trì), /api/host/<host
                   lưu biên bản (--minutes-dir), gửi webhook (work/task/ended), ghi/nạp trạng thái phòng (--data-dir),
                   renew(mt, carry); nội dung tệp: blobs (bộ nhớ) hoặc <dataDir>/<hostKey>.files/<mã tệp>
 src/minutes.js    biên bản Markdown / JSON (agent-meeting/minutes@1) / tóm tắt webhook
-src/ui/           trang chủ trì: index.html + app.css + app.js, không build, CSP chặt
+src/brief.js      bản brief JSON (agent-meeting/brief@1): parseBrief / toBrief / aiPrompt, chạy cả Node lẫn trình duyệt
+                  (UMD: module.exports | window.AgentMeetingBrief), phục vụ ở /assets/brief.js (v3.3)
+src/ui/           trang chủ trì: index.html + app.css + app.js (+ /assets/brief.js), không build, CSP chặt
 scripts/          install-linux.sh (launcher menu), demo-bots.js (3 agent giả lập)
-test/             node:test; meeting.test.js (luật) + server.test.js (HTTP/MCP) + minutes.test.js
+test/             node:test; meeting.test.js (luật) + server.test.js (HTTP/MCP) + minutes.test.js + files.test.js + brief.test.js
 Dockerfile        node:22-alpine, CMD --local --no-open; docs/DEPLOY.md (proxy, systemd, mã cố định)
 ```
 
@@ -65,6 +67,21 @@ Quyết định kỹ thuật quan trọng (đừng đảo ngược nếu không 
   (quyết định progress qua tool hay curl). Tool `files(name, wait)` là `readOnlyHint`; `send` không phải tool MCP.
   `files?wait=1` chặn tới `waitMs` cho tới khi có tệp chưa tải gửi cho mình: cần cho giai đoạn WORK (agent đã rời không
   còn `wait`), đã thấy agent thật dùng đúng.
+- **Bản brief (v3.3)** = đúng thân `POST /api/host/<k>/start` + `schema` + `roles`. `src/brief.js` là nguồn duy nhất cho
+  kiểm tra/chuẩn hoá (UI, CLI `--brief-file`, test); `LIMITS` phải khớp `BOUNDS`/`MAX_AGENDA`/`start()` của meeting.js (có
+  test so sánh). Server KHÔNG dùng parseBrief: `start()` tự kẹp/cắt như cũ. Lỗi cú pháp dùng bộ dò riêng (`syntaxError`)
+  để thông báo tiếng Việt, giống nhau trên mọi engine (thông báo của `JSON.parse` khác nhau giữa Node/Chrome/Firefox).
+  Trường thiếu lấy `base` (mặc định của server/CLI), KHÔNG lấy bản nháp đang có: JSON là toàn bộ sự thật.
+- `roles` theo vị trí: agent có mặt thứ i (sắp theo slot, `_order()`) nhận `roles[i]` nếu chưa có vai trò giao tay
+  (vai trò tay không "ăn" mất vị trí). `meeting.preset` = brief từ CLI, chỉ hiện trong snapshot khi LOBBY, lưu qua --data-dir,
+  "Cuộc họp mới" mang sang (như agenda); trang chủ trì dùng làm bản nháp ban đầu khi trình duyệt chưa có nháp.
+- Hai bước chuẩn bị là trạng thái TRÌNH DUYỆT (`step`, `location.hash` `#boi-canh`/`#moi-agent`, pushState + popstate);
+  server vẫn chỉ có LOBBY. Bản nháp: `localStorage[agent-meeting:<hostKey>:brief]` (nháp cũ ≤3.2 theo từng ô được chuyển).
+  Form ↔ JSON: đổi form → JSON viết lại (trừ khi ô JSON đang focus); JSON hợp lệ → form viết lại, KHÔNG định dạng lại chữ
+  người dùng đang gõ; JSON sai thì giữ nguyên chữ để sửa tiếp.
+- Prompt nhờ AI (`aiPrompt`) đã chỉnh theo agent thật, đừng nới: ví dụ KHÔNG có số liệu/chi tiết riêng (Haiku chép sang
+  cuộc họp khác); dặn rõ khi `followUp` thì agenda/endCondition chỉ là phần bàn bạc; prompt không được chứa `<…>`
+  (test kiểm). Đổi prompt thì thử lại bằng subagent Haiku + Sonnet với đúng prompt lấy từ trang (so sha256).
 - Tệp luôn trả về `application/octet-stream` + `attachment` + `nosniff` + CSP `sandbox` (cùng origin với trang chủ trì);
   tên tệp qua `fileName()` (basename, chỉ `\p{L}\p{M}\p{N}._+-`, không bắt đầu bằng `.`/`-`) nên an toàn trong `curl -o "…"`.
 
@@ -121,10 +138,40 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
   - Mẫu nginx trong DEPLOY.md từng để `client_max_body_size 1m`: gửi tệp > 1 MB sau proxy sẽ hỏng. Đã nâng lên 25m +
     `proxy_request_buffering off`; đổi `--max-file-mb` thì nhớ đổi theo.
   - `scripts/install-linux.sh` chép code nhánh hiện tại vào app trong menu của người dùng: chỉ chạy sau khi đã merge.
+  - (v3.3) Ô ẩn của công tắc/nút chọn dùng `position:absolute`: thiếu `position:relative` ở khung cha thì chúng định vị
+    theo trang và kéo dài cả `body` (trang tràn, thanh dưới trôi). `.pane` trong `.setup` (flex cột) phải `flex: none`,
+    không thì bị co bằng khung và nội dung tràn ra ngoài.
+  - (v3.3) Luật màn hẹp `.btn span:not(:only-child) { display: none }` ẩn chữ của mọi nút có icon: nút ở thanh dưới
+    (`.startbar`) phải được trả lại chữ.
+  - (v3.3) Trình duyệt tích hợp: khi cửa sổ app bị ẩn, `computer` (phím/chụp ảnh) báo hết giờ; `javascript_tool`,
+    `read_page` vẫn chạy. Cỡ mô phỏng (mobile/tablet) bị app xoá khi pane đổi rộng: đặt lại trước mỗi lần chụp.
+  - (v3.3) Subagent đôi khi trả JSON trong `SubagentHandback` hoặc chỉ trong text trước đó và báo cáo cuối chỉ là câu tóm
+    tắt: lấy đúng chữ từ transcript (`tool_use` SubagentHandback `input.message`, hoặc các khối `text` của assistant).
+  - (v3.3) Heredoc không có dấu nháy (`<<EOF`) ăn mất dấu `\`: viết script JS/Python có `\n` bằng công cụ Write.
 - Commit kết thúc bằng dòng `Co-Authored-By` theo hướng dẫn của phiên; cập nhật CHANGELOG + README/GUIDE cho thay đổi người dùng thấy được; `bash scripts/install-linux.sh` để cập nhật bản trong menu.
 
 ## Trạng thái
 
+- **v3.3.0 xong trên nhánh `v3.3-brief` (2026-10-18), CHƯA merge, CHƯA push, CHƯA tag.** 92 test xanh (`test/brief.test.js`
+  mới: JSON hợp lệ, bọc ```json/câu dẫn, lỗi cú pháp có dòng/cột, sai kiểu từng trường, kẹp số, cắt độ dài, khoá lạ, `<…>`,
+  64 KB, roles theo slot, POST start nhận nguyên brief, preset qua toState/restore). package.json 3.3.0, CHANGELOG 3.3.0,
+  README/README.en/GUIDE/DEPLOY đã cập nhật, ảnh mới `setup.jpg`, `invite.jpg`, `brief-json.jpg`, GIF `docs/demo.gif` mới
+  (dán JSON do AI viết → form → Tiếp → mời agent → họp → thực hiện → đóng; 39 khung, 71 s, 2,0 MB).
+  - Đã kiểm chứng trên trình duyệt tích hợp (server dev `--data-dir`): mẫu, đếm ký tự, danh sách chương trình (Enter, Alt+↑
+    bằng phím thật), tab JSON (lỗi theo dòng, áp ngay, Áp dụng), Tiếp/← Bối cảnh/thanh bước/Back/tải lại giữ bước, chặn khi
+    trống, hỏi lại `<…>`, phòng chờ hiện vai trò "theo bản brief", Bắt đầu gửi đúng brief (vai trò slot + vai trò tay giữ
+    nguyên), ngăn kéo Mời agent lúc họp, Họp tiếp về bước 1 có thẻ mang sang. Cỡ 1280 (sáng), 768 (sáng), ~800 và 375 (tối),
+    không tràn ngang, không lỗi console. Thứ tự Tab kiểm tra qua DOM (cửa sổ app bị ẩn nên không gửi được phím Tab thật).
+  - "Nhờ AI viết" với agent thật: subagent Haiku 4.5 + Sonnet 5.5, đúng prompt sao chép từ trang (so sha256), 3 vòng,
+    10 lần, gồm cả chế độ "đã có bản nháp": mọi JSON đều hợp lệ và đúng ý mô tả; đã sửa prompt 2 lần (xem "Quyết định").
+    Kết quả dán nguyên văn vào trang (cả bản bọc ```json + đoạn giải thích phía sau): form điền đúng, bước 2 tóm tắt đúng.
+  - CLI `--brief-file`: lỗi theo dòng + thoát 1, dùng kèm `--context` bị từ chối, `--auto-start` dùng settings + roles
+    (đã thử với curl join), không `--auto-start` thì trang nhận brief làm bản nháp (đã xem trên trang); `--context-file` +
+    `--agenda-file` cũng tạo preset (xem qua API).
+  - CHƯA kiểm chứng: bàn phím thật đầy đủ (Tab/Space trên công tắc), trình đọc màn hình, Safari/iOS, Node 18/20 (CI sẽ
+    chạy), bấm "Mở tệp .json" với hộp chọn tệp thật, mở tệp do "Tải .json" tải về, Docker với `--brief-file`, chế độ tối ở
+    768/1280 (CSS dùng chung biến nên không khác, nhưng chưa nhìn), agent THẬT họp theo brief do AI viết (mới thử phần viết +
+    dán; giao thức gửi agent không đổi trừ dòng vai trò, vốn đã có từ v3).
 - **v3.2.0 đã merge vào main và push (2026-10-18, fast-forward từ `v3.2-files`); CHƯA tag, CHƯA GitHub Release.**
   Đã chạy `scripts/install-linux.sh` (bản trong menu là 3.2.0); người dùng tự mở để kiểm tra giao diện. 75 test xanh
   (`test/files.test.js` mới: tải lên/tải về đúng bytes, header an toàn, gửi riêng, tên độc, giới hạn content-length/
@@ -159,6 +206,24 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
   `--local --port 3100 --host-key … --agent-key … --data-dir … --minutes-dir …`, giao diện bằng trình duyệt tích hợp
   (desktop + mobile 375px). Chưa kiểm chứng: CLI thật qua MCP, webhook tới Slack/Discord/Google Chat thật (mới có server giả
   trong test), `npm run demo` sau thay đổi, `scripts/install-linux.sh`.
+
+### Cách lặp lại phép thử "Nhờ AI viết" (v3.3)
+
+1. Server dev (lệnh ở dưới), mở trang chủ trì trong trình duyệt tích hợp. Lấy ĐÚNG prompt trang chép ra: bọc
+   `navigator.clipboard.writeText` bằng `javascript_tool` để lưu chữ vào `window.__copied`, bấm `#btnAiPrompt`, rồi so sha256
+   với `aiPrompt(...)` sinh bằng Node (bản nháp trống: `aiPrompt(defaults())`; có nháp: dựng đúng bản nháp đó).
+2. Subagent haiku + sonnet (nền), prompt = chữ đó + mô tả cuộc họp như người dùng gõ, không dặn thêm. Mô tả đã dùng: repo
+   calc (sửa sub, thêm mul, commit, báo tiến độ, reviewer, ≤20 phút); review bảo mật API đăng nhập (3 agent, lần lượt);
+   hoàn thiện bản nháp "Review PR MoMo" (3 agent, 3 mục, ≤30 phút).
+3. Kiểm `parseBrief` bằng Node, rồi dán nguyên văn vào `#jsonText` (gán `.value` + sự kiện `input`), bấm `#jsonApply`,
+   đọc lại các ô form, bấm `#btnNextStep`, đọc `#briefSummary`. Xem ý nghĩa: followUp/mode/giới hạn đúng mô tả, agenda
+   không chứa "làm việc/báo tiến độ" khi followUp, không chép chi tiết của ví dụ.
+
+Ảnh tài liệu: server riêng (`--port 3101 --host-key shothost… --agent-key shotagent…`), Firefox headless như dưới,
+`shot.js <url> <out.png> 1280 860 2 2500 '' '<js>'` (tham số js chạy sau khi tải: đặt localStorage bản nháp/tab rồi chụp lần
+hai), join agent giả bằng curl cho ảnh bước 2, PIL thu về 1280px JPEG q85. GIF: script quay cũ + đoạn mới: `localStorage.clear()`
+và bỏ hash → bấm `#btnToJson` → dán JSON (có ```json) làm hai nhát → `#jsonApply` → cuộn → `#btnNextStep` → chạy bot → chờ đủ 3
+agent → `#btnStart`; ghép: gộp khung gần trùng (bbox khác biệt < 1500 px²), live 1 s, work 1,1 s, khung chính 3,5-5 s.
 
 ### Cách lặp lại phép thử agent thật của v3.2 (gửi tệp)
 
@@ -280,7 +345,10 @@ Thiết kế dưới đây đã làm đúng như chốt, chỉ BỔ SUNG `files?
 3. ✅ Nhỏ: "Thảo luận" ở màn kết thúc khi đóng từ phòng chờ (đã sửa). Ghi chú agent báo sau thay ghi chú đã nối khi gộp
    việc: giữ nguyên (chấp nhận được).
 
-## Lộ trình v3.3: màn chuẩn bị tách 2 bước + bối cảnh dạng JSON để nhờ AI viết (nhánh v3.3-brief)
+## Lộ trình v3.3: màn chuẩn bị tách 2 bước + bối cảnh dạng JSON để nhờ AI viết (nhánh v3.3-brief, đã xong)
+
+Kết quả: 1-5 xong đúng thiết kế dưới đây (không đổi thiết kế; `roles` theo slot đã làm). Chi tiết ở "Trạng thái". Bước 2-4
+làm chung một lần vì cùng một màn (làm từng bước sẽ phải viết lại màn ba lần), test riêng từng phần.
 
 Người dùng yêu cầu 2026-10-18: tự điền bối cảnh và tuỳ chọn trên UI "hơi mệt", muốn chuyển sang JSON để gửi cho AI viết
 hộ; trang bối cảnh cần thiết kế đẹp hơn; bước 1 (Bối cảnh) và bước 2 (Mời agent) đang chung một màn, phải tách ra: xong
@@ -351,14 +419,20 @@ subagent Haiku + Sonnet như các phiên trước.
 
 Theo thứ tự ưu tiên:
 
-1. **Hỏi người dùng kết quả kiểm tra giao diện v3.2** (bản trong menu đã là 3.2.0, main đã push), sửa nếu có góp ý; rồi
-   (khi được đồng ý) tag `v3.2.0` + GitHub Release (nội dung từ CHANGELOG 3.2.0). KHÔNG tự tag/release khi chưa hỏi.
-2. **v3.3** theo "Lộ trình v3.3" ở trên, làm trên nhánh `v3.3-brief` (đã tạo từ main, chỉ có commit HANDOFF này).
+1. **Hỏi người dùng**: (a) kết quả kiểm tra giao diện v3.2 trong menu (chưa có câu trả lời); (b) duyệt v3.3 trên nhánh
+   `v3.3-brief` (thử trang chuẩn bị mới, nhất là "Nhờ AI viết" với ChatGPT/Claude thật của họ). Khi được đồng ý: merge
+   `v3.3-brief` vào main (fast-forward), push, `bash scripts/install-linux.sh`, rồi tag `v3.2.0` (nếu người dùng muốn phát
+   hành riêng) và `v3.3.0` + GitHub Release từ CHANGELOG. KHÔNG tự merge/push/tag/release khi chưa hỏi.
+2. **Thử agent thật họp theo brief do AI viết** (sau khi merge hoặc ngay trên nhánh): lấy một JSON Haiku/Sonnet đã viết
+   (ví dụ repo calc, `followUp: true`, roles theo slot), dán vào trang, mời 2 subagent bằng prompt "Dán là vào ngay", kiểm
+   tra vai trò theo slot hiện đúng trong tin mở đầu và agent không chờ nhau trong phòng (agenda chỉ phần bàn bạc).
 3. **Thử gửi tệp qua tunnel Cloudflare thật** (bỏ `--local`): tệp vài MB và ~20 MB, kiểm tra Expect 100-continue và
    thông báo "Tệp quá lớn" qua tunnel. Tunnel là công khai: hỏi người dùng trước.
 4. **Webhook thật** (Slack/Discord/Google Chat, phòng có `--follow-up`): chỉ khi người dùng đưa URL, không tự tạo.
-5. Ảnh `meeting.jpg`, `mobile-dark.jpg` vẫn là bản v3.0 (800px): chụp lại cùng lúc với ảnh v3.3.
-6. Có thể cân nhắc (chưa làm, cần người dùng đồng ý): chủ trì xoá một tệp trên trang; giới hạn tốc độ gửi tệp theo agent.
+5. Ảnh `meeting.jpg`, `mobile-dark.jpg` vẫn là bản v3.0 (800px); `shot.js` (Firefox BiDi) ở "Cách lặp lại phép thử" dùng lại
+   được, chế độ tối cần `prefers-color-scheme` (CSS không có `[data-theme]`): dùng BiDi `emulation` hoặc profile tối.
+6. Có thể cân nhắc (chưa làm, cần người dùng đồng ý): chủ trì xoá một tệp trên trang; giới hạn tốc độ gửi tệp theo agent;
+   kéo-thả để đổi thứ tự mục chương trình (hiện có nút ↑↓ và Alt+↑/↓).
 
 Ý tưởng xa hơn (chưa lên kế hoạch):
 

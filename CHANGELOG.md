@@ -1,5 +1,34 @@
 # Changelog
 
+## 3.3.0
+
+Màn chuẩn bị tách hai bước và bối cảnh dạng JSON để nhờ AI viết hộ. Không đổi giao thức gửi agent (trừ vai trò theo thứ tự
+vào phòng). Vẫn một lệnh là chạy, không thư viện ngoài, Node 18+.
+
+- **Bản brief** (`agent-meeting/brief@1`): bối cảnh, điều kiện kết thúc, chương trình họp, tuỳ chọn và `roles` trong một
+  object JSON, đúng bằng thân `POST /api/host/<mã chủ trì>/start`. Module dùng chung `src/brief.js` (Node + trình duyệt,
+  phục vụ ở `/assets/brief.js`): kiểm kiểu từng trường, kẹp số theo giới hạn của server, cắt độ dài, khoá lạ chỉ cảnh báo,
+  nhận cả khi AI bọc trong ```` ```json ```` hoặc thêm câu dẫn, lỗi cú pháp báo dòng/cột bằng tiếng Việt (thừa/thiếu dấu
+  phẩy, ngoặc cong “ ”, chuỗi xuống dòng thật…), giới hạn 64 KB.
+- **Nhờ AI viết**: nút *Sao chép prompt cho AI* (mô tả và giới hạn từng trường, JSON mẫu hoặc bản nháp hiện tại); dán kết
+  quả vào tab **JSON**: hợp lệ thì áp vào form ngay, lỗi hiện theo dòng (bấm để tới dòng). Form và JSON đồng bộ hai chiều.
+  *Sao chép JSON*, *Tải .json*, *Mở tệp .json* (đọc trong trình duyệt, không gửi lên server). Đã thử với Haiku 4.5 và
+  Sonnet 5.5 (prompt sao chép từ trang): JSON hợp lệ, đúng ý mô tả; prompt được chỉnh sau lần thử đầu (agent đưa phần
+  "làm việc / báo tiến độ" vào chương trình họp khi giữ phòng; Haiku chép số liệu của ví dụ).
+- **Vai trò theo thứ tự vào phòng** (`roles`): khi bắt đầu, agent có mặt thứ nhất nhận vai trò 1…; vai trò chủ trì giao tay
+  được giữ. Phòng chờ hiện trước vai trò sẽ nhận ("theo bản brief").
+- **Hai màn chuẩn bị**: *1. Bối cảnh* → **Tiếp: mời agent →** → *2. Mời agent* (thẻ mời, phòng chờ, tóm tắt bối cảnh chỉ đọc
+  kèm **← Sửa bối cảnh**, **Bắt đầu cuộc họp**). Bước lưu trong địa chỉ (`#boi-canh` / `#moi-agent`): tải lại trang hay bấm
+  Back vẫn đúng bước; thanh bước bấm được khi đang chuẩn bị. Bước 1 hiện số agent đang chờ. "Họp tiếp"/"Cuộc họp mới" về bước 1.
+- **Thiết kế lại trang bối cảnh**: thẻ mẫu có biểu tượng + mô tả, ô lời dặn
+  đếm ký tự (8000), chương trình họp và vai trò dạng danh sách sửa được (Enter thêm dòng, Backspace ở dòng trống xoá,
+  Alt+↑/↓ hoặc nút ↑↓ đổi chỗ), công tắc *Giữ phòng để báo tiến độ*, chế độ phát biểu dạng nút chọn, nhóm giới hạn.
+  Đã kiểm tra ở 1280, 768, 375 px, sáng và tối.
+- CLI **`--brief-file brief.json`** (thay `--context-file` + `--agenda-file`, báo lỗi theo dòng và dừng nếu sai); với
+  `--auto-start` dùng cả tuỳ chọn và vai trò của brief; không có `--auto-start` thì brief là bản nháp ban đầu trên trang chủ trì
+  (`--context-file`… cũng vậy). Bản nháp kiểu cũ trong trình duyệt (≤ 3.2) được chuyển sang tự động.
+- Ảnh mới: `docs/screenshots/setup.jpg` (bước 1), `invite.jpg` (bước 2), `brief-json.jpg` (tab JSON).
+
 ## 3.2.0
 
 Gửi tệp / code giữa các agent. Server là trạm chuyển tiếp HTTP: nội dung tệp không đi qua tin nhắn hay ngữ cảnh model

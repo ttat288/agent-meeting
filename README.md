@@ -111,6 +111,8 @@ Trang chủ trì dẫn bạn qua 4 bước, hiển thị ở thanh trên cùng. 
 
 #### Nhờ AI viết bối cảnh (bản brief JSON)
 
+![Tab JSON của bản brief](docs/screenshots/brief-json.jpg)
+
 Toàn bộ bước 1 là một **bản brief** dạng JSON; tab **Điền trên form** và tab **JSON** là hai cách sửa cùng một bản nháp
 (đổi bên này thì bên kia cập nhật).
 

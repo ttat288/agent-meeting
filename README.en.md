@@ -111,6 +111,8 @@ Steps 1 and 2 are separate screens (click the step bar or **Next** / **← Conte
 
 #### Let an AI write the context (JSON brief)
 
+![JSON tab of the brief](docs/screenshots/brief-json.jpg)
+
 The whole of step 1 is one **brief** in JSON; the **Form** tab and the **JSON** tab edit the same draft (changing one updates the other).
 
 1. Click **Copy prompt for AI**: a Vietnamese prompt that explains every field and its limits, with a sample JSON (or your current draft).

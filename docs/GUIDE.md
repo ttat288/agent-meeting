@@ -110,28 +110,36 @@ Sau khi cài, **mở lại phiên agent** để nó nạp MCP, rồi bảo agent
 
 ### Trước khi bắt đầu
 
-1. **Viết bối cảnh** (bắt buộc) hoặc chọn một mẫu rồi sửa phần `<…>`.
+Màn chuẩn bị có hai bước riêng: **1. Bối cảnh** rồi bấm **Tiếp: mời agent →** sang **2. Mời agent**. Bấm thanh bước ở trên
+cùng (hoặc nút **← Bối cảnh**) để quay lại sửa; tải lại trang vẫn ở đúng bước. Agent vào phòng chờ được cả khi bạn còn ở bước 1.
+
+**Bước 1: Bối cảnh** (tab **Điền trên form**, hoặc tab **JSON** nếu nhờ AI viết, xem [mục 7](#nhờ-ai-viết-bản-brief))
+
+1. **Lời dặn cho các agent** (bắt buộc, tối đa 8000 ký tự): tự viết, hoặc bấm một thẻ mẫu rồi sửa phần `<…>`.
 2. **Điều kiện kết thúc** (tuỳ chọn), ví dụ "khi có danh sách 5 việc ưu tiên". Để trống thì agent tự chốt bằng tin `KẾT LUẬN:` rồi rời phòng.
-3. **Chương trình họp** (tuỳ chọn), mỗi dòng một mục, ví dụ:
+3. **Chương trình họp** (tuỳ chọn): bấm **+ Thêm mục**, gõ rồi `Enter` để thêm mục tiếp theo, `Alt+↑/↓` hoặc nút ↑↓ để đổi thứ tự, ví dụ:
    ```text
    1. Chọn cổng thanh toán
    2. Kế hoạch ra mắt và phân công
    ```
    Agent bàn lần lượt từng mục. Khi chốt xong một mục, một agent gửi `XONG MỤC 1: <tóm tắt>` và server chuyển sang mục kế tiếp. Sau mục cuối, agent gửi `KẾT LUẬN:` tổng hợp.
-
-   **Giữ phòng để báo tiến độ** (ô đánh dấu ngay dưới): bật khi agent sẽ tự làm các việc được giao (sửa code, viết tài liệu…) rồi báo lại. Xem [Giữ phòng để báo tiến độ](#giữ-phòng-để-báo-tiến-độ).
-4. **Tuỳ chọn nâng cao**:
+4. **Tuỳ chọn**:
 
 | Tuỳ chọn | Mặc định | Gợi ý |
 |---|---|---|
+| Giữ phòng để báo tiến độ (công tắc) | Tắt | Bật khi agent sẽ tự làm các việc được giao (sửa code, viết tài liệu…) rồi báo lại. Xem [Giữ phòng để báo tiến độ](#giữ-phòng-để-báo-tiến-độ) |
 | Chế độ phát biểu | Tự do | **Lần lượt** cho nhóm từ 3 agent, để ai cũng có tiếng nói |
-| Giới hạn số tin | 120 | Giảm xuống 20-40 nếu muốn họp nhanh, tiết kiệm |
-| Giới hạn thời gian | 0 (không) | Đặt 5-15 phút; agent được nhắc trước 2 phút |
-| Im lặng trước khi hỏi chốt | 40 giây | Tăng nếu agent hay suy nghĩ lâu |
+| Số tin tối đa | 120 | Giảm xuống 20-40 nếu muốn họp nhanh, tiết kiệm |
+| Thời gian | 0 (không giới hạn) | Đặt 5-15 phút; agent được nhắc trước 2 phút |
+| Hỏi chốt khi im lặng | 40 giây | Tăng nếu agent hay suy nghĩ lâu (chỉ ở chế độ Tự do) |
+| Vai trò theo thứ tự vào phòng | không | Agent vào thứ nhất nhận vai trò 1, thứ hai nhận vai trò 2… khi bắt đầu |
 
-5. Đợi agent vào **phòng chờ**. Bạn có thể bắt đầu khi chưa đủ người: ai vào sau vẫn đọc lại được từ đầu.
-6. **Giao vai trò**: di chuột vào tên agent, bấm **✎**, gõ vai trò (ví dụ *phản biện*, *đại diện tài chính, quan tâm chi phí*). Cả nhóm được báo vai trò khi bắt đầu.
+**Bước 2: Mời agent**
+
+5. Sao chép prompt mời (xem [mục 4](#4-mời-agent-vào-họp)) và đợi agent vào **phòng chờ**. Cột phải tóm tắt đúng bối cảnh sẽ gửi. Bạn có thể bắt đầu khi chưa đủ người: ai vào sau vẫn đọc lại được từ đầu.
+6. **Giao vai trò**: di chuột vào tên agent, bấm **✎**, gõ vai trò (ví dụ *phản biện*, *đại diện tài chính, quan tâm chi phí*). Vai trò theo thứ tự trong bản brief hiện mờ kèm chữ "theo bản brief"; vai trò giao tay được ưu tiên. Cả nhóm được báo vai trò khi bắt đầu.
 7. Thấy agent lạ? Di chuột vào tên và bấm **⨯** để mời ra, ngay từ phòng chờ.
+8. Bấm **Bắt đầu cuộc họp**.
 
 ### Trong cuộc họp
 
@@ -207,18 +215,40 @@ Bàn về database.
 
 ```text
 Chọn database cho app quản lý công việc (team 4 người, dự kiến 10k người dùng năm đầu).
-Vai trò: Lục Bình bảo vệ PostgreSQL, Orion bảo vệ MongoDB, Mây đóng vai người phản biện.
+Vai trò: một bạn bảo vệ PostgreSQL, một bạn bảo vệ MongoDB, một bạn phản biện cả hai.
 Ràng buộc: ngân sách hạ tầng dưới 50 USD/tháng, team đã quen SQL.
 Đầu ra: một tin KẾT LUẬN gồm lựa chọn, 3 lý do, và điều kiện để đổi ý.
 ```
 
 Mẹo:
 
-- **Giao vai trò đối lập** (nút ✎, hoặc viết ngay trong bối cảnh) để tránh cả nhóm đồng ý ngay từ câu đầu. Nhắn riêng cho một agent "hãy phản biện" cũng rất hiệu quả.
+- Agent **tự đặt tên** khi vào phòng nên bạn không biết trước tên: đừng gọi agent bằng tên trong bối cảnh. Phân vai bằng
+  **vai trò theo thứ tự vào phòng** (bước 1) hoặc nút ✎ ở phòng chờ (bước 2).
+- **Giao vai trò đối lập** để tránh cả nhóm đồng ý ngay từ câu đầu. Nhắn riêng cho một agent "hãy phản biện" cũng rất hiệu quả.
 - **Chia chương trình họp** thành 2-4 mục khi có nhiều quyết định; mỗi mục có tóm tắt riêng trong biên bản.
 - **Nêu rõ đầu ra** (danh sách, bảng, quyết định có điều kiện…), agent sẽ chốt đúng dạng.
 - **Giới hạn lượt** ("mỗi người tối đa 2 lượt phản biện") giúp cuộc họp ngắn và đỡ tốn tiền.
+- Bật **Giữ phòng để báo tiến độ** khi agent phải đi làm thật: chương trình họp chỉ cần phần bàn bạc (chia việc, chốt), phần làm
+  và báo tiến độ diễn ra sau khi chốt; nhớ dặn bằng chứng cần báo (mã commit, kết quả test).
 - Agent nhận bối cảnh khi cuộc họp bắt đầu. Muốn bổ sung giữa chừng thì nhắn với tư cách chủ trì.
+
+### Nhờ AI viết (bản brief)
+
+Toàn bộ bước 1 là một **bản brief** dạng JSON. Thay vì tự điền:
+
+1. Bấm **Sao chép prompt cho AI** (thẻ *Nhờ AI viết*). Prompt có mô tả, giới hạn từng trường và JSON mẫu (hoặc bản nháp bạn đang viết dở).
+2. Dán vào ChatGPT, Claude… rồi viết tiếp mô tả cuộc họp: bàn gì, mấy agent và vai trò, cần chốt gì, có phải đi làm sau họp
+   không, giới hạn thời gian. Ví dụ:
+   ```text
+   Repo Node ở /home/dev/calc: sub() đang trả a + b, chưa có mul(). Hai agent họp nhanh để chia việc: một bạn sửa sub(),
+   một bạn thêm mul() kèm test. Mỗi bạn commit riêng, xong thì báo tiến độ kèm mã commit. Một bạn kiêm reviewer. Họp ≤ 20 phút.
+   ```
+3. Dán JSON nhận được vào tab **JSON** (AI bọc trong ```` ```json ```` hay thêm câu giải thích cũng được). JSON hợp lệ được áp vào
+   form ngay; lỗi hiện theo dòng, bấm "dòng n" để tới chỗ sai. Số ngoài khoảng được kẹp lại kèm lưu ý.
+4. Mở tab **Điền trên form** để kiểm tra lại (đặc biệt bối cảnh và vai trò) trước khi bấm **Tiếp**.
+
+**Tải .json** để lưu bản brief dùng lại (hoặc cho `--brief-file`), **Mở tệp .json** để nạp lại (tệp đọc ngay trong trình duyệt,
+không gửi lên server). Đã thử với Haiku 4.5 và Sonnet 5.5: cả hai trả về JSON hợp lệ, đúng ý mô tả.
 
 ## 8. Xử lý sự cố
 
@@ -249,9 +279,10 @@ Vẫn chưa được? [Mở issue](https://github.com/ttat288/agent-meeting/issu
 - **Họp tự động** (không cần người bấm), ví dụ trong CI hoặc cron:
   ```bash
   npx github:ttat288/agent-meeting --local --no-open \
-    --context-file brief.md --agenda-file agenda.txt --auto-start 3 \
+    --brief-file brief.json --auto-start 3 \
     --time-limit 20 --minutes-dir ./bien-ban --webhook "$SLACK_WEBHOOK" --exit-on-end
   ```
-  Chương trình tự bắt đầu khi đủ 3 agent, kết thúc khi hết giờ hoặc agent rời hết, lưu biên bản, gửi tóm tắt rồi thoát.
+  `brief.json` là bản brief tải từ trang chủ trì (nút **Tải .json**) hoặc do AI viết; tham số dòng lệnh (`--max`, `--follow-up`…) là
+  mặc định cho trường bị thiếu. Chương trình tự bắt đầu khi đủ 3 agent (vai trò theo thứ tự vào phòng), kết thúc khi hết giờ hoặc agent rời hết, lưu biên bản, gửi tóm tắt rồi thoát.
 - **Theo dõi việc sau họp**: thêm `--follow-up` để agent rời họp đi làm rồi báo tiến độ; `--data-dir` để server khởi động lại không mất phòng (kể cả tệp agent gửi nhau).
 - **Tích hợp**: biên bản JSON (`schema: agent-meeting/minutes@1`) có `decisions`, `actions` (`id`, `owner`, `task`, `due`, `item`, `status`, `note`, `carried`) và `files` (`name`, `size`, `sha256`, `from`, `to`, `downloadedBy`) để đẩy sang Jira, Notion, Google Sheets… qua webhook dạng URL bất kỳ (nhận `{ event, text, content, meeting }`, với `event` là `work` lúc chốt, `task` khi một việc xong/vướng, `ended` lúc kết thúc) hoặc đọc file trong `--minutes-dir`.

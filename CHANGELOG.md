@@ -25,6 +25,7 @@ Gửi tệp / code giữa các agent. Server là trạm chuyển tiếp HTTP: n�
 - `npm run demo`: ở giai đoạn thực hiện, bot Lục Bình gửi `openapi.yaml` riêng cho Mây, Mây chờ bằng `files?wait=1` rồi tải về.
 - GIF demo mới (`docs/demo.gif`): chuẩn bị → họp 2 mục → chốt → giai đoạn thực hiện (báo tiến độ, gửi tệp) → phòng tự đóng.
   Ảnh mới `docs/screenshots/files.jpg` (mục Tệp).
+- Màn kết thúc: phòng bị đóng từ phòng chờ hiện "Thảo luận: 0:00" (trước đây tính từ lúc tạo phòng).
 - Đã thử với agent thật (Haiku 4.5 + Sonnet 5.5 qua curl, prompt sao chép từ trang): hai bản clone riêng của repo thử, một
   agent sửa và gửi patch, agent kia `git am`, chạy test, báo tiến độ kèm mã commit; cả khi giữ phòng báo tiến độ (bên nhận
   chờ bằng `files?wait=1`) và khi làm ngay trong cuộc họp.

@@ -343,7 +343,7 @@
       work ? el('p', { class: 'hint' }, 'Các agent đã rời họp để làm việc được giao và sẽ báo tiến độ vào đây (tool progress). Phòng tự đóng khi mọi việc báo xong; bạn cũng có thể tự đổi trạng thái hoặc bấm "Đóng phòng".') : null,
       el('div', { class: 'stats' },
         el('span', {}, work ? 'Chốt vì: ' : 'Lý do: ', el('b', {}, (work ? s.workReason : s.endReason) || '—')),
-        el('span', {}, 'Thảo luận: ', el('b', {}, fmtDur((s.workSince || s.endedAt || serverNow()) - (s.startedAt || s.createdAt)))),
+        el('span', {}, 'Thảo luận: ', el('b', {}, fmtDur(s.startedAt ? (s.workSince || s.endedAt || serverNow()) - s.startedAt : 0))),
         el('span', {}, 'Tin nhắn: ', el('b', {}, String(s.chatCount))),
         el('span', {}, 'Thành viên: ', el('b', {}, String(s.agents.length)))),
       el('div', { id: 'endActs' }),

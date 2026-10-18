@@ -178,6 +178,7 @@ textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
 .send { display: flex; gap: 10px; align-items: flex-end; }
 .send textarea { flex: 1; max-height: 180px; }
 .send select { width: auto; max-width: 150px; flex: none; }
+.send textarea::placeholder { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .endcard { border-top: 1px solid var(--line); background: var(--surface); padding: 18px 24px; }
 .endcard-in { max-width: 920px; margin: 0 auto; display: grid; gap: 12px; }
 .endcard h3 { margin: 0; font-size: 16px; }
@@ -247,6 +248,8 @@ textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
   .startbar .btn { flex: 1; }
   .checks { font-size: 12.5px; gap: 10px; }
   .newpill { bottom: 150px; }
+  .send { gap: 8px; }
+  .send select { max-width: 104px; }
 }
 
 /* ---------- v3: chương trình, kết quả, vai trò, tin riêng ---------- */
@@ -285,6 +288,7 @@ textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
   .side:not(.open) { overflow: hidden; }
   .side:not(.open) .side-sec:first-child { flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; padding-right: 6px; }
   .side:not(.open) .side-sec:first-child::-webkit-scrollbar { display: none; }
+  .side:not(.open) .person .nm { flex-wrap: nowrap; }
   .panel-toggle { display: flex; align-items: center; gap: 6px; flex: none; align-self: center; margin: 0 12px 0 4px;
     padding: 7px 12px; border-radius: 99px; border: 1px solid var(--line-2); background: var(--surface-2); color: var(--ink);
     font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; }

@@ -183,11 +183,19 @@ function createApp(cfg = {}) {
     m.restore(s);
     return m;
   }
-  // Cuộc họp nối tiếp dùng lại mã agent (agent đã cài MCP không phải cài lại) và các tuỳ chọn của cuộc trước
-  const renew = (mt) => {
+  // Cuộc họp nối tiếp dùng lại mã agent (agent đã cài MCP không phải cài lại) và các tuỳ chọn của cuộc trước.
+  // carry: "Họp tiếp" mang việc chưa xong (giữ số) + quyết định + việc đã xong sang làm bối cảnh cuộc sau.
+  const renew = (mt, carry) => {
     const s = mt.cfg;
     const n = create({ id: mt.id, hostKey: mt.fixed ? mt.hostKey : undefined, fixed: mt.fixed, mode: s.mode, maxMsgs: s.maxMsgs, idleMs: s.idleMs, timeLimitMin: s.timeLimitMin, followUp: s.followUp });
     n.configure({ agenda: mt.agenda });
+    if (carry) n.carryIn({
+      from: mt.startedAt || mt.createdAt, topic: (mt.context.split('\n').find(Boolean) || '').slice(0, 120),
+      decisions: minutes.decisions(mt.log).slice(-10).map(d => ({ item: d.item, text: d.text.replace(/\s+/g, ' ').slice(0, 300), by: d.by })),
+      done: mt.actions.filter(t => t.status === 'done').map(({ n: num, task, owner, note }) => ({ n: num, task, owner, note })),
+      // agent cuộc trước (và các cuộc trước nữa) vẫn báo tiến độ được cho việc mang sang
+      members: [...new Set([...mt.agents.keys(), ...(mt.carry?.members || [])])],
+    }, mt.actions.filter(t => t.status !== 'done').map(t => ({ ...t })), mt.taskSeq);
     return n;
   };
   const sweep = setInterval(() => {
@@ -237,7 +245,7 @@ function createApp(cfg = {}) {
         if (act === 'kick') return json(200, { ok: mt.kick(d.name) });
         if (act === 'new') {
           if (mt.state === 'LIVE' || mt.state === 'WORK') mt.stop('chủ trì mở cuộc họp mới', true);
-          return json(200, { hostKey: renew(mt).hostKey });
+          return json(200, { hostKey: renew(mt, d.carry === true || d.carry === 'true').hostKey });
         }
       }
 

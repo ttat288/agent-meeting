@@ -2,6 +2,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { createApp } = require('../src/server');
+const minutes = require('../src/minutes');
 
 async function boot() {
   const app = createApp({ waitMs: 400, idleMs: 60000, tick: 30 });
@@ -244,4 +245,39 @@ test('Giữ phòng báo tiến độ: webhook khi chốt, khi từng việc xong
   assert.equal(files.length, 2); // .md + .json, ghi đè lúc đóng
   const j = JSON.parse(fs.readFileSync(path.join(minutesDir, files.find(f => f.endsWith('.json'))), 'utf8'));
   assert.equal(j.state, 'ENDED'); assert.ok(j.concludedAt); assert.deepEqual(j.actions.map(a => a.status), ['done', 'done']);
+});
+
+test('Họp tiếp: mang việc chưa xong (giữ số, trạng thái, bằng chứng) và quyết định sang cuộc sau', async (t) => {
+  const { app, base, m } = await boot(); t.after(() => app.close());
+  const host = (k, act, body) => fetch(`${base}/api/host/${k}/${act}`, { method: 'POST', body: JSON.stringify(body || {}) }).then(r => r.json());
+  m.join('Lam', 'x'); m.join('Minh', 'x');
+  m.start('Sửa lỗi đăng nhập\nchi tiết', '');
+  m.say('Lam', 'KẾT LUẬN: dùng OAuth\nVIỆC: Lam | sửa callback | mai\nVIỆC: Minh | viết test | mai\nVIỆC: Lam | cập nhật docs | thứ 6');
+  m.progress('Lam', '1', 'xong', 'commit abc'); m.progress('Minh', '2', 'đang làm', 'đã có 3/5 test');
+  const { hostKey } = await host(m.hostKey, 'new', { carry: true });
+  const n = app.meetings.get(hostKey);
+  assert.equal(n.state, 'LOBBY');
+  assert.deepEqual(n.actions.map(a => [a.n, a.status, a.note, a.carried]), [[2, 'doing', 'đã có 3/5 test', true], [3, 'todo', '', true]]);
+  assert.equal(m.actions.length, 3); // cuộc cũ giữ nguyên
+  const s = await (await fetch(`${base}/api/host/${hostKey}/state`)).json();
+  assert.equal(s.carry.topic, 'Sửa lỗi đăng nhập'); assert.match(s.carry.decisions[0].text, /dùng OAuth/); assert.equal(s.carry.done[0].n, 1);
+  // agent cuộc trước báo tiến độ việc mang sang khi cuộc mới còn ở phòng chờ (chưa join lại)
+  const r = await fetch(`${base}/a/${m.id}/progress`, { method: 'POST', body: form({ name: 'Minh', task: '2', status: 'xong', note: 'PR #9' }) }).then(r => r.text());
+  assert.match(r, /Đã cập nhật việc #2: xong\. Cuộc họp trước đã đóng/);
+  assert.match(await fetch(`${base}/a/${m.id}/progress`, { method: 'POST', body: form({ name: 'La', task: '3', status: 'xong' }) }).then(r => r.text()), /không có trong cuộc họp/);
+  n.join('Lam', 'x');
+  n.start('Họp review tiến độ', '');
+  const intro = n.log.find(x => x.type === 'host').text;
+  assert.match(intro, /TỪ CUỘC HỌP TRƯỚC \(Sửa lỗi đăng nhập\)/); assert.match(intro, /- dùng OAuth/);
+  assert.match(intro, /Việc đã báo xong:\n- #1 sửa callback \(Lam\): commit abc/);
+  assert.match(intro, /Việc CHƯA XONG[^\n]*\n- #3 Lam — cập nhật docs \(hạn: thứ 6\): chưa làm/);
+  assert.doesNotMatch(intro, /#2 Minh/); // đã báo xong trước khi họp
+  n.say('Lam', 'VIỆC: Lam | viết changelog | mai');
+  assert.equal(n.actions.at(-1).n, 4); // số việc không dùng lại
+  const md = minutes.toMarkdown(n), j = minutes.toJSON(n);
+  assert.match(md, /## Từ cuộc họp trước: Sửa lỗi đăng nhập/); assert.match(md, /\| 3 ↩ \| cập nhật docs/);
+  assert.equal(j.carriedFrom.done.length, 1); assert.deepEqual(j.actions.map(a => a.carried), [true, true, false]);
+  // "Cuộc họp mới" không mang gì
+  const k2 = (await host(hostKey, 'new', {})).hostKey;
+  assert.equal(app.meetings.get(k2).actions.length, 0); assert.equal(app.meetings.get(k2).carry, null);
 });

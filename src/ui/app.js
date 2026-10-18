@@ -147,6 +147,7 @@
     ['Review thiết kế', 'Review thiết kế/kiến trúc sau: <dán mô tả hoặc nội dung>.\nChỉ ra rủi ro, đề xuất cải tiến, rồi thống nhất danh sách việc cần làm theo thứ tự ưu tiên.'],
     ['Lập kế hoạch', 'Lập kế hoạch cho: <mục tiêu>.\nChia nhỏ thành các bước, phân công agent nào phụ trách phần nào, ước lượng thời gian, và chốt kế hoạch cuối cùng.'],
     ['Ra quyết định', 'Cần chọn giữa: <phương án A> và <phương án B>.\nPhân tích ưu nhược điểm theo chi phí, rủi ro và thời gian, rồi chọn một phương án và nêu điều kiện để đổi ý.'],
+    ['Review tiến độ', 'Họp rà soát tiến độ các việc từ cuộc họp trước (hệ thống tự gửi kèm danh sách việc và quyết định).\nMỗi agent báo trạng thái thật của việc mình phụ trách bằng dòng TIẾN ĐỘ VIỆC (ví dụ "TIẾN ĐỘ VIỆC 2: xong | commit abc123, test xanh"), nêu vướng mắc, rồi thống nhất việc tiếp theo (dòng VIỆC).'],
   ];
   const MODE_HINT = {
     free: 'Tự do: ai có ý mới thì nói. Khi im lặng đủ lâu, một agent được hỏi có muốn chốt và rời phòng không.',
@@ -196,8 +197,19 @@
       opts.kick && !gone ? el('button', { class: 'icon edit', type: 'button', title: 'Giao vai trò', 'aria-label': 'Giao vai trò cho ' + a.name, onclick: () => editRole(a) }, '✎') : null,
       opts.kick && !gone ? el('button', { class: 'icon kick', type: 'button', title: 'Mời ra khỏi phòng', 'aria-label': 'Mời ' + a.name + ' ra khỏi phòng', onclick: () => kick(a.name) }, '⨯') : null);
   }
+  // "Họp tiếp": việc chưa xong và quyết định mang từ cuộc họp trước (hệ thống tự gửi kèm khi bắt đầu)
+  function renderCarry(s) {
+    const c = s.carry; $('carryCard').hidden = !c;
+    if (!c || !changed('carry', [c, s.actions])) return;
+    const open = s.actions.filter(x => x.status !== 'done');
+    $('carry').replaceChildren(...[
+      el('p', { class: 'hint' }, `Từ: ${c.topic || 'cuộc họp trước'}${c.from ? ' · ' + new Date(c.from).toLocaleString('vi-VN') : ''}. Danh sách này được gửi kèm bối cảnh khi bắt đầu; số việc giữ nguyên.`),
+      c.decisions.length ? el('div', {}, el('h4', {}, `Quyết định (${c.decisions.length})`), el('ul', {}, ...c.decisions.map(d => el('li', {}, d.item ? el('b', {}, `Mục ${d.item}: `) : null, el('span', { html: inline(d.text) }))))) : null,
+      el('div', {}, el('h4', {}, `Việc chưa xong (${open.length})`), open.length ? el('ul', { class: 'tasks' }, ...open.map(taskItem)) : el('p', { class: 'muted' }, 'Mọi việc mang sang đã báo xong.')),
+      c.done.length ? el('div', {}, el('h4', {}, `Đã xong (${c.done.length})`), el('ul', {}, ...c.done.map(t => el('li', {}, `#${t.n} `, el('span', { html: inline(t.task) }), t.note ? el('span', { class: 'who' }, ' · ' + t.note) : null)))) : null].filter(Boolean)); // replaceChildren(null) in ra chữ "null"
+  }
   function renderSetup(s) {
-    initForm(s);
+    initForm(s); renderCarry(s);
     const lobby = $('lobby');
     lobby.replaceChildren(...s.agents.map(a => person(a, { kick: true })), el('li', { class: 'person empty' }, `Slot ${s.agents.length + 1} · đang chờ agent vào…`));
     const present = s.agents.filter(a => a.status !== 'left' && a.status !== 'kicked').length;
@@ -335,7 +347,9 @@
         el('button', { class: 'btn primary', type: 'button', onclick: downloadMinutes }, 'Tải biên bản .md'),
         el('button', { class: 'btn ghost', type: 'button', onclick: async () => copy(await (await fetch(`/api/host/${key}/minutes.md`)).text(), 'Đã sao chép biên bản') }, 'Sao chép biên bản'),
         el('a', { class: 'btn ghost', href: `/api/host/${key}/minutes.json`, download: 'bien-ban-hop.json' }, 'Tải JSON'),
-        el('button', { class: 'btn ghost', type: 'button', onclick: newMeeting }, 'Cuộc họp mới'))));
+        carryable(s) ? el('button', { class: 'btn ghost', type: 'button', title: 'Cuộc họp mới nhận sẵn các việc chưa xong (giữ số) và quyết định của cuộc này, để họp review tiến độ', onclick: () => newMeeting(true) },
+          s.actions.some(x => x.status !== 'done') ? `Họp tiếp (mang ${s.actions.filter(x => x.status !== 'done').length} việc dở)` : 'Họp tiếp (mang quyết định)') : null,
+        el('button', { class: 'btn ghost', type: 'button', title: 'Cuộc họp mới hoàn toàn trống', onclick: () => newMeeting(false) }, 'Cuộc họp mới'))));
   }
   function renderEndActs(s) {
     const box = $('endActs'); if (!box || !changed('endActs', s.actions)) return;
@@ -348,8 +362,10 @@
         el('td', {}, x.owner || '—'), el('td', {}, x.due || '—'), el('td', {}, statusSelect(x))))))),
       verifyNote()] : []));
   }
-  async function newMeeting() {
-    try { const { hostKey } = await post('new'); location.href = '/m/' + hostKey; }
+  const carryable = (s) => s.actions.some(x => x.status !== 'done') || decisions().length > 0;
+  async function newMeeting(carry) {
+    if (snap.state === 'WORK' && !(await confirmBox('Đóng phòng theo dõi?', `Phòng hiện tại sẽ đóng. ${carry ? 'Các việc chưa xong được mang sang cuộc họp mới: agent vẫn báo tiến độ được ở đó.' : 'Việc chưa xong sẽ không được theo dõi tiếp.'}`, carry ? 'Họp tiếp' : 'Cuộc họp mới'))) return;
+    try { const { hostKey } = await post('new', { carry }); location.href = '/m/' + hostKey; }
     catch (e) { toast('Không tạo được cuộc họp mới: ' + e.message, true); }
   }
 

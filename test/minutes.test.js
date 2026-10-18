@@ -27,7 +27,7 @@ test('JSON biên bản: đủ phần, không chứa mã bí mật', () => {
   assert.equal(j.schema, 'agent-meeting/minutes@1');
   assert.deepEqual(j.agenda.map(a => [a.title, a.done, a.summary]), [['Chọn DB', true, 'dùng Postgres'], ['Chọn auth', false, null]]);
   assert.deepEqual(j.decisions.map(d => [d.item, d.text]), [[1, 'dùng Postgres'], [2, 'Postgres + OAuth.']]);
-  assert.deepEqual(j.actions, [{ id: 1, owner: 'Lan', task: 'Dựng DB', due: 'thứ 6', proposedBy: 'Lan', item: 2, status: 'todo', note: null, updatedAt: null, updatedBy: null }]);
+  assert.deepEqual(j.actions, [{ id: 1, owner: 'Lan', task: 'Dựng DB', due: 'thứ 6', proposedBy: 'Lan', item: 2, status: 'todo', note: null, updatedAt: null, updatedBy: null, carried: false }]);
   assert.equal(j.members.find(a => a.name === 'Minh').role, 'phản biện');
   assert.ok(!raw.includes(m.hostKey) && !raw.includes(m.id));
 });

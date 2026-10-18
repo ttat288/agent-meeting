@@ -44,8 +44,9 @@ function toJSON(m) {
     decisions: decisions(m.log),
     actions: m.actions.map(a => ({
       id: a.n, owner: a.owner || null, task: a.task, due: a.due || null, proposedBy: a.by, item: a.item != null ? a.item + 1 : null,
-      status: a.status || 'todo', note: a.note || null, updatedAt: a.updatedAt || null, updatedBy: a.updatedBy || null,
+      status: a.status || 'todo', note: a.note || null, updatedAt: a.updatedAt || null, updatedBy: a.updatedBy || null, carried: !!a.carried,
     })),
+    carriedFrom: m.carry ? { startedAt: m.carry.from || null, topic: m.carry.topic || null, decisions: m.carry.decisions, done: m.carry.done } : null,
     stats: { messages: msgs.length, members: m.agents.size },
     transcript: m.log.map(x => ({ t: x.t, type: x.type, name: x.type === 'host' ? 'Chủ trì' : x.name, to: x.to || null, text: x.text })),
   };
@@ -64,6 +65,13 @@ function toMarkdown(m) {
   L.push('## Thành viên', '', '| Slot | Tên | Model | Vai trò | Số tin |', '|---|---|---|---|---|');
   for (const a of j.members) L.push(`| ${a.slot} | ${cell(a.name)}${a.kicked ? ' (bị mời ra)' : ''} | ${cell(a.model)} | ${cell(a.role)} | ${a.messages} |`);
   L.push('', '## Bối cảnh', '', j.context || '—', '');
+  if (j.carriedFrom) {
+    const c = j.carriedFrom;
+    L.push(`## Từ cuộc họp trước${c.topic ? `: ${c.topic}` : ''}${c.startedAt ? ` (${fmtDate(c.startedAt)})` : ''}`, '');
+    for (const d of c.decisions) L.push(`- Quyết định: ${d.item ? `**[Mục ${d.item}]** ` : ''}${d.text}`);
+    for (const t of c.done) L.push(`- ✅ Việc #${t.n} đã xong: ${t.task}${t.owner ? ` (${t.owner})` : ''}${t.note ? ` · ${t.note}` : ''}`);
+    L.push(`- Việc chưa xong mang sang: ${j.actions.filter(a => a.carried).map(a => '#' + a.id).join(', ') || 'không có'}`, '');
+  }
   if (j.endCondition) L.push(`**Điều kiện kết thúc:** ${j.endCondition}`, '');
 
   if (j.agenda.length) {
@@ -77,8 +85,8 @@ function toMarkdown(m) {
   L.push('', '## Việc cần làm', '');
   if (j.actions.length) {
     L.push('| # | Việc | Phụ trách | Hạn | Trạng thái | Bằng chứng / ghi chú | Đề xuất bởi |', '|---|---|---|---|---|---|---|');
-    for (const a of j.actions) L.push(`| ${a.id} | ${cell(a.task)} | ${cell(a.owner)} | ${cell(a.due)} | ${statusText(a.status)}${a.updatedBy ? ` (${cell(a.updatedBy)})` : ''} | ${cell(a.note)} | ${cell(a.proposedBy)} |`);
-    L.push('', `*${VERIFY_NOTE}*`);
+    for (const a of j.actions) L.push(`| ${a.id}${a.carried ? ' ↩' : ''} | ${cell(a.task)} | ${cell(a.owner)} | ${cell(a.due)} | ${statusText(a.status)}${a.updatedBy ? ` (${cell(a.updatedBy)})` : ''} | ${cell(a.note)} | ${cell(a.proposedBy)} |`);
+    L.push('', `*${VERIFY_NOTE}*${j.actions.some(a => a.carried) ? ' ↩ = việc mang từ cuộc họp trước.' : ''}`);
   } else L.push('*Không có việc nào được giao.*');
 
   L.push('', '## Diễn biến', '');
@@ -117,4 +125,4 @@ function toTaskText(m, t) {
   return text.length > 1900 ? text.slice(0, 1890) + '…' : text;
 }
 
-module.exports = { toJSON, toMarkdown, toSummary, toTaskText, fmtDur, statusText, VERIFY_NOTE };
+module.exports = { decisions, toJSON, toMarkdown, toSummary, toTaskText, fmtDur, statusText, VERIFY_NOTE };

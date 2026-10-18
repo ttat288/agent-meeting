@@ -99,7 +99,8 @@ class Meeting {
     this.agenda = [];      // chương trình họp: danh sách tiêu đề mục
     this.agendaIndex = 0;  // mục đang bàn (== agenda.length nghĩa là đã xong hết)
     this.actions = [];     // việc cần làm: { n, owner, task, due, by, t, item, status, note, updatedAt, updatedBy }
-    this.taskSeq = 0;      // số việc (#1, #2…) không bao giờ dùng lại
+    this.taskSeq = 0;      // số việc (#1, #2…) không bao giờ dùng lại, kể cả qua các cuộc họp nối tiếp
+    this.carry = null;     // mang từ cuộc họp trước: { from, topic, decisions: [{item, text, by}], done: [{n, task, owner, note}], members: [tên] }
   }
 
   // ---------- nội bộ ----------
@@ -364,6 +365,14 @@ ${calls}`;
     if (this.cfg.followUp) lines.push('', 'SAU KHI CHỐT, PHÒNG ĐƯỢC GIỮ LẠI ĐỂ THEO DÕI TIẾN ĐỘ: khi đã có KẾT LUẬN và các dòng VIỆC (ghi đúng tên agent phụ trách),',
       'từng agent rời họp (leave) rồi đi làm NGAY việc của mình. Làm xong thì báo tiến độ bằng progress (số việc, xong, bằng chứng như link commit/PR, kết quả test).',
       'Không chờ nhau trong phòng; chỉ báo "xong" khi đã làm thật.');
+    if (this.carry) {
+      const c = this.carry, open = this.actions.filter(t => t.carried && t.status !== 'done');
+      lines.push('', `TỪ CUỘC HỌP TRƯỚC${c.topic ? ` (${c.topic})` : ''}:`);
+      if (c.decisions.length) lines.push('Quyết định đã chốt:', ...c.decisions.map(d => `- ${d.item ? `[Mục ${d.item}] ` : ''}${d.text}`));
+      if (c.done.length) lines.push('Việc đã báo xong:', ...c.done.map(t => `- #${t.n} ${t.task}${t.owner ? ` (${t.owner})` : ''}${t.note ? `: ${t.note}` : ''}`));
+      if (open.length) lines.push('Việc CHƯA XONG (giữ nguyên số việc; ai phụ trách thì báo "TIẾN ĐỘ VIỆC <số>: <trạng thái> | <bằng chứng>"):',
+        ...open.map(t => `- #${t.n} ${t.owner ? t.owner + ' — ' : ''}${t.task}${t.due ? ` (hạn: ${t.due})` : ''}: ${TASK_STATUS[t.status]}${t.note ? ` · ${t.note}` : ''}`));
+    }
     const roles = this._order().filter(a => a.role);
     if (roles.length) lines.push('', 'Vai trò:', ...roles.map(a => `- ${a.name}: ${a.role}`));
     if (this.agenda.length) lines.push('', `Chương trình họp (${this.agenda.length} mục, bàn lần lượt):`,
@@ -402,13 +411,13 @@ ${calls}`;
       version: this.version, createdAt: this.createdAt, startedAt: this.startedAt, endedAt: this.endedAt, endsAt: this.endsAt,
       workSince: this.workSince, workReason: this.workReason,
       everLeft: this.everLeft, turn: this.turn?.name || null, turnSeq: this.turnSeq, passStreak: this.passStreak, taskSeq: this.taskSeq,
-      agenda: this.agenda, agendaIndex: this.agendaIndex, actions: this.actions, log: this.log,
+      agenda: this.agenda, agendaIndex: this.agendaIndex, actions: this.actions, carry: this.carry, log: this.log,
       agents: [...this.agents.values()].map(({ waiting, busyUntil, lastSeen, ...a }) => a),
     };
   }
   restore(s) {
     for (const k of ['state', 'endReason', 'context', 'endCondition', 'createdAt', 'startedAt', 'endedAt', 'endsAt',
-      'everLeft', 'workSince', 'workReason', 'turnSeq', 'passStreak', 'agenda', 'agendaIndex', 'actions', 'log']) if (s[k] !== undefined) this[k] = s[k];
+      'everLeft', 'workSince', 'workReason', 'turnSeq', 'passStreak', 'agenda', 'agendaIndex', 'actions', 'carry', 'log']) if (s[k] !== undefined) this[k] = s[k];
     Object.assign(this.cfg, s.cfg);
     for (const a of this.actions) { a.n ??= ++this.taskSeq; a.status ??= 'todo'; a.note ??= ''; }
     this.taskSeq = Math.max(s.taskSeq || 0, ...this.actions.map(a => a.n), 0);
@@ -447,8 +456,18 @@ ${calls}`;
     return true;
   }
 
+  // Họp tiếp: nhận việc chưa xong (giữ số, trạng thái, bằng chứng) và tóm tắt cuộc họp trước
+  carryIn(carry, tasks, taskSeq) {
+    if (this.state !== 'LOBBY') return false;
+    this.carry = carry;
+    this.actions = tasks.map(t => ({ ...t, item: null, carried: true }));
+    this.taskSeq = Math.max(this.taskSeq, taskSeq || 0, ...this.actions.map(t => t.n));
+    this._changed();
+    return true;
+  }
+
   hostTask(n, status, note) {
-    if (this.state === 'LOBBY' || !this.actions.some(x => x.n === Number(n)) || !parseStatus(status)) return false;
+    if (!this.actions.some(x => x.n === Number(n)) || !parseStatus(status)) return false; // phòng chờ chỉ có việc mang từ cuộc trước
     this._setTask(n, status, note, 'Chủ trì');
     this._changed();
     return true;
@@ -542,16 +561,20 @@ ${calls}`;
   // Báo tiến độ một việc (tool progress). Agent đã rời phòng vẫn báo được, miễn là thành viên của cuộc họp.
   progress(name, task, status, note) {
     if (this.state === 'ENDED') return END_TEXT;
-    if (this.state === 'LOBBY') return 'Cuộc họp chưa bắt đầu, chưa có việc nào. Hãy gọi wait để chờ chủ trì.';
+    if (this.state === 'LOBBY' && !this.actions.length) return 'Cuộc họp chưa bắt đầu, chưa có việc nào. Hãy gọi wait để chờ chủ trì.';
     const a = this.agents.get(clean(name));
-    if (!a) return 'Bạn không có trong cuộc họp này. Dùng đúng tên bạn đã join.';
-    if (a.kicked) return KICK_TEXT;
-    a.lastSeen = Date.now();
-    const r = this._setTask(task, status, note, a.name);
+    // agent của cuộc họp trước (đã đóng) báo việc được mang sang cuộc này
+    const prev = !a && this.carry?.members.find(x => x.toLowerCase() === clean(name).toLowerCase());
+    if (!a && !prev) return 'Bạn không có trong cuộc họp này. Dùng đúng tên bạn đã join.';
+    if (a?.kicked) return KICK_TEXT;
+    if (a) a.lastSeen = Date.now();
+    const r = this._setTask(task, status, note, a ? a.name : prev);
     if (!r.startsWith('Đã')) return r;
     this._changed();
     if (this.state === 'ENDED') return r + ' Mọi việc đã báo xong, phòng đã đóng. Hãy dừng lại, không gọi thêm tool.';
+    if (!a) return r + ' Cuộc họp trước đã đóng; việc vẫn được theo dõi ở cuộc họp tiếp theo. Hãy dừng lại, không gọi thêm tool.';
     if (a.present && this.state === 'LIVE') return r + ' Gọi wait để nghe tiếp.';
+    if (a.present && this.state === 'LOBBY') return r + ' Gọi wait để chờ chủ trì bắt đầu.';
     const open = this._mine(a).filter(t => t.status !== 'done');
     return r + (open.length ? ` Việc của bạn còn lại: ${open.map(t => `#${t.n} (${TASK_STATUS[t.status]})`).join(', ')}. Làm tiếp rồi báo tiến độ, không cần gọi wait.`
       : ' Bạn đã báo xong mọi việc ghi tên mình. Hãy dừng lại, không gọi thêm tool.');
@@ -652,7 +675,7 @@ ${calls}`;
       settings: { mode: this.cfg.mode, maxMsgs: this.cfg.maxMsgs, idleSec: Math.round(this.cfg.idleMs / 1000), timeLimitMin: this.cfg.timeLimitMin, followUp: !!this.cfg.followUp },
       now, createdAt: this.createdAt, startedAt: this.startedAt, endedAt: this.endedAt, endsAt: this.endsAt, workSince: this.workSince, workReason: this.workReason,
       turn: this.turn?.name || null,
-      agenda: this.agenda, agendaIndex: this.agendaIndex, actions: this.actions,
+      agenda: this.agenda, agendaIndex: this.agendaIndex, actions: this.actions, carry: this.carry,
       chatCount: this._chatCount(),
       agents: [...this.agents.values()].map(a => ({
         slot: a.slot, name: a.name, model: a.model, role: a.role || '', said: a.said, kicked: !!a.kicked,

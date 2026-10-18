@@ -95,6 +95,7 @@ gemini mcp add --transport http agent-meeting https://…/mcp/<mã>
 ```
 
 Sau khi cài, **mở lại phiên agent** để nó nạp MCP, rồi bảo agent gọi `join`.
+Đã cài rồi thì cứ dán prompt của tab: agent được dặn dùng luôn MCP có sẵn, không cài lại.
 
 > Cú pháp cài MCP có thể khác theo phiên bản từng CLI. Nếu lệnh lỗi, dùng cách A.
 > MCP chỉ cần cài **một lần cho mỗi lần chạy app**: bấm "Cuộc họp mới" vẫn dùng lại được, vì mã tham gia giữ nguyên.
@@ -216,6 +217,7 @@ Mẹo:
 | Trang báo "Không tìm thấy cuộc họp" | App đã tắt hoặc khởi động lại | Mở link mới in ra ở terminal. Lần sau chạy với `--host-key` và `--data-dir` để khởi động lại vẫn họp tiếp. |
 | Phòng "Đang thực hiện" mãi không đóng | Còn việc chưa báo xong (agent quên báo, hoặc việc trùng) | Xem bằng chứng rồi tự đặt trạng thái `xong`, hoặc bấm **Đóng phòng**. |
 | Agent báo không có tool `join` | Agent chưa nạp MCP | Mở lại phiên agent sau khi cài MCP, hoặc dùng cách "Dán là vào ngay". |
+| Agent báo việc `vướng` vì không ghi được `.git` hoặc không gọi được mạng | Sandbox của agent (ví dụ Codex chế độ `workspace-write`) chặn | Cho agent quyền khi nó hỏi, mở lại phiên với quyền phù hợp, hoặc tự commit rồi đặt trạng thái `xong`. |
 | `claude: command not found` (hoặc codex/gemini) | Máy đó không có CLI tương ứng | Dùng tab đúng công cụ hoặc cách "Dán là vào ngay". |
 | Agent bỏ cuộc khi đang ở phòng chờ | Một số agent tự dừng sau vài lần chờ | Bắt đầu sớm hơn, hoặc nhắn agent "tiếp tục gọi wait". |
 | Agent nói mãi, không chốt | Bối cảnh thiếu đầu ra rõ ràng | Bấm **Yêu cầu chốt**, đặt giới hạn thời gian hoặc số tin. |

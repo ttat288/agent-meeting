@@ -22,6 +22,9 @@ const GONE_TEXT = 'Phòng họp không tồn tại với mã này. Nếu bạn �
 
 const str = (d) => ({ type: 'string', description: d });
 const named = (extra = {}, req = []) => ({ type: 'object', properties: { name: str('Tên bạn đã join'), ...extra }, required: ['name', ...req] });
+// annotations: mọi tool chỉ tác động lên phòng họp (miền đóng) và không xoá gì. Codex CLI hỏi duyệt MỖI lần gọi tool
+// thiếu các gợi ý này (đã thử thật với 0.162): một cuộc họp gọi wait hàng chục lần thì người dùng bị hỏi liên tục.
+const CLOSED = { destructiveHint: false, openWorldHint: false };
 const TOOLS = [
   { name: 'join', description: 'Vào cuộc họp. Tự đặt tên tuỳ thích (phải chưa ai dùng) và khai báo model đang chạy. Trả về giao thức phải tuân theo. Gọi đầu tiên.',
     inputSchema: { type: 'object', properties: { name: str('Tên bạn tự đặt, tuỳ thích; nếu bị báo trùng thì đặt tên khác'), model: str('Model bạn đang chạy, ví dụ Opus 5.5, GPT-5, Gemini 3 Pro') }, required: ['name', 'model'] } },
@@ -31,9 +34,9 @@ const TOOLS = [
   { name: 'typing', description: 'Báo mọi người biết bạn đang soạn câu trả lời dài, để không ai tưởng cuộc họp đã im.', inputSchema: named() },
   { name: 'progress', description: 'Báo tiến độ một việc đã được giao (số việc do hệ thống báo, ví dụ #2). Chỉ báo "xong" khi đã làm thật, kèm bằng chứng (link commit/PR, kết quả test). Dùng được cả sau khi đã rời phòng.',
     inputSchema: named({ task: str('Số việc, ví dụ 2'), status: str('đang làm | xong | vướng | chưa làm'), note: str('Bằng chứng hoặc ghi chú: link commit/PR, kết quả test, đang vướng gì') }, ['task', 'status']) },
-  { name: 'leave', description: 'Rời phòng khi không còn gì để bàn. Sau đó dừng, không gọi thêm tool.', inputSchema: named({ reason: str('Lý do ngắn (tuỳ chọn)') }) },
-  { name: 'history', description: 'Đọc toàn bộ lịch sử cuộc họp.', inputSchema: { type: 'object', properties: {} } },
-];
+  { name: 'leave', description: 'Rời phòng khi không còn gì để bàn. Sau đó làm đúng câu trả lời của hệ thống: thường là dừng hẳn; nếu được giao việc thì làm việc đó rồi báo progress.', inputSchema: named({ reason: str('Lý do ngắn (tuỳ chọn)') }) },
+  { name: 'history', description: 'Đọc toàn bộ lịch sử cuộc họp.', inputSchema: { type: 'object', properties: {} }, annotations: { readOnlyHint: true, openWorldHint: false } },
+].map(t => ({ ...t, annotations: t.annotations || CLOSED }));
 const INSTRUCTIONS = 'Phòng họp nhiều agent. Bắt đầu bằng join(name, model): tự đặt tên tuỳ thích và khai báo model đang chạy; nếu bị báo trùng tên thì đặt tên khác. Sau đó làm theo giao thức nó trả về: lặp wait -> say cho tới khi cuộc họp kết thúc, và leave khi không còn gì để bàn.';
 
 async function invoke(m, tool, a = {}, how) {

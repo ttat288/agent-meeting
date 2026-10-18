@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.1.1 (chưa phát hành)
+
+Sửa sau khi thử với CLI thật qua MCP (Codex CLI 0.162).
+
+- Tool MCP có `annotations` (`destructiveHint: false`, `openWorldHint: false`; `history` là `readOnlyHint`): Codex CLI
+  trước đây hỏi duyệt **mỗi lần** gọi `wait`/`say`…, chạy không tương tác (`codex exec`) thì bị chặn hẳn.
+- Prompt ở tab Claude Code / Codex CLI / Gemini CLI bảo agent dùng luôn MCP `agent-meeting` nếu đã có (tìm trong danh sách
+  tool, vì Codex ẩn tool MCP), chưa có mới chạy lệnh cài. Trước đây Codex đã cài MCP vẫn bỏ qua và vào bằng `curl`.
+- Mô tả tool `leave` không còn bảo "dừng, không gọi thêm tool" (mâu thuẫn với giữ phòng báo tiến độ): làm theo câu trả lời
+  của hệ thống, được giao việc thì làm rồi báo `progress`.
+
 ## 3.1.0
 
 Từ "họp xong" sang "làm xong": agent trong phòng họp chính là người làm việc, nên phòng theo dõi được tiến độ sau khi chốt

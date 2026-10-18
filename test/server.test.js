@@ -21,6 +21,10 @@ test('MCP: initialize, tools/list, tools/call, notification', async (t) => {
   assert.equal((await rpc(base, m.id, { jsonrpc: '2.0', method: 'notifications/initialized' })).status, 202);
   const list = await (await rpc(base, m.id, { jsonrpc: '2.0', id: 2, method: 'tools/list' })).json();
   assert.deepEqual(list.result.tools.map(x => x.name), ['join', 'wait', 'say', 'pass', 'typing', 'progress', 'leave', 'history']);
+  // Codex CLI chỉ chạy không cần duyệt khi readOnlyHint, hoặc destructiveHint=false + openWorldHint=false
+  for (const x of list.result.tools)
+    assert.ok(x.annotations.readOnlyHint === true || (x.annotations.destructiveHint === false && x.annotations.openWorldHint === false), x.name);
+  assert.equal(list.result.tools.find(x => x.name === 'history').annotations.readOnlyHint, true);
   const join = await (await rpc(base, m.id, { jsonrpc: '2.0', id: 3, method: 'tools/call', params: { name: 'join', arguments: { name: 'A', model: 'Opus 5.5' } } })).json();
   assert.match(join.result.content[0].text, /slot 1/);
   const bad = await (await rpc(base, m.id, { jsonrpc: '2.0', id: 4, method: 'tools/call', params: { name: 'nope' } })).json();

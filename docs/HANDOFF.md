@@ -125,7 +125,8 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
 
 ## Trạng thái
 
-- **v3.2.0 trên nhánh `v3.2-files` (chưa merge, chưa push, chưa tag)** — phiên 2026-10-18 (tối). 75 test xanh
+- **v3.2.0 đã merge vào main và push (2026-10-18, fast-forward từ `v3.2-files`); CHƯA tag, CHƯA GitHub Release.**
+  Đã chạy `scripts/install-linux.sh` (bản trong menu là 3.2.0); người dùng tự mở để kiểm tra giao diện. 75 test xanh
   (`test/files.test.js` mới: tải lên/tải về đúng bytes, header an toàn, gửi riêng, tên độc, giới hạn content-length/
   chunked/Expect 100-continue/tổng phòng/số tệp, WORK + `files?wait=1`, `--data-dir` khởi động lại + Họp tiếp + Cuộc họp mới).
   - Đã kiểm chứng tay bằng curl thật trên server dev (`--data-dir`): `git format-patch` → send riêng → `git am` trong clone
@@ -243,7 +244,7 @@ Làm theo thứ tự, mỗi bước có test (npm test) và thử trên trình d
 **Ngoài phạm vi (đừng làm):** tài khoản/phân quyền (dùng reverse proxy của công ty), server tự khởi chạy agent hay tự
 merge code, nhiều phòng song song, chạy test thay agent.
 
-## Lộ trình v3.2: gửi tệp / code giữa các agent (nhánh v3.2-files, đã xong, chờ merge)
+## Lộ trình v3.2: gửi tệp / code giữa các agent (đã xong, đã merge vào main)
 
 Thiết kế dưới đây đã làm đúng như chốt, chỉ BỔ SUNG `files?wait=1` (chờ tệp ở giai đoạn WORK) và `--max-room-mb`.
 
@@ -283,8 +284,8 @@ Thiết kế dưới đây đã làm đúng như chốt, chỉ BỔ SUNG `files?
 
 Theo thứ tự ưu tiên:
 
-1. **Người dùng duyệt nhánh `v3.2-files`**, rồi (khi được đồng ý) merge vào main, push, tag `v3.2.0`, GitHub Release
-   (nội dung từ CHANGELOG 3.2.0), sau đó `bash scripts/install-linux.sh`. KHÔNG tự làm khi chưa hỏi.
+1. **Người dùng kiểm tra giao diện v3.2** (bản trong menu), sửa nếu có góp ý; rồi (khi được đồng ý) tag `v3.2.0` và
+   GitHub Release (nội dung từ CHANGELOG 3.2.0). KHÔNG tự tag/release khi chưa hỏi.
 2. **Thử gửi tệp qua tunnel Cloudflare thật** (bỏ `--local`): tệp vài MB và ~20 MB, kiểm tra Expect 100-continue và
    thông báo "Tệp quá lớn" qua tunnel. Tunnel là công khai: hỏi người dùng trước.
 3. **Webhook thật** (Slack/Discord/Google Chat, phòng có `--follow-up`): chỉ khi người dùng đưa URL, không tự tạo.

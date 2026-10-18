@@ -30,9 +30,10 @@ function toJSON(m) {
     schema: 'agent-meeting/minutes@1',
     state: m.state, endReason: m.endReason || null,
     createdAt: m.createdAt, startedAt: m.startedAt, endedAt: m.endedAt,
-    durationMs: m.startedAt ? (m.endedAt || Date.now()) - m.startedAt : 0,
+    durationMs: m.startedAt ? (m.workSince || m.endedAt || Date.now()) - m.startedAt : 0, // thời gian thảo luận
     context: m.context, endCondition: m.endCondition,
-    settings: { mode: m.cfg.mode, maxMsgs: m.cfg.maxMsgs, timeLimitMin: m.cfg.timeLimitMin },
+    settings: { mode: m.cfg.mode, maxMsgs: m.cfg.maxMsgs, timeLimitMin: m.cfg.timeLimitMin, followUp: !!m.cfg.followUp },
+    concludedAt: m.workSince || null, concludedReason: m.workReason || null, // đã chốt và chuyển sang theo dõi tiến độ
     agenda: m.agenda.map((title, i) => {
       const done = m.log.flatMap(x => x.itemsDone || []).find(d => d.item === i);
       return { index: i + 1, title, done: i < m.agendaIndex, summary: done?.summary || null };
@@ -54,7 +55,8 @@ function toMarkdown(m) {
   const j = toJSON(m);
   const L = ['# Biên bản cuộc họp agent', ''];
   L.push(`- **Bắt đầu:** ${fmtDate(j.startedAt)}`);
-  L.push(`- **Kết thúc:** ${j.endedAt ? `${fmtDate(j.endedAt)} (${j.endReason})` : 'đang họp'}`);
+  if (j.concludedAt) L.push(`- **Chốt:** ${fmtDate(j.concludedAt)} (${j.concludedReason}), sau đó theo dõi tiến độ`);
+  L.push(`- **Kết thúc:** ${j.endedAt ? `${fmtDate(j.endedAt)} (${j.endReason})` : j.state === 'WORK' ? 'đang chờ agent báo tiến độ' : 'đang họp'}`);
   if (j.startedAt) L.push(`- **Thời lượng:** ${fmtDur(j.durationMs)}`);
   L.push(`- **Chế độ:** ${j.settings.mode === 'turns' ? 'lần lượt' : 'tự do'} · tối đa ${j.settings.maxMsgs} tin${j.settings.timeLimitMin ? ` · ${j.settings.timeLimitMin} phút` : ''}`);
   L.push(`- **Số tin:** ${j.stats.messages}`, '');
@@ -94,7 +96,8 @@ function toMarkdown(m) {
 function toSummary(m) {
   const j = toJSON(m);
   const topic = (j.context.split('\n').find(Boolean) || 'Cuộc họp agent').slice(0, 160);
-  const L = [`🤝 Cuộc họp agent đã kết thúc: ${topic}`,
+  const head = j.state === 'WORK' ? '🤝 Cuộc họp agent đã chốt, đang theo dõi tiến độ' : j.concludedAt ? '🏁 Đã đóng phòng theo dõi tiến độ' : '🤝 Cuộc họp agent đã kết thúc';
+  const L = [`${head}: ${topic}`,
     `⏱ ${fmtDur(j.durationMs)} · ${j.stats.messages} tin · ${j.members.map(a => `${a.name} (${a.model})`).join(', ') || 'không có thành viên'} · ${j.endReason || ''}`];
   if (j.decisions.length) { L.push('', '✅ Quyết định:'); j.decisions.slice(-5).forEach(d => L.push(`• ${d.item ? `[Mục ${d.item}] ` : ''}${d.text.replace(/\s+/g, ' ').slice(0, 300)}`)); }
   if (j.actions.length) {
@@ -105,4 +108,13 @@ function toSummary(m) {
   return text.length > 1900 ? text.slice(0, 1890) + '…' : text;
 }
 
-module.exports = { toJSON, toMarkdown, toSummary, fmtDur, statusText, VERIFY_NOTE };
+// Một dòng báo tiến độ cho webhook: "✅ Việc #2 xong: viết test — Minh · PR #7 (2/3 việc xong) · Chủ đề"
+function toTaskText(m, t) {
+  const done = m.actions.filter(a => a.status === 'done').length;
+  const topic = (m.context.split('\n').find(Boolean) || 'Cuộc họp agent').slice(0, 80);
+  const text = `${ICON[t.status] || '•'} Việc #${t.n} ${TASK_STATUS[t.status]}: ${t.task}${t.owner ? ` — ${t.owner}` : ''}${t.note ? ` · ${t.note}` : ''}`
+    + ` (${done}/${m.actions.length} việc xong${t.updatedBy ? `, báo bởi ${t.updatedBy}` : ''}) · ${topic}`;
+  return text.length > 1900 ? text.slice(0, 1890) + '…' : text;
+}
+
+module.exports = { toJSON, toMarkdown, toSummary, toTaskText, fmtDur, statusText, VERIFY_NOTE };

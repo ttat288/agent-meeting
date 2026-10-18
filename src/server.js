@@ -16,6 +16,7 @@ const ASSETS = {
 };
 const TTL_MS = 3 * 3600 * 1000;       // họp nhàn rỗi quá 3 giờ thì xóa
 const ENDED_TTL_MS = 30 * 60 * 1000;  // họp đã kết thúc thì xóa sau 30 phút
+const WORK_TTL_MS = 7 * 24 * 3600 * 1000; // giai đoạn thực hiện: agent có thể mất nhiều ngày mới báo tiến độ
 // Agent thật từng gõ sai mã phòng giữa cuộc họp rồi bỏ về: nhắc kiểm tra URL trước, thử lại một lần, rồi mới dừng.
 const GONE_TEXT = 'Phòng họp không tồn tại với mã này. Nếu bạn đang họp dở, có thể bạn đã chép sai URL: hãy dùng lại ĐÚNG URL trong giao thức đã nhận lúc join (so từng ký tự của mã phòng) và thử lại một lần. Nếu vẫn báo lỗi này thì phòng đã đóng (app đã tắt hoặc cuộc họp kết thúc quá lâu): hãy dừng lại, không gọi thêm tool.';
 
@@ -91,35 +92,44 @@ const slug = (s) => String(s || 'cuoc-hop').normalize('NFD').replace(/[\u0300-\u
 const stamp = (t) => { const d = new Date(t), p = (n) => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`; };
 
 // Mỗi dịch vụ chat nhận một dạng JSON khác nhau; dịch vụ lạ nhận bản đầy đủ.
-function webhookBody(url, m) {
-  const text = minutes.toSummary(m);
+// event: 'ended' (đóng hẳn), 'work' (đã chốt, bắt đầu theo dõi tiến độ), 'task' (một việc xong/vướng, kèm task)
+function webhookBody(url, m, event = 'ended', task) {
+  const text = task ? minutes.toTaskText(m, task) : minutes.toSummary(m);
   let host = ''; try { host = new URL(url).hostname; } catch {}
   if (/(^|\.)slack\.com$/.test(host) || /(^|\.)chat\.googleapis\.com$/.test(host)) return { text };
   if (/(^|\.)discord(app)?\.com$/.test(host)) return { content: text };
   const { transcript, ...meeting } = minutes.toJSON(m);
-  return { text, content: text, meeting };
+  return { event, text, content: text, ...(task ? { task: meeting.actions.find(a => a.id === task.n) } : {}), meeting };
 }
 
 function createApp(cfg = {}) {
   const log = cfg.log || (() => {});
-  // Khi một cuộc họp kết thúc: tự lưu biên bản và gửi webhook (nếu được bật)
-  async function onEnded(m) {
+  // Khi cuộc họp chốt (WORK) hoặc kết thúc: tự lưu biên bản và gửi webhook (nếu được bật).
+  // Phòng có giai đoạn thực hiện được lưu hai lần vào cùng một file: lúc chốt và lúc đóng hẳn.
+  async function onEnded(m, event = 'ended') {
     if (!m.startedAt) return; // phòng chờ bị dọn khi chưa họp: không có gì để lưu hay báo
-    const base = `${stamp(m.startedAt || m.createdAt)}_${slug(m.context.split('\n')[0])}`;
     if (cfg.minutesDir) {
       try {
         fs.mkdirSync(cfg.minutesDir, { recursive: true });
-        let name = base, k = 2;
-        while (fs.existsSync(path.join(cfg.minutesDir, name + '.md'))) name = `${base}-${k++}`;
+        if (!m.minutesName) {
+          const base = `${stamp(m.startedAt || m.createdAt)}_${slug(m.context.split('\n')[0])}`;
+          let name = base, k = 2;
+          while (fs.existsSync(path.join(cfg.minutesDir, name + '.md'))) name = `${base}-${k++}`;
+          m.minutesName = name;
+        }
+        const name = m.minutesName;
         fs.writeFileSync(path.join(cfg.minutesDir, name + '.md'), minutes.toMarkdown(m));
         fs.writeFileSync(path.join(cfg.minutesDir, name + '.json'), JSON.stringify(minutes.toJSON(m), null, 2));
-        log(`📝 Đã lưu biên bản: ${path.join(cfg.minutesDir, name)}.md (+ .json)`);
+        log(`📝 Đã lưu biên bản${event === 'work' ? ' (đã chốt, đang theo dõi tiến độ)' : ''}: ${path.join(cfg.minutesDir, name)}.md (+ .json)`);
       } catch (e) { log(`⚠ Không lưu được biên bản: ${e.message}`); }
     }
+    await notify(m, event);
+  }
+  async function notify(m, event, task) {
     for (const url of cfg.webhooks || []) {
       try {
-        const r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(webhookBody(url, m)), signal: AbortSignal.timeout(10000) });
-        log(r.ok ? `📨 Đã gửi tóm tắt tới webhook ${new URL(url).host}` : `⚠ Webhook ${new URL(url).host} trả lỗi HTTP ${r.status}`);
+        const r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(webhookBody(url, m, event, task)), signal: AbortSignal.timeout(10000) });
+        log(r.ok ? `📨 Đã gửi ${task ? `tiến độ việc #${task.n}` : 'tóm tắt'} tới webhook ${new URL(url).host}` : `⚠ Webhook ${new URL(url).host} trả lỗi HTTP ${r.status}`);
       } catch (e) { log(`⚠ Không gửi được webhook: ${e.message}`); }
     }
   }
@@ -135,6 +145,9 @@ function createApp(cfg = {}) {
     m.fixed = !!overrides.fixed;
     byAgent.set(m.id, m); byHost.set(m.hostKey, m);
     m.ev.once('ended', () => { onEnded(m).finally(() => app.ev.emit('ended', m)); });
+    m.ev.once('work', () => { onEnded(m, 'work'); });
+    // giai đoạn thực hiện: báo ngay khi một việc xong hoặc bị vướng (việc cuối cùng xong thì tóm tắt cuối cũng được gửi)
+    m.ev.on('task', (t) => { if (m.state === 'WORK' && (t.status === 'done' || t.status === 'blocked')) notify(m, 'task', { ...t }); });
     if (cfg.dataDir && m.fixed) m.ev.on('change', () => saveSoon(m));
     return m;
   };
@@ -173,15 +186,15 @@ function createApp(cfg = {}) {
   // Cuộc họp nối tiếp dùng lại mã agent (agent đã cài MCP không phải cài lại) và các tuỳ chọn của cuộc trước
   const renew = (mt) => {
     const s = mt.cfg;
-    const n = create({ id: mt.id, hostKey: mt.fixed ? mt.hostKey : undefined, fixed: mt.fixed, mode: s.mode, maxMsgs: s.maxMsgs, idleMs: s.idleMs, timeLimitMin: s.timeLimitMin });
+    const n = create({ id: mt.id, hostKey: mt.fixed ? mt.hostKey : undefined, fixed: mt.fixed, mode: s.mode, maxMsgs: s.maxMsgs, idleMs: s.idleMs, timeLimitMin: s.timeLimitMin, followUp: s.followUp });
     n.configure({ agenda: mt.agenda });
     return n;
   };
   const sweep = setInterval(() => {
     for (const m of [...byHost.values()]) {
-      if (Date.now() - m.touched <= (m.state === 'ENDED' ? ENDED_TTL_MS : TTL_MS)) continue;
-      if (m.fixed) { if (m.state !== 'LOBBY') { m.stop('quá lâu không hoạt động'); renew(m); } continue; }
-      m.stop('quá lâu không hoạt động'); byHost.delete(m.hostKey);
+      if (Date.now() - m.touched <= ({ ENDED: ENDED_TTL_MS, WORK: WORK_TTL_MS }[m.state] || TTL_MS)) continue;
+      if (m.fixed) { if (m.state !== 'LOBBY') { m.stop('quá lâu không hoạt động', true); renew(m); } continue; }
+      m.stop('quá lâu không hoạt động', true); byHost.delete(m.hostKey);
       if (byAgent.get(m.id) === m) byAgent.delete(m.id);
     }
   }, 60000);
@@ -223,7 +236,7 @@ function createApp(cfg = {}) {
         if (act === 'task') return json(200, { ok: mt.hostTask(d.n, d.status, d.note) });
         if (act === 'kick') return json(200, { ok: mt.kick(d.name) });
         if (act === 'new') {
-          if (mt.state === 'LIVE') mt.stop('chủ trì mở cuộc họp mới');
+          if (mt.state === 'LIVE' || mt.state === 'WORK') mt.stop('chủ trì mở cuộc họp mới', true);
           return json(200, { hostKey: renew(mt).hostKey });
         }
       }
@@ -247,7 +260,7 @@ function createApp(cfg = {}) {
         return json(200, out);
       }
       text(404, 'not found');
-    } catch (e) { if (!res.headersSent) json(500, { error: String(e.message || e) }); else res.end(); }
+    } catch (e) { log(`⚠ Lỗi xử lý ${req.method} ${p.replace(/\/(\w{6})\w+/g, '/$1…')}: ${e.message || e}`); if (!res.headersSent) json(500, { error: String(e.message || e) }); else res.end(); }
   });
   server.requestTimeout = 0; // long-poll và wait giữ kết nối lâu
   const app = { server, create, renew, meetings: byHost, ev: new EventEmitter(), setPublicOrigin: (o, fixed) => { publicOrigin = o; if (fixed) fixedOrigin = o; }, flush, restore, close: () => { clearInterval(sweep); flush(); server.close(); server.closeAllConnections?.(); } };

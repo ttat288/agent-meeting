@@ -211,7 +211,7 @@ test('giới hạn thời gian: hết giờ thì kết thúc', async () => {
 test('cấu hình từ chủ trì bị giới hạn trong khoảng hợp lệ', () => {
   const m = new Meeting();
   m.start('x', '', { maxMsgs: 999999, idleSec: 1, timeLimitMin: -5, mode: 'turns' });
-  assert.deepEqual(m.snapshot().settings, { mode: 'turns', maxMsgs: 1000, idleSec: 10, timeLimitMin: 0 });
+  assert.deepEqual(m.snapshot().settings, { mode: 'turns', maxMsgs: 1000, idleSec: 10, timeLimitMin: 0, followUp: false });
   assert.equal(m.configure({ maxMsgs: 5 }), false); // đã họp thì không đổi được
 });
 
@@ -416,7 +416,7 @@ test('Việc có số và trạng thái: TIẾN ĐỘ VIỆC trong tin, tool pro
   assert.match(m.progress('A', '2', 'vướng', 'thiếu quyền repo'), /Đã cập nhật việc #2: vướng/);
   assert.equal(m.actions[1].note, 'thiếu quyền repo');
   m.leave('B');
-  assert.match(m.progress('B', 'việc 2', 'xong', 'PR #7'), /^Đã cập nhật việc #2: xong\.$/); // đã rời phòng vẫn báo được
+  assert.match(m.progress('B', 'việc 2', 'xong', 'PR #7'), /^Đã cập nhật việc #2: xong\. Bạn đã báo xong mọi việc ghi tên mình\. Hãy dừng lại/); // đã rời phòng vẫn báo được
   assert.match(m.progress('Z', '2', 'xong'), /không có trong cuộc họp/);
   assert.equal(m.hostTask(2, 'đang làm'), true);
   assert.equal(m.actions[1].status, 'doing'); assert.equal(m.actions[1].note, 'PR #7'); // không gửi ghi chú thì giữ ghi chú cũ
@@ -428,4 +428,71 @@ test('Việc có số và trạng thái: TIẾN ĐỘ VIỆC trong tin, tool pro
   assert.doesNotMatch(require('../src/meeting').decisionText('KẾT LUẬN: ok\nTIẾN ĐỘ VIỆC 1: xong'), /TIẾN ĐỘ/);
   m.stop();
   assert.match(m.progress('A', '1', 'xong'), /đã kết thúc/);
+});
+
+test('Giữ phòng báo tiến độ: chốt xong thì sang WORK, agent rời đi làm, báo xong hết thì đóng phòng', async () => {
+  const m = new Meeting({ ...fast, idleMs: 60000, followUp: true });
+  const events = [];
+  m.ev.on('work', () => events.push('work')); m.ev.on('ended', () => events.push('ended')); m.ev.on('task', (t) => events.push(`task#${t.n}:${t.status}`));
+  m.join('Lam', 'Sonnet 5.5', { base: 'http://x/a/id' }); m.join('Minh', 'Haiku 4.5');
+  m.start('Chia việc', '');
+  assert.match(m.log.at(-1).text, /PHÒNG ĐƯỢC GIỮ LẠI ĐỂ THEO DÕI TIẾN ĐỘ/);
+  await m.wait('Lam'); await m.wait('Minh');
+  m.say('Lam', 'KẾT LUẬN: chia như sau\nVIỆC: Lam | viết parser | hôm nay\nVIỆC: Minh (Haiku) | viết test | hôm nay\nVIỆC: Khoa | viết docs | mai');
+  // rời thảo luận khi phòng vẫn đang họp: được giao việc ngay (kèm lệnh curl báo tiến độ), không bị bảo "dừng lại"
+  const l1 = m.leave('Lam');
+  assert.match(l1, /Đã ghi việc: #1/); // kèm tin chưa đọc
+  assert.match(l1, /Bạn đã rời phần thảo luận/); assert.match(l1, /chưa xong:\n- #1 viết parser \(phụ trách: Lam\) \(hạn: hôm nay\): chưa làm\n\n/);
+  assert.match(l1, /curl -s -X POST "http:\/\/x\/a\/id\/progress" --data-urlencode "name=Lam"/);
+  assert.equal(m.state, 'LIVE');
+  const l2 = m.leave('Minh'); // người cuối rời: phòng sang WORK thay vì kết thúc
+  assert.equal(m.state, 'WORK'); assert.equal(m.workReason, 'mọi agent đã rời phòng');
+  assert.match(l2, /GIAI ĐOẠN THỰC HIỆN/); assert.match(l2, /#2 viết test/); assert.match(l2, /progress\(name="Minh"/);
+  assert.deepEqual(events, ['work']);
+  assert.deepEqual(m.snapshot().agents.map(a => a.status), ['working', 'working']);
+  // gọi nhầm wait/say trong WORK: không chặn, nhắc lại việc
+  assert.match(await m.wait('Lam'), /đừng gọi wait\/say nữa[\s\S]*#1 viết parser/);
+  assert.match(m.say('Minh', 'xin chào'), /#2 viết test/);
+  assert.equal(m.log.filter(x => x.type === 'chat').length, 1);
+  assert.match(m.join('Lam', 'Opus 5.5', { base: 'http://y/a/id' }), /#1 viết parser[\s\S]*http:\/\/y\/a\/id\/progress/); // mở lại phiên vẫn được nhắc việc
+  assert.match(m.join('Moi', 'x'), /không nhận thành viên mới/);
+  assert.match(m.progress('Lam', '1', 'xong', 'commit abc'), /Đã cập nhật việc #1: xong\. Bạn đã báo xong mọi việc ghi tên mình/);
+  assert.match(m.progress('Minh', '2', 'đang làm'), /Việc của bạn còn lại: #2 \(đang làm\)/);
+  assert.equal(m.hostTask(2, 'xong', 'chủ trì kiểm tra'), true);
+  assert.equal(m.state, 'WORK'); // còn việc #3 của người không có trong phòng
+  assert.equal(m.snapshot().agents.find(a => a.name === 'Lam').status, 'finished');
+  assert.match(m.leave('Minh'), /Mọi việc ghi tên bạn đã báo xong/);
+  assert.match(m.progress('Lam', '3', 'xong', 'đã viết docs'), /phòng đã đóng/); // ai cũng báo được việc không ghi tên mình
+  assert.equal(m.state, 'ENDED'); assert.equal(m.endReason, 'mọi việc đã báo xong');
+  assert.deepEqual(events, ['work', 'task#1:done', 'task#2:doing', 'task#2:done', 'task#3:done', 'ended']);
+});
+
+test('Giữ phòng báo tiến độ: không có việc thì kết thúc như thường; chủ trì đóng phòng; hết giờ cũng sang WORK', async () => {
+  const a = new Meeting({ ...fast, followUp: true });
+  a.join('A', 'x'); a.start('x', ''); a.leave('A');
+  assert.equal(a.state, 'ENDED');
+  const b = new Meeting({ ...fast, followUp: true });
+  b.join('A', 'x'); b.start('x', ''); b.say('A', 'VIỆC: A | làm | mai');
+  b.stop(); assert.equal(b.state, 'WORK'); assert.equal(b.workReason, 'chủ trì kết thúc');
+  b.stop('chủ trì đóng phòng'); assert.equal(b.state, 'ENDED'); assert.equal(b.endReason, 'chủ trì đóng phòng');
+  const c = new Meeting({ ...fast, idleMs: 60000 });
+  c.join('A', 'x'); c.start('x', '', { followUp: true, timeLimitMin: 1 });
+  assert.equal(c.cfg.followUp, true);
+  c.say('A', 'VIỆC: A | làm | mai');
+  c.endsAt = Date.now(); c.timers.forEach(clearTimeout); c._armTimers();
+  await sleep(20);
+  assert.equal(c.state, 'WORK'); assert.equal(c.workReason, 'hết thời gian');
+  const s = c.toState(), d = new Meeting(); d.restore(s);
+  assert.equal(d.state, 'WORK'); assert.equal(d.cfg.followUp, true); assert.match(d.leave('A'), /#1 làm/);
+});
+
+test('Giữ phòng báo tiến độ: tên agent có dấu gạch, dấu chấm vẫn nhận đúng việc của mình', () => {
+  const m = new Meeting({ ...fast, followUp: true });
+  m.join('Haiku-Agent', 'x'); m.join('gpt.5', 'x'); m.start('x', '');
+  m.say('Haiku-Agent', 'VIỆC: Haiku-Agent | sửa lỗi | mai\nVIỆC: gpt.5 | viết test | mai\nVIỆC: gpt-5 | không phải của gpt.5 | mai');
+  assert.match(m.leave('Haiku-Agent'), /chưa xong:\n- #1 sửa lỗi/);
+  const t = m.leave('gpt.5');
+  assert.match(t, /chưa xong:\n- #2 viết test[^\n]*\n\n/);
+  assert.equal(m.state, 'WORK');
+  assert.deepEqual(m.snapshot().agents.map(a => a.status), ['working', 'working']);
 });

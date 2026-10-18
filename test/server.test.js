@@ -211,3 +211,37 @@ test('--data-dir: hết giờ trong lúc server tắt thì kết thúc khi nạp
   assert.equal(m2.state, 'ENDED'); assert.equal(m2.endReason, 'hết thời gian');
   await ended;
 });
+
+test('Giữ phòng báo tiến độ: webhook khi chốt, khi từng việc xong, khi đóng; biên bản ghi vào cùng một file', async (t) => {
+  const fs = require('fs'), os = require('os'), path = require('path'), http = require('http');
+  const minutesDir = fs.mkdtempSync(path.join(os.tmpdir(), 'am-min-'));
+  t.after(() => fs.rmSync(minutesDir, { recursive: true, force: true }));
+  const got = [];
+  const hook = http.createServer((req, res) => { let b = ''; req.on('data', c => { b += c; }); req.on('end', () => { got.push(JSON.parse(b)); res.end('ok'); }); });
+  await new Promise(r => hook.listen(0, r)); t.after(() => hook.close());
+  const app = createApp({ waitMs: 400, idleMs: 60000, tick: 30, minutesDir, webhooks: [`http://127.0.0.1:${hook.address().port}/x`] });
+  await new Promise(r => app.server.listen(0, r)); t.after(() => app.close());
+  const base = `http://127.0.0.1:${app.server.address().port}`;
+  const m = app.create();
+  const post = (tool, o) => fetch(`${base}/a/${m.id}/${tool}`, { method: 'POST', body: form(o) }).then(r => r.text());
+  await post('join', { name: 'Lam', model: 'x' }); await post('join', { name: 'Minh', model: 'x' });
+  const host = (act, body) => fetch(`${base}/api/host/${m.hostKey}/${act}`, { method: 'POST', body: JSON.stringify(body || {}) }).then(r => r.json());
+  await host('start', { context: 'Chia việc repo thử', settings: { followUp: true } });
+  await post('say', { name: 'Lam', text: 'KẾT LUẬN: ok\nVIỆC: Lam | sửa lỗi | hôm nay\nVIỆC: Minh | viết test | hôm nay' });
+  assert.match(await post('leave', { name: 'Lam' }), new RegExp(`${base}/a/${m.id}/progress`));
+  await post('leave', { name: 'Minh' });
+  assert.equal(m.state, 'WORK');
+  const s = await (await fetch(`${base}/api/host/${m.hostKey}/state`)).json();
+  assert.equal(s.state, 'WORK'); assert.equal(s.settings.followUp, true); assert.ok(s.workSince);
+  assert.match(await post('progress', { name: 'Lam', task: '1', status: 'xong', note: 'commit abc' }), /Đã cập nhật việc #1: xong/);
+  await post('progress', { name: 'Minh', task: '2', status: 'vướng', note: 'thiếu quyền' });
+  assert.equal((await host('task', { n: 2, status: 'done', note: 'chủ trì sửa quyền, test xanh' })).ok, true);
+  assert.equal(m.state, 'ENDED');
+  for (let i = 0; i < 50 && got.length < 5; i++) await new Promise(r => setTimeout(r, 20));
+  assert.deepEqual(got.map(g => g.event + (g.task ? `#${g.task.id}:${g.task.status}` : '')), ['work', 'task#1:done', 'task#2:blocked', 'task#2:done', 'ended']);
+  assert.match(got[0].text, /đã chốt, đang theo dõi tiến độ/); assert.match(got.at(-1).text, /Đã đóng phòng theo dõi tiến độ[\s\S]*2\/2 xong/);
+  const files = fs.readdirSync(minutesDir);
+  assert.equal(files.length, 2); // .md + .json, ghi đè lúc đóng
+  const j = JSON.parse(fs.readFileSync(path.join(minutesDir, files.find(f => f.endsWith('.json'))), 'utf8'));
+  assert.equal(j.state, 'ENDED'); assert.ok(j.concludedAt); assert.deepEqual(j.actions.map(a => a.status), ['done', 'done']);
+});

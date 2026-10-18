@@ -118,8 +118,15 @@ test('Webhook: Slack/Google Chat nhận {text}, Discord nhận {content}, dịch
   assert.deepEqual(Object.keys(webhookBody('https://chat.googleapis.com/v1/spaces/x/messages?key=k', m)), ['text']);
   assert.deepEqual(Object.keys(webhookBody('https://discord.com/api/webhooks/1/x', m)), ['content']);
   const generic = webhookBody('https://example.com/hook', m);
-  assert.deepEqual(Object.keys(generic).sort(), ['content', 'meeting', 'text']);
+  assert.deepEqual(Object.keys(generic).sort(), ['content', 'event', 'meeting', 'text']);
+  assert.equal(generic.event, 'ended');
   assert.equal(generic.meeting.transcript, undefined);
+  // báo tiến độ một việc
+  m.hostTask(1, 'xong', 'PR #7');
+  assert.deepEqual(webhookBody('https://hooks.slack.com/services/T/B/x', m, 'task', m.actions[0]),
+    { text: '✅ Việc #1 xong: Dựng DB — Lan · PR #7 (1/1 việc xong, báo bởi Chủ trì) · Chọn DB cho app' });
+  const g = webhookBody('https://example.com/hook', m, 'task', m.actions[0]);
+  assert.equal(g.event, 'task'); assert.equal(g.task.id, 1); assert.equal(g.task.status, 'done');
 });
 
 test('Việc có trạng thái: biên bản, JSON và tóm tắt ghi trạng thái + bằng chứng', () => {

@@ -31,10 +31,13 @@ Cuộc họp (mặc định, đổi được trên web trước khi bắt đầu
   --idle <giây>         Im lặng bao lâu thì hỏi 1 agent có muốn kết thúc (mặc định 40)
   --time-limit <phút>   Giới hạn thời gian (mặc định 0 = không giới hạn)
   --turns               Chế độ phát biểu lần lượt
+  --follow-up           Giữ phòng để báo tiến độ: sau khi chốt, agent rời họp đi làm việc được giao rồi
+                        báo tiến độ (progress); phòng đóng khi mọi việc đã báo xong
 
 Lưu và chia sẻ kết quả
   --minutes-dir <thư mục>  Tự lưu biên bản .md + .json khi mỗi cuộc họp kết thúc
-  --webhook <url>          Gửi tóm tắt (quyết định, việc cần làm) khi kết thúc; dùng nhiều lần được.
+  --webhook <url>          Gửi tóm tắt (quyết định, việc cần làm) khi kết thúc (với --follow-up: khi chốt,
+                           khi từng việc xong/vướng, khi đóng phòng); dùng nhiều lần được.
                            Hỗ trợ Slack, Discord, Google Chat; URL khác nhận JSON đầy đủ
   --data-dir <thư mục>     Lưu trạng thái phòng (cần --host-key): tắt/khởi động lại server giữa cuộc họp
                            thì nạp lại và họp tiếp. File chứa mã bí mật, chỉ chủ máy đọc được (quyền 600)
@@ -52,7 +55,7 @@ Khác
   -v, --version         In phiên bản
 
 Biến môi trường tương đương: PORT, AGENT_MEETING_MINUTES_DIR, AGENT_MEETING_WEBHOOK (nhiều URL cách nhau bởi dấu phẩy),
-AGENT_MEETING_PUBLIC_URL, AGENT_MEETING_HOST_KEY, AGENT_MEETING_AGENT_KEY, AGENT_MEETING_DATA_DIR.`);
+AGENT_MEETING_PUBLIC_URL, AGENT_MEETING_HOST_KEY, AGENT_MEETING_AGENT_KEY, AGENT_MEETING_DATA_DIR, AGENT_MEETING_FOLLOW_UP=1.`);
   process.exit(0);
 }
 
@@ -77,6 +80,7 @@ if (auto.startAt && !auto.context) { console.error('Lỗi: --auto-start cần --
 const cfg = {
   maxMsgs: num('--max', 120), idleMs: num('--idle', 40) * 1000, timeLimitMin: num('--time-limit', 0),
   mode: flag('--turns') ? 'turns' : 'free',
+  followUp: flag('--follow-up') || /^(1|true|yes)$/i.test(env.AGENT_MEETING_FOLLOW_UP || ''),
   minutesDir: opt('--minutes-dir') || env.AGENT_MEETING_MINUTES_DIR || '',
   dataDir,
   webhooks,
@@ -164,7 +168,7 @@ function listen(server, port) {
   Mời agent (dán cho agent chạy được curl):
     ${origin}/a/${meeting.id}/join   (gửi kèm name=<tên> và model=<model>)
   MCP (Streamable HTTP):  ${origin}/mcp/${meeting.id}
-${cfg.minutesDir ? `\n  Biên bản sẽ tự lưu vào: ${path.resolve(cfg.minutesDir)}` : ''}${dataDir ? `\n  Trạng thái phòng lưu ở: ${path.resolve(dataDir)} (khởi động lại thì họp tiếp)` : ''}${webhooks.length ? `\n  Gửi tóm tắt tới ${webhooks.length} webhook khi kết thúc` : ''}${auto.startAt ? `\n  Tự bắt đầu khi đủ ${auto.startAt} agent trong phòng chờ` : ''}
+${cfg.minutesDir ? `\n  Biên bản sẽ tự lưu vào: ${path.resolve(cfg.minutesDir)}` : ''}${dataDir ? `\n  Trạng thái phòng lưu ở: ${path.resolve(dataDir)} (khởi động lại thì họp tiếp)` : ''}${webhooks.length ? `\n  Gửi tóm tắt tới ${webhooks.length} webhook khi kết thúc` : ''}${cfg.followUp ? '\n  Giữ phòng để báo tiến độ sau khi chốt (--follow-up)' : ''}${auto.startAt ? `\n  Tự bắt đầu khi đủ ${auto.startAt} agent trong phòng chờ` : ''}
 
   Giữ cửa sổ này mở suốt cuộc họp. Ctrl+C để tắt.
   Link chủ trì chứa mã bí mật: đừng chia sẻ.\n${line}`);

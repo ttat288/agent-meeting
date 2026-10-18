@@ -21,7 +21,7 @@
   const COLORS = ['#4f46e5', '#0891b2', '#c026d3', '#ea580c', '#059669', '#db2777', '#7c3aed', '#0d9488', '#b45309', '#2563eb'];
   const colorOf = (name) => { let h = 0; for (const c of name) h = (h * 31 + c.codePointAt(0)) >>> 0; return COLORS[h % COLORS.length]; };
   const initials = (name) => { const w = name.split(/[\s\-_.]+/).filter(Boolean); return ((w[0] || '?')[0] + (w[1] ? w[1][0] : (w[0] || '')[1] || '')).toUpperCase(); };
-  const STATUS = { listening: 'đang nghe', thinking: 'đang soạn tin…', idle: 'có mặt', turn: 'tới lượt phát biểu', left: 'đã rời', kicked: 'bị mời ra', ended: 'đã kết thúc' };
+  const STATUS = { listening: 'đang nghe', thinking: 'đang soạn tin…', idle: 'có mặt', turn: 'tới lượt phát biểu', left: 'đã rời', kicked: 'bị mời ra', ended: 'đã kết thúc', working: 'đang làm việc được giao', finished: 'đã báo xong việc' };
   const fmtTime = (t) => new Date(t).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
   const fmtDur = (ms) => {
     const s = Math.max(0, Math.floor(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, x = s % 60;
@@ -103,7 +103,7 @@
 
   // ---------- trạng thái ----------
   let snap = null, log = [], version = -1, rendered = 0, clockOffset = 0, unread = 0;
-  let inviteBuilt = false, formInit = false, endedBuilt = false, lastView = '';
+  let inviteBuilt = false, formInit = false, endedBuilt = '', lastView = '';
   const serverNow = () => Date.now() + clockOffset;
   const draftKey = (k) => `agent-meeting:${key}:${k}`;
 
@@ -159,6 +159,8 @@
     $('agenda').value = store.get(draftKey('agenda')) ?? (s.agenda || []).map((x, i) => `${i + 1}. ${x}`).join('\n');
     $('agenda').addEventListener('input', () => store.set(draftKey('agenda'), $('agenda').value));
     $('mode').value = s.settings.mode; $('maxMsgs').value = s.settings.maxMsgs;
+    $('followUp').checked = (store.get(draftKey('followUp')) ?? String(s.settings.followUp)) === 'true';
+    $('followUp').addEventListener('change', () => store.set(draftKey('followUp'), String($('followUp').checked)));
     $('timeLimit').value = s.settings.timeLimitMin; $('idleSec').value = s.settings.idleSec;
     const tpl = $('templates');
     TEMPLATES.forEach(([name, text]) => tpl.append(el('button', { class: 'chip', type: 'button', onclick: () => useTemplate(text) }, name)));
@@ -208,7 +210,7 @@
     if (/<[^>\n]{1,40}>/.test(context) && !(await confirmBox('Bối cảnh còn chỗ trống', 'Bối cảnh còn phần <…> của mẫu chưa điền. Vẫn bắt đầu?', 'Vẫn bắt đầu'))) return;
     const b = $('btnStart'); b.disabled = true;
     try {
-      await post('start', { context, endCondition: $('endc').value.trim(), settings: { mode: $('mode').value, maxMsgs: +$('maxMsgs').value, timeLimitMin: +$('timeLimit').value, idleSec: +$('idleSec').value, agenda: $('agenda').value } });
+      await post('start', { context, endCondition: $('endc').value.trim(), settings: { mode: $('mode').value, maxMsgs: +$('maxMsgs').value, timeLimitMin: +$('timeLimit').value, idleSec: +$('idleSec').value, agenda: $('agenda').value, followUp: $('followUp').checked } });
     } catch (e) { toast('Không bắt đầu được: ' + e.message, true); }
     b.disabled = false;
   };
@@ -250,13 +252,18 @@
     try { await post('kick', { name }); toast(`Đã mời ${name} ra khỏi phòng`); } catch (e) { toast(e.message, true); }
   }
   $('btnStop').onclick = async () => {
-    if (!(await confirmBox('Kết thúc cuộc họp?', 'Các agent sẽ được báo dừng ngay. Bạn vẫn tải được biên bản sau đó.', 'Kết thúc'))) return;
+    const [title, text, yes] = snap.state === 'WORK'
+      ? ['Đóng phòng theo dõi?', 'Agent sẽ không báo tiến độ vào phòng này được nữa. Bạn vẫn tải được biên bản và tự đổi trạng thái việc.', 'Đóng phòng']
+      : snap.settings.followUp && snap.actions.some(x => x.status !== 'done')
+        ? ['Chốt cuộc họp?', 'Các agent dừng thảo luận và đi làm việc được giao; phòng được giữ lại để chờ agent báo tiến độ.', 'Chốt']
+        : ['Kết thúc cuộc họp?', 'Các agent sẽ được báo dừng ngay. Bạn vẫn tải được biên bản sau đó.', 'Kết thúc'];
+    if (!(await confirmBox(title, text, yes))) return;
     try { await post('stop'); } catch (e) { toast(e.message, true); }
   };
 
   function renderInfo(s) {
     const start = s.startedAt || serverNow();
-    const end = s.endedAt || serverNow();
+    const end = s.workSince || s.endedAt || serverNow();
     const left = s.endsAt && s.state === 'LIVE' ? s.endsAt - serverNow() : null;
     const ratio = Math.min(1, s.chatCount / s.settings.maxMsgs);
     $('info').replaceChildren(...[
@@ -310,13 +317,15 @@
   }
 
   function renderEnded(s) {
-    if (endedBuilt) return; endedBuilt = true;
-    const v = log.filter(m => m.conclusion && m.decision).at(-1);
+    if (endedBuilt === s.state) return; endedBuilt = s.state;
+    delete sigs.endActs;
+    const v = log.filter(m => m.conclusion && m.decision).at(-1), work = s.state === 'WORK';
     $('ended').replaceChildren(el('div', { class: 'endcard-in' },
-      el('h3', {}, 'Cuộc họp đã kết thúc'),
+      el('h3', {}, work ? 'Đã chốt: đang chờ agent làm và báo tiến độ' : s.workSince ? 'Đã đóng phòng theo dõi tiến độ' : 'Cuộc họp đã kết thúc'),
+      work ? el('p', { class: 'hint' }, 'Các agent đã rời họp để làm việc được giao và sẽ báo tiến độ vào đây (tool progress). Phòng tự đóng khi mọi việc báo xong; bạn cũng có thể tự đổi trạng thái hoặc bấm "Đóng phòng".') : null,
       el('div', { class: 'stats' },
-        el('span', {}, 'Lý do: ', el('b', {}, s.endReason || '—')),
-        el('span', {}, 'Thời lượng: ', el('b', {}, fmtDur((s.endedAt || serverNow()) - (s.startedAt || s.createdAt)))),
+        el('span', {}, work ? 'Chốt vì: ' : 'Lý do: ', el('b', {}, (work ? s.workReason : s.endReason) || '—')),
+        el('span', {}, 'Thảo luận: ', el('b', {}, fmtDur((s.workSince || s.endedAt || serverNow()) - (s.startedAt || s.createdAt)))),
         el('span', {}, 'Tin nhắn: ', el('b', {}, String(s.chatCount))),
         el('span', {}, 'Thành viên: ', el('b', {}, String(s.agents.length)))),
       el('div', { id: 'endActs' }),
@@ -330,7 +339,9 @@
   }
   function renderEndActs(s) {
     const box = $('endActs'); if (!box || !changed('endActs', s.actions)) return;
-    box.replaceChildren(...(s.actions.length ? [el('div', { class: 'acts-wrap' }, el('table', { class: 'acts' },
+    const done = s.actions.filter(x => x.status === 'done').length;
+    box.replaceChildren(...(s.actions.length ? [el('div', { class: 'tprog' }, el('b', {}, `${done}/${s.actions.length} việc xong`),
+      el('div', { class: 'bar' + (done === s.actions.length ? ' full' : '') }, el('i', { style: `width:${done / s.actions.length * 100}%` }))),el('div', { class: 'acts-wrap' }, el('table', { class: 'acts' },
       el('thead', {}, el('tr', {}, el('th', {}, '#'), el('th', {}, 'Việc cần làm · bằng chứng'), el('th', {}, 'Phụ trách'), el('th', {}, 'Hạn'), el('th', {}, 'Trạng thái'))),
       el('tbody', {}, ...s.actions.map(x => el('tr', { class: 's-' + x.status }, el('td', {}, '#' + x.n),
         el('td', {}, el('div', { html: inline(x.task) }), el('div', { class: 'tnote' }, x.note ? el('span', { html: linkify(inline(x.note)) }) : el('span', { class: 'muted' }, 'chưa có bằng chứng'), ' ', noteBtn(x))),
@@ -433,8 +444,8 @@
     // đổi khung dưới (ô nhắn / tóm tắt) TRƯỚC khi thêm tin, để cuộn xuống cuối tính đúng chiều cao
     const stick = fresh || nearBottom();
     $('composer').hidden = s.state !== 'LIVE';
-    $('ended').hidden = s.state !== 'ENDED';
-    if (s.state === 'ENDED') { renderEnded(s); renderEndActs(s); }
+    $('ended').hidden = s.state !== 'ENDED' && s.state !== 'WORK';
+    if (!$('ended').hidden) { renderEnded(s); renderEndActs(s); }
     renderFeed(stick);
     renderTyping(s);
   }
@@ -472,13 +483,14 @@
     const s = snap;
     if (!inviteBuilt) { buildInvite(s.agentId, s.origin || location.origin); inviteBuilt = true; }
     const st = $('status');
-    st.className = 'badge ' + (s.state === 'LIVE' ? 'live' : s.state === 'ENDED' ? 'ended' : '');
-    st.textContent = s.state === 'LOBBY' ? 'Chuẩn bị' : s.state === 'LIVE' ? 'Đang họp' : 'Đã kết thúc';
+    st.className = 'badge ' + ({ LIVE: 'live', WORK: 'work', ENDED: 'ended' }[s.state] || '');
+    st.textContent = { LOBBY: 'Chuẩn bị', LIVE: 'Đang họp', WORK: 'Đang thực hiện', ENDED: 'Đã kết thúc' }[s.state];
     const view = s.state === 'LOBBY' ? 'setup' : 'room', fresh = view !== lastView;
     $('setup').hidden = view !== 'setup'; $('room').hidden = view !== 'room';
     $('btnInvite').hidden = s.state !== 'LIVE';
     $('btnMinutes').hidden = s.state === 'LOBBY';
-    $('btnStop').hidden = s.state !== 'LIVE';
+    $('btnStop').hidden = s.state !== 'LIVE' && s.state !== 'WORK';
+    $('btnStop').querySelector('span').textContent = s.state === 'WORK' ? 'Đóng phòng' : 'Kết thúc';
     if (s.state !== 'LIVE' && !$('drawer').hidden) closeDrawer();
     if (view === 'setup') renderSetup(s); else renderRoom(s, fresh);
     renderSteps();

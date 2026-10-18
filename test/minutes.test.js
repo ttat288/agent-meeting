@@ -42,8 +42,20 @@ test('Quyết định không dính các dòng VIỆC (kể cả định dạng M
   const j = minutes.toJSON(m);
   assert.deepEqual(j.decisions.map(d => d.text), ['chọn A', 'Làm B trước.\n\nLý do: rẻ hơn.']);
   assert.deepEqual(j.actions.map(a => a.task), ['Viết đặc tả', 'Dựng CI', 'Gửi báo cáo']);
-  assert.equal(m.log.find(x => x.itemDone === 0).summary, 'chọn A');
+  assert.deepEqual(m.log.find(x => x.itemsDone).itemsDone, [{ item: 0, summary: 'chọn A' }]);
   assert.ok(!minutes.toMarkdown(m).split('## Việc cần làm')[0].includes('VIỆC:'));
+});
+
+test('agent gửi lại KẾT LUẬN nhiều lần: mỗi mục chỉ giữ bản mới nhất', () => {
+  const m = new Meeting({ waitMs: 300, idleMs: 60000, tick: 30 });
+  m.join('S', 'x'); m.join('H', 'x');
+  m.start('x', '', { agenda: ['A'] });
+  m.say('S', 'KẾT LUẬN: bản nháp mục 1');
+  m.say('S', 'XONG MỤC 1: chọn A\nKẾT LUẬN: tổng hợp lần 1');
+  m.say('S', 'KẾT LUẬN: tổng hợp lần 2');
+  m.say('H', 'KẾT LUẬN: tổng hợp của H');
+  assert.deepEqual(minutes.toJSON(m).decisions.map(d => [d.item, d.text, d.by]),
+    [[1, 'bản nháp mục 1', 'S'], [1, 'chọn A', 'S'], [null, 'tổng hợp của H', 'H']]);
 });
 
 test('Markdown biên bản và tóm tắt webhook', () => {

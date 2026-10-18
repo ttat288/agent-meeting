@@ -67,7 +67,7 @@ test('Phòng không tồn tại: MCP và curl trả lời rõ ràng để agent 
   const init = await (await rpc(base, 'khongco', { jsonrpc: '2.0', id: 1, method: 'initialize', params: {} })).json();
   assert.ok(init.result); // client vẫn kết nối được
   const call = await (await rpc(base, 'khongco', { jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: 'wait', arguments: { name: 'A', model: 'Opus 5.5' } } })).json();
-  assert.match(call.result.content[0].text, /không tồn tại.*dừng lại/s);
+  assert.match(call.result.content[0].text, /không tồn tại.*chép sai URL.*thử lại một lần.*dừng lại/s);
   const r = await fetch(`${base}/a/khongco/wait?name=A`);
   assert.match(await r.text(), /không tồn tại/);
   assert.equal((await fetch(`${base}/m/khongco`)).status, 404);

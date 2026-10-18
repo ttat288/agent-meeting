@@ -11,6 +11,16 @@ const fmtDur = (ms) => {
 const cell = (x) => String(x ?? '').replace(/\|/g, '\\|').replace(/\n/g, ' ') || '—';
 const { decisionText } = require('./meeting');
 
+// Tóm tắt từng mục (XONG MỤC) + KẾT LUẬN. Agent hay gửi lại KẾT LUẬN nhiều lần: mỗi mục chỉ giữ bản mới nhất.
+function decisions(log) {
+  const last = new Map();
+  for (const x of log) if (x.conclusion && (x.decision ?? decisionText(x.text))) last.set(x.item ?? null, x);
+  return log.flatMap(x => [
+    ...(x.itemsDone || []).map(d => ({ by: x.name, t: x.t, item: d.item + 1, text: d.summary })),
+    ...(last.get(x.item ?? null) === x ? [{ by: x.name, t: x.t, item: x.item == null ? null : x.item + 1, text: x.decision ?? decisionText(x.text) }] : []),
+  ]).filter(d => d.text);
+}
+
 function toJSON(m) {
   const msgs = m.log.filter(x => x.type === 'chat');
   return {
@@ -21,16 +31,13 @@ function toJSON(m) {
     context: m.context, endCondition: m.endCondition,
     settings: { mode: m.cfg.mode, maxMsgs: m.cfg.maxMsgs, timeLimitMin: m.cfg.timeLimitMin },
     agenda: m.agenda.map((title, i) => {
-      const done = m.log.find(x => x.itemDone === i);
-      return { index: i + 1, title, done: i < m.agendaIndex, summary: done ? done.summary : null };
+      const done = m.log.flatMap(x => x.itemsDone || []).find(d => d.item === i);
+      return { index: i + 1, title, done: i < m.agendaIndex, summary: done?.summary || null };
     }),
     members: [...m.agents.values()].map(a => ({
       slot: a.slot, name: a.name, model: a.model, role: a.role || null, messages: a.said, kicked: !!a.kicked,
     })),
-    decisions: m.log.filter(x => x.conclusion || x.itemDone !== undefined).map(x => ({
-      by: x.name, t: x.t, item: x.itemDone !== undefined ? x.itemDone + 1 : (x.item ?? null) !== null ? x.item + 1 : null,
-      text: x.itemDone !== undefined ? x.summary : (x.decision ?? decisionText(x.text)),
-    })).filter(d => d.text),
+    decisions: decisions(m.log),
     actions: m.actions.map(a => ({ owner: a.owner || null, task: a.task, due: a.due || null, proposedBy: a.by, item: a.item !== null ? a.item + 1 : null })),
     stats: { messages: msgs.length, members: m.agents.size },
     transcript: m.log.map(x => ({ t: x.t, type: x.type, name: x.type === 'host' ? 'Chủ trì' : x.name, to: x.to || null, text: x.text })),

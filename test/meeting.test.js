@@ -286,18 +286,65 @@ test('việc cần làm: đọc dòng VIỆC trong tin, gộp việc trùng', ()
 
 test('chương trình họp: XONG MỤC chuyển mục, hết mục thì nhắc kết luận tổng hợp', () => {
   const m = new Meeting(fast);
-  m.join('A', 'x'); m.start('x', '', { agenda: '1. Chọn DB\n2. Chọn auth' });
-  assert.deepEqual(m.agenda, ['Chọn DB', 'Chọn auth']);
-  assert.match(m.log.find(x => x.type === 'host').text, /Chương trình họp \(2 mục.*Bắt đầu với mục 1: Chọn DB/s);
-  m.say('A', 'XONG MỤC 2: nhảy cóc'); // sai số mục thì bỏ qua
+  m.join('A', 'x'); m.start('x', '', { agenda: '1. Chọn DB\n2. Chọn auth\n3. Chia việc' });
+  assert.deepEqual(m.agenda, ['Chọn DB', 'Chọn auth', 'Chia việc']);
+  assert.match(m.log.find(x => x.type === 'host').text, /Chương trình họp \(3 mục.*XONG MỤC <số>: <tóm tắt.*Bắt đầu với mục 1: Chọn DB/s);
+  m.say('A', 'XONG MỤC 9: không có mục này'); // số mục không tồn tại thì bỏ qua
   assert.equal(m.agendaIndex, 0);
   m.say('A', 'XONG MỤC 1: dùng Postgres');
   assert.equal(m.agendaIndex, 1);
-  assert.match(m.log.at(-1).text, /Chuyển sang mục 2\/2: Chọn auth/);
+  assert.match(m.log.at(-1).text, /Chuyển sang mục 2\/3: Chọn auth/);
+  m.say('A', 'XONG MỤC 1: nói lại mục cũ'); // mục đã xong thì bỏ qua
+  assert.equal(m.agendaIndex, 1);
+  assert.equal(m.hostNextItem(), true);
   assert.equal(m.hostNextItem(), true);
   assert.match(m.log.at(-1).text, /Đã bàn xong mọi mục/);
   assert.equal(m.hostNextItem(), false);
-  assert.equal(m.log.find(x => x.itemDone === 0).summary, 'dùng Postgres');
+  assert.deepEqual(m.log.find(x => x.itemsDone).itemsDone, [{ item: 0, summary: 'dùng Postgres' }]);
+});
+
+test('nhận diện theo cách agent thật hay viết (XONG MỤC giữa đoạn, KẾT LUẬN ở dòng 2, nhảy mục)', () => {
+  const m = new Meeting(fast);
+  m.join('A', 'x'); m.start('x', '', { agenda: ['DB', 'Auth', 'Chia việc'] });
+  // Sonnet: XONG MỤC nằm giữa đoạn văn
+  m.say('A', 'Đồng ý Supabase, nhớ dùng gói Pro. XONG MỤC 1: Dùng PostgreSQL trên Supabase gói Pro. Sang mục 2.');
+  assert.equal(m.agendaIndex, 1);
+  assert.equal(m.log.at(-2).itemsDone[0].summary, 'Dùng PostgreSQL trên Supabase gói Pro. Sang mục 2.');
+  // Haiku: "Kết luận:" chữ thường giữa đoạn chỉ là ý kiến; "trước khi XONG MỤC 2, ..." không phải báo xong
+  m.say('A', 'SSO là hợp lý. Kết luận: SSO OAuth. Trước khi XONG MỤC 2, cần hỏi IdP.');
+  assert.equal(m.log.at(-1).conclusion, undefined);
+  assert.equal(m.agendaIndex, 1);
+  // Báo xong mục 3 khi đang ở mục 2: nhóm đã chốt luôn mục 2; KẾT LUẬN ở dòng 2 vẫn nhận, không dính VIỆC
+  m.say('A', '**XONG MỤC 3:** chia 2 sprint\nKẾT LUẬN: Supabase + SSO, 2 sprint.\nVIỆC: A | Dựng DB | tuần 1');
+  const last = m.log.filter(x => x.type === 'chat').at(-1);
+  assert.equal(m.agendaIndex, 3);
+  assert.deepEqual(last.itemsDone, [{ item: 2, summary: 'chia 2 sprint' }]);
+  assert.equal(last.conclusion, true);
+  assert.equal(last.item, null); // kết luận tổng hợp sau mục cuối
+  assert.equal(last.decision, 'Supabase + SSO, 2 sprint.');
+  assert.match(m.log.at(-1).text, /Đã bàn xong mọi mục/);
+  // KẾT LUẬN viết HOA sau dấu hết câu, và XONG MỤC đứng một mình rồi tóm tắt ở dòng dưới
+  const n = new Meeting(fast);
+  n.join('B', 'x'); n.start('x', '', { agenda: ['DB', 'Auth'] });
+  n.say('B', 'XONG MỤC 1\nChọn Postgres.\nVIỆC: B | Viết schema');
+  n.say('B', 'Mọi người đồng ý. KẾT LUẬN: Postgres + SSO.');
+  assert.equal(n.log.find(x => x.itemsDone).itemsDone[0].summary, 'Chọn Postgres.');
+  const c = n.log.filter(x => x.conclusion);
+  assert.equal(c.length, 1);
+  assert.equal(c[0].decision, 'Postgres + SSO.');
+  assert.equal(c[0].item, 1);
+});
+
+test('việc nhắc lại với câu chữ hơi khác được gộp (dữ liệu từ agent thật); việc khác nhau thì giữ', () => {
+  const m = new Meeting(fast);
+  m.join('S', 'x'); m.join('H', 'x'); m.start('x', '');
+  m.say('S', 'KẾT LUẬN: 2 cổng.\nVIỆC: S | PaymentProvider interface, bảng subscription/invoice, webhook idempotent, Stripe, PayOS, đối soát hằng ngày | Tuần 5\nVIỆC: H | Template email/SMS nhắc gia hạn VN+Anh, chính sách refund hiển thị, FAQ kỹ thuật thanh toán/refund, hướng dẫn QR, tuyển khách beta | Tuần 6');
+  m.say('S', 'KẾT LUẬN: 2 cổng, 7 tuần.\nVIỆC: S | PaymentProvider interface, bảng subscription/invoice, webhook idempotent, tích hợp Stripe và PayOS, đối soát hằng ngày | Tuần 5\nVIỆC: H | Template email/SMS nhắc gia hạn VN+Anh, chính sách refund hiển thị, FAQ kỹ thuật thanh toán, hướng dẫn QR, tuyển khách beta | Tuần 6');
+  m.say('H', 'VIỆC: S | Viết test cho API A\nVIỆC: S | Viết test cho API B');
+  assert.deepEqual(m.actions.map(a => a.task), [
+    'PaymentProvider interface, bảng subscription/invoice, webhook idempotent, tích hợp Stripe và PayOS, đối soát hằng ngày',
+    'Template email/SMS nhắc gia hạn VN+Anh, chính sách refund hiển thị, FAQ kỹ thuật thanh toán, hướng dẫn QR, tuyển khách beta',
+    'Viết test cho API A', 'Viết test cho API B']);
 });
 
 test('vai trò: có trong tin mở đầu; đổi khi đang họp thì chỉ agent đó nhận', async () => {

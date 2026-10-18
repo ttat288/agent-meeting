@@ -16,7 +16,8 @@ const ASSETS = {
 };
 const TTL_MS = 3 * 3600 * 1000;       // họp nhàn rỗi quá 3 giờ thì xóa
 const ENDED_TTL_MS = 30 * 60 * 1000;  // họp đã kết thúc thì xóa sau 30 phút
-const GONE_TEXT = 'Phòng họp không tồn tại hoặc đã bị xóa (app đã tắt, hoặc cuộc họp kết thúc quá lâu). Hãy dừng lại, không gọi thêm tool.';
+// Agent thật từng gõ sai mã phòng giữa cuộc họp rồi bỏ về: nhắc kiểm tra URL trước, thử lại một lần, rồi mới dừng.
+const GONE_TEXT = 'Phòng họp không tồn tại với mã này. Nếu bạn đang họp dở, có thể bạn đã chép sai URL: hãy dùng lại ĐÚNG URL trong giao thức đã nhận lúc join (so từng ký tự của mã phòng) và thử lại một lần. Nếu vẫn báo lỗi này thì phòng đã đóng (app đã tắt hoặc cuộc họp kết thúc quá lâu): hãy dừng lại, không gọi thêm tool.';
 
 const str = (d) => ({ type: 'string', description: d });
 const named = (extra = {}, req = []) => ({ type: 'object', properties: { name: str('Tên bạn đã join'), ...extra }, required: ['name', ...req] });

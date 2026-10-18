@@ -275,7 +275,7 @@
     if (m.type === 'sys') return el('div', { class: 'sys' }, el('time', {}, fmtTime(m.t)), m.text);
     const host = m.type === 'host', name = host ? (m.to ? `Chủ trì → ${m.to} (riêng)` : 'Chủ trì') : m.name, color = host ? 'var(--accent)' : colorOf(m.name);
     const first = !prev || prev.type === 'sys' || prev.type !== m.type || prev.name !== m.name || m.t - prev.t > 5 * 60000;
-    return el('div', { class: 'msg' + (first ? ' first' : '') + (host ? ' host' : '') + (m.conclusion || m.itemDone !== undefined ? ' conclusion' : '') + (m.itemDone !== undefined ? ' itemdone' : '') + (m.to ? ' private' : '') },
+    return el('div', { class: 'msg' + (first ? ' first' : '') + (host ? ' host' : '') + (m.conclusion || m.itemsDone ? ' conclusion' : '') + (m.itemsDone && !m.conclusion ? ' itemdone' : '') + (m.to ? ' private' : '') },
       el('span', { class: 'av', style: `background:${color}` }, host ? '★' : initials(m.name)),
       el('div', { class: 'hd' }, el('b', { style: `color:${color}` }, name), !host && modelOf(m.name) ? el('span', { class: 'model' }, modelOf(m.name)) : null, el('time', { datetime: new Date(m.t).toISOString() }, fmtTime(m.t))),
       el('div', { class: 'bubble', html: md(m.text) }));
@@ -309,7 +309,7 @@
 
   function renderEnded(s) {
     if (endedBuilt) return; endedBuilt = true;
-    const v = log.filter(m => m.conclusion && decisionOf(m)).at(-1);
+    const v = log.filter(m => m.conclusion && m.decision).at(-1);
     $('ended').replaceChildren(el('div', { class: 'endcard-in' },
       el('h3', {}, 'Cuộc họp đã kết thúc'),
       el('div', { class: 'stats' },
@@ -321,7 +321,7 @@
         el('thead', {}, el('tr', {}, el('th', {}, '#'), el('th', {}, 'Việc cần làm'), el('th', {}, 'Phụ trách'), el('th', {}, 'Hạn'))),
         el('tbody', {}, ...s.actions.map((x, i) => el('tr', {}, el('td', {}, String(i + 1)), el('td', {}, x.task), el('td', {}, x.owner || '—'), el('td', {}, x.due || '—'))))) : null,
       v ? el('div', { class: 'verdict' }, el('b', {}, `Kết luận (${v.name}${modelOf(v.name) ? ', ' + modelOf(v.name) : ''})`),
-        el('div', { class: 'bubble-md', html: md(decisionOf(v)) })) : null,
+        el('div', { class: 'bubble-md', html: md(v.decision) })) : null,
       el('div', { class: 'row' },
         el('button', { class: 'btn primary', type: 'button', onclick: downloadMinutes }, 'Tải biên bản .md'),
         el('button', { class: 'btn ghost', type: 'button', onclick: async () => copy(await (await fetch(`/api/host/${key}/minutes.md`)).text(), 'Đã sao chép biên bản') }, 'Sao chép biên bản'),
@@ -336,22 +336,30 @@
   function renderAgenda(s) {
     $('agendaSec').hidden = !s.agenda.length;
     if (!s.agenda.length) return;
-    const summaries = new Map(log.filter(m => m.itemDone !== undefined).map(m => [m.itemDone, m.summary]));
+    const summaries = new Map(log.flatMap(m => m.itemsDone || []).map(d => [d.item, d.summary]));
     $('agendaCount').textContent = `${Math.min(s.agendaIndex, s.agenda.length)}/${s.agenda.length}`;
     $('agendaList').replaceChildren(...s.agenda.map((t, i) => el('li', { class: i < s.agendaIndex ? 'done' : i === s.agendaIndex && s.state === 'LIVE' ? 'now' : '' },
       el('div', {}, t, summaries.get(i) ? el('small', {}, summaries.get(i)) : null))));
     $('btnNext').hidden = s.state !== 'LIVE' || s.agendaIndex >= s.agenda.length;
     $('btnNext').textContent = s.agendaIndex === s.agenda.length - 1 ? 'Kết thúc chương trình →' : 'Mục tiếp theo →';
   }
-  // server đã tách sẵn nội dung quyết định (bỏ nhãn KẾT LUẬN và các dòng VIỆC)
-  const decisionOf = (m) => m.itemDone !== undefined ? m.summary || '' : m.decision ?? m.text.replace(/^\s*(\*\*)?\s*KẾT LUẬN\s*(\*\*)?\s*:\s*/i, '');
-  const decisions = () => log.filter(m => (m.conclusion || m.itemDone !== undefined) && decisionOf(m));
+  // server đã tách sẵn: tóm tắt từng mục (XONG MỤC) và nội dung KẾT LUẬN (không gồm các dòng VIỆC)
+  // (cùng quy tắc với src/minutes.js: mỗi mục chỉ giữ KẾT LUẬN mới nhất)
+  const decisions = () => {
+    const last = new Map();
+    for (const m of log) if (m.conclusion && m.decision) last.set(m.item ?? null, m);
+    return log.flatMap(m => [
+      ...(m.itemsDone || []).map(d => ({ name: m.name, item: d.item, text: d.summary })),
+      ...(last.get(m.item ?? null) === m ? [{ name: m.name, item: m.item, text: m.decision }] : []),
+    ]).filter(d => d.text);
+  };
   function renderResults(s) {
     const ds = decisions();
     if (!ds.length && !s.actions.length) { $('results').replaceChildren(el('div', { class: 'empty' }, 'Chưa có quyết định hay việc cần làm. Tin "KẾT LUẬN:" và dòng "VIỆC:" sẽ hiện ở đây.')); return; }
     $('results').replaceChildren(...[
       ds.length ? el('div', {}, el('h4', {}, `Quyết định (${ds.length})`), el('ul', {}, ...ds.map(d => el('li', {},
-        decisionOf(d).replace(/\*\*/g, '').split('\n').find(l => l.trim()).slice(0, 140), ' ', el('span', { class: 'who' }, '· ' + d.name))))) : null,
+        d.item != null && s.agenda.length ? el('b', {}, `Mục ${d.item + 1}: `) : null,
+        d.text.replace(/\*\*/g, '').split('\n').find(l => l.trim()).slice(0, 140), ' ', el('span', { class: 'who' }, '· ' + d.name))))) : null,
       s.actions.length ? el('div', {}, el('h4', {}, `Việc cần làm (${s.actions.length})`), el('ul', {}, ...s.actions.map(x => el('li', {},
         x.task, ' ', el('span', { class: 'who' }, [x.owner && '· ' + x.owner, x.due && '· hạn ' + x.due].filter(Boolean).join(' ')))))) : null].filter(Boolean));
   }

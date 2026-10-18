@@ -109,11 +109,11 @@ textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
 .note { font-size: 12.5px; color: var(--mute); margin-top: 12px; display: flex; gap: 8px; }
 
 /* ---------- people ---------- */
-.people { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.people { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; }
 .person { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); position: relative; }
 .person.gone { opacity: .55; }
 .person .who { min-width: 0; flex: 1; }
-.person .nm { font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 6px; }
+.person .nm { font-weight: 600; font-size: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; }
 .person .st { font-size: 12px; color: var(--mute); display: flex; align-items: center; gap: 5px; }
 .person .kick { opacity: 0; transition: opacity .15s; }
 .person:hover .kick, .person:focus-within .kick { opacity: 1; }
@@ -134,7 +134,7 @@ textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
 
 /* ---------- room ---------- */
 .room { flex: 1; min-height: 0; display: grid; grid-template-columns: 290px minmax(0, 1fr); }
-.side { border-right: 1px solid var(--line); background: var(--surface); overflow: auto; display: flex; flex-direction: column; min-height: 0; }
+.side { border-right: 1px solid var(--line); background: var(--surface); overflow: hidden auto; display: flex; flex-direction: column; min-height: 0; }
 .side-sec { padding: 16px; border-bottom: 1px solid var(--line); }
 .side-sec.grow { flex: 1; border-bottom: 0; }
 .side h3 { margin: 0 0 10px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--mute); font-weight: 700; }
@@ -263,10 +263,17 @@ textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
 .results h4 { margin: 0 0 4px; font-size: 12.5px; color: var(--ink-2); }
 .results ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
 .results .who { color: var(--mute); font-size: 12px; }
+.results code, .agenda code, .acts code { font: 12px var(--mono); background: var(--surface-2); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
 .person .role { font-size: 12px; color: var(--accent); margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .person .edit { opacity: 0; transition: opacity .15s; }
 .person:hover .edit, .person:focus-within .edit { opacity: 1; }
 @media (hover: none) { .person .edit { opacity: 1; } }
+/* có chuột: nút ✎ / ⨯ nổi ở góc phải khi di chuột, không chiếm chỗ của tên và model */
+@media (hover: hover) and (pointer: fine) {
+  .person .icon.edit, .person .icon.kick { position: absolute; top: 50%; transform: translateY(-50%); background: var(--surface-2); }
+  .person .icon.kick { right: 6px; }
+  .person .icon.edit { right: 34px; }
+}
 .msg.private .bubble { border: 1px dashed var(--accent); }
 .msg.itemdone .hd b::after { content: "Xong mục"; }
 .acts { width: 100%; border-collapse: collapse; font-size: 13.5px; }

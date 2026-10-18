@@ -319,7 +319,7 @@
         el('span', {}, 'Thành viên: ', el('b', {}, String(s.agents.length)))),
       s.actions.length ? el('table', { class: 'acts' },
         el('thead', {}, el('tr', {}, el('th', {}, '#'), el('th', {}, 'Việc cần làm'), el('th', {}, 'Phụ trách'), el('th', {}, 'Hạn'))),
-        el('tbody', {}, ...s.actions.map((x, i) => el('tr', {}, el('td', {}, String(i + 1)), el('td', {}, x.task), el('td', {}, x.owner || '—'), el('td', {}, x.due || '—'))))) : null,
+        el('tbody', {}, ...s.actions.map((x, i) => el('tr', {}, el('td', {}, String(i + 1)), el('td', { html: inline(x.task) }), el('td', {}, x.owner || '—'), el('td', {}, x.due || '—'))))) : null,
       v ? el('div', { class: 'verdict' }, el('b', {}, `Kết luận (${v.name}${modelOf(v.name) ? ', ' + modelOf(v.name) : ''})`),
         el('div', { class: 'bubble-md', html: md(v.decision) })) : null,
       el('div', { class: 'row' },
@@ -339,7 +339,7 @@
     const summaries = new Map(log.flatMap(m => m.itemsDone || []).map(d => [d.item, d.summary]));
     $('agendaCount').textContent = `${Math.min(s.agendaIndex, s.agenda.length)}/${s.agenda.length}`;
     $('agendaList').replaceChildren(...s.agenda.map((t, i) => el('li', { class: i < s.agendaIndex ? 'done' : i === s.agendaIndex && s.state === 'LIVE' ? 'now' : '' },
-      el('div', {}, t, summaries.get(i) ? el('small', {}, summaries.get(i)) : null))));
+      el('div', {}, t, summaries.get(i) ? el('small', { html: inline(summaries.get(i)) }) : null))));
     $('btnNext').hidden = s.state !== 'LIVE' || s.agendaIndex >= s.agenda.length;
     $('btnNext').textContent = s.agendaIndex === s.agenda.length - 1 ? 'Kết thúc chương trình →' : 'Mục tiếp theo →';
   }
@@ -359,9 +359,9 @@
     $('results').replaceChildren(...[
       ds.length ? el('div', {}, el('h4', {}, `Quyết định (${ds.length})`), el('ul', {}, ...ds.map(d => el('li', {},
         d.item != null && s.agenda.length ? el('b', {}, `Mục ${d.item + 1}: `) : null,
-        d.text.replace(/\*\*/g, '').split('\n').find(l => l.trim()).slice(0, 140), ' ', el('span', { class: 'who' }, '· ' + d.name))))) : null,
+        el('span', { html: inline(d.text.split('\n').find(l => l.trim()).slice(0, 160)) }), ' ', el('span', { class: 'who' }, '· ' + d.name))))) : null,
       s.actions.length ? el('div', {}, el('h4', {}, `Việc cần làm (${s.actions.length})`), el('ul', {}, ...s.actions.map(x => el('li', {},
-        x.task, ' ', el('span', { class: 'who' }, [x.owner && '· ' + x.owner, x.due && '· hạn ' + x.due].filter(Boolean).join(' ')))))) : null].filter(Boolean));
+        el('span', { html: inline(x.task) }), ' ', el('span', { class: 'who' }, [x.owner && '· ' + x.owner, x.due && '· hạn ' + x.due].filter(Boolean).join(' ')))))) : null].filter(Boolean));
   }
   function renderSendTo(s) {
     const sel = $('sendTo'), cur = sel.value;

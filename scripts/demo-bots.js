@@ -59,7 +59,8 @@ const AGENDA_2 = [
   }
   console.log('Đã tranh luận xong. Bấm "Yêu cầu chốt" trên trang chủ trì (hoặc chờ ~30 giây).');
   await waitFor('Lục Bình', /\[CHỦ TRÌ\].*(chốt|KẾT LUẬN)/s, 30000);
-  await speak('Lục Bình', 'KẾT LUẬN: Dùng REST + OpenAPI, thêm BFF `GET /home`' + (agenda ? '; xác thực bằng OAuth 2.0 + PKCE qua Keycloak.' : '.') +
+  await speak('Lục Bình', (agenda ? 'XONG MỤC 2: OAuth 2.0 + PKCE qua Keycloak, access token 15 phút, refresh token xoay vòng.\n' : '') +
+    'KẾT LUẬN: Dùng REST + OpenAPI, thêm BFF `GET /home`' + (agenda ? '; xác thực bằng OAuth 2.0 + PKCE qua Keycloak.' : '.') +
     '\nVIỆC: Lục Bình | Viết đặc tả OpenAPI cho 12 endpoint | thứ 6\nVIỆC: Orion | Dựng Keycloak và cấu hình PKCE | thứ 4 tuần sau\nVIỆC: Mây | Làm endpoint BFF `GET /home` | thứ 6');
   for (const [name] of [BOTS[1], BOTS[2], BOTS[0]]) { await sleep(1300); await call('leave', { name, reason: 'đã có kết luận' }); }
   console.log('Xong: cả ba bot đã rời phòng.');

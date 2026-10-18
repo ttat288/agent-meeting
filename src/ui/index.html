@@ -25,70 +25,158 @@
 
 <nav class="steps" aria-label="Quy trình">
   <ol id="steps">
-    <li data-step="1"><b>1</b><span>Bối cảnh</span></li>
-    <li data-step="2"><b>2</b><span>Mời agent</span></li>
-    <li data-step="3"><b>3</b><span>Họp</span></li>
-    <li data-step="4"><b>4</b><span>Biên bản</span></li>
+    <li data-step="1"><button type="button" class="stepbtn" data-go="1"><b>1</b><span>Bối cảnh</span></button></li>
+    <li data-step="2"><button type="button" class="stepbtn" data-go="2"><b>2</b><span>Mời agent</span></button></li>
+    <li data-step="3"><span class="stepbtn"><b>3</b><span>Họp</span></span></li>
+    <li data-step="4"><span class="stepbtn"><b>4</b><span>Biên bản</span></span></li>
   </ol>
 </nav>
 
-<!-- Màn 1: chuẩn bị -->
+<!-- Màn chuẩn bị (server: LOBBY), hai bước phía trình duyệt: #boi-canh và #moi-agent -->
 <main class="setup" id="setup" hidden>
-  <section class="col">
-    <div class="card">
-      <div class="card-h"><h2><span class="num">1</span>Bối cảnh cuộc họp</h2></div>
-      <p class="hint">Chọn nhanh một mẫu rồi sửa phần trong dấu &lt;…&gt;, hoặc tự viết.</p>
-      <div class="templates" id="templates"></div>
-      <label class="field">
-        <span>Chủ đề và yêu cầu cho các agent</span>
-        <textarea id="ctx" rows="7" placeholder="Ví dụ: Hai bạn hãy thống nhất kiến trúc cho app todo: chọn database, cách đăng nhập, và chia việc."></textarea>
-        <small class="err" id="ctxErr" hidden>Hãy viết bối cảnh để các agent biết cần bàn gì.</small>
-      </label>
-      <label class="field">
-        <span>Điều kiện kết thúc <em>(tuỳ chọn)</em></span>
-        <input id="endc" placeholder="Để trống: các agent tự bàn đến khi chốt, gửi KẾT LUẬN rồi tự rời phòng">
-      </label>
-      <label class="field">
-        <span>Chương trình họp <em>(tuỳ chọn, mỗi dòng một mục)</em></span>
-        <textarea id="agenda" rows="3" placeholder="1. Chọn database&#10;2. Chọn cách đăng nhập&#10;3. Chia việc và hạn chót"></textarea>
-      </label>
-      <label class="check">
-        <input type="checkbox" id="followUp">
-        <span><b>Giữ phòng để báo tiến độ</b><small>Sau khi chốt, agent rời họp đi làm việc được giao (dòng VIỆC) rồi quay lại báo tiến độ kèm bằng chứng. Phòng tự đóng khi mọi việc báo xong.</small></span>
-      </label>
-      <details class="adv" id="adv">
-        <summary>Tuỳ chọn nâng cao</summary>
-        <div class="grid2">
-          <label class="field"><span>Chế độ phát biểu</span>
-            <select id="mode"><option value="free">Tự do: ai có ý thì nói</option><option value="turns">Lần lượt theo slot</option></select>
-          </label>
-          <label class="field"><span>Giới hạn số tin</span><input id="maxMsgs" type="number" min="2" max="1000" inputmode="numeric"></label>
-          <label class="field"><span>Giới hạn thời gian (phút, 0 = không)</span><input id="timeLimit" type="number" min="0" max="600" inputmode="numeric"></label>
-          <label class="field" id="idleField"><span>Im lặng bao lâu thì hỏi chốt (giây)</span><input id="idleSec" type="number" min="10" max="600" inputmode="numeric"></label>
+  <!-- Bước 1: bối cảnh -->
+  <div class="pane" id="paneBrief">
+    <div class="pane-in">
+      <header class="pane-h">
+        <div>
+          <h1 tabindex="-1" id="briefTitle">Bối cảnh cuộc họp</h1>
+          <p class="hint">Dặn các agent cần bàn gì và chốt ra sao. Tự điền, hoặc nhờ AI viết hộ rồi dán JSON vào.</p>
         </div>
-        <p class="hint" id="modeHint"></p>
-      </details>
+        <div class="seg" role="tablist" aria-label="Cách soạn" id="briefTabs">
+          <button type="button" role="tab" id="tabForm" data-tab="form" aria-controls="formView">Điền trên form</button>
+          <button type="button" role="tab" id="tabJson" data-tab="json" aria-controls="jsonView"><span class="mono-i">{ }</span> JSON</button>
+        </div>
+      </header>
+      <div class="brief-grid">
+        <div class="brief-main">
+          <section id="formView" role="tabpanel" aria-labelledby="tabForm">
+            <div class="card">
+              <div class="card-h"><h2>Chủ đề và yêu cầu</h2></div>
+              <div class="sub">Bắt đầu nhanh từ một mẫu</div>
+              <div class="tpls" id="templates"></div>
+              <div class="field" id="ctxField">
+                <div class="lab"><label for="ctx">Lời dặn cho các agent</label><span class="count" id="ctxCount" aria-live="polite"></span></div>
+                <textarea id="ctx" rows="9" maxlength="8000" placeholder="Ví dụ: Hai bạn hãy thống nhất kiến trúc cho app todo: chọn database, cách đăng nhập, và chia việc. Cuối cùng gửi KẾT LUẬN kèm các dòng VIỆC."></textarea>
+                <small class="err" id="ctxErr" hidden>Hãy viết bối cảnh để các agent biết cần bàn gì.</small>
+              </div>
+              <div class="field">
+                <div class="lab"><label for="endc">Điều kiện kết thúc <em>(tuỳ chọn)</em></label></div>
+                <input id="endc" maxlength="1000" placeholder="Để trống: các agent tự bàn đến khi chốt, gửi KẾT LUẬN rồi tự rời phòng">
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-h"><h2>Chương trình họp <em>tuỳ chọn</em></h2><span class="muted" id="agendaNum"></span></div>
+              <p class="hint">Các mục được bàn lần lượt; khi chốt xong một mục, agent báo <code>XONG MỤC n</code> và phòng chuyển sang mục kế.</p>
+              <ol class="items" id="agendaEd"></ol>
+            </div>
+            <div class="card">
+              <div class="card-h"><h2>Tuỳ chọn</h2></div>
+              <div class="opt">
+                <label class="switch">
+                  <input type="checkbox" role="switch" id="followUp">
+                  <span class="track" aria-hidden="true"></span>
+                  <span class="sw-t"><b>Giữ phòng để báo tiến độ</b><small>Sau khi chốt, agent rời họp đi làm việc được giao (dòng VIỆC) rồi quay lại báo tiến độ kèm bằng chứng. Phòng tự đóng khi mọi việc báo xong.</small></span>
+                </label>
+              </div>
+              <div class="opt">
+                <div class="opt-l" id="modeLabel">Chế độ phát biểu</div>
+                <div class="seg radios" role="radiogroup" aria-labelledby="modeLabel">
+                  <label><input type="radio" name="mode" value="free"><span>Tự do</span></label>
+                  <label><input type="radio" name="mode" value="turns"><span>Lần lượt</span></label>
+                </div>
+                <p class="hint" id="modeHint"></p>
+              </div>
+              <div class="opt">
+                <div class="opt-l">Giới hạn</div>
+                <div class="grid3">
+                  <label class="field sm"><span>Số tin tối đa</span><input id="maxMsgs" type="number" min="2" max="1000" inputmode="numeric"></label>
+                  <label class="field sm"><span>Thời gian (phút, 0 = không giới hạn)</span><input id="timeLimit" type="number" min="0" max="600" inputmode="numeric"></label>
+                  <label class="field sm" id="idleField"><span>Hỏi chốt khi im lặng (giây)</span><input id="idleSec" type="number" min="10" max="600" inputmode="numeric"></label>
+                </div>
+              </div>
+              <div class="opt">
+                <div class="opt-l">Vai trò theo thứ tự vào phòng <em>(tuỳ chọn)</em></div>
+                <p class="hint">Agent vào phòng thứ nhất nhận vai trò 1, thứ hai nhận vai trò 2… khi bắt đầu. Ở bước 2 bạn vẫn giao tay cho từng agent (vai trò giao tay được giữ).</p>
+                <ol class="items" id="rolesEd"></ol>
+              </div>
+            </div>
+          </section>
+          <section id="jsonView" role="tabpanel" aria-labelledby="tabJson" hidden>
+            <div class="card">
+              <div class="card-h"><h2>Bản brief JSON</h2><span class="jstat" id="jsonStat"></span></div>
+              <p class="hint">Dán JSON nhận từ AI vào đây (bọc trong <code>```json</code> cũng được). JSON hợp lệ được áp vào form ngay; lỗi hiện theo từng dòng.</p>
+              <textarea id="jsonText" class="mono" rows="20" spellcheck="false" autocomplete="off" aria-describedby="jsonIssues" aria-label="Bản brief JSON"></textarea>
+              <ul class="issues" id="jsonIssues"></ul>
+              <div class="row">
+                <button type="button" class="btn primary" id="jsonApply">Áp dụng vào form</button>
+                <button type="button" class="btn ghost" id="jsonCopy">Sao chép JSON</button>
+                <button type="button" class="btn ghost" id="jsonDownload">Tải .json</button>
+                <button type="button" class="btn ghost" id="jsonOpen">Mở tệp .json</button>
+                <input type="file" id="jsonFile" accept=".json,application/json,text/plain" hidden>
+              </div>
+            </div>
+          </section>
+          <div class="card carry" id="carryCard" hidden>
+            <div class="card-h"><h2>Mang từ cuộc họp trước</h2></div>
+            <div class="results" id="carry"></div>
+          </div>
+        </div>
+        <aside class="brief-side">
+          <div class="card ai">
+            <div class="card-h"><h2><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5l1.6 4.4 4.4 1.6-4.4 1.6L10 14.5l-1.6-4.4L4 8.5l4.4-1.6zM15.5 13l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg>Nhờ AI viết</h2></div>
+            <ol class="ai-steps">
+              <li><b>Sao chép prompt</b><small>Gồm mô tả từng trường, giới hạn và bản nháp hiện tại.</small>
+                <button type="button" class="btn primary" id="btnAiPrompt">Sao chép prompt cho AI</button></li>
+              <li><b>Dán vào ChatGPT, Claude…</b><small>Viết tiếp bên dưới: cuộc họp bàn gì, mấy agent, cần chốt gì, có phải đi làm sau họp không.</small></li>
+              <li><b>Dán JSON nhận được</b><small>Vào tab JSON, rồi kiểm tra lại trên form.</small>
+                <button type="button" class="btn ghost" id="btnToJson">Mở tab JSON</button></li>
+            </ol>
+          </div>
+        </aside>
+      </div>
     </div>
-    <div class="card carry" id="carryCard" hidden>
-      <div class="card-h"><h2>Mang từ cuộc họp trước</h2></div>
-      <div class="results" id="carry"></div>
+    <div class="startbar">
+      <div class="startbar-in">
+        <div class="checks" id="checks1"></div>
+        <button type="button" class="btn primary lg" id="btnNextStep"><span>Tiếp: mời agent</span><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 10h10m-4-4 4 4-4 4"/></svg></button>
+      </div>
     </div>
-  </section>
-  <section class="col">
-    <div class="card" id="inviteHome">
-      <div class="card-h"><h2><span class="num">2</span>Mời agent vào họp</h2></div>
-      <div id="invite"></div>
+  </div>
+
+  <!-- Bước 2: mời agent -->
+  <div class="pane" id="paneInvite" hidden>
+    <div class="pane-in">
+      <header class="pane-h">
+        <div>
+          <h1 tabindex="-1" id="inviteTitle">Mời agent vào họp</h1>
+          <p class="hint">Sao chép prompt và dán cho từng agent. Agent vào phòng chờ ngay; đủ người thì bấm Bắt đầu.</p>
+        </div>
+      </header>
+      <div class="invite-grid">
+        <div class="col">
+          <div class="card" id="inviteHome"><div id="invite"></div></div>
+        </div>
+        <div class="col">
+          <div class="card">
+            <div class="card-h"><h2>Phòng chờ</h2><span class="muted" id="lobbyCount"></span></div>
+            <ul class="people" id="lobby"></ul>
+          </div>
+          <div class="card">
+            <div class="card-h"><h2>Bối cảnh sẽ gửi</h2><button type="button" class="btn ghost sm" id="btnEditBrief">← Sửa bối cảnh</button></div>
+            <div id="briefSummary"></div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="card">
-      <div class="card-h"><h2>Phòng chờ</h2><span class="muted" id="lobbyCount"></span></div>
-      <ul class="people" id="lobby"></ul>
+    <div class="startbar">
+      <div class="startbar-in">
+        <button type="button" class="btn ghost" id="btnBack"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M15 10H5m4-4-4 4 4 4"/></svg><span>Bối cảnh</span></button>
+        <div class="checks" id="checks2"></div>
+        <button type="button" class="btn primary lg" id="btnStart">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5v10l8-5z" class="fill"/></svg><span>Bắt đầu cuộc họp</span>
+        </button>
+      </div>
     </div>
-  </section>
-  <div class="startbar">
-    <div class="checks" id="checks"></div>
-    <button class="btn primary lg" id="btnStart">
-      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 5v10l8-5z" class="fill"/></svg><span>Bắt đầu cuộc họp</span>
-    </button>
   </div>
 </main>
 
@@ -159,6 +247,7 @@
   </div>
 </div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
+<script src="/assets/brief.js"></script>
 <script src="/assets/app.js"></script>
 </body>
 </html>

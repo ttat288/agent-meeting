@@ -141,51 +141,254 @@
       el('p', { class: 'note' }, '🔒', 'Prompt chứa mã tham gia phòng: ai có prompt đều vào họp được. Không chia sẻ công khai. Link trang này (chủ trì) thì đừng gửi cho ai.'));
   }
 
-  // ---------- màn chuẩn bị ----------
+  // ---------- màn chuẩn bị: bản brief (bối cảnh + tuỳ chọn) là nguồn chung cho form và JSON ----------
+  const BR = window.AgentMeetingBrief;
+  const svgIcon = (d) => { const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('viewBox', '0 0 20 20'); s.setAttribute('aria-hidden', 'true'); const p = document.createElementNS('http://www.w3.org/2000/svg', 'path'); p.setAttribute('d', d); s.append(p); return s; };
   const TEMPLATES = [
-    ['Tranh luận', 'Tranh luận về: <chủ đề>.\nMỗi agent bảo vệ một quan điểm khác nhau, phản biện lẫn nhau bằng lập luận cụ thể, rồi cả nhóm thống nhất một kết luận có lý do.'],
-    ['Brainstorm', 'Cùng brainstorm ý tưởng cho: <chủ đề>.\nMỗi lượt đưa 1-2 ý mới, không lặp lại ý đã có. Cuối cùng chọn ra 3 ý tốt nhất và giải thích vì sao.'],
-    ['Review thiết kế', 'Review thiết kế/kiến trúc sau: <dán mô tả hoặc nội dung>.\nChỉ ra rủi ro, đề xuất cải tiến, rồi thống nhất danh sách việc cần làm theo thứ tự ưu tiên.'],
-    ['Lập kế hoạch', 'Lập kế hoạch cho: <mục tiêu>.\nChia nhỏ thành các bước, phân công agent nào phụ trách phần nào, ước lượng thời gian, và chốt kế hoạch cuối cùng.'],
-    ['Ra quyết định', 'Cần chọn giữa: <phương án A> và <phương án B>.\nPhân tích ưu nhược điểm theo chi phí, rủi ro và thời gian, rồi chọn một phương án và nêu điều kiện để đổi ý.'],
-    ['Review tiến độ', 'Họp rà soát tiến độ các việc từ cuộc họp trước (hệ thống tự gửi kèm danh sách việc và quyết định).\nMỗi agent báo trạng thái thật của việc mình phụ trách bằng dòng TIẾN ĐỘ VIỆC (ví dụ "TIẾN ĐỘ VIỆC 2: xong | commit abc123, test xanh"), nêu vướng mắc, rồi thống nhất việc tiếp theo (dòng VIỆC).'],
+    ['Tranh luận', 'Mỗi agent bảo vệ một quan điểm, phản biện rồi thống nhất.', 'M10 3v14M6 17h8M4 6h12M4 6l-2 5a2 2 0 0 0 4 0zM16 6l-2 5a2 2 0 0 0 4 0z',
+      'Tranh luận về: <chủ đề>.\nMỗi agent bảo vệ một quan điểm khác nhau, phản biện lẫn nhau bằng lập luận cụ thể, rồi cả nhóm thống nhất một kết luận có lý do.'],
+    ['Brainstorm', 'Mỗi lượt 1-2 ý mới, cuối cùng chọn 3 ý tốt nhất.', 'M7.5 14.5h5M8.5 17.5h3M10 2.5a5 5 0 0 0-3 9c.6.5 1 1.3 1 2.2V14h4v-.3c0-.9.4-1.7 1-2.2a5 5 0 0 0-3-9z',
+      'Cùng brainstorm ý tưởng cho: <chủ đề>.\nMỗi lượt đưa 1-2 ý mới, không lặp lại ý đã có. Cuối cùng chọn ra 3 ý tốt nhất và giải thích vì sao.'],
+    ['Review thiết kế', 'Chỉ ra rủi ro, đề xuất cải tiến, chốt danh sách việc.', 'M8.5 3.5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM12.2 12.2 16.5 16.5',
+      'Review thiết kế/kiến trúc sau: <dán mô tả hoặc nội dung>.\nChỉ ra rủi ro, đề xuất cải tiến, rồi thống nhất danh sách việc cần làm theo thứ tự ưu tiên.'],
+    ['Lập kế hoạch', 'Chia bước, phân công, ước lượng thời gian.', 'M8.5 5h8M8.5 10h8M8.5 15h8M3 5l1.2 1.2L6.5 4M3 10l1.2 1.2L6.5 9M3.5 15h2',
+      'Lập kế hoạch cho: <mục tiêu>.\nChia nhỏ thành các bước, phân công agent nào phụ trách phần nào, ước lượng thời gian, và chốt kế hoạch cuối cùng.'],
+    ['Ra quyết định', 'So sánh phương án theo chi phí, rủi ro, thời gian.', 'M10 2.5v15M10 4.5h5l2 2-2 2h-5M10 10.5H5l-2 2 2 2h5',
+      'Cần chọn giữa: <phương án A> và <phương án B>.\nPhân tích ưu nhược điểm theo chi phí, rủi ro và thời gian, rồi chọn một phương án và nêu điều kiện để đổi ý.'],
+    ['Review tiến độ', 'Rà soát việc của cuộc họp trước (dùng với Họp tiếp).', 'M3.5 16.5h13M6 13.5v-3M10 13.5v-7M14 13.5v-5',
+      'Họp rà soát tiến độ các việc từ cuộc họp trước (hệ thống tự gửi kèm danh sách việc và quyết định).\nMỗi agent báo trạng thái thật của việc mình phụ trách bằng dòng TIẾN ĐỘ VIỆC (ví dụ "TIẾN ĐỘ VIỆC 2: xong | commit abc123, test xanh"), nêu vướng mắc, rồi thống nhất việc tiếp theo (dòng VIỆC).'],
   ];
   const MODE_HINT = {
-    free: 'Tự do: ai có ý mới thì nói. Khi im lặng đủ lâu, một agent được hỏi có muốn chốt và rời phòng không.',
-    turns: 'Lần lượt: agent phát biểu theo thứ tự slot; tới lượt mà không có gì mới thì bỏ lượt. Cả vòng đều bỏ lượt thì cuộc họp tự kết thúc.',
+    free: 'Ai có ý mới thì nói. Khi phòng im lặng đủ lâu, một agent được hỏi có muốn chốt và rời phòng không.',
+    turns: 'Agent phát biểu theo thứ tự slot; tới lượt mà không có gì mới thì bỏ lượt. Cả vòng đều bỏ lượt thì cuộc họp tự kết thúc.',
   };
+  let draft = null, base = null, step = 1, placeholderOk = '';
+  const fmtN = (n) => n.toLocaleString('vi-VN');
+  const saveDraft = () => store.set(draftKey('brief'), BR.stringify(draft));
+
+  // danh sách sửa được (chương trình họp, vai trò): Enter thêm dòng dưới, Backspace ở dòng trống thì xoá, Alt+↑/↓ đổi chỗ
+  function listEditor(root, o) {
+    const items = () => [...root.querySelectorAll('input')];
+    const add = el('button', { class: 'btn ghost sm add', type: 'button' }, '+ ' + o.addText);
+    const empty = el('li', { class: 'items-empty' }, o.empty);
+    const renum = () => {
+      const ins = items();
+      ins.forEach((inp, i) => {
+        const li = inp.closest('li');
+        li.querySelector('.ix').textContent = i + 1;
+        inp.setAttribute('aria-label', `${o.label} ${i + 1}`);
+        li.querySelector('.up').disabled = i === 0; li.querySelector('.down').disabled = i === ins.length - 1;
+        li.querySelector('.up').setAttribute('aria-label', `Đưa ${o.label.toLowerCase()} ${i + 1} lên`);
+        li.querySelector('.down').setAttribute('aria-label', `Đưa ${o.label.toLowerCase()} ${i + 1} xuống`);
+        li.querySelector('.del').setAttribute('aria-label', `Xoá ${o.label.toLowerCase()} ${i + 1}`);
+      });
+      empty.hidden = ins.length > 0; add.disabled = ins.length >= o.max;
+      if (o.count) o.count(ins.length);
+    };
+    const row = (v) => {
+      const inp = el('input', { maxlength: o.maxLen, placeholder: o.placeholder, autocomplete: 'off' }); inp.value = v;
+      const li = el('li', { class: 'item' }, el('span', { class: 'ix', 'aria-hidden': 'true' }), inp,
+        el('button', { class: 'icon up', type: 'button', title: 'Lên', onclick: () => move(li, -1) }, '↑'),
+        el('button', { class: 'icon down', type: 'button', title: 'Xuống', onclick: () => move(li, 1) }, '↓'),
+        el('button', { class: 'icon del', type: 'button', title: 'Xoá', onclick: () => remove(li) }, '✕'));
+      inp.addEventListener('input', o.onChange);
+      inp.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); if (items().length < o.max) insert('', li); }
+        else if (e.key === 'Backspace' && !inp.value && items().length) { e.preventDefault(); remove(li); }
+        else if (e.altKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) { e.preventDefault(); move(li, e.key === 'ArrowUp' ? -1 : 1); inp.focus(); }
+      });
+      return li;
+    };
+    const insert = (v, after) => { const li = row(v); (after ? after.after(li) : empty.before(li)); renum(); li.querySelector('input').focus(); o.onChange(); };
+    const remove = (li) => {
+      const ins = items(), i = ins.indexOf(li.querySelector('input'));
+      li.remove(); renum(); o.onChange();
+      const next = items()[Math.max(0, i - 1)]; (next || add).focus();
+    };
+    const move = (li, d) => {
+      const sib = d < 0 ? li.previousElementSibling : li.nextElementSibling;
+      if (!sib || !sib.classList.contains('item')) return;
+      d < 0 ? sib.before(li) : sib.after(li); renum(); o.onChange();
+      li.querySelector(d < 0 ? '.up' : '.down').focus();
+    };
+    add.onclick = () => insert('');
+    root.after(add);
+    return {
+      get: () => items().map(i => i.value),
+      set: (arr) => { root.replaceChildren(...arr.map(row), empty); renum(); },
+    };
+  }
+  let agendaEd, rolesEd;
+
+  function readForm() {
+    return BR.toBrief({
+      context: $('ctx').value, endCondition: $('endc').value, agenda: agendaEd.get(), roles: rolesEd.get(),
+      followUp: $('followUp').checked, mode: document.querySelector('input[name=mode]:checked')?.value,
+      maxMsgs: $('maxMsgs').value, timeLimitMin: $('timeLimit').value, idleSec: $('idleSec').value,
+    }, base);
+  }
+  function writeForm(b) {
+    $('ctx').value = b.context; $('endc').value = b.endCondition;
+    agendaEd.set(b.settings.agenda); rolesEd.set(b.roles);
+    $('followUp').checked = b.settings.followUp;
+    for (const r of document.querySelectorAll('input[name=mode]')) r.checked = r.value === b.settings.mode;
+    $('maxMsgs').value = b.settings.maxMsgs; $('timeLimit').value = b.settings.timeLimitMin; $('idleSec').value = b.settings.idleSec;
+    formSideEffects();
+  }
+  function formSideEffects() {
+    const n = $('ctx').value.length;
+    $('ctxCount').textContent = `${fmtN(n)} / ${fmtN(BR.LIMITS.context)}`;
+    $('ctxCount').classList.toggle('warn', n > BR.LIMITS.context * .9);
+    const mode = document.querySelector('input[name=mode]:checked')?.value || 'free';
+    $('modeHint').textContent = MODE_HINT[mode]; $('idleField').hidden = mode !== 'free';
+    renderChecks();
+  }
+  // form đổi → bản brief + JSON cập nhật (JSON đang sai dở dang cũng bị thay: form là bản mới nhất)
+  function formChanged() {
+    draft = readForm(); saveDraft(); formSideEffects();
+    $('ctxErr').hidden = true; $('ctxField').classList.remove('invalid');
+    if (document.activeElement !== $('jsonText')) showJson(true);
+  }
+  function showJson(reset) {
+    if (reset) $('jsonText').value = BR.stringify(draft);
+    renderIssues(reset ? { ok: true, errors: [], warnings: [] } : null);
+  }
+  function renderIssues(r) {
+    const st = $('jsonStat');
+    if (!r) return;
+    st.className = 'jstat ' + (r.ok ? 'ok' : 'bad');
+    st.textContent = r.ok ? (r.warnings.length ? `✓ Hợp lệ · ${r.warnings.length} lưu ý` : '✓ Hợp lệ, khớp với form') : `✕ ${r.errors.length} lỗi, chưa áp dụng`;
+    const line = (x) => x.line ? el('button', { class: 'ln', type: 'button', title: 'Tới dòng ' + x.line, onclick: () => gotoLine(x.line) }, 'dòng ' + x.line) : null;
+    $('jsonIssues').replaceChildren(...r.errors.map(x => el('li', { class: 'bad' }, line(x), x.msg)), ...r.warnings.map(x => el('li', { class: 'warn' }, line(x), x.msg)));
+  }
+  function gotoLine(n) {
+    const t = $('jsonText'), lines = t.value.split('\n'), at = lines.slice(0, n - 1).reduce((a, l) => a + l.length + 1, 0);
+    t.focus(); t.setSelectionRange(at, at + (lines[n - 1] || '').length);
+    t.scrollTop = Math.max(0, (n - 4) * parseFloat(getComputedStyle(t).lineHeight || '18'));
+  }
+  // JSON hợp lệ → áp ngay vào form (không định dạng lại chữ người dùng đang gõ)
+  let jsonTimer = 0;
+  function jsonChanged(now) {
+    clearTimeout(jsonTimer);
+    const run = () => {
+      const r = BR.parseBrief($('jsonText').value, base);
+      renderIssues(r);
+      if (r.ok) { draft = r.brief; saveDraft(); writeForm(draft); }
+      return r;
+    };
+    if (now) return run();
+    jsonTimer = setTimeout(run, 250);
+  }
+  function setTab(t, focus) {
+    const json = t === 'json';
+    for (const b of $('briefTabs').children) { const on = b.dataset.tab === t; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; }
+    $('formView').hidden = json; $('jsonView').hidden = !json;
+    store.set('agent-meeting:briefTab', t);
+    if (json && focus) $('jsonText').focus();
+  }
+
   function initForm(s) {
     if (formInit) return; formInit = true;
-    $('ctx').value = store.get(draftKey('ctx')) ?? '';
-    $('endc').value = store.get(draftKey('endc')) ?? '';
-    $('agenda').value = store.get(draftKey('agenda')) ?? (s.agenda || []).map((x, i) => `${i + 1}. ${x}`).join('\n');
-    $('agenda').addEventListener('input', () => store.set(draftKey('agenda'), $('agenda').value));
-    $('mode').value = s.settings.mode; $('maxMsgs').value = s.settings.maxMsgs;
-    $('followUp').checked = (store.get(draftKey('followUp')) ?? String(s.settings.followUp)) === 'true';
-    $('followUp').addEventListener('change', () => store.set(draftKey('followUp'), String($('followUp').checked)));
-    $('timeLimit').value = s.settings.timeLimitMin; $('idleSec').value = s.settings.idleSec;
+    base = { settings: { ...s.settings, agenda: [] } };
+    const stored = store.get(draftKey('brief'));
+    const parsed = stored && BR.parseBrief(stored, base);
+    if (parsed && parsed.ok) draft = parsed.brief;
+    else if (store.get(draftKey('ctx')) !== null || store.get(draftKey('agenda')) !== null) // bản nháp kiểu cũ (≤ v3.2)
+      draft = BR.toBrief({ ...s.settings, context: store.get(draftKey('ctx')) ?? '', endCondition: store.get(draftKey('endc')) ?? '',
+        agenda: store.get(draftKey('agenda')) ?? s.agenda, followUp: (store.get(draftKey('followUp')) ?? String(s.settings.followUp)) === 'true' }, base);
+    else draft = s.preset ? BR.toBrief({ ...s.preset.settings, ...s.preset }, base) : BR.toBrief({ ...s.settings, agenda: s.agenda }, base);
+    const common = { onChange: formChanged };
+    agendaEd = listEditor($('agendaEd'), { ...common, max: BR.LIMITS.agenda, maxLen: BR.LIMITS.item, label: 'Mục', addText: 'Thêm mục',
+      placeholder: 'Ví dụ: Chọn database', empty: 'Chưa có mục nào: cả cuộc họp bàn một chủ đề.',
+      count: (n) => { $('agendaNum').textContent = n ? `${n}/${BR.LIMITS.agenda} mục` : ''; } });
+    rolesEd = listEditor($('rolesEd'), { ...common, max: BR.LIMITS.roles, maxLen: BR.LIMITS.role, label: 'Vai trò', addText: 'Thêm vai trò',
+      placeholder: 'Ví dụ: phản biện', empty: 'Không đặt vai trò: các agent bàn ngang hàng.' });
     const tpl = $('templates');
-    TEMPLATES.forEach(([name, text]) => tpl.append(el('button', { class: 'chip', type: 'button', onclick: () => useTemplate(text) }, name)));
-    $('ctx').addEventListener('input', () => { store.set(draftKey('ctx'), $('ctx').value); $('ctxErr').hidden = true; $('ctx').parentElement.classList.remove('invalid'); renderChecks(); });
-    $('endc').addEventListener('input', () => store.set(draftKey('endc'), $('endc').value));
-    $('mode').addEventListener('change', modeChanged); modeChanged();
+    TEMPLATES.forEach(([name, desc, icon, text]) => tpl.append(el('button', { class: 'tpl', type: 'button', onclick: () => useTemplate(text) },
+      el('span', { class: 'tpl-i' }, svgIcon(icon)), el('span', { class: 'tpl-t' }, el('b', {}, name), el('small', {}, desc)))));
+    for (const id of ['ctx', 'endc', 'maxMsgs', 'timeLimit', 'idleSec']) $(id).addEventListener('input', formChanged);
+    $('followUp').addEventListener('change', formChanged);
+    for (const r of document.querySelectorAll('input[name=mode]')) r.addEventListener('change', formChanged);
+    writeForm(draft); showJson(true);
+    $('jsonText').addEventListener('input', () => jsonChanged());
+    $('jsonText').addEventListener('blur', () => { if (BR.parseBrief($('jsonText').value, base).ok) jsonChanged(true); });
+    setTab(store.get('agent-meeting:briefTab') === 'json' ? 'json' : 'form');
   }
-  function modeChanged() { $('modeHint').textContent = MODE_HINT[$('mode').value]; $('idleField').hidden = $('mode').value !== 'free'; }
+  for (const b of $('briefTabs').children) b.onclick = () => setTab(b.dataset.tab);
+  $('briefTabs').addEventListener('keydown', (e) => { // tablist: mũi tên trái/phải
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    const t = $('tabForm').classList.contains('on') ? 'json' : 'form'; setTab(t); $(t === 'json' ? 'tabJson' : 'tabForm').focus();
+  });
+  $('btnAiPrompt').onclick = () => copy(BR.aiPrompt(draft), 'Đã sao chép prompt: dán vào ChatGPT/Claude kèm mô tả cuộc họp');
+  $('btnToJson').onclick = () => { setTab('json', true); $('jsonText').select(); };
+  $('jsonApply').onclick = () => {
+    const r = jsonChanged(true);
+    if (!r.ok) { if (r.errors[0].line) gotoLine(r.errors[0].line); toast('JSON còn lỗi: ' + r.errors[0].msg, true); return; }
+    showJson(true); renderIssues(r); setTab('form'); toast('Đã áp dụng bản brief vào form');
+  };
+  $('jsonCopy').onclick = () => copy(BR.stringify(draft), 'Đã sao chép JSON');
+  $('jsonDownload').onclick = () => {
+    const slug = (draft.context.split('\n')[0] || 'cuoc-hop').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/gi, 'd').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'cuoc-hop';
+    const url = URL.createObjectURL(new Blob([BR.stringify(draft) + '\n'], { type: 'application/json' }));
+    const a = el('a', { href: url, download: `brief-${slug}.json` }); document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+  $('jsonOpen').onclick = () => $('jsonFile').click();
+  $('jsonFile').onchange = () => { // đọc ngay trong trình duyệt, không gửi lên server
+    const f = $('jsonFile').files[0]; $('jsonFile').value = '';
+    if (!f) return;
+    if (f.size > BR.LIMITS.text) { toast(`Tệp quá lớn (${fmtSize(f.size)}), tối đa ${BR.LIMITS.text / 1024} KB`, true); return; }
+    const rd = new FileReader();
+    rd.onload = () => { setTab('json'); $('jsonText').value = String(rd.result); const r = jsonChanged(true); toast(r.ok ? `Đã mở ${f.name}` : `${f.name}: JSON còn lỗi`, !r.ok); };
+    rd.onerror = () => toast('Không đọc được tệp', true);
+    rd.readAsText(f);
+  };
   async function useTemplate(text) {
     const cur = $('ctx').value.trim();
-    if (cur && !(await confirmBox('Dùng mẫu này?', 'Nội dung bối cảnh hiện tại sẽ được thay bằng mẫu.', 'Thay bằng mẫu'))) return;
-    $('ctx').value = text; $('ctx').dispatchEvent(new Event('input'));
+    if (cur && cur !== text && !(await confirmBox('Dùng mẫu này?', 'Nội dung "Lời dặn cho các agent" hiện tại sẽ được thay bằng mẫu.', 'Thay bằng mẫu'))) return;
+    $('ctx').value = text; formChanged();
     const i = text.indexOf('<'), j = text.indexOf('>', i);
     $('ctx').focus(); if (i >= 0 && j > i) $('ctx').setSelectionRange(i, j + 1);
   }
+  // bối cảnh phải có chữ; còn <…> của mẫu thì hỏi lại (một lần cho mỗi nội dung)
+  async function briefReady(yes) {
+    if (!draft.context) {
+      goStep(1); setTab('form');
+      $('ctxErr').hidden = false; $('ctxField').classList.add('invalid'); $('ctx').focus(); return false;
+    }
+    if (BR.PLACEHOLDER.test(draft.context) && placeholderOk !== draft.context) {
+      if (!(await confirmBox('Bối cảnh còn chỗ trống', `Bối cảnh còn phần ${BR.PLACEHOLDER.exec(draft.context)[0]} của mẫu chưa điền. ${yes}?`, yes))) {
+        goStep(1); setTab('form'); const i = draft.context.search(BR.PLACEHOLDER); $('ctx').focus(); $('ctx').setSelectionRange(i, draft.context.indexOf('>', i) + 1); return false;
+      }
+      placeholderOk = draft.context;
+    }
+    return true;
+  }
+  function goStep(n, focus) {
+    if (step === n) return;
+    step = n;
+    if (location.hash !== (n === 2 ? '#moi-agent' : '#boi-canh')) history.pushState(null, '', n === 2 ? '#moi-agent' : '#boi-canh');
+    if (snap) render();
+    $('setup').scrollTop = 0;
+    if (focus) $(n === 2 ? 'inviteTitle' : 'briefTitle').focus({ preventScroll: true });
+  }
+  window.addEventListener('popstate', () => { const n = location.hash === '#moi-agent' ? 2 : 1; if (n !== step) { step = n; if (snap) render(); } });
+  $('btnNextStep').onclick = async () => { if (await briefReady('Vẫn tiếp tục')) goStep(2, true); };
+  $('btnBack').onclick = $('btnEditBrief').onclick = () => goStep(1, true);
+  for (const b of $('steps').querySelectorAll('button[data-go]')) b.onclick = async () => {
+    if (!snap || snap.state !== 'LOBBY') return;
+    if (+b.dataset.go === 2) { if (step !== 2 && await briefReady('Vẫn tiếp tục')) goStep(2, true); } else goStep(1, true);
+  };
+
+  const presentAgents = () => snap.agents.filter(a => a.status !== 'left' && a.status !== 'kicked');
   function renderChecks() {
-    if (!snap) return;
-    const present = snap.agents.filter(a => a.status !== 'left' && a.status !== 'kicked').length;
-    const hasCtx = !!$('ctx').value.trim();
-    $('checks').replaceChildren(
-      el('span', { class: hasCtx ? 'ok' : '' }, hasCtx ? 'Đã có bối cảnh' : 'Chưa có bối cảnh'),
-      el('span', { class: present ? 'ok' : '' }, present ? `${present} agent đang chờ` : 'Chưa có agent (vẫn bắt đầu được, ai vào sau đọc lại từ đầu)'));
-    renderSteps();
+    if (!snap || !draft) return;
+    const n = presentAgents().length, ctx = draft.context.length;
+    $('checks1').replaceChildren(
+      el('span', { class: ctx ? 'ok' : '' }, ctx ? `Đã có bối cảnh (${fmtN(ctx)} ký tự)` : 'Chưa có bối cảnh'),
+      el('span', { class: n ? 'ok' : '' }, n ? `${n} agent đang chờ ở phòng chờ` : 'Chưa có agent: mời ở bước 2'));
+    $('checks2').replaceChildren(
+      el('span', { class: n ? 'ok' : '' }, n ? `${n} agent đang chờ` : 'Chưa có agent (vẫn bắt đầu được, ai vào sau đọc lại từ đầu)'));
   }
   function person(a, opts = {}) {
     const color = colorOf(a.name), gone = a.status === 'left' || a.status === 'kicked';
@@ -193,7 +396,8 @@
       el('span', { class: 'av s-' + a.status, style: `background:${color}` }, initials(a.name), el('i')),
       el('div', { class: 'who' },
         el('div', { class: 'nm' }, a.name, a.model ? el('span', { class: 'model' }, a.model) : null, a.status === 'turn' ? el('span', { class: 'tag' }, 'đang lượt') : null),
-        a.role ? el('div', { class: 'role', title: a.role }, '🎭 ' + a.role) : null,
+        a.role ? el('div', { class: 'role', title: a.role }, '🎭 ' + a.role)
+          : opts.planned ? el('div', { class: 'role planned', title: 'Theo thứ tự vào phòng trong bản brief, giao khi bắt đầu' }, '🎭 ' + opts.planned + ' · theo bản brief') : null,
         el('div', { class: 'st' }, `slot ${a.slot} · ${STATUS[a.status] || a.status}` + (opts.said && a.said ? ` · ${a.said} tin` : ''))),
       opts.kick && !gone ? el('button', { class: 'icon edit', type: 'button', title: 'Giao vai trò', 'aria-label': 'Giao vai trò cho ' + a.name, onclick: () => editRole(a) }, '✎') : null,
       opts.kick && !gone ? el('button', { class: 'icon kick', type: 'button', title: 'Mời ra khỏi phòng', 'aria-label': 'Mời ' + a.name + ' ra khỏi phòng', onclick: () => kick(a.name) }, '⨯') : null);
@@ -210,22 +414,35 @@
       s.files.length ? el('div', {}, el('h4', {}, `Tệp (${s.files.length})`), el('ul', {}, ...s.files.map(f => el('li', {}, f.name, el('span', { class: 'who' }, ` · ${f.from} → ${f.to || 'cả phòng'} · ${fmtSize(f.size)}`))))) : null,
       c.done.length ? el('div', {}, el('h4', {}, `Đã xong (${c.done.length})`), el('ul', {}, ...c.done.map(t => el('li', {}, `#${t.n} `, el('span', { html: inline(t.task) }), t.note ? el('span', { class: 'who' }, ' · ' + t.note) : null)))) : null].filter(Boolean)); // replaceChildren(null) in ra chữ "null"
   }
+  // bước 2: tóm tắt chỉ đọc đúng bản brief sẽ gửi khi bắt đầu
+  function renderSummary(s) {
+    const b = draft, st = b.settings;
+    if (!changed('summary', [b, !!s.carry])) return;
+    const fact = (k, v) => [el('dt', {}, k), el('dd', {}, v)];
+    $('briefSummary').replaceChildren(...[
+      b.context ? el('div', { class: 'ctx sum-ctx' }, b.context) : el('p', { class: 'err' }, 'Chưa có bối cảnh: bấm "Sửa bối cảnh" để viết.'),
+      b.endCondition ? el('p', { class: 'hint' }, 'Điều kiện kết thúc: ' + b.endCondition) : null,
+      st.agenda.length ? el('ol', { class: 'sum-list' }, ...st.agenda.map(x => el('li', {}, x))) : null,
+      el('dl', { class: 'info sum' }, ...[
+        fact('Chương trình', st.agenda.length ? `${st.agenda.length} mục` : 'một chủ đề'),
+        fact('Giữ phòng báo tiến độ', st.followUp ? 'có' : 'không'),
+        fact('Chế độ', st.mode === 'turns' ? 'lần lượt' : 'tự do'),
+        fact('Giới hạn', `${st.maxMsgs} tin${st.timeLimitMin ? ` · ${st.timeLimitMin} phút` : ''}`),
+        b.roles.some(Boolean) ? fact('Vai trò theo thứ tự', b.roles.map((r, i) => `${i + 1}. ${r || '—'}`).join(' · ')) : null,
+        s.carry ? fact('Từ cuộc họp trước', 'gửi kèm việc + quyết định') : null].flat().filter(Boolean))].filter(Boolean));
+  }
   function renderSetup(s) {
     initForm(s); renderCarry(s);
-    const lobby = $('lobby');
-    lobby.replaceChildren(...s.agents.map(a => person(a, { kick: true })), el('li', { class: 'person empty' }, `Slot ${s.agents.length + 1} · đang chờ agent vào…`));
-    const present = s.agents.filter(a => a.status !== 'left' && a.status !== 'kicked').length;
-    $('lobbyCount').textContent = present ? `${present} agent` : '';
-    renderChecks();
+    $('paneBrief').hidden = step !== 1; $('paneInvite').hidden = step !== 2;
+    const present = presentAgents(), planned = new Map(present.sort((x, y) => x.slot - y.slot).map((a, i) => [a.name, draft.roles[i] || '']));
+    $('lobby').replaceChildren(...s.agents.map(a => person(a, { kick: true, planned: planned.get(a.name) })), el('li', { class: 'person empty' }, `Slot ${s.agents.length + 1} · đang chờ agent vào…`));
+    $('lobbyCount').textContent = present.length ? `${present.length} agent` : '';
+    renderSummary(s); renderChecks();
   }
   $('btnStart').onclick = async () => {
-    const context = $('ctx').value.trim();
-    if (!context) { $('ctxErr').hidden = false; $('ctx').parentElement.classList.add('invalid'); $('ctx').focus(); return; }
-    if (/<[^>\n]{1,40}>/.test(context) && !(await confirmBox('Bối cảnh còn chỗ trống', 'Bối cảnh còn phần <…> của mẫu chưa điền. Vẫn bắt đầu?', 'Vẫn bắt đầu'))) return;
+    if (!(await briefReady('Vẫn bắt đầu'))) return;
     const b = $('btnStart'); b.disabled = true;
-    try {
-      await post('start', { context, endCondition: $('endc').value.trim(), settings: { mode: $('mode').value, maxMsgs: +$('maxMsgs').value, timeLimitMin: +$('timeLimit').value, idleSec: +$('idleSec').value, agenda: $('agenda').value, followUp: $('followUp').checked } });
-    } catch (e) { toast('Không bắt đầu được: ' + e.message, true); }
+    try { await post('start', draft); } catch (e) { toast('Không bắt đầu được: ' + e.message, true); }
     b.disabled = false;
   };
 
@@ -517,11 +734,12 @@
   // ---------- khung chung ----------
   function renderSteps() {
     if (!snap) return;
-    const step = snap.state === 'LOBBY' ? ($('ctx').value.trim() ? 2 : 1) : snap.state === 'LIVE' ? 3 : 4;
+    const lobby = snap.state === 'LOBBY', cur = lobby ? step : snap.state === 'LIVE' ? 3 : 4;
     for (const li of $('steps').children) {
-      const n = +li.dataset.step;
-      li.classList.toggle('on', n === step); li.classList.toggle('done', n < step);
-      li.setAttribute('aria-current', n === step ? 'step' : 'false');
+      const n = +li.dataset.step, btn = li.querySelector('button');
+      li.classList.toggle('on', n === cur); li.classList.toggle('done', n < cur);
+      if (btn) { btn.disabled = !lobby; btn.setAttribute('aria-current', n === cur ? 'step' : 'false'); }
+      else li.firstElementChild.setAttribute('aria-current', n === cur ? 'step' : 'false');
     }
   }
   function setConn(kind) {
@@ -535,6 +753,7 @@
     st.className = 'badge ' + ({ LIVE: 'live', WORK: 'work', ENDED: 'ended' }[s.state] || '');
     st.textContent = { LOBBY: 'Chuẩn bị', LIVE: 'Đang họp', WORK: 'Đang thực hiện', ENDED: 'Đã kết thúc' }[s.state];
     const view = s.state === 'LOBBY' ? 'setup' : 'room', fresh = view !== lastView;
+    if (fresh && view === 'setup') step = location.hash === '#moi-agent' ? 2 : 1;
     $('setup').hidden = view !== 'setup'; $('room').hidden = view !== 'room';
     $('btnInvite').hidden = s.state !== 'LIVE';
     $('btnMinutes').hidden = s.state === 'LOBBY';
@@ -555,7 +774,7 @@
         if (!r.ok) throw new Error(r.status);
         const s = await r.json();
         // link chủ trì cố định (--host-key): cuộc họp mới thay cuộc cũ dưới cùng địa chỉ thì tải lại trang
-        if (snap && s.createdAt !== snap.createdAt) { location.reload(); return; }
+        if (snap && s.createdAt !== snap.createdAt) { location.replace(location.pathname); return; } // về bước 1 của cuộc mới
         if (s.logFrom === log.length) log = log.concat(s.log);
         else { log = s.log; rendered = 0; $('feedIn').replaceChildren(); }
         version = s.version; clockOffset = s.now - Date.now(); snap = s; fails = 0;

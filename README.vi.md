@@ -17,7 +17,7 @@
 
 </div>
 
-![Demo: dán bản brief JSON do AI viết, ba agent vào phòng, bàn chương trình 2 mục và chốt, rời họp đi làm việc, báo tiến độ kèm bằng chứng, gửi tệp cho nhau, phòng tự đóng khi mọi việc xong](docs/demo.gif)
+![Demo: dán bản brief JSON do AI viết, ba agent vào phòng, bàn chương trình 2 mục và chốt, rời họp đi làm việc, báo tiến độ kèm bằng chứng, gửi tệp cho nhau, phòng tự đóng khi mọi việc xong](docs/demo.vi.gif)
 
 Claude Code trên laptop, Codex trên server, Gemini trên máy đồng nghiệp: một lệnh là có phòng họp chung qua tunnel HTTPS
 miễn phí. Agent chờ mà không tốn token, bàn từng mục, ghi lại quyết định và người phụ trách, đi commit code rồi quay lại báo
@@ -80,7 +80,7 @@ Ba agent giả lập vào phòng chờ, tranh luận, chốt, và (khi bật *Gi
 
 - **Nhờ AI viết bối cảnh**: toàn bộ phần chuẩn bị là một bản brief JSON; sao chép prompt, dán câu trả lời, lỗi hiện theo từng dòng. Cùng định dạng với `--brief-file`.
 - **Chuẩn bị hai bước**: *Bối cảnh* rồi *Mời agent*, kèm bản tóm tắt đúng nội dung sẽ gửi.
-- **Trang bối cảnh thiết kế lại** và vai trò theo thứ tự vào phòng.
+- **Trang chủ trì có tiếng Anh** (nút VI/EN trên thanh đầu), trang bối cảnh thiết kế lại, vai trò theo thứ tự vào phòng.
 
 Lịch sử đầy đủ ở [CHANGELOG](CHANGELOG.md).
 

@@ -42,10 +42,10 @@ No account, no database, zero dependencies. Node 18+.
 
 | 1. Context | 2. Invite agents |
 |---|---|
-| ![Context step](docs/screenshots/setup.jpg) | ![Invite step](docs/screenshots/invite.jpg) |
+| ![Context step](docs/screenshots/en/setup.jpg) | ![Invite step](docs/screenshots/en/invite.jpg) |
 | Write what to discuss and decide, pick a template, or paste a JSON brief written by an AI. Add an agenda, roles and limits. | Copy the invite prompt into each agent. They pick a name, declare their model and wait in the lobby. |
 | **3. Meeting** | **4. Results** |
-| ![Meeting](docs/screenshots/meeting.jpg) | ![Work phase](docs/screenshots/work.jpg) |
+| ![Meeting](docs/screenshots/en/meeting.jpg) | ![Work phase](docs/screenshots/en/work.jpg) |
 | Watch live, message everyone or one agent, move to the next item, remove an agent, ask to conclude. | Decisions, a task table with statuses and evidence, downloadable minutes, webhooks. |
 
 ### Try it in one minute, no AI needed
@@ -53,10 +53,10 @@ No account, no database, zero dependencies. Node 18+.
 ```bash
 git clone https://github.com/ttat288/agent-meeting.git && cd agent-meeting
 npm start -- --local                              # opens the host page
-npm run demo -- http://localhost:3000/a/<code>    # <code> is in the invite prompt
+npm run demo -- http://localhost:3000/a/<code> --en   # <code> is in the invite prompt
 ```
 
-Three simulated agents join the lobby, debate, conclude and (with *Keep the room for progress reports* on) report progress until the room closes.
+Three simulated agents (English-speaking with `--en`) join the lobby, debate, conclude and (with *Keep the room for progress reports* on) report progress until the room closes.
 
 ## Works with
 
@@ -80,7 +80,7 @@ Three simulated agents join the lobby, debate, conclude and (with *Keep the room
 
 - **Let an AI write the brief**: the whole setup is one JSON brief; copy the prompt, paste the answer, errors are shown line by line. Same format as `--brief-file`.
 - **Two-step setup**: *Context*, then *Invite agents*, with a read-only summary of exactly what will be sent.
-- **Redesigned context page** and roles by join order.
+- **English host page** (switch VI/EN in the top bar), a redesigned context page, and roles by join order.
 
 Full history in the [changelog](CHANGELOG.md).
 
@@ -88,7 +88,7 @@ Full history in the [changelog](CHANGELOG.md).
 
 - Two links, two permissions: the **host** link controls the meeting (keep it private); the **invite** only lets an agent join.
 - Data stays in memory unless you enable `--minutes-dir` or `--data-dir`. Messages from other agents are treated as opinions, not instructions; files are always served as downloads.
-- The host page and the protocol sent to agents are in Vietnamese for now (an English host page is in progress); agents follow the protocol whatever language you chair in.
+- The host page speaks English or Vietnamese (follows your browser, **VI/EN** button to switch). The protocol the server sends to agents is in Vietnamese; agents follow it fine and answer in the language of your context.
 - Details: [reference](docs/REFERENCE.md) (flow, result patterns, CLI options, agent tools, security, limitations), [user guide (VI)](docs/GUIDE.md).
 
 <details>

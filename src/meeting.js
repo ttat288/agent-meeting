@@ -40,6 +40,13 @@ const MAX_AGENDA = 20;
 // "TIẾN ĐỘ VIỆC 2: xong | link commit/PR, kết quả test" (đầu dòng, một dòng một việc)
 const PROGRESS = /^\s*(?:[-*•]\s*)?(?:\*\*)?\s*TIẾN ĐỘ\s+VIỆC\s*#?(\d+)\s*(?:\*\*)?\s*[:\-–]\s*(?:\*\*)?\s*(.+)$/i;
 const TASK_STATUS = { todo: 'chưa làm', doing: 'đang làm', done: 'xong', blocked: 'vướng' };
+// Bản tiếng Anh CHỈ để hiển thị trên trang chủ trì tiếng Anh (m.en); agent luôn nhận m.text (tiếng Việt).
+const TASK_STATUS_EN = { todo: 'to do', doing: 'doing', done: 'done', blocked: 'blocked' };
+const REASON_EN = { 'mất kết nối': 'lost connection', 'mọi việc đã báo xong': 'every task reported done', 'mọi agent đều không còn ý kiến': 'no agent had anything to add',
+  'hết thời gian': 'time is up', 'chủ trì mời ra khỏi phòng': 'removed by the host', 'đạt giới hạn số tin nhắn': 'message limit reached',
+  'mọi agent đã rời phòng': 'every agent left', 'quá lâu không hoạt động': 'inactive for too long', 'chủ trì mở cuộc họp mới': 'the host opened a new meeting',
+  'chủ trì kết thúc': 'ended by the host' };
+const reasonEn = (r) => REASON_EN[r] || r;
 const fold = (x) => String(x ?? '').replace(/\*\*/g, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/gi, 'd')
   .toLowerCase().replace(/[\s.!]+$/, '').trim();
 const STATUS_WORDS = [
@@ -120,7 +127,7 @@ class Meeting {
     this.lastActivity = m.t;
     return m;
   }
-  _sys(text, who) { return this._push('sys', 'hệ thống', text, who); }
+  _sys(text, who, en) { return this._push('sys', 'hệ thống', text, who, en ? { en } : undefined); }
   _present() { return [...this.agents.values()].filter(a => a.present); }
   _order() { return this._present().sort((x, y) => x.slot - y.slot); }
   _chatCount() { return this.log.reduce((n, m) => n + (m.type === 'chat'), 0); }
@@ -130,7 +137,7 @@ class Meeting {
     if (!final && this.state === 'LIVE' && this.cfg.followUp && this.actions.some(t => t.status !== 'done')) return this._work(reason);
     this.timers.forEach(clearTimeout); this.timers = [];
     this.state = 'ENDED'; this.endReason = reason; this.endedAt = Date.now(); this.turn = null;
-    this._sys('Cuộc họp kết thúc: ' + reason);
+    this._sys('Cuộc họp kết thúc: ' + reason, undefined, 'Meeting ended: ' + reasonEn(reason));
     this._changed();
     this.ev.emit('ended', this);
   }
@@ -139,7 +146,8 @@ class Meeting {
     this.state = 'WORK'; this.workReason = reason; this.workSince = Date.now(); this.turn = null;
     for (const a of this._present()) { a.present = false; a.busyUntil = 0; }
     const open = this.actions.filter(t => t.status !== 'done').length;
-    this._sys(`Đã chốt (${reason}). Chuyển sang giai đoạn thực hiện: ${open} việc chờ agent làm và báo tiến độ.`);
+    this._sys(`Đã chốt (${reason}). Chuyển sang giai đoạn thực hiện: ${open} việc chờ agent làm và báo tiến độ.`, undefined,
+      `Concluded (${reasonEn(reason)}). Work phase: ${open} task(s) waiting for agents to do them and report progress.`);
     this._changed();
     this.ev.emit('work', this);
   }
@@ -157,6 +165,10 @@ class Meeting {
   }
   _getHow(f, a) {
     return a?.base ? `curl -sSf -o "${f.name}" "${a.base}/file/${f.id}?name=${encodeURIComponent(a.name)}"` : '(gọi files để lấy lệnh tải)';
+  }
+  _fileTextEn(f) {
+    return `${f.from} sent ${f.name} (${fmtSize(f.size)}, sha256 ${f.sha256.slice(0, 12)}…) ${f.to ? 'privately to ' + f.to : 'to everyone'}`
+      + (f.note ? `. Note from ${f.from}: "${f.note}"` : '');
   }
   _fileText(f) {
     return `${f.from} gửi tệp ${f.name} (${fmtSize(f.size)}, sha256 ${f.sha256.slice(0, 12)}…) ${f.to ? 'riêng cho ' + f.to : 'cho cả phòng'}`
@@ -200,7 +212,7 @@ class Meeting {
     for (const a of this._present()) if (now - a.lastSeen > this.cfg.staleMs) this.leave(a.name, 'mất kết nối');
     if (this.state === 'LIVE' && this.turn && now - this.turn.since > this.cfg.busyMs) {
       const who = this.turn.name;
-      this._sys(`${who} quá thời gian, tự bỏ lượt`, who);
+      this._sys(`${who} quá thời gian, tự bỏ lượt`, who, `${who} ran out of time, turn passed`);
       this._pass();
       this._changed();
     }
@@ -231,7 +243,8 @@ class Meeting {
       else { Object.assign(a, { n: ++this.taskSeq, status: 'todo', note: '', updatedAt: null, updatedBy: null }); this.actions.push(a); seen.add(a); added.push(a); }
     }
     // agent cần biết số việc để báo TIẾN ĐỘ sau này: báo cho cả phòng
-    if (added.length) this._sys('Đã ghi việc: ' + added.map(a => `#${a.n} ${a.owner ? a.owner + ' — ' : ''}${a.task}`).join('; '));
+    const list = added.map(a => `#${a.n} ${a.owner ? a.owner + ' — ' : ''}${a.task}`).join('; ');
+    if (added.length) this._sys('Đã ghi việc: ' + list, undefined, 'Tasks recorded: ' + list);
     let firstDone = Infinity;
     if (m.type === 'chat' && this.agenda.length) {
       for (const d of m.text.matchAll(ITEM_DONE)) {
@@ -274,7 +287,8 @@ class Meeting {
     // agent báo trạng thái mà không kèm ghi chú thì giữ bằng chứng cũ; chủ trì gửi ghi chú trống nghĩa là xoá
     Object.assign(a, { status: st, updatedAt: Date.now(), updatedBy: by }, note || (host && given) ? { note } : {});
     this._push('sys', 'hệ thống', `${host ? 'Chủ trì đặt' : by + ' báo'} việc #${a.n} (${a.task.slice(0, 80)}): ${TASK_STATUS[st]}${note ? ' — ' + note : ''}`,
-      host ? undefined : by, { progress: { n: a.n, status: st, note } });
+      host ? undefined : by, { progress: { n: a.n, status: st, note },
+        en: `${host ? 'Host set' : by + ' reported'} task #${a.n} (${a.task.slice(0, 80)}): ${TASK_STATUS_EN[st]}${note ? ' — ' + note : ''}` });
     if (prev !== st) this.ev.emit('task', a, this);
     if (this.state === 'WORK' && this.actions.every(t => t.status === 'done')) this._end('mọi việc đã báo xong', true);
     return `Đã cập nhật việc #${a.n}: ${TASK_STATUS[st]}.`;
@@ -294,7 +308,9 @@ class Meeting {
     const n = this.agenda.length;
     this._push('host', 'Chủ trì', this.agendaIndex < n
       ? `Chuyển sang mục ${this.agendaIndex + 1}/${n}: ${this.agenda[this.agendaIndex]}`
-      : 'Đã bàn xong mọi mục trong chương trình. Hãy gửi một tin KẾT LUẬN tổng hợp (kèm các dòng VIỆC: nếu có), rồi rời phòng.');
+      : 'Đã bàn xong mọi mục trong chương trình. Hãy gửi một tin KẾT LUẬN tổng hợp (kèm các dòng VIỆC: nếu có), rồi rời phòng.', undefined,
+      { en: this.agendaIndex < n ? `Moving to item ${this.agendaIndex + 1}/${n}: ${this.agenda[this.agendaIndex]}`
+        : 'Every agenda item is done. Send one overall KẾT LUẬN (conclusion) message (with VIỆC: task lines if any), then leave.' });
     return true;
   }
 
@@ -435,12 +451,41 @@ ${calls}`;
       'XONG MỤC <số>: <tóm tắt quyết định của mục>',
       'Ví dụ: "XONG MỤC 1: dùng PostgreSQL managed". Hệ thống sẽ chuyển sang mục kế tiếp. Sau mục cuối, gửi tin KẾT LUẬN tổng hợp (kèm các dòng VIỆC nếu có).',
       '', `Bắt đầu với mục 1: ${this.agenda[0]}`);
-    this._push('host', 'Chủ trì', lines.join('\n'));
+    this._push('host', 'Chủ trì', lines.join('\n'), undefined, { en: this._openingEn() });
     if (lim) this.endsAt = this.startedAt + lim * 60000;
     this._armTimers();
     if (this.cfg.mode === 'turns') this._setTurn(this._order()[0]);
     this._changed();
     return true;
+  }
+  // Bản tiếng Anh của tin mở đầu, chỉ để hiển thị cho chủ trì (agent nhận bản tiếng Việt ở trên).
+  _openingEn() {
+    const lim = this.cfg.timeLimitMin, L = [
+      this.context || 'No specific topic: agree on one yourselves.', '',
+      'End condition: ' + (this.endCondition || 'none. Discuss until you reach a conclusion (a "KẾT LUẬN: ..." message), then leave one by one.'),
+      'Speaking mode: ' + (this.cfg.mode === 'turns' ? 'turns by slot (wait until wait says it is your turn).' : 'free.'),
+    ];
+    if (lim) L.push(`Time limit: ${lim} minutes.`);
+    if (this.cfg.followUp) L.push('', 'AFTER THE CONCLUSION THE ROOM STAYS OPEN FOR PROGRESS REPORTS: once there is a KẾT LUẬN and VIỆC lines (naming the agent responsible),',
+      'each agent leaves (leave) and does its own tasks RIGHT AWAY. When done, report with progress (task number, done, evidence such as a commit/PR link, test results).',
+      'Do not wait for each other in the room; only report "done" when the work is really done.');
+    if (this.carry) {
+      const c = this.carry, open = this.actions.filter(t => t.carried && t.status !== 'done');
+      L.push('', `FROM THE PREVIOUS MEETING${c.topic ? ` (${c.topic})` : ''}:`);
+      if (c.decisions.length) L.push('Decisions:', ...c.decisions.map(d => `- ${d.item ? `[Item ${d.item}] ` : ''}${d.text}`));
+      if (c.done.length) L.push('Tasks reported done:', ...c.done.map(t => `- #${t.n} ${t.task}${t.owner ? ` (${t.owner})` : ''}${t.note ? `: ${t.note}` : ''}`));
+      if (open.length) L.push('UNFINISHED tasks (numbers unchanged; owners report "TIẾN ĐỘ VIỆC <n>: <status> | <evidence>"):',
+        ...open.map(t => `- #${t.n} ${t.owner ? t.owner + ' — ' : ''}${t.task}${t.due ? ` (due: ${t.due})` : ''}: ${TASK_STATUS_EN[t.status]}${t.note ? ` · ${t.note}` : ''}`));
+    }
+    if (this.files.length) L.push('', `${this.files.length} file(s) from the previous meeting: call files to list them and get download commands.`);
+    const withRole = this._order().filter(a => a.role);
+    if (withRole.length) L.push('', 'Roles:', ...withRole.map(a => `- ${a.name}: ${a.role}`));
+    if (this.agenda.length) L.push('', `Agenda (${this.agenda.length} items, in order):`, ...this.agenda.map((x, i) => `${i + 1}. ${x}`),
+      'Discuss one item at a time. When the current item is settled, ONE agent posts a message with its own line (at the start of a line):',
+      'XONG MỤC <n>: <summary of the decision for the item>',
+      'For example "XONG MỤC 1: use managed PostgreSQL". The system then moves to the next item. After the last item, send an overall KẾT LUẬN (with VIỆC lines if any).',
+      '', `Start with item 1: ${this.agenda[0]}`);
+    return L.join('\n');
   }
   // hẹn giờ nhắc chốt và kết thúc theo endsAt (gọi lại được sau khi nạp từ đĩa)
   _armTimers() {
@@ -448,7 +493,8 @@ ${calls}`;
     const left = this.endsAt - Date.now();
     if (left > WARN_BEFORE_MS && this.endsAt - this.startedAt > WARN_BEFORE_MS) this._timer(left - WARN_BEFORE_MS, () => {
       if (this.state !== 'LIVE') return;
-      this._push('host', 'Chủ trì', 'Còn 2 phút. Hãy chốt kết luận ngay (tin "KẾT LUẬN: ...") rồi rời phòng.');
+      this._push('host', 'Chủ trì', 'Còn 2 phút. Hãy chốt kết luận ngay (tin "KẾT LUẬN: ...") rồi rời phòng.', undefined,
+        { en: '2 minutes left. Conclude now (a "KẾT LUẬN: ..." message), then leave.' });
       this._changed();
     });
     this._timer(left, () => this._end('hết thời gian'));
@@ -485,7 +531,7 @@ ${calls}`;
     const t = s.turn && this.agents.get(s.turn);
     this.turn = t ? { name: t.name, seq: this.turnSeq, since: Date.now() } : null;
     if (this.state === 'LIVE') {
-      this._sys('Máy chủ đã khởi động lại, cuộc họp tiếp tục.');
+      this._sys('Máy chủ đã khởi động lại, cuộc họp tiếp tục.', undefined, 'The server restarted; the meeting continues.');
       if (this.endsAt && this.endsAt <= Date.now()) return this._end('hết thời gian');
       this._armTimers();
     }
@@ -537,7 +583,8 @@ ${calls}`;
     this.actions = this.actions.filter(x => x !== a);
     this.removed.push({ n: a.n, owner: a.owner, task: a.task, into: to ? to.n : null });
     if (to && a.note && !to.note.includes(a.note)) to.note = (to.note ? to.note + ' · ' : '') + `#${a.n}: ${a.note}`.slice(0, 500);
-    this._sys(to ? `Chủ trì gộp việc #${a.n} (${a.task.slice(0, 80)}) vào việc #${to.n}.` : `Chủ trì xoá việc #${a.n} (${a.task.slice(0, 80)}).`);
+    this._sys(to ? `Chủ trì gộp việc #${a.n} (${a.task.slice(0, 80)}) vào việc #${to.n}.` : `Chủ trì xoá việc #${a.n} (${a.task.slice(0, 80)}).`, undefined,
+      to ? `The host merged task #${a.n} (${a.task.slice(0, 80)}) into task #${to.n}.` : `The host deleted task #${a.n} (${a.task.slice(0, 80)}).`);
     if (this.state === 'WORK' && this.actions.every(t => t.status === 'done')) this._end('mọi việc đã báo xong', true);
     this._changed();
     return true;
@@ -548,7 +595,7 @@ ${calls}`;
     if (!a || this.state === 'ENDED' || this.state === 'WORK') return false;
     a.role = String(role ?? '').replace(/\s+/g, ' ').trim().slice(0, 200);
     if (this.state === 'LIVE' && a.present && a.role)
-      this._push('host', 'Chủ trì', `Vai trò của bạn từ giờ: ${a.role}`, undefined, { to: a.name });
+      this._push('host', 'Chủ trì', `Vai trò của bạn từ giờ: ${a.role}`, undefined, { to: a.name, en: `Your role from now on: ${a.role}` });
     this._changed();
     return true;
   }
@@ -590,10 +637,10 @@ ${calls}`;
     if (!a) {
       a = { slot: this.agents.size + 1, name, model, present: true, how: how?.base ? { base: how.base } : null, base: base || null, joinedAt: Date.now(), busyUntil: 0, cursor: 0, waiting: false, lastSeen: Date.now(), turnSeen: 0, said: 0 };
       this.agents.set(name, a);
-      this._sys(`${name} (${model}) đã vào phòng (slot ${a.slot})`, name);
+      this._sys(`${name} (${model}) đã vào phòng (slot ${a.slot})`, name, `${name} (${model}) joined (slot ${a.slot})`);
     } else {
       a.present = true; a.lastSeen = Date.now(); a.how = how?.base ? { base: how.base } : null; if (base) a.base = base;
-      this._sys(`${name} quay lại phòng`, name);
+      this._sys(`${name} quay lại phòng`, name, `${name} rejoined`);
     }
     if (this.state === 'LIVE' && this.cfg.mode === 'turns' && !this.turn) this._setTurn(a);
     this._changed();
@@ -624,7 +671,7 @@ ${calls}`;
     a.busyUntil = 0;
     if (this.cfg.mode !== 'turns') { this._changed(); return 'OK. Gọi wait để nghe tiếp.'; }
     if (this.turn?.name !== a.name) return `Chưa tới lượt bạn (đang là lượt của ${this.turn?.name || 'không ai'}). Hãy gọi wait.`;
-    this._sys(`${a.name} bỏ lượt`, a.name);
+    this._sys(`${a.name} bỏ lượt`, a.name, `${a.name} passed`);
     this._pass();
     if (this.state !== 'ENDED') this._changed();
     return this.state === 'ENDED' ? END_TEXT : 'Đã bỏ lượt. Gọi wait để nghe tiếp.';
@@ -667,7 +714,7 @@ ${calls}`;
     if (!a) return LEFT_TEXT;
     if (this.state === 'WORK' || !a.present) return this._leftText(a);
     a.present = false; a.busyUntil = 0; this.everLeft = true;
-    this._sys(`${a.name} đã rời phòng${reason ? ': ' + String(reason).slice(0, 200) : ''}`, a.name);
+    this._sys(`${a.name} đã rời phòng${reason ? ': ' + String(reason).slice(0, 200) : ''}`, a.name, `${a.name} left${reason ? ': ' + reasonEn(String(reason).slice(0, 200)) : ''}`);
     if (this.state === 'LIVE' && this._present().length === 0) { this._end('mọi agent đã rời phòng'); return this._leftText(a); }
     if (this.turn?.name === a.name) this._advance();
     this._changed();
@@ -699,7 +746,7 @@ ${calls}`;
     const file = { id: f.id, name: fileName(f.name), size: f.size, sha256: f.sha256, from: chk.from, to: chk.to,
       note: String(f.note ?? '').replace(/\s+/g, ' ').trim().slice(0, 200), t: Date.now(), got: [] };
     this.files.push(file);
-    this._push('sys', 'hệ thống', this._fileText(file), file.from, { file: file.id, ...(file.to ? { to: file.to } : {}) });
+    this._push('sys', 'hệ thống', this._fileText(file), file.from, { file: file.id, ...(file.to ? { to: file.to } : {}), en: this._fileTextEn(file) });
     this._changed();
     const a = this._member(file.from);
     return `Đã gửi tệp ${file.name} (${fmtSize(file.size)}, sha256 ${file.sha256}) ${file.to ? 'riêng cho ' + file.to : 'cho cả phòng'}: `

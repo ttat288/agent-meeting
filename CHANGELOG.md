@@ -28,6 +28,13 @@ vào phòng). Vẫn một lệnh là chạy, không thư viện ngoài, Node 18+
   `--auto-start` dùng cả tuỳ chọn và vai trò của brief; không có `--auto-start` thì brief là bản nháp ban đầu trên trang chủ trì
   (`--context-file`… cũng vậy). Bản nháp kiểu cũ trong trình duyệt (≤ 3.2) được chuyển sang tự động.
 - Ảnh mới: `docs/screenshots/setup.jpg` (bước 1), `invite.jpg` (bước 2), `brief-json.jpg` (tab JSON).
+- **Trang chủ trì tiếng Anh**: tự theo ngôn ngữ trình duyệt, nút **VI/EN** trên thanh đầu (nhớ lựa chọn, `?lang=en` cũng được).
+  Từ điển ở `src/ui/i18n.js` (khoá là câu tiếng Việt gốc, `tr('…')` / `` tr`…${x}…` ``), `test/i18n.test.js` kiểm không thiếu
+  bản dịch. Tin hệ thống do server sinh có thêm bản hiển thị tiếng Anh (`en`); giao thức gửi agent vẫn tiếng Việt. Prompt mời,
+  tin nhanh của chủ trì, mẫu bối cảnh, prompt nhờ AI và thông báo lỗi JSON theo ngôn ngữ trang. Đã thử prompt mời tiếng Anh với
+  Haiku 4.5 + Sonnet 5.5 thật (vào họp, nhận vai trò theo slot, XONG MỤC, KẾT LUẬN + VIỆC, rời phòng).
+- `npm run demo -- <url> --en`: bot nói tiếng Anh. GIF demo `docs/demo.gif` giờ là tiếng Anh; bản tiếng Việt ở `docs/demo.vi.gif`.
+  Ảnh tiếng Anh ở `docs/screenshots/en/`.
 - **README viết lại**: tiếng Anh là bản chính (`README.md`), tiếng Việt ở `README.vi.md`; ngắn, tập trung vào lợi ích, luôn
   ghi phiên bản mới nhất. Phần chi tiết (luồng đầy đủ, mẫu kết quả, tham số dòng lệnh, tool, bảo mật, hạn chế) chuyển sang
   `docs/REFERENCE.md` / `docs/REFERENCE.vi.md`. `README.en.md` bị bỏ.

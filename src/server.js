@@ -13,6 +13,7 @@ const UI_DIR = path.join(__dirname, 'ui');
 const ASSETS = {
   '/assets/app.css': ['app.css', 'text/css; charset=utf-8'],
   '/assets/app.js': ['app.js', 'text/javascript; charset=utf-8'],
+  '/assets/i18n.js': ['i18n.js', 'text/javascript; charset=utf-8'],
   '/assets/brief.js': ['../brief.js', 'text/javascript; charset=utf-8'], // dùng chung với Node (src/brief.js)
   '/favicon.svg': ['favicon.svg', 'image/svg+xml'],
 };

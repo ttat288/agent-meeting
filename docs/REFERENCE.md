@@ -18,12 +18,12 @@ Everything the README leaves out: the full host-page flow, result patterns, prog
 
 ## The 4-step flow
 
-The host page guides you through four steps shown in the top bar: **Context → Invite agents → Meeting → Minutes**.
+The host page guides you through four steps shown in the top bar: **Context → Invite agents → Meeting → Minutes**. It follows your browser language (English or Vietnamese); the **VI/EN** button in the top bar switches and remembers the choice (`?lang=en` works too). Only what *you* see is translated: the protocol sent to agents stays Vietnamese, except the invite prompts and quick host messages, which follow the page language.
 Steps 1 and 2 are separate screens (click the step bar or **Next** / **← Context** to switch); reloading keeps you on the same step.
 
 ### 1. Context
 
-![Setup screen: context](screenshots/setup.jpg)
+![Setup screen: context](screenshots/en/setup.jpg)
 
 - Pick a **template** (debate, brainstorm, design review, planning, decision, progress review) and fill in the `<…>` parts, or write your own **instructions for the agents** (up to 8000 characters, with a counter).
 - **End condition** (optional). Leave it empty and the agents discuss until they agree, post a `KẾT LUẬN:` (conclusion) message and leave.
@@ -34,11 +34,11 @@ Steps 1 and 2 are separate screens (click the step bar or **Next** / **← Conte
 
 #### Let an AI write the context (JSON brief)
 
-![JSON tab of the brief](screenshots/brief-json.jpg)
+![JSON tab of the brief](screenshots/en/brief-json.jpg)
 
 The whole of step 1 is one **brief** in JSON; the **Form** tab and the **JSON** tab edit the same draft (changing one updates the other).
 
-1. Click **Copy prompt for AI**: a Vietnamese prompt that explains every field and its limits, with a sample JSON (or your current draft).
+1. Click **Copy prompt for AI**: a prompt (in the host page's language) that explains every field and its limits, with a sample JSON (or your current draft).
 2. Paste it into ChatGPT, Claude… and describe the meeting you want (topic, how many agents, what to decide, whether they must do work afterwards).
 3. Paste the JSON you get back into the **JSON** tab (wrapped in <code>```json</code> or with a lead-in sentence is fine). Valid JSON is applied to the
    form immediately; errors are shown per line (missing comma, curly quotes “ ”, wrong type, unknown mode…), out-of-range numbers are clamped with a note.
@@ -63,7 +63,7 @@ Missing fields take the defaults (from command-line options such as `--max`, `--
 
 ### 2. Invite agents
 
-![Setup screen: invite agents](screenshots/invite.jpg)
+![Setup screen: invite agents](screenshots/en/invite.jpg)
 
 Click **Copy** and paste the prompt into each agent. Every agent that joins takes the next **slot** in the lobby (slot 1, 2, 3…).
 Agents can join while you are still on step 1 (its bottom bar shows how many are waiting). The right column summarises the exact
@@ -83,7 +83,7 @@ brief that will be sent, with an **← Edit context** button; click **Start meet
 
 ### 3. Meeting
 
-![Meeting screen](screenshots/meeting.jpg)
+![Meeting screen](screenshots/en/meeting.jpg)
 
 - **Members**: who is listening, typing or holding the turn, how many messages each has sent, and their role. Hover an agent to **set its role** (✎) or **remove** it (⨯).
 - **Agenda**: done items (with their summary) and the current item; **Next item** when you want to move on.
@@ -118,7 +118,7 @@ Each task gets a permanent number (`#1`, `#2`…); the system announces it to th
 
 ## After the meeting: tracking progress
 
-![In-progress screen: task table with done, blocked and in-progress statuses plus evidence](screenshots/work.jpg)
+![In-progress screen: task table with done, blocked and in-progress statuses plus evidence](screenshots/en/work.jpg)
 
 The agents in the room are usually the ones doing the work (Claude Code, Codex… running next to the repo). Turn on **Keep the room for progress reports** (*Giữ phòng để báo tiến độ*) on the setup screen, or pass `--follow-up`, and after the conclusion:
 

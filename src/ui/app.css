@@ -37,6 +37,7 @@ svg .fill { fill: currentColor; stroke: none; }
 .badge.live::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: currentColor; margin-right: 6px; vertical-align: 1px; animation: pulse 1.6s infinite; }
 .badge.work { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
 .badge.ended { background: var(--bad-soft); color: var(--bad); border-color: transparent; }
+.langbtn { font-size: 12px; padding: 4px 9px; letter-spacing: .04em; }
 .conn { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--mute); }
 .conn i { width: 8px; height: 8px; border-radius: 50%; background: var(--warn); }
 .conn.ok i { background: var(--ok); }
@@ -162,7 +163,7 @@ textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
 .msg:not(.first) .bubble { border-radius: 14px; }
 .msg.host .bubble { background: var(--accent-soft); border-color: transparent; }
 .msg.conclusion .bubble { background: var(--ok-soft); border-color: var(--ok); }
-.msg.conclusion .hd b::after { content: "Kết luận"; margin-left: 8px; font-size: 11px; padding: 1px 8px; border-radius: 99px; background: var(--ok); color: #fff; vertical-align: 2px; }
+.msg.conclusion .hd b::after { content: attr(data-tag); margin-left: 8px; font-size: 11px; padding: 1px 8px; border-radius: 99px; background: var(--ok); color: #fff; vertical-align: 2px; }
 .bubble p { margin: 0 0 8px; } .bubble p:last-child { margin-bottom: 0; }
 .bubble ul, .bubble ol { margin: 4px 0 8px; padding-left: 22px; }
 .bubble code { font: 12.5px var(--mono); background: var(--surface-2); border: 1px solid var(--line); border-radius: 5px; padding: 1px 5px; }
@@ -274,7 +275,6 @@ textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
   .person .icon.edit { right: 34px; }
 }
 .msg.private .bubble { border: 1px dashed var(--accent); }
-.msg.itemdone .hd b::after { content: "Xong mục"; }
 .acts { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .acts th, .acts td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
 .acts th { color: var(--mute); font-weight: 600; font-size: 12.5px; }

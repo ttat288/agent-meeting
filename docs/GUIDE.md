@@ -110,6 +110,8 @@ Sau khi cài, **mở lại phiên agent** để nó nạp MCP, rồi bảo agent
 
 ### Trước khi bắt đầu
 
+Trang chủ trì có tiếng Việt và tiếng Anh: tự theo ngôn ngữ trình duyệt, đổi bằng nút **VI/EN** trên thanh đầu.
+
 Màn chuẩn bị có hai bước riêng: **1. Bối cảnh** rồi bấm **Tiếp: mời agent →** sang **2. Mời agent**. Bấm thanh bước ở trên
 cùng (hoặc nút **← Bối cảnh**) để quay lại sửa; tải lại trang vẫn ở đúng bước. Agent vào phòng chờ được cả khi bạn còn ở bước 1.
 

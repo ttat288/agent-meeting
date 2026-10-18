@@ -26,8 +26,10 @@ src/server.js     HTTP thuần: /m/<hostKey> (trang chủ trì), /api/host/<host
 src/minutes.js    biên bản Markdown / JSON (agent-meeting/minutes@1) / tóm tắt webhook
 src/brief.js      bản brief JSON (agent-meeting/brief@1): parseBrief / toBrief / aiPrompt, chạy cả Node lẫn trình duyệt
                   (UMD: module.exports | window.AgentMeetingBrief), phục vụ ở /assets/brief.js (v3.3)
-src/ui/           trang chủ trì: index.html + app.css + app.js (+ /assets/brief.js), không build, CSP chặt
-scripts/          install-linux.sh (launcher menu), demo-bots.js (3 agent giả lập)
+src/ui/           trang chủ trì: index.html + app.css + app.js + i18n.js (từ điển VI→EN, v3.3) (+ /assets/brief.js),
+                  không build, CSP chặt
+scripts/          install-linux.sh (launcher menu), demo-bots.js (3 agent giả lập, `--en` nói tiếng Anh)
+tools/            công cụ phát triển, KHÔNG phát hành: shot.js (chụp ảnh Firefox BiDi), record-demo.js (quay GIF), make-gif.py
 test/             node:test; meeting.test.js (luật) + server.test.js (HTTP/MCP) + minutes.test.js + files.test.js + brief.test.js
 Dockerfile        node:22-alpine, CMD --local --no-open; docs/DEPLOY.md (proxy, systemd, mã cố định)
 ```
@@ -84,6 +86,15 @@ Quyết định kỹ thuật quan trọng (đừng đảo ngược nếu không 
 - Prompt nhờ AI (`aiPrompt`) đã chỉnh theo agent thật, đừng nới: ví dụ KHÔNG có số liệu/chi tiết riêng (Haiku chép sang
   cuộc họp khác); dặn rõ khi `followUp` thì agenda/endCondition chỉ là phần bàn bạc; prompt không được chứa `<…>`
   (test kiểm). Đổi prompt thì thử lại bằng subagent Haiku + Sonnet với đúng prompt lấy từ trang (so sha256).
+- **Hai ngôn ngữ cho trang chủ trì (v3.3)**: khoá dịch là CÂU TIẾNG VIỆT GỐC. Mọi chuỗi hiển thị trong app.js bọc
+  `tr('…')` hoặc `` tr`… ${x} …` `` (khoá: `${…}` → `{0}`, `{1}`…, bản EN đổi được thứ tự); HTML tĩnh để tiếng Việt, `apply()`
+  dịch từng đoạn chữ + placeholder/title/aria-label. Thêm chuỗi mới thì thêm vào `EN` trong src/ui/i18n.js, `test/i18n.test.js`
+  sẽ báo nếu thiếu (kể cả chuỗi tiếng Việt quên bọc `tr`; chuỗi không dấu như `'xong'` thì test không bắt được, phải tự để ý).
+  Đừng đặt biến cục bộ tên `tr`. Chữ trong CSS `content:` không dịch được: dùng `attr(data-…)`.
+  Chọn ngôn ngữ: `?lang=` → localStorage `agent-meeting:lang` → `navigator.language`; nút VI/EN tải lại trang.
+  Tin do server sinh có thêm `m.en` (CHỈ để hiển thị; agent, biên bản, history vẫn dùng `m.text` tiếng Việt). Giao thức gửi agent
+  KHÔNG dịch. Phần theo ngôn ngữ trang mà agent nhận được: prompt mời, tin nhanh của chủ trì (giữ từ khoá KẾT LUẬN/VIỆC),
+  mẫu bối cảnh, prompt nhờ AI (`aiPrompt(brief, 'en')`). Lý do kết thúc: `REASON_EN` ở meeting.js + bảng trong i18n.js.
 - Tệp luôn trả về `application/octet-stream` + `attachment` + `nosniff` + CSP `sandbox` (cùng origin với trang chủ trì);
   tên tệp qua `fileName()` (basename, chỉ `\p{L}\p{M}\p{N}._+-`, không bắt đầu bằng `.`/`-`) nên an toàn trong `curl -o "…"`.
 
@@ -154,7 +165,19 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
 
 ## Trạng thái
 
-- **v3.3.0 xong trên nhánh `v3.3-brief` (2026-10-18), CHƯA merge, CHƯA push, CHƯA tag.** 92 test xanh (`test/brief.test.js`
+- **2026-10-18 (tối), theo yêu cầu người dùng**: README viết lại (tiếng Anh là `README.md`, tiếng Việt `README.vi.md`, chi tiết ở
+  `docs/REFERENCE(.vi).md`), đã **merge v3.3-brief vào main và push** (main = 08fbb23 lúc đó). Sau đó làm thêm **trang chủ trì
+  tiếng Anh** + bot demo `--en` + GIF tiếng Anh (`docs/demo.gif`; bản Việt `docs/demo.vi.gif`) + ảnh `docs/screenshots/en/`,
+  rồi push lần hai (xem git log). CHƯA tag, CHƯA GitHub Release (cả v3.2.0 lẫn v3.3.0).
+  - 96 test xanh (`test/i18n.test.js` mới: đủ bản dịch cho app.js/index.html, `tr` dạng tag, parseBrief/aiPrompt tiếng Anh).
+  - Đã thử với agent thật: Haiku 4.5 + Sonnet 5.5 dùng ĐÚNG prompt mời tiếng Anh chép từ trang (`?lang=en`), bối cảnh tiếng Anh,
+    2 mục, roles theo slot: cả hai vào họp, nhận đúng vai trò theo slot, XONG MỤC 1 → server chuyển mục 2, KẾT LUẬN + VIỆC
+    được ghi (#1), rời phòng, ENDED "mọi agent đã rời phòng". Agent trả lời bằng tiếng Anh (theo bối cảnh), lý do rời phòng có
+    khi viết tiếng Việt (chữ của agent, không dịch).
+  - Giao diện tiếng Anh đã xem: bước 1/2, họp, thực hiện, kết thúc (desktop + 375 px tối), nút VI/EN đổi và nhớ, tiếng Việt
+    vẫn như cũ. CHƯA: prompt nhờ AI tiếng Anh với AI thật (mới test bằng Node: không có `<…>`, mẫu JSON hợp lệ), MCP tab tiếng
+    Anh với CLI thật (chỉ thử tab "Paste and join" qua curl).
+- **v3.3.0 (nhánh `v3.3-brief`) đã merge vào main và push (2026-10-18, người dùng yêu cầu); CHƯA tag.** 92 test xanh (`test/brief.test.js`
   mới: JSON hợp lệ, bọc ```json/câu dẫn, lỗi cú pháp có dòng/cột, sai kiểu từng trường, kẹp số, cắt độ dài, khoá lạ, `<…>`,
   64 KB, roles theo slot, POST start nhận nguyên brief, preset qua toState/restore). package.json 3.3.0, CHANGELOG 3.3.0,
   README/README.en/GUIDE/DEPLOY đã cập nhật, ảnh mới `setup.jpg`, `invite.jpg`, `brief-json.jpg`, GIF `docs/demo.gif` mới
@@ -222,8 +245,8 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
    không chứa "làm việc/báo tiến độ" khi followUp, không chép chi tiết của ví dụ.
 
 Ảnh tài liệu: server riêng (`--port 3101 --host-key shothost… --agent-key shotagent…`), Firefox headless như dưới,
-`shot.js <url> <out.png> 1280 860 2 2500 '' '<js>'` (tham số js chạy sau khi tải: đặt localStorage bản nháp/tab rồi chụp lần
-hai), join agent giả bằng curl cho ảnh bước 2, PIL thu về 1280px JPEG q85. GIF: script quay cũ + đoạn mới: `localStorage.clear()`
+`tools/shot.js <url> <out.png> 1280 860 2 2500 '' '<js>'` (tham số js chạy sau khi tải: đặt localStorage bản nháp/tab rồi chụp lần
+hai), join agent giả bằng curl cho ảnh bước 2, PIL thu về 1280px JPEG q85. GIF (`tools/record-demo.js`, tiếng Anh; ảnh EN thêm `localStorage['agent-meeting:lang']='en'`): script quay cũ + đoạn mới: `localStorage.clear()`
 và bỏ hash → bấm `#btnToJson` → dán JSON (có ```json) làm hai nhát → `#jsonApply` → cuộn → `#btnNextStep` → chạy bot → chờ đủ 3
 agent → `#btnStart`; ghép: gộp khung gần trùng (bbox khác biệt < 1500 px²), live 1 s, work 1,1 s, khung chính 3,5-5 s.
 
@@ -421,19 +444,22 @@ subagent Haiku + Sonnet như các phiên trước.
 
 Theo thứ tự ưu tiên:
 
-1. **Hỏi người dùng**: (a) kết quả kiểm tra giao diện v3.2 trong menu (chưa có câu trả lời); (b) duyệt v3.3 trên nhánh
-   `v3.3-brief` (thử trang chuẩn bị mới, nhất là "Nhờ AI viết" với ChatGPT/Claude thật của họ). Khi được đồng ý: merge
-   `v3.3-brief` vào main (fast-forward), push, `bash scripts/install-linux.sh`, rồi tag `v3.2.0` (nếu người dùng muốn phát
-   hành riêng) và `v3.3.0` + GitHub Release từ CHANGELOG. KHÔNG tự merge/push/tag/release khi chưa hỏi.
-2. **Thử agent thật họp theo brief do AI viết** (sau khi merge hoặc ngay trên nhánh): lấy một JSON Haiku/Sonnet đã viết
+1. **Hỏi người dùng**: (a) kết quả kiểm tra giao diện v3.2/v3.3 (main đã có v3.3); (b) có tag + GitHub Release `v3.3.0`
+   (và `v3.2.0` riêng?) không; (c) chạy `bash scripts/install-linux.sh` để bản trong menu lên 3.3.0. KHÔNG tự tag/release.
+   README (EN + VI) phải luôn ghi phiên bản mới nhất (badge + "What's new"); mỗi lần đổi giao diện thì quay lại GIF tiếng Anh
+   bằng `tools/record-demo.js` và chụp lại `docs/screenshots/en/` (người dùng yêu cầu).
+2. **Thử "Nhờ AI viết" tiếng Anh** bằng subagent Haiku + Sonnet với đúng prompt lấy từ trang `?lang=en` (như phép thử tiếng
+   Việt), và tab MCP tiếng Anh (Codex `exec` nếu cần).
+3. **Thử agent thật họp theo brief do AI viết** (sau khi merge hoặc ngay trên nhánh): lấy một JSON Haiku/Sonnet đã viết
    (ví dụ repo calc, `followUp: true`, roles theo slot), dán vào trang, mời 2 subagent bằng prompt "Dán là vào ngay", kiểm
    tra vai trò theo slot hiện đúng trong tin mở đầu và agent không chờ nhau trong phòng (agenda chỉ phần bàn bạc).
-3. **Thử gửi tệp qua tunnel Cloudflare thật** (bỏ `--local`): tệp vài MB và ~20 MB, kiểm tra Expect 100-continue và
+4. **Thử gửi tệp qua tunnel Cloudflare thật** (bỏ `--local`): tệp vài MB và ~20 MB, kiểm tra Expect 100-continue và
    thông báo "Tệp quá lớn" qua tunnel. Tunnel là công khai: hỏi người dùng trước.
-4. **Webhook thật** (Slack/Discord/Google Chat, phòng có `--follow-up`): chỉ khi người dùng đưa URL, không tự tạo.
-5. Ảnh `meeting.jpg`, `mobile-dark.jpg` vẫn là bản v3.0 (800px); `shot.js` (Firefox BiDi) ở "Cách lặp lại phép thử" dùng lại
+5. **Webhook thật** (Slack/Discord/Google Chat, phòng có `--follow-up`): chỉ khi người dùng đưa URL, không tự tạo.
+6. Ảnh tiếng Việt `meeting.jpg`, `mobile-dark.jpg` vẫn là bản v3.0 (800px; bản EN đã mới); `tools/shot.js` ở "Cách lặp lại phép thử" dùng lại
    được, chế độ tối cần `prefers-color-scheme` (CSS không có `[data-theme]`): dùng BiDi `emulation` hoặc profile tối.
-6. Có thể cân nhắc (chưa làm, cần người dùng đồng ý): chủ trì xoá một tệp trên trang; giới hạn tốc độ gửi tệp theo agent;
+7. Có thể cân nhắc (chưa làm, cần người dùng đồng ý): dịch cả giao thức gửi agent sang tiếng Anh (`--lang en`, phải thử lại
+   agent thật);: chủ trì xoá một tệp trên trang; giới hạn tốc độ gửi tệp theo agent;
    kéo-thả để đổi thứ tự mục chương trình (hiện có nút ↑↓ và Alt+↑/↓).
 
 Ý tưởng xa hơn (chưa lên kế hoạch):

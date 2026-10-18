@@ -109,6 +109,7 @@ class Meeting {
     this.taskSeq = 0;      // số việc (#1, #2…) không bao giờ dùng lại, kể cả qua các cuộc họp nối tiếp
     this.carry = null;     // mang từ cuộc họp trước: { from, topic, decisions: [{item, text, by}], done: [{n, task, owner, note}], members: [tên] }
     this.files = [];       // tệp agent gửi nhau (nội dung do server giữ): { id, name, size, sha256, from, to, note, t, got: [tên đã tải], carried? }
+    this.preset = null;    // bản brief từ CLI (--brief-file, --context-file…): trang chủ trì dùng làm bản nháp ban đầu
   }
 
   // ---------- nội bộ ----------
@@ -395,9 +396,13 @@ ${calls}`;
     return true;
   }
 
-  start(context, endCondition, settings) {
+  // roles: vai trò theo thứ tự slot của agent đang có mặt (bản brief không biết trước tên agent);
+  // agent đã được chủ trì giao vai trò tay thì giữ nguyên.
+  start(context, endCondition, settings, roles) {
     if (this.state !== 'LOBBY') return false;
     this.configure(settings);
+    const rs = Array.isArray(roles) ? roles : typeof roles === 'string' ? roles.split('\n') : [];
+    this._order().forEach((a, i) => { const r = String(rs[i] ?? '').replace(/\s+/g, ' ').trim().slice(0, 200); if (r && !a.role) a.role = r; });
     this.context = String(context ?? '').trim().slice(0, 8000);
     this.endCondition = String(endCondition ?? '').trim().slice(0, 1000);
     this.state = 'LIVE';
@@ -422,8 +427,8 @@ ${calls}`;
         ...open.map(t => `- #${t.n} ${t.owner ? t.owner + ' — ' : ''}${t.task}${t.due ? ` (hạn: ${t.due})` : ''}: ${TASK_STATUS[t.status]}${t.note ? ` · ${t.note}` : ''}`));
     }
     if (this.files.length) lines.push('', `Có ${this.files.length} tệp từ cuộc họp trước: gọi files để xem và lấy lệnh tải.`);
-    const roles = this._order().filter(a => a.role);
-    if (roles.length) lines.push('', 'Vai trò:', ...roles.map(a => `- ${a.name}: ${a.role}`));
+    const withRole = this._order().filter(a => a.role);
+    if (withRole.length) lines.push('', 'Vai trò:', ...withRole.map(a => `- ${a.name}: ${a.role}`));
     if (this.agenda.length) lines.push('', `Chương trình họp (${this.agenda.length} mục, bàn lần lượt):`,
       ...this.agenda.map((x, i) => `${i + 1}. ${x}`),
       'Bàn từng mục một. Khi đã chốt xong mục đang bàn, MỘT agent gửi tin có dòng riêng (ở đầu dòng):',
@@ -461,13 +466,13 @@ ${calls}`;
       workSince: this.workSince, workReason: this.workReason,
       everLeft: this.everLeft, turn: this.turn?.name || null, turnSeq: this.turnSeq, passStreak: this.passStreak, taskSeq: this.taskSeq,
       agenda: this.agenda, agendaIndex: this.agendaIndex, actions: this.actions, removed: this.removed, carry: this.carry, log: this.log,
-      files: this.files,
+      files: this.files, preset: this.preset,
       agents: [...this.agents.values()].map(({ waiting, busyUntil, lastSeen, ...a }) => a),
     };
   }
   restore(s) {
     for (const k of ['state', 'endReason', 'context', 'endCondition', 'createdAt', 'startedAt', 'endedAt', 'endsAt',
-      'everLeft', 'workSince', 'workReason', 'turnSeq', 'passStreak', 'agenda', 'agendaIndex', 'actions', 'removed', 'carry', 'log', 'files']) if (s[k] !== undefined) this[k] = s[k];
+      'everLeft', 'workSince', 'workReason', 'turnSeq', 'passStreak', 'agenda', 'agendaIndex', 'actions', 'removed', 'carry', 'log', 'files', 'preset']) if (s[k] !== undefined) this[k] = s[k];
     Object.assign(this.cfg, s.cfg);
     for (const a of this.actions) { a.n ??= ++this.taskSeq; a.status ??= 'todo'; a.note ??= ''; }
     this.taskSeq = Math.max(s.taskSeq || 0, ...this.actions.map(a => a.n), ...this.removed.map(a => a.n), 0);
@@ -814,6 +819,7 @@ ${calls}`;
       now, createdAt: this.createdAt, startedAt: this.startedAt, endedAt: this.endedAt, endsAt: this.endsAt, workSince: this.workSince, workReason: this.workReason,
       turn: this.turn?.name || null,
       agenda: this.agenda, agendaIndex: this.agendaIndex, actions: this.actions, carry: this.carry,
+      preset: this.state === 'LOBBY' ? this.preset : null,
       files: this.files.map(({ id, name, size, sha256, from, to, note, t, got, carried, gone }) => ({ id, name, size, sha256, from, to, note, t, got, carried: !!carried, gone: !!gone })),
       chatCount: this._chatCount(),
       agents: [...this.agents.values()].map(a => ({
@@ -830,4 +836,4 @@ ${calls}`;
   }
 }
 
-module.exports = { Meeting, clean, decisionText, parseStatus, fileName, fmtSize, TASK_STATUS, DEFAULTS };
+module.exports = { Meeting, clean, decisionText, parseStatus, fileName, fmtSize, TASK_STATUS, DEFAULTS, BOUNDS, MAX_AGENDA, MAX_TEXT };

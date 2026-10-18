@@ -4,6 +4,7 @@
 const { spawn, execSync } = require('child_process');
 const fs = require('fs'), os = require('os'), path = require('path'), https = require('https');
 const { createApp } = require('../src/server');
+const { parseBrief, toBrief } = require('../src/brief');
 
 const args = process.argv.slice(2);
 const flag = (n) => args.includes(n);
@@ -48,11 +49,13 @@ Gửi tệp giữa các agent (curl --data-binary; nội dung không đi qua tin
   --max-room-mb <n>        Tổng dung lượng tệp mỗi phòng (mặc định 200), tối đa 100 tệp
 
 Tự động hoá (chạy không cần người)
+  --brief-file <file>      Bản brief JSON (bối cảnh, chương trình, tuỳ chọn, vai trò; cùng định dạng với nút
+                           "Sao chép JSON" trên trang chủ trì). Thay cho --context-file + --agenda-file
   --context <văn bản>      Bối cảnh cuộc họp
   --context-file <file>    Bối cảnh đọc từ file
   --end-condition <văn bản> Điều kiện kết thúc
   --agenda-file <file>     Chương trình họp, mỗi dòng một mục
-  --auto-start <n>         Tự bắt đầu khi đủ n agent trong phòng chờ (cần --context/--context-file)
+  --auto-start <n>         Tự bắt đầu khi đủ n agent trong phòng chờ (cần --brief-file hoặc --context/--context-file)
   --exit-on-end            Thoát chương trình khi cuộc họp kết thúc (sau khi lưu biên bản, gửi webhook)
 
 Khác
@@ -69,12 +72,6 @@ const num = (n, d) => { const v = Number(opt(n, d)); return Number.isFinite(v) &
 const readFile = (f) => { try { return fs.readFileSync(f, 'utf8'); } catch (e) { console.error(`Lỗi: không đọc được file ${f}: ${e.message}`); process.exit(1); } };
 const publicUrl = (opt('--public-url') || env.AGENT_MEETING_PUBLIC_URL || '').replace(/\/+$/, '');
 const webhooks = [...opts('--webhook'), ...(env.AGENT_MEETING_WEBHOOK || '').split(',')].map(x => x.trim()).filter(Boolean);
-const auto = {
-  context: opt('--context-file') ? readFile(opt('--context-file')).trim() : (opt('--context') || ''),
-  endCondition: opt('--end-condition') || '',
-  agenda: opt('--agenda-file') ? readFile(opt('--agenda-file')) : undefined,
-  startAt: num('--auto-start', 0),
-};
 const hostKey = opt('--host-key') || env.AGENT_MEETING_HOST_KEY || '';
 const agentKey = opt('--agent-key') || env.AGENT_MEETING_AGENT_KEY || '';
 for (const k of [hostKey, agentKey].filter(Boolean)) if (!/^\w{16,64}$/.test(k)) { console.error(`Lỗi: mã "${k}" phải dài 16-64 ký tự chữ, số hoặc _ (tạo bằng: openssl rand -hex 16).`); process.exit(1); }
@@ -82,7 +79,6 @@ if (hostKey && hostKey === agentKey) { console.error('Lỗi: --host-key và --ag
 for (const u of [publicUrl, ...webhooks].filter(Boolean)) if (!/^https?:\/\//.test(u)) { console.error(`Lỗi: "${u}" không phải URL http(s).`); process.exit(1); }
 const dataDir = opt('--data-dir') || env.AGENT_MEETING_DATA_DIR || '';
 if (dataDir && !hostKey) { console.error('Lỗi: --data-dir cần --host-key (link chủ trì phải cố định thì mới nạp lại được cuộc họp sau khi khởi động lại).'); process.exit(1); }
-if (auto.startAt && !auto.context) { console.error('Lỗi: --auto-start cần --context hoặc --context-file.'); process.exit(1); }
 const cfg = {
   maxMsgs: num('--max', 120), idleMs: num('--idle', 40) * 1000, timeLimitMin: num('--time-limit', 0),
   mode: flag('--turns') ? 'turns' : 'free',
@@ -94,6 +90,28 @@ const cfg = {
   webhooks,
   log: (x) => console.log(x),
 };
+// Bản brief (bối cảnh + tuỳ chọn dạng JSON, cùng định dạng với trang chủ trì): --brief-file, hoặc ghép từ --context-file…
+// Trường thiếu trong brief lấy theo tham số dòng lệnh (--max, --follow-up…).
+const base = { settings: { mode: cfg.mode, maxMsgs: cfg.maxMsgs, idleSec: cfg.idleMs / 1000, timeLimitMin: cfg.timeLimitMin, followUp: cfg.followUp } };
+let brief = null;
+if (opt('--brief-file')) {
+  const f = opt('--brief-file'), clash = ['--context', '--context-file', '--end-condition', '--agenda-file'].filter(o => opt(o));
+  if (clash.length) { console.error(`Lỗi: --brief-file đã gồm bối cảnh và chương trình họp, đừng dùng kèm ${clash.join(', ')}.`); process.exit(1); }
+  const r = parseBrief(readFile(f), base);
+  const at = (x) => `${f}${x.line ? ':' + x.line : ''}: ${x.msg}`;
+  for (const w of r.warnings) console.warn('⚠ ' + at(w));
+  if (!r.ok) { for (const e of r.errors) console.error('Lỗi: ' + at(e)); process.exit(1); }
+  brief = r.brief;
+} else if (opt('--context') || opt('--context-file') || opt('--end-condition') || opt('--agenda-file')) {
+  brief = toBrief({
+    context: opt('--context-file') ? readFile(opt('--context-file')) : (opt('--context') || ''),
+    endCondition: opt('--end-condition') || '',
+    agenda: opt('--agenda-file') ? readFile(opt('--agenda-file')) : [],
+    ...base.settings,
+  }, base);
+}
+const autoStart = num('--auto-start', 0);
+if (autoStart && !brief?.context) { console.error('Lỗi: --auto-start cần bối cảnh (--brief-file, --context hoặc --context-file).'); process.exit(1); }
 const dir = path.join(os.homedir(), '.agent-meeting');
 const exe = process.platform === 'win32' ? 'cloudflared.exe' : 'cloudflared';
 
@@ -146,7 +164,7 @@ function listen(server, port) {
     console.log(`↻ Đã nạp lại cuộc họp đã lưu (${{ LOBBY: 'phòng chờ', LIVE: 'đang họp', ENDED: 'đã kết thúc' }[meeting.state]}, ${meeting.log.length} dòng diễn biến) từ ${path.resolve(dataDir)}`);
     if (agentKey && agentKey !== meeting.id) console.log('⚠ Cuộc họp đã lưu dùng mã agent khác --agent-key: giữ mã cũ để agent đang họp vẫn vào được.');
   }
-  if (auto.agenda !== undefined && !restored) meeting.configure({ agenda: auto.agenda });
+  if (brief && !restored) { meeting.configure(brief.settings); meeting.preset = brief; }
   let origin = `http://localhost:${port}`, tunnel = null;
 
   if (publicUrl) { origin = publicUrl; app.setPublicOrigin(origin, true); }
@@ -176,19 +194,20 @@ function listen(server, port) {
   Mời agent (dán cho agent chạy được curl):
     ${origin}/a/${meeting.id}/join   (gửi kèm name=<tên> và model=<model>)
   MCP (Streamable HTTP):  ${origin}/mcp/${meeting.id}
-${cfg.minutesDir ? `\n  Biên bản sẽ tự lưu vào: ${path.resolve(cfg.minutesDir)}` : ''}${dataDir ? `\n  Trạng thái phòng lưu ở: ${path.resolve(dataDir)} (khởi động lại thì họp tiếp)` : ''}${webhooks.length ? `\n  Gửi tóm tắt tới ${webhooks.length} webhook khi kết thúc` : ''}${cfg.followUp ? '\n  Giữ phòng để báo tiến độ sau khi chốt (--follow-up)' : ''}${auto.startAt ? `\n  Tự bắt đầu khi đủ ${auto.startAt} agent trong phòng chờ` : ''}
+${cfg.minutesDir ? `\n  Biên bản sẽ tự lưu vào: ${path.resolve(cfg.minutesDir)}` : ''}${dataDir ? `\n  Trạng thái phòng lưu ở: ${path.resolve(dataDir)} (khởi động lại thì họp tiếp)` : ''}${webhooks.length ? `\n  Gửi tóm tắt tới ${webhooks.length} webhook khi kết thúc` : ''}${cfg.followUp ? '\n  Giữ phòng để báo tiến độ sau khi chốt (--follow-up)' : ''}${autoStart ? `\n  Tự bắt đầu khi đủ ${autoStart} agent trong phòng chờ` : ''}
 
   Giữ cửa sổ này mở suốt cuộc họp. Ctrl+C để tắt.
   Link chủ trì chứa mã bí mật: đừng chia sẻ.\n${line}`);
 
   // Tự động hoá: tự bắt đầu khi đủ người, tự thoát khi kết thúc
-  if (auto.startAt) {
+  if (autoStart) {
     const check = () => {
       if (meeting.state !== 'LOBBY') return meeting.ev.off('change', check);
       const n = meeting.snapshot().agents.filter(a => a.status !== 'left' && a.status !== 'kicked').length;
-      if (n >= auto.startAt) {
+      if (n >= autoStart) {
         meeting.ev.off('change', check);
-        meeting.start(auto.context, auto.endCondition);
+        const b = meeting.preset || brief;
+        meeting.start(b.context, b.endCondition, b.settings, b.roles);
         console.log(`▶ Đã tự bắt đầu cuộc họp với ${n} agent.`);
       }
     };
@@ -206,5 +225,5 @@ ${cfg.minutesDir ? `\n  Biên bản sẽ tự lưu vào: ${path.resolve(cfg.minu
     console.log(ok ? ' sẵn sàng ✓' : '\nChưa truy cập được qua mạng. Thử mở link sau ít phút; nếu vẫn lỗi, chạy lại chương trình.');
     tunnel.on('exit', () => console.error('\n⚠ Tunnel Cloudflare đã ngắt: máy khác không vào được nữa. Hãy tắt (Ctrl+C) và chạy lại để có link mới.'));
   }
-  if (!flag('--no-open') && !auto.startAt) open(host);
+  if (!flag('--no-open') && !autoStart) open(host);
 })().catch(e => { console.error('Lỗi:', e.message); process.exit(1); });

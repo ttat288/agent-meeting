@@ -13,6 +13,7 @@ const UI_DIR = path.join(__dirname, 'ui');
 const ASSETS = {
   '/assets/app.css': ['app.css', 'text/css; charset=utf-8'],
   '/assets/app.js': ['app.js', 'text/javascript; charset=utf-8'],
+  '/assets/brief.js': ['../brief.js', 'text/javascript; charset=utf-8'], // dùng chung với Node (src/brief.js)
   '/favicon.svg': ['favicon.svg', 'image/svg+xml'],
 };
 const TTL_MS = 3 * 3600 * 1000;       // họp nhàn rỗi quá 3 giờ thì xóa
@@ -220,6 +221,7 @@ function createApp(cfg = {}) {
     const s = mt.cfg;
     const n = create({ id: mt.id, hostKey: mt.fixed ? mt.hostKey : undefined, fixed: mt.fixed, mode: s.mode, maxMsgs: s.maxMsgs, idleMs: s.idleMs, timeLimitMin: s.timeLimitMin, followUp: s.followUp });
     n.configure({ agenda: mt.agenda });
+    n.preset = mt.preset;
     if (carry) n.carryIn({
       from: mt.startedAt || mt.createdAt, topic: ((t) => t.length > 120 ? t.slice(0, 119) + '…' : t)(mt.context.split('\n').find(Boolean) || ''),
       decisions: minutes.decisions(mt.log).slice(-10).map(d => ({ item: d.item, text: d.text.replace(/\s+/g, ' ').slice(0, 300), by: d.by })),
@@ -340,7 +342,7 @@ function createApp(cfg = {}) {
         if (act === 'minutes.json') return json(200, minutes.toJSON(mt));
         if (req.method !== 'POST') return json(405, { error: 'POST only' });
         const d = parseArgs(u, await readBody(req));
-        if (act === 'start') return json(200, { ok: mt.start(d.context, d.endCondition, d.settings) });
+        if (act === 'start') return json(200, { ok: mt.start(d.context, d.endCondition, d.settings, d.roles) });
         if (act === 'stop') { mt.stop(); return json(200, { ok: true }); }
         if (act === 'say') return json(200, { ok: mt.hostSay(d.text, d.to) });
         if (act === 'next') return json(200, { ok: mt.hostNextItem() });

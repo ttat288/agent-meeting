@@ -281,3 +281,17 @@ test('Họp tiếp: mang việc chưa xong (giữ số, trạng thái, bằng ch
   const k2 = (await host(hostKey, 'new', {})).hostKey;
   assert.equal(app.meetings.get(k2).actions.length, 0); assert.equal(app.meetings.get(k2).carry, null);
 });
+
+test('MCP: giữ phòng báo tiến độ, agent MCP được hướng dẫn gọi tool progress', async (t) => {
+  const { app, base, m } = await boot(); t.after(() => app.close());
+  const call = async (id, name, args) => (await (await rpc(base, m.id, { jsonrpc: '2.0', id, method: 'tools/call', params: { name, arguments: args } })).json()).result.content[0].text;
+  await call(1, 'join', { name: 'Codex-1', model: 'GPT-5' });
+  m.start('x', '', { followUp: true });
+  await call(2, 'say', { name: 'Codex-1', text: 'KẾT LUẬN: ok\nVIỆC: Codex-1 | sửa lỗi | mai' });
+  const left = await call(3, 'leave', { name: 'Codex-1' });
+  assert.equal(m.state, 'WORK');
+  assert.match(left, /Tool MCP: progress\(name="Codex-1", task="<số việc>", status="xong", note="<bằng chứng>"\)/);
+  assert.doesNotMatch(left, /curl/);
+  assert.match(await call(4, 'progress', { name: 'Codex-1', task: '1', status: 'xong', note: 'commit 1a2b' }), /phòng đã đóng/);
+  assert.equal(m.state, 'ENDED');
+});

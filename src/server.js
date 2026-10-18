@@ -190,7 +190,7 @@ function createApp(cfg = {}) {
     const n = create({ id: mt.id, hostKey: mt.fixed ? mt.hostKey : undefined, fixed: mt.fixed, mode: s.mode, maxMsgs: s.maxMsgs, idleMs: s.idleMs, timeLimitMin: s.timeLimitMin, followUp: s.followUp });
     n.configure({ agenda: mt.agenda });
     if (carry) n.carryIn({
-      from: mt.startedAt || mt.createdAt, topic: (mt.context.split('\n').find(Boolean) || '').slice(0, 120),
+      from: mt.startedAt || mt.createdAt, topic: ((t) => t.length > 120 ? t.slice(0, 119) + '…' : t)(mt.context.split('\n').find(Boolean) || ''),
       decisions: minutes.decisions(mt.log).slice(-10).map(d => ({ item: d.item, text: d.text.replace(/\s+/g, ' ').slice(0, 300), by: d.by })),
       done: mt.actions.filter(t => t.status === 'done').map(({ n: num, task, owner, note }) => ({ n: num, task, owner, note })),
       // agent cuộc trước (và các cuộc trước nữa) vẫn báo tiến độ được cho việc mang sang

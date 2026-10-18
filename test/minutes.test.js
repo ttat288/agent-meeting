@@ -96,6 +96,20 @@ test('Kết thúc: tự lưu biên bản ra thư mục và gửi webhook đúng 
   assert.ok(logs.some(l => /Đã lưu biên bản/.test(l)) && logs.some(l => /Đã gửi tóm tắt/.test(l)));
 });
 
+test('phòng chờ chưa họp mà bị dừng: không lưu biên bản, không gửi webhook', async (t) => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'am-'));
+  let hits = 0;
+  const hook = http.createServer((req, res) => { hits++; res.end('ok'); });
+  await new Promise(r => hook.listen(0, r));
+  const app = createApp({ minutesDir: dir, webhooks: [`http://127.0.0.1:${hook.address().port}/`] });
+  t.after(() => { app.close(); hook.close(); fs.rmSync(dir, { recursive: true, force: true }); });
+  const m = app.create(); m.join('A', 'x');
+  const done = new Promise(r => app.ev.once('ended', r));
+  m.stop('quá lâu không hoạt động'); await done;
+  assert.deepEqual(fs.readdirSync(dir), []);
+  assert.equal(hits, 0);
+});
+
 test('Webhook: Slack/Google Chat nhận {text}, Discord nhận {content}, dịch vụ khác nhận bản đầy đủ', () => {
   const { webhookBody } = require('../src/server');
   const m = sample();

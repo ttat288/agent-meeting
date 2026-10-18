@@ -22,6 +22,9 @@ Mạng
   --public-url <url>    Địa chỉ công khai cố định (server công ty, reverse proxy, domain riêng);
                         không bật tunnel, prompt mời dùng địa chỉ này
   --port <n>            Cổng server (mặc định 3000 hoặc biến PORT; bận thì tự chọn cổng khác)
+  --host-key <mã>       Mã chủ trì cố định: link /m/<mã> không đổi qua các lần khởi động, cuộc họp mới
+                        dùng lại đúng link này (16-64 ký tự chữ, số, _; tạo bằng: openssl rand -hex 16)
+  --agent-key <mã>      Mã phòng cố định cho agent: lệnh cài MCP / prompt mời không đổi khi khởi động lại
 
 Cuộc họp (mặc định, đổi được trên web trước khi bắt đầu)
   --max <n>             Giới hạn số tin (mặc định 120)
@@ -47,7 +50,7 @@ Khác
   -v, --version         In phiên bản
 
 Biến môi trường tương đương: PORT, AGENT_MEETING_MINUTES_DIR, AGENT_MEETING_WEBHOOK (nhiều URL cách nhau bởi dấu phẩy),
-AGENT_MEETING_PUBLIC_URL.`);
+AGENT_MEETING_PUBLIC_URL, AGENT_MEETING_HOST_KEY, AGENT_MEETING_AGENT_KEY.`);
   process.exit(0);
 }
 
@@ -61,6 +64,10 @@ const auto = {
   agenda: opt('--agenda-file') ? readFile(opt('--agenda-file')) : undefined,
   startAt: num('--auto-start', 0),
 };
+const hostKey = opt('--host-key') || env.AGENT_MEETING_HOST_KEY || '';
+const agentKey = opt('--agent-key') || env.AGENT_MEETING_AGENT_KEY || '';
+for (const k of [hostKey, agentKey].filter(Boolean)) if (!/^\w{16,64}$/.test(k)) { console.error(`Lỗi: mã "${k}" phải dài 16-64 ký tự chữ, số hoặc _ (tạo bằng: openssl rand -hex 16).`); process.exit(1); }
+if (hostKey && hostKey === agentKey) { console.error('Lỗi: --host-key và --agent-key phải khác nhau (ai có mã agent không được điều khiển cuộc họp).'); process.exit(1); }
 for (const u of [publicUrl, ...webhooks].filter(Boolean)) if (!/^https?:\/\//.test(u)) { console.error(`Lỗi: "${u}" không phải URL http(s).`); process.exit(1); }
 if (auto.startAt && !auto.context) { console.error('Lỗi: --auto-start cần --context hoặc --context-file.'); process.exit(1); }
 const cfg = {
@@ -116,7 +123,7 @@ function listen(server, port) {
 (async () => {
   const app = createApp(cfg);
   const port = await listen(app.server, +opt('--port', env.PORT || 3000));
-  const meeting = app.create();
+  const meeting = app.create({ hostKey: hostKey || undefined, id: agentKey || undefined, fixed: !!hostKey });
   if (auto.agenda !== undefined) meeting.configure({ agenda: auto.agenda });
   let origin = `http://localhost:${port}`, tunnel = null;
 

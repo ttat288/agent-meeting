@@ -59,7 +59,7 @@ class Meeting {
     this.cfg = { ...DEFAULTS, ...opts };
     this.cfg.staleMs = this.cfg.staleMs ?? this.cfg.busyMs + 60000;
     this.id = opts.id || crypto.randomBytes(12).toString('hex'); // token cho agent (giữ nguyên qua các cuộc họp nối tiếp)
-    this.hostKey = crypto.randomBytes(12).toString('hex');  // token riêng cho chủ trì
+    this.hostKey = opts.hostKey || crypto.randomBytes(12).toString('hex');  // token riêng cho chủ trì (cố định nếu --host-key)
     this.ev = new EventEmitter();
     this.ev.setMaxListeners(1000);
     this.context = '';

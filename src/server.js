@@ -101,6 +101,7 @@ function createApp(cfg = {}) {
   const log = cfg.log || (() => {});
   // Khi một cuộc họp kết thúc: tự lưu biên bản và gửi webhook (nếu được bật)
   async function onEnded(m) {
+    if (!m.startedAt) return; // phòng chờ bị dọn khi chưa họp: không có gì để lưu hay báo
     const base = `${stamp(m.startedAt || m.createdAt)}_${slug(m.context.split('\n')[0])}`;
     if (cfg.minutesDir) {
       try {
@@ -125,18 +126,28 @@ function createApp(cfg = {}) {
   let fixedOrigin = null;  // --public-url: người vận hành đã khai báo, dùng cho cả lệnh trong giao thức (proxy có thể đổi header Host)
   const assets = Object.fromEntries(Object.entries(ASSETS).map(([k, [f, type]]) => [k, { body: fs.readFileSync(path.join(UI_DIR, f)), type }]));
   const index = fs.readFileSync(path.join(UI_DIR, 'index.html'));
+  // fixed: mã chủ trì cố định (--host-key), link chủ trì không bao giờ hỏng; cuộc họp mới dùng lại đúng mã đó
   const create = (overrides = {}) => {
     const m = new Meeting({ ...cfg, ...overrides });
+    m.fixed = !!overrides.fixed;
     byAgent.set(m.id, m); byHost.set(m.hostKey, m);
     m.ev.once('ended', () => { onEnded(m).finally(() => app.ev.emit('ended', m)); });
     return m;
   };
+  // Cuộc họp nối tiếp dùng lại mã agent (agent đã cài MCP không phải cài lại) và các tuỳ chọn của cuộc trước
+  const renew = (mt) => {
+    const s = mt.cfg;
+    const n = create({ id: mt.id, hostKey: mt.fixed ? mt.hostKey : undefined, fixed: mt.fixed, mode: s.mode, maxMsgs: s.maxMsgs, idleMs: s.idleMs, timeLimitMin: s.timeLimitMin });
+    n.configure({ agenda: mt.agenda });
+    return n;
+  };
   const sweep = setInterval(() => {
-    for (const m of byHost.values())
-      if (Date.now() - m.touched > (m.state === 'ENDED' ? ENDED_TTL_MS : TTL_MS)) {
-        m.stop('quá lâu không hoạt động'); byHost.delete(m.hostKey);
-        if (byAgent.get(m.id) === m) byAgent.delete(m.id);
-      }
+    for (const m of [...byHost.values()]) {
+      if (Date.now() - m.touched <= (m.state === 'ENDED' ? ENDED_TTL_MS : TTL_MS)) continue;
+      if (m.fixed) { if (m.state !== 'LOBBY') { m.stop('quá lâu không hoạt động'); renew(m); } continue; }
+      m.stop('quá lâu không hoạt động'); byHost.delete(m.hostKey);
+      if (byAgent.get(m.id) === m) byAgent.delete(m.id);
+    }
   }, 60000);
   sweep.unref();
 
@@ -175,11 +186,8 @@ function createApp(cfg = {}) {
         if (act === 'role') return json(200, { ok: mt.setRole(d.name, d.role) });
         if (act === 'kick') return json(200, { ok: mt.kick(d.name) });
         if (act === 'new') {
-          // Cuộc họp nối tiếp dùng lại mã agent: agent đã cài MCP không phải cài lại.
           if (mt.state === 'LIVE') mt.stop('chủ trì mở cuộc họp mới');
-          const s = mt.cfg, n = create({ id: mt.id, mode: s.mode, maxMsgs: s.maxMsgs, idleMs: s.idleMs, timeLimitMin: s.timeLimitMin });
-          n.configure({ agenda: mt.agenda });
-          return json(200, { hostKey: n.hostKey });
+          return json(200, { hostKey: renew(mt).hostKey });
         }
       }
 
@@ -205,7 +213,7 @@ function createApp(cfg = {}) {
     } catch (e) { if (!res.headersSent) json(500, { error: String(e.message || e) }); else res.end(); }
   });
   server.requestTimeout = 0; // long-poll và wait giữ kết nối lâu
-  const app = { server, create, meetings: byHost, ev: new EventEmitter(), setPublicOrigin: (o, fixed) => { publicOrigin = o; if (fixed) fixedOrigin = o; }, close: () => { clearInterval(sweep); server.close(); server.closeAllConnections?.(); } };
+  const app = { server, create, renew, meetings: byHost, ev: new EventEmitter(), setPublicOrigin: (o, fixed) => { publicOrigin = o; if (fixed) fixedOrigin = o; }, close: () => { clearInterval(sweep); server.close(); server.closeAllConnections?.(); } };
   return app;
 }
 

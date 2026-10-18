@@ -458,6 +458,8 @@
         if (r.status === 404) { $('gone').hidden = false; setConn('bad'); return; }
         if (!r.ok) throw new Error(r.status);
         const s = await r.json();
+        // link chủ trì cố định (--host-key): cuộc họp mới thay cuộc cũ dưới cùng địa chỉ thì tải lại trang
+        if (snap && s.createdAt !== snap.createdAt) { location.reload(); return; }
         if (s.logFrom === log.length) log = log.concat(s.log);
         else { log = s.log; rendered = 0; $('feedIn').replaceChildren(); }
         version = s.version; clockOffset = s.now - Date.now(); snap = s; fails = 0;

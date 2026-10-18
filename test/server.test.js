@@ -34,6 +34,24 @@ test('--public-url: lệnh trong giao thức luôn dùng địa chỉ đã khai 
   assert.ok(j.includes(`--data-urlencode "text@-" <<'HET'`));
 });
 
+test('mã chủ trì cố định: "Cuộc họp mới" dùng lại đúng link, mã agent giữ nguyên', async (t) => {
+  const app = createApp({ waitMs: 400, idleMs: 60000, tick: 30 });
+  await new Promise(r => app.server.listen(0, r)); t.after(() => app.close());
+  const base = `http://127.0.0.1:${app.server.address().port}`;
+  const m = app.create({ hostKey: 'host_key_0123456789', id: 'agent_key_0123456789', fixed: true });
+  m.join('A', 'x'); m.start('x', '');
+  const r = await (await fetch(`${base}/api/host/host_key_0123456789/new`, { method: 'POST' })).json();
+  assert.equal(r.hostKey, 'host_key_0123456789');
+  assert.equal(m.state, 'ENDED');
+  const s = await (await fetch(`${base}/api/host/host_key_0123456789/state?v=-1`)).json();
+  assert.equal(s.state, 'LOBBY');
+  assert.equal(s.agentId, 'agent_key_0123456789');
+  assert.notEqual(s.createdAt, undefined);
+  // không cố định thì mỗi cuộc họp mới có mã chủ trì mới
+  const k = app.create().hostKey;
+  assert.notEqual((await (await fetch(`${base}/api/host/${k}/new`, { method: 'POST' })).json()).hostKey, k);
+});
+
 test('API curl: join/say/wait dạng văn bản, kèm hướng dẫn curl đúng địa chỉ', async (t) => {
   const { app, base, m } = await boot(); t.after(() => app.close());
   const post = (tool, o) => fetch(`${base}/a/${m.id}/${tool}`, { method: 'POST', body: form(o) }).then(r => r.text());

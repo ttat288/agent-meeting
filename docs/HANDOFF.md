@@ -86,8 +86,8 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
 ## Trạng thái
 
 - Phiên bản phát hành: **v3.0.0** (main, đã có GitHub Release).
-- **v3.1.0** xong trên nhánh `v3.1-followup` (đã push lên origin, CHƯA merge vào main, CHƯA tag/release): code bước 1-4,
-  65 test xanh, package.json 3.1.0, CHANGELOG, README/README.en/GUIDE/DEPLOY đã cập nhật. Merge/release phải hỏi người dùng.
+- **v3.1.0** đã merge vào main (2026-10-18), CHƯA tag/GitHub Release: code bước 1-4, 65 test xanh, package.json 3.1.0,
+  CHANGELOG, README/README.en/GUIDE/DEPLOY đã cập nhật. Tag/release phải hỏi người dùng (nên làm sau khi thử MCP thật).
 - Đã kiểm chứng (phiên 2026-10-18): toàn bộ bằng subagent Haiku 4.5 / Sonnet 5.5 qua curl với đúng prompt từ trang, server dev
   `--local --port 3100 --host-key … --agent-key … --data-dir … --minutes-dir …`, giao diện bằng trình duyệt tích hợp
   (desktop + mobile 375px). Chưa kiểm chứng: CLI thật qua MCP, webhook tới Slack/Discord/Google Chat thật (mới có server giả
@@ -168,8 +168,8 @@ Theo thứ tự ưu tiên:
 2. **Webhook thật**: gửi thử tới Slack/Discord/Google Chat một phòng có `--follow-up` (3 loại `work`/`task`/`ended`).
 3. **Ảnh/GIF**: chụp lại `docs/screenshots/` cho bảng việc có trạng thái, màn "Đang thực hiện", thẻ "Mang từ cuộc họp
    trước"; cân nhắc GIF demo mới (`npm run demo` chưa dùng `progress`/follow-up: có thể thêm vào `scripts/demo-bots.js`).
-4. **Phát hành v3.1.0** (khi người dùng đồng ý): merge `v3.1-followup` vào main, tag `v3.1.0`, GitHub Release lấy nội dung
-   từ CHANGELOG, `bash scripts/install-linux.sh` để cập nhật bản trong menu.
+4. **Phát hành v3.1.0** (khi người dùng đồng ý; code đã ở main): tag `v3.1.0`, GitHub Release lấy nội dung từ CHANGELOG,
+   `bash scripts/install-linux.sh` để cập nhật bản trong menu. Sửa gì sau khi thử MCP thì làm trên nhánh mới rồi merge.
 5. **Việc trùng**: nút cho chủ trì gộp/xoá một việc trên web (hiện chỉ đánh dấu xong). Không nới `sameTask` nếu chưa có
    tin agent thật làm bằng chứng gộp đúng (gộp nhầm làm mất việc).
 6. Nhỏ: tên nút có `title` làm accessible name khác chữ hiển thị ("Họp tiếp…"); có thể dùng `aria-describedby`.

@@ -17,9 +17,10 @@ src/meeting.js    lõi: class Meeting (trạng thái LOBBY→LIVE→ENDED, hoặ
                   slot, chế độ free/turns, luật chống chờ nhau, kick, giới hạn tin/thời gian, việc có số/trạng thái,
                   toState()/restore() cho --data-dir, carryIn() cho "Họp tiếp"). Không phụ thuộc HTTP.
 src/server.js     HTTP thuần: /m/<hostKey> (trang chủ trì), /api/host/<hostKey>/* (điều khiển,
-                  long-poll state, minutes.md|json), /a/<agentId>/<tool> (API văn bản cho curl),
-                  /mcp/<agentId> (MCP JSON-RPC); lưu biên bản (--minutes-dir), gửi webhook (work/task/ended),
-                  ghi/nạp trạng thái phòng (--data-dir), renew(mt, carry)
+                  long-poll state, minutes.md|json, file/<mã tệp>), /a/<agentId>/<tool> (API văn bản cho curl),
+                  /a/<agentId>/send + /a/<agentId>/file/<mã tệp> (tệp, v3.2), /mcp/<agentId> (MCP JSON-RPC);
+                  lưu biên bản (--minutes-dir), gửi webhook (work/task/ended), ghi/nạp trạng thái phòng (--data-dir),
+                  renew(mt, carry); nội dung tệp: blobs (bộ nhớ) hoặc <dataDir>/<hostKey>.files/<mã tệp>
 src/minutes.js    biên bản Markdown / JSON (agent-meeting/minutes@1) / tóm tắt webhook
 src/ui/           trang chủ trì: index.html + app.css + app.js, không build, CSP chặt
 scripts/          install-linux.sh (launcher menu), demo-bots.js (3 agent giả lập)
@@ -53,6 +54,19 @@ Quyết định kỹ thuật quan trọng (đừng đảo ngược nếu không 
 - `--public-url` cố định địa chỉ trong giao thức (`fixedOrigin`); tunnel thì dùng địa chỉ của request.
 - `--host-key`: phòng `fixed` không bị xoá khi hết hạn mà được `renew()` (cùng hostKey + agent id); trang chủ trì
   thấy `createdAt` đổi thì tự tải lại.
+- **Tệp (v3.2)**: server là trạm chuyển tiếp HTTP, nội dung tệp KHÔNG đi qua tin nhắn/ngữ cảnh model. Meeting chỉ giữ
+  metadata (`files`: id, name, size, sha256, from, to, note, t, got, carried, gone) và đăng một dòng sys có `file: id`
+  (+ `to` nếu gửi riêng); `_render(msgs, a)` thêm lệnh tải đúng của người đọc (`a.base`). Server giữ bytes và kiểm tra
+  `sendCheck` + giới hạn TRƯỚC khi nhận (handler `checkContinue`: chỉ `writeContinue()` khi hợp lệ), nhận theo luồng, tính
+  sha256 lúc nhận. Gửi riêng được bảo vệ bằng mã tệp ngẫu nhiên (chỉ người nhận được báo) + so tên, KHÔNG phải xác thực.
+  `fileFor` so theo TÊN chứ không đòi đang là thành viên (tệp "Họp tiếp" mang sang tải được trước khi join lại).
+  `dropFiles` có đếm tham chiếu: tệp mà cuộc khác trong `byHost` còn giữ (Họp tiếp) thì không xoá.
+  Mọi agent (cả MCP) có `a.base` = `<origin>/a/<id>` để có lệnh curl cho phần tệp; `a.how` vẫn chỉ dành cho curl
+  (quyết định progress qua tool hay curl). Tool `files(name, wait)` là `readOnlyHint`; `send` không phải tool MCP.
+  `files?wait=1` chặn tới `waitMs` cho tới khi có tệp chưa tải gửi cho mình: cần cho giai đoạn WORK (agent đã rời không
+  còn `wait`), đã thấy agent thật dùng đúng.
+- Tệp luôn trả về `application/octet-stream` + `attachment` + `nosniff` + CSP `sandbox` (cùng origin với trang chủ trì);
+  tên tệp qua `fileName()` (basename, chỉ `\p{L}\p{M}\p{N}._+-`, không bắt đầu bằng `.`/`-`) nên an toàn trong `curl -o "…"`.
 
 ## Cách làm việc / kiểm thử
 
@@ -102,10 +116,32 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
   - Agent hay vào lại cuộc họp sau với TÊN KHÁC (Haiku-Agent → Haiku-Analyst); nó tự nhắc lại dòng VIỆC và `sameTask`
     gộp vào việc cũ (đổi người phụ trách, giữ số). Hai agent cùng gửi KẾT LUẬN với câu chữ khác nhau vẫn có thể tạo việc
     trùng: chưa nới `sameTask` (gộp nhầm làm mất việc), chủ trì đánh dấu bản trùng là xong.
+  - Firefox snap headless chạy từ sandbox của phiên: `kill <pid>` bị từ chối (Permission denied). Tắt bằng BiDi:
+    `session.new` rồi `browser.close` (xem script quay GIF ở "Cách lặp lại phép thử").
+  - Mẫu nginx trong DEPLOY.md từng để `client_max_body_size 1m`: gửi tệp > 1 MB sau proxy sẽ hỏng. Đã nâng lên 25m +
+    `proxy_request_buffering off`; đổi `--max-file-mb` thì nhớ đổi theo.
+  - `scripts/install-linux.sh` chép code nhánh hiện tại vào app trong menu của người dùng: chỉ chạy sau khi đã merge.
 - Commit kết thúc bằng dòng `Co-Authored-By` theo hướng dẫn của phiên; cập nhật CHANGELOG + README/GUIDE cho thay đổi người dùng thấy được; `bash scripts/install-linux.sh` để cập nhật bản trong menu.
 
 ## Trạng thái
 
+- **v3.2.0 trên nhánh `v3.2-files` (chưa merge, chưa push, chưa tag)** — phiên 2026-10-18 (tối). 75 test xanh
+  (`test/files.test.js` mới: tải lên/tải về đúng bytes, header an toàn, gửi riêng, tên độc, giới hạn content-length/
+  chunked/Expect 100-continue/tổng phòng/số tệp, WORK + `files?wait=1`, `--data-dir` khởi động lại + Họp tiếp + Cuộc họp mới).
+  - Đã kiểm chứng tay bằng curl thật trên server dev (`--data-dir`): `git format-patch` → send riêng → `git am` trong clone
+    khác; `tar czf - | curl --data-binary @-`; người ngoài bị 404; tệp 25 MB bị từ chối ngay (có Expect và chunked);
+    tệp 15 MB OK; kill SIGTERM rồi chạy lại vẫn tải đúng (sha256 khớp), quyền 600/700.
+  - Agent thật (subagent Haiku 4.5 + Sonnet 5.5 qua curl, prompt "Dán là vào ngay" sao chép từ trang, không dặn thêm),
+    hai bản clone riêng của repo thử, 2 lần: (1) giữ phòng báo tiến độ: Haiku sửa + commit + gửi patch riêng (tự mã hoá
+    `to=Sao%20Mai`), Sonnet đã rời họp chờ bằng đúng một lệnh `files?wait=1`, tải, `git apply --check`, `git am`, test xanh,
+    báo progress; phòng tự đóng. (2) làm ngay trong cuộc họp: Sonnet gửi, Haiku nhận qua `files?wait=1`, `cat` đọc patch
+    trước, `git am`, test xanh, báo TIẾN ĐỘ. Cả hai clone có commit đúng (giữ tác giả của patch). Chưa thấy agent dán code.
+  - Giao diện (trình duyệt tích hợp, desktop + mobile 375px): mục Tệp, thông báo tệp có nút Tải, nút ☰ hiện "Tệp n",
+    không lỗi console. Ảnh `docs/screenshots/files.jpg` và GIF `docs/demo.gif` mới (Firefox BiDi, 27 khung, 1,6 MB).
+  - `npm run demo` chạy trọn với gửi tệp ở giai đoạn thực hiện.
+  - CHƯA kiểm chứng: gửi tệp qua tunnel Cloudflare thật (giới hạn ~100 MB, Expect 100-continue qua tunnel), sau
+    nginx/Caddy thật, Node 18/20 (máy dev là Node 22; CI sẽ chạy), MCP `files` với CLI thật (chỉ có test node), Windows
+    (tên tệp, quyền 600), `scripts/install-linux.sh`.
 - Phiên bản phát hành: **v3.1.1** (2026-10-18, main, tag + GitHub Release; gồm cả 3.1.0 vốn chưa phát hành riêng).
   67 test xanh. Phiên 2026-10-18 (chiều): thử Codex CLI thật, sửa annotations/prompt MCP, gộp/xoá việc trùng, ảnh mới,
   demo có báo tiến độ.
@@ -122,6 +158,21 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
   `--local --port 3100 --host-key … --agent-key … --data-dir … --minutes-dir …`, giao diện bằng trình duyệt tích hợp
   (desktop + mobile 375px). Chưa kiểm chứng: CLI thật qua MCP, webhook tới Slack/Discord/Google Chat thật (mới có server giả
   trong test), `npm run demo` sau thay đổi, `scripts/install-linux.sh`.
+
+### Cách lặp lại phép thử agent thật của v3.2 (gửi tệp)
+
+Repo thử như v3.1 (bên dưới) nhưng tạo `origin` rồi `git clone origin clone-a`, `git clone origin clone-b` (mỗi clone
+`git config user.name/email` riêng). Bối cảnh: hai đường dẫn clone; (1) agent ở clone-a sửa sub(), test, commit, gửi patch
+cho agent kia bằng cách gửi tệp trong giao thức (không dán code); (2) agent ở clone-b nhận patch, `git am`, chạy test, báo
+tiến độ. Một lần `followUp: true` (bên nhận phải chờ tệp ở WORK), một lần `followUp: false` và dặn làm ngay trong họp.
+Theo dõi `GET /api/host/<k>/state?v=-1` (`files[].got` cho biết đã tải); kiểm tra `git log` + `node test.js` ở cả hai
+clone. Đọc lệnh agent đã chạy: duyệt JSONL của subagent, lấy `tool_use.input.command` (đừng đọc cả file).
+
+Quay GIF: `firefox --headless --no-remote -profile ~/snap/firefox/common/am-shot --remote-debugging-port 9223`, script
+Node BiDi: `/new` → mở trang chủ trì 1280×680 → chạy `scripts/demo-bots.js` → điền bối cảnh/chương trình/ô giữ phòng bằng
+`script.evaluate` → giao vai trò qua API → bấm Bắt đầu → chụp mỗi ~1,7 s, bấm chip "Yêu cầu chốt" khi bot in "tranh luận
+xong", cuộn cột trái tới `#filesSec` khi có tệp → tới ENDED. Ghép bằng PIL: bỏ khung gần trùng (`ImageChops.difference`),
+`quantize(128, MEDIANCUT, không dither)`, khung quan trọng giữ 3,5-5 s.
 
 ### Cách lặp lại phép thử agent thật của v3.1
 
@@ -192,11 +243,11 @@ Làm theo thứ tự, mỗi bước có test (npm test) và thử trên trình d
 **Ngoài phạm vi (đừng làm):** tài khoản/phân quyền (dùng reverse proxy của công ty), server tự khởi chạy agent hay tự
 merge code, nhiều phòng song song, chạy test thay agent.
 
-## Việc tiếp theo
+## Lộ trình v3.2: gửi tệp / code giữa các agent (nhánh v3.2-files, đã xong, chờ merge)
 
-Theo thứ tự ưu tiên:
+Thiết kế dưới đây đã làm đúng như chốt, chỉ BỔ SUNG `files?wait=1` (chờ tệp ở giai đoạn WORK) và `--max-room-mb`.
 
-1. **v3.2: Gửi tệp / code giữa các agent** (người dùng yêu cầu 2026-10-18: "tạo một đường truyền rồi đẩy file ngầm qua,
+1. ✅ **v3.2: Gửi tệp / code giữa các agent** (người dùng yêu cầu 2026-10-18: "tạo một đường truyền rồi đẩy file ngầm qua,
    cách nhanh nhất"). Thiết kế đã chốt, phiên sau làm theo, có lý do mạnh mới đổi:
    - **Server là trạm chuyển tiếp HTTP**, không P2P/WebRTC (máy sau NAT, đi qua tunnel, không thư viện ngoài). Agent đẩy
      bằng `curl --data-binary @tệp` (thư mục: `tar czf - thư_mục | curl --data-binary @- …`), tải bằng `curl -o`.
@@ -224,11 +275,21 @@ Theo thứ tự ưu tiên:
      HAI bản clone riêng của repo thử (tránh bẫy chung working tree), agent A sửa `sub()` rồi gửi patch, agent B `git am`
      trong clone của mình, chạy `node test.js`, báo tiến độ kèm mã commit. Subagent Haiku + Sonnet qua curl, prompt sao
      chép đúng từ trang. Tài liệu: README/README.en/GUIDE, CHANGELOG 3.2.0, ảnh mục Tệp.
-2. **GIF demo mới** có giai đoạn thực hiện (và gửi tệp nếu đã có): `npm run demo` đã có báo tiến độ; quay bằng Firefox
-   BiDi chụp từng khung (xem "Bẫy đã gặp") rồi ghép bằng PIL. Ảnh `meeting.jpg`, `mobile-dark.jpg` vẫn là bản v3.0 (800px).
+2. ✅ **GIF demo mới** có giai đoạn thực hiện và gửi tệp (`docs/demo.gif`).
+3. ✅ Nhỏ: "Thảo luận" ở màn kết thúc khi đóng từ phòng chờ (đã sửa). Ghi chú agent báo sau thay ghi chú đã nối khi gộp
+   việc: giữ nguyên (chấp nhận được).
+
+## Việc tiếp theo
+
+Theo thứ tự ưu tiên:
+
+1. **Người dùng duyệt nhánh `v3.2-files`**, rồi (khi được đồng ý) merge vào main, push, tag `v3.2.0`, GitHub Release
+   (nội dung từ CHANGELOG 3.2.0), sau đó `bash scripts/install-linux.sh`. KHÔNG tự làm khi chưa hỏi.
+2. **Thử gửi tệp qua tunnel Cloudflare thật** (bỏ `--local`): tệp vài MB và ~20 MB, kiểm tra Expect 100-continue và
+   thông báo "Tệp quá lớn" qua tunnel. Tunnel là công khai: hỏi người dùng trước.
 3. **Webhook thật** (Slack/Discord/Google Chat, phòng có `--follow-up`): chỉ khi người dùng đưa URL, không tự tạo.
-4. Nhỏ: "Thảo luận" ở màn kết thúc tính từ lúc tạo phòng khi cuộc họp bị đóng từ phòng chờ, trong khi "Thời lượng" là
-   0:00. Ghi chú agent báo sau thay ghi chú đã nối khi gộp việc (giữ bản mới nhất, chấp nhận được).
+4. Ảnh `meeting.jpg`, `mobile-dark.jpg` vẫn là bản v3.0 (800px): chụp lại bằng Firefox BiDi nếu cần.
+5. Có thể cân nhắc (chưa làm, cần người dùng đồng ý): chủ trì xoá một tệp trên trang; giới hạn tốc độ gửi tệp theo agent.
 
 Ý tưởng xa hơn (chưa lên kế hoạch):
 

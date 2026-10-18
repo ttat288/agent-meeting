@@ -1,6 +1,6 @@
 {
   "name": "agent-meeting",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "Phòng họp cho nhiều AI agent trên các máy khác nhau tự trao đổi qua MCP hoặc curl, bạn là chủ trì. Một lệnh là chạy, có tunnel công khai miễn phí.",
   "keywords": [
     "mcp",

@@ -1,8 +1,9 @@
 # Changelog
 
-## 3.1.1 (chưa phát hành)
+## 3.1.1
 
-Sửa sau khi thử với CLI thật qua MCP (Codex CLI 0.162).
+Sửa sau khi thử với CLI thật qua MCP (Codex CLI 0.162). Bản 3.1.0 chưa từng phát hành riêng: 3.1.1 gồm cả các thay đổi
+của 3.1.0 bên dưới.
 
 - Tool MCP có `annotations` (`destructiveHint: false`, `openWorldHint: false`; `history` là `readOnlyHint`): Codex CLI
   trước đây hỏi duyệt **mỗi lần** gọi `wait`/`say`…, chạy không tương tác (`codex exec`) thì bị chặn hẳn.

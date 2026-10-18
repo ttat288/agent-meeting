@@ -77,6 +77,27 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
   - Docker: container chạy UTC, cần `TZ=Asia/Ho_Chi_Minh` (Node có sẵn dữ liệu múi giờ, alpine không cần tzdata).
   - Regex có cờ `u` KHÔNG cho escape `-` ngoài `[]` (SyntaxError): tên agent như `Haiku-Agent` từng làm `leave` và state
     của chủ trì trả 500. Dùng `reEscFold` (không escape `-`) cho regex cờ `u`.
+  - Codex CLI (0.162): tool MCP bị ẩn sau cơ chế tìm tool (model không thấy `join` nếu không chủ động tìm), và tool
+    không có `annotations` thì bị hỏi duyệt MỖI lần gọi (`codex exec` thì bị chặn: "requires approval, but approval policy
+    is never"). Codex tự chạy tool khi `readOnlyHint: true` hoặc `destructiveHint: false` + `openWorldHint: false` (đã thử
+    bằng MCP server giả). Đừng bỏ `annotations` trong `TOOLS`.
+  - Codex `-s workspace-write` để `.git` chỉ đọc (agent không commit được, báo "vướng") và chặn mạng: thêm
+    `-c sandbox_workspace_write.network_access=true -c 'sandbox_workspace_write.writable_roots=["<repo>/.git"]'`.
+    Chạy `--dangerously-bypass-approvals-and-sandbox` bị bộ kiểm duyệt của Claude Code chặn: đừng dùng.
+  - `codex mcp add/remove` viết lại toàn bộ `~/.codex/config.toml` (đổi thứ tự khoá) và `codex exec` tự thêm
+    `[projects."<repo>"] trust_level`: sao lưu file trước, thử xong chép lại bản sao lưu.
+  - Hai agent làm chung một working tree: `git commit -a` của agent này có thể gom thay đổi của agent kia (đã gặp,
+    agent Codex tự ghi chú trung thực trong bằng chứng). Không phải lỗi sản phẩm.
+  - `POST /api/host/<k>/start` không gửi `settings.agenda` thì GIỮ chương trình của cuộc trước ("Cuộc họp mới" mang
+    `agenda` sang, để `--agenda-file` dùng cho mọi cuộc). Trang web luôn gửi chương trình đang hiện nên không bị;
+    gọi API thử thì gửi `"agenda": []`.
+  - `read_page`/`find` của trình duyệt tích hợp lấy `title` làm tên nút và không tính chữ trong `<span>` con: KHÔNG dùng
+    để kết luận về accessibility (chuẩn accname: nội dung trước, `title` thành mô tả).
+  - Chụp ảnh tài liệu: Firefox snap headless + WebDriver BiDi (`firefox --headless --no-remote -profile
+    ~/snap/firefox/common/<thư mục> --remote-debugging-port 9223`, rồi script Node dùng WebSocket có sẵn:
+    `session.new` → `browsingContext.setViewport` (devicePixelRatio 2) → `navigate` → chờ → `captureScreenshot`).
+    Profile phải nằm trong `~/snap/firefox/common` (snap không đọc được /tmp riêng). `firefox --screenshot` chụp trước
+    khi trang tải xong state nên trống. Ảnh lưu JPEG 1280px bằng PIL.
   - Mẫu bối cảnh không được chứa `<…>` thật (trang chủ trì coi là chỗ trống chưa điền và hỏi lại trước khi bắt đầu).
   - Agent hay vào lại cuộc họp sau với TÊN KHÁC (Haiku-Agent → Haiku-Analyst); nó tự nhắc lại dòng VIỆC và `sameTask`
     gộp vào việc cũ (đổi người phụ trách, giữ số). Hai agent cùng gửi KẾT LUẬN với câu chữ khác nhau vẫn có thể tạo việc
@@ -85,10 +106,19 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
 
 ## Trạng thái
 
-- Phiên bản phát hành: **v3.0.0** (main, đã có GitHub Release).
-- **v3.1.0** đã merge vào main (2026-10-18), CHƯA tag/GitHub Release: code bước 1-4, 65 test xanh, package.json 3.1.0,
-  CHANGELOG, README/README.en/GUIDE/DEPLOY đã cập nhật. Tag/release phải hỏi người dùng (nên làm sau khi thử MCP thật).
-- Đã kiểm chứng (phiên 2026-10-18): toàn bộ bằng subagent Haiku 4.5 / Sonnet 5.5 qua curl với đúng prompt từ trang, server dev
+- Phiên bản phát hành: **v3.1.1** (2026-10-18, main, tag + GitHub Release; gồm cả 3.1.0 vốn chưa phát hành riêng).
+  67 test xanh. Phiên 2026-10-18 (chiều): thử Codex CLI thật, sửa annotations/prompt MCP, gộp/xoá việc trùng, ảnh mới,
+  demo có báo tiến độ.
+- Đã kiểm chứng với **Codex CLI 0.162** (bản đi kèm app ChatGPT, `/usr/lib/chatgpt/resources/codex`, `codex exec`
+  trong sandbox `workspace-write`): prompt tab Codex CLI → dùng MCP thật (join/wait/say/leave/progress), làm việc trên
+  repo thử, commit, báo `progress` sau khi `leave`, tự dừng sau "Mọi việc đã báo xong"; `wait` chặn 50s không bị Codex
+  cắt (gọi lại đều trong phòng chờ); chủ trì đóng phòng thì dừng ngay. Codex chưa cài MCP thì đi thẳng đường lui curl.
+  Kèm Haiku 4.5 / Sonnet 5.5 qua curl (4 cuộc họp, gồm khởi động lại server khi agent ở phòng chờ, và gộp việc trùng).
+- CHƯA kiểm chứng: **Claude Code qua MCP** (bản đi kèm app desktop `~/.config/Claude/claude-code/<ver>/claude` chạy riêng
+  báo chưa đăng nhập), **Gemini CLI** (máy không có; chỉ có `~/.local/bin/agy` = Antigravity CLI, chưa đăng nhập, cú
+  pháp `agy mcp add <tên> <url>` khác tab Gemini CLI), Codex ở chế độ tương tác (TUI) có người duyệt, webhook thật
+  (người dùng chưa có URL), GIF demo mới.
+- Đã kiểm chứng (phiên 2026-10-18, sáng): toàn bộ bằng subagent Haiku 4.5 / Sonnet 5.5 qua curl với đúng prompt từ trang, server dev
   `--local --port 3100 --host-key … --agent-key … --data-dir … --minutes-dir …`, giao diện bằng trình duyệt tích hợp
   (desktop + mobile 375px). Chưa kiểm chứng: CLI thật qua MCP, webhook tới Slack/Discord/Google Chat thật (mới có server giả
   trong test), `npm run demo` sau thay đổi, `scripts/install-linux.sh`.
@@ -107,7 +137,12 @@ npm start -- --local --no-open --port 3100 --host-key <mã> --agent-key <mã> --
 3. Theo dõi `GET /api/host/<k>/state?v=-1` tới khi `state` là `ENDED` (lý do "mọi việc đã báo xong"), rồi `git log` và
    `node test.js` trong repo thử. Muốn thử "Họp tiếp": họp đầu không bật followUp và dặn "chỉ chốt phân công", rồi
    `POST /api/host/<k>/new {"carry": true}`, mời lại chính các agent đó (SendMessage tới subagent cũ với cùng prompt).
-4. Khởi động lại giữa chừng: kill theo PID (`ss -ltnp | grep :3100`, SIGTERM để kịp ghi), chạy lại đúng lệnh trên.
+4. Codex CLI: sao lưu `~/.codex/config.toml`; `codex mcp add agent-meeting --url <url mcp>` (hoặc để agent tự cài); lưu
+   prompt tab Codex CLI ra file rồi trong repo thử: `codex exec -s workspace-write -c sandbox_workspace_write.network_access=true
+   -c 'sandbox_workspace_write.writable_roots=["<repo>/.git"]' --json - < prompt.txt > run.jsonl` (chạy nền). Đọc
+   `run.jsonl`: `item.type == "mcp_tool_call"` là gọi MCP, `command_execution` là shell/curl. Trả lời agent như người dùng:
+   `codex exec resume <thread_id> "…"`. Xong thì chép lại config.toml đã sao lưu.
+5. Khởi động lại giữa chừng: kill theo PID (`ss -ltnp | grep :3100`, SIGTERM để kịp ghi), chạy lại đúng lệnh trên.
 
 ## Lộ trình v3: giải quyết nỗi đau doanh nghiệp (đã xong)
 
@@ -125,8 +160,8 @@ npm start -- --local --no-open --port 3100 --host-key <mã> --agent-key <mã> --
 
 Kết quả: bước 1-4 và 6 xong, có test (65 test) và đã thử bằng subagent Haiku 4.5 / Sonnet 5.5 qua curl: khởi động lại server
 giữa cuộc họp; báo tiến độ; WORK trên repo git thử (agent sửa code, commit thật, báo progress, phòng tự đóng) ×2; họp lập
-kế hoạch → "Họp tiếp" → họp review → WORK → đóng. Bước 5 còn thiếu: Claude Code / Codex CLI / Gemini CLI qua MCP (máy dev
-không có các CLI này; luồng MCP mới chỉ có test JSON-RPC). Ảnh/GIF chưa cập nhật cho màn WORK và bảng việc.
+kế hoạch → "Họp tiếp" → họp review → WORK → đóng. v3.1.1: Codex CLI qua MCP đã thử thật (cùng
+kịch bản, xem "Trạng thái"); còn thiếu Claude Code / Gemini CLI qua MCP. Ảnh đã cập nhật cho màn WORK và bảng việc; GIF chưa.
 
 Nhận định (sau bài đánh giá bên ngoài v3.0.0): agent trong phòng họp CHÍNH LÀ người thực thi (Claude Code/Codex trên
 máy có repo). Không cần server tự chạy agent; chỉ cần phòng họp theo dõi được tiến độ sau khi chốt và mang việc dở
@@ -148,8 +183,8 @@ Làm theo thứ tự, mỗi bước có test (npm test) và thử trên trình d
    của mình xong mới báo, không chờ nhau trong phòng.
 4. ✅ **Họp tiếp mang việc dở.** "Cuộc họp mới" có lựa chọn đưa các việc chưa xong + quyết định trước vào bối cảnh cuộc
    sau (giữ số việc), để họp review tiến độ.
-5. ◐ **Thử với agent thật**: Claude Code, Codex CLI, Gemini CLI qua MCP (chưa từng thử, máy dev hiện KHÔNG cài các CLI
-   này: nhờ người dùng cài hoặc thử trên máy khác); subagent haiku/sonnet qua curl như trước. Mẫu kịch bản: họp chốt
+5. ◐ **Thử với agent thật**: Codex CLI qua MCP ✅ (v3.1.1, phải thêm `annotations`); Claude Code và Gemini CLI qua MCP
+   CHƯA thử (máy dev không có bản đăng nhập được); subagent haiku/sonnet qua curl ✅. Mẫu kịch bản: họp chốt
    2 việc nhỏ trong một repo thử, agent làm thật, báo TIẾN ĐỘ kèm commit.
 6. ✅ Tài liệu (README, README.en, GUIDE, DEPLOY, CHANGELOG 3.1.0), package.json 3.1.0, ảnh/GIF nếu UI đổi nhiều,
    rồi hỏi người dùng trước khi merge/push/release.
@@ -161,18 +196,23 @@ merge code, nhiều phòng song song, chạy test thay agent.
 
 Theo thứ tự ưu tiên:
 
-1. **Thử MCP với CLI thật** (bước 5 còn dở). Cần người dùng cài Claude Code / Codex CLI / Gemini CLI (máy dev không có).
-   Kịch bản như mục "Cách lặp lại" nhưng agent vào bằng tab Claude Code / Codex CLI / Gemini CLI trên trang. Cần xem:
-   agent có gọi `progress` (tool MCP) sau khi `leave` không, có tự dừng sau "Bạn đã báo xong mọi việc" không, Codex có bị
-   timeout tool ~60s với `wait` không, Gemini có đọc đúng `TIẾN ĐỘ VIỆC` không. Sửa văn bản giao thức nếu agent hiểu sai.
-2. **Webhook thật**: gửi thử tới Slack/Discord/Google Chat một phòng có `--follow-up` (3 loại `work`/`task`/`ended`).
-3. **Ảnh/GIF**: chụp lại `docs/screenshots/` cho bảng việc có trạng thái, màn "Đang thực hiện", thẻ "Mang từ cuộc họp
-   trước"; cân nhắc GIF demo mới (`npm run demo` chưa dùng `progress`/follow-up: có thể thêm vào `scripts/demo-bots.js`).
-4. **Phát hành v3.1.0** (khi người dùng đồng ý; code đã ở main): tag `v3.1.0`, GitHub Release lấy nội dung từ CHANGELOG,
-   `bash scripts/install-linux.sh` để cập nhật bản trong menu. Sửa gì sau khi thử MCP thì làm trên nhánh mới rồi merge.
-5. **Việc trùng**: nút cho chủ trì gộp/xoá một việc trên web (hiện chỉ đánh dấu xong). Không nới `sameTask` nếu chưa có
-   tin agent thật làm bằng chứng gộp đúng (gộp nhầm làm mất việc).
-6. Nhỏ: tên nút có `title` làm accessible name khác chữ hiển thị ("Họp tiếp…"); có thể dùng `aria-describedby`.
+1. **Claude Code và Gemini CLI qua MCP** (còn dở từ bước 5). Cần người dùng đăng nhập Claude Code (bản đi kèm app hoặc
+   `npm i -g @anthropic-ai/claude-code`) và cài Gemini CLI (`npm i -g @google/gemini-cli`, hoặc thử `agy` sau khi đăng
+   nhập, ghi rõ là agy). Không tự sửa cấu hình MCP toàn cục khi chưa hỏi; `claude mcp add` mặc định ghi scope local cho repo
+   thử vào `~/.claude.json` (sao lưu trước). Cần xem: Claude Code có hỏi duyệt mỗi tool MCP không (annotations không
+   thay quyền của Claude Code: có thể cần `--allowedTools mcp__agent-meeting__*` khi chạy `-p`), Gemini có cần `trust`
+   cho server không, cả hai có dùng MCP có sẵn thay vì curl không, có tự dừng sau "Mọi việc đã báo xong" không.
+2. **Codex chế độ tương tác** (TUI, người dùng ngồi trước máy): xác nhận không còn bị hỏi duyệt mỗi lần `wait`, và luồng
+   "cài MCP → báo mở lại phiên → join" khi chưa cài.
+3. **Webhook thật**: gửi thử tới Slack/Discord/Google Chat một phòng có `--follow-up` (3 loại `work`/`task`/`ended`).
+   Hỏi người dùng URL, không tự tạo.
+4. **GIF demo mới** có giai đoạn thực hiện: `npm run demo` đã có báo tiến độ (bật "Giữ phòng để báo tiến độ"); có thể quay
+   bằng Firefox BiDi chụp từng khung (xem "Bẫy đã gặp") rồi ghép bằng PIL, hoặc `gif_creator` của Claude in Chrome.
+   Ảnh `meeting.jpg`, `mobile-dark.jpg` vẫn là bản v3.0 (800px), các ảnh khác 1280px.
+5. Nhỏ: "Thảo luận" ở màn kết thúc tính từ lúc tạo phòng khi cuộc họp bị đóng từ phòng chờ (chưa bắt đầu), trong khi
+   "Thời lượng" là 0:00. Thẻ việc: ghi chú agent báo sau sẽ thay ghi chú đã nối khi gộp (giữ bản mới nhất, chấp nhận được).
+
+Đã xử lý ở v3.1.1: việc trùng (nút ×, gộp/xoá), accessible name có `title` (không phải lỗi, xem "Bẫy đã gặp").
 
 Ý tưởng xa hơn (chưa lên kế hoạch):
 

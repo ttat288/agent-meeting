@@ -1,13 +1,14 @@
-// Quay khung hình GIF demo (tiếng Anh): node tools/record-demo.js <thư mục khung>
+// Quay khung hình GIF demo: node tools/record-demo.js <thư mục khung> [--vi]  (mặc định tiếng Anh; --vi cho docs/demo.vi.gif)
 // Cần: server dev ở :3100 với --host-key devhost0123456789abcdef --agent-key devagent0123456789abcdef (đã chạy bản UI mới nhất),
-// firefox --headless --no-remote -profile ~/snap/firefox/common/am-shot --remote-debugging-port 9223. Ghép: python3 tools/make-gif.py <thư mục khung> docs/demo.gif
-// Bản tiếng Việt (docs/demo.vi.gif): bỏ ?lang=en / --en, dịch bản brief và tên nút 'Ask to conclude' → 'Yêu cầu chốt'.
+// firefox --headless --no-remote -profile ~/snap/firefox/common/am-shot --remote-debugging-port 9223 (cổng khác: BIDI_PORT=…).
+// Ghép: python3 tools/make-gif.py <thư mục khung> docs/demo.gif
 const fs = require('fs'), path = require('path'), { spawn } = require('child_process');
 const out = process.argv[2]; fs.mkdirSync(out, { recursive: true });
+const VI = process.argv.includes('--vi'), LANG = VI ? 'vi' : 'en';
 const ORIGIN = 'http://localhost:3100', HK = 'devhost0123456789abcdef', AK = 'devagent0123456789abcdef';
 const H = `${ORIGIN}/api/host/${HK}`;
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-const ws = new WebSocket('ws://127.0.0.1:9223/session');
+const ws = new WebSocket(`ws://127.0.0.1:${process.env.BIDI_PORT || 9223}/session`);
 let id = 0; const pend = {};
 const cmd = (method, params) => new Promise((res, rej) => { const i = ++id; pend[i] = { res, rej }; ws.send(JSON.stringify({ id: i, method, params })); });
 ws.onmessage = (e) => { const m = JSON.parse(e.data); if (m.id && pend[m.id]) { m.type === 'error' ? pend[m.id].rej(new Error(m.error + ': ' + m.message)) : pend[m.id].res(m.result); } };
@@ -26,18 +27,20 @@ ws.onopen = async () => {
     await cmd('session.new', { capabilities: {} });
     ctx = (await cmd('browsingContext.create', { type: 'tab' })).context;
     await cmd('browsingContext.setViewport', { context: ctx, viewport: { width: 1280, height: 680 }, devicePixelRatio: 1 });
-    await cmd('browsingContext.navigate', { context: ctx, url: `${ORIGIN}/m/${HK}?lang=en`, wait: 'complete' });
-    await js(`localStorage.clear(); localStorage.setItem('agent-meeting:lang', 'en'); history.replaceState(null, '', location.pathname)`);
+    await cmd('browsingContext.navigate', { context: ctx, url: `${ORIGIN}/m/${HK}?lang=${LANG}`, wait: 'complete' });
+    await js(`localStorage.clear(); localStorage.setItem('agent-meeting:lang', '${LANG}'); history.replaceState(null, '', location.pathname)`);
     await cmd('browsingContext.reload', { context: ctx, wait: 'complete' });
     await sleep(1500);
     await shot('empty');
     // v3.3: nhờ AI viết bối cảnh → dán JSON vào tab JSON → áp vào form → Tiếp → mời agent → Bắt đầu
-    const brief = 'Here is the brief for your meeting:\n\n```json\n' + JSON.stringify({
+    const brief = (VI ? 'Đây là bản brief cho cuộc họp:' : 'Here is the brief for your meeting:') + '\n\n```json\n' + JSON.stringify({
       schema: 'agent-meeting/brief@1',
-      context: 'Pick the API style for our new mobile app: REST or GraphQL. Team of 4, one mobile client.\nAgree on one approach and split the work (each VIỆC line names the agent responsible); after the conclusion, each of you does your own task and reports progress with evidence.',
+      context: VI
+        ? 'Chọn kiểu API cho app di động mới: REST hay GraphQL. Nhóm 4 người, một client di động.\nThống nhất một cách và chia việc (mỗi dòng VIỆC ghi đúng tên agent phụ trách); sau khi chốt, mỗi bạn tự làm việc của mình rồi báo tiến độ kèm bằng chứng.'
+        : 'Pick the API style for our new mobile app: REST or GraphQL. Team of 4, one mobile client.\nAgree on one approach and split the work (each VIỆC line names the agent responsible); after the conclusion, each of you does your own task and reports progress with evidence.',
       endCondition: '',
-      settings: { agenda: ['API style', 'Authentication'], followUp: true, mode: 'free', maxMsgs: 60, timeLimitMin: 0, idleSec: 40 },
-      roles: ['', "devil's advocate"],
+      settings: { agenda: VI ? ['Kiểu API', 'Xác thực'] : ['API style', 'Authentication'], followUp: true, mode: 'free', maxMsgs: 60, timeLimitMin: 0, idleSec: 40 },
+      roles: ['', VI ? 'phản biện' : "devil's advocate"],
     }, null, 2) + '\n```';
     await shot('ai');
     await js(`document.getElementById('btnToJson').click()`);
@@ -55,7 +58,7 @@ ws.onopen = async () => {
     await sleep(300); await shot('form'); await shot('form');
     await js(`document.getElementById('btnNextStep').click()`);
     await sleep(800); await shot('invite');
-    const bots = spawn('node', ['scripts/demo-bots.js', `${ORIGIN}/a/${AK}`, '--en'], { cwd: path.join(__dirname, '..') });
+    const bots = spawn('node', ['scripts/demo-bots.js', `${ORIGIN}/a/${AK}`, ...(VI ? [] : ['--en'])], { cwd: path.join(__dirname, '..') });
     let debated = false;
     bots.stdout.on('data', d => { process.stdout.write('[bots] ' + d); if (/tranh luận xong/.test(d)) debated = true; });
     for (let i = 0; i < 30 && (await state()).agents.length < 3; i++) { await sleep(900); await shot('lobby'); }
@@ -69,7 +72,7 @@ ws.onopen = async () => {
       if (debated && !asked) {
         asked = true;
         await shot('before-ask');
-        await js(`[...document.querySelectorAll('#quick .chip')].find(b => b.textContent === 'Ask to conclude').click()`);
+        await js(`[...document.querySelectorAll('#quick .chip')].find(b => b.textContent === ${JSON.stringify(VI ? 'Yêu cầu chốt' : 'Ask to conclude')}).click()`);
         await sleep(600);
       }
       if (s.files.length && !scrolled) { // đưa mục Tệp vào khung nhìn

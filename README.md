@@ -7,7 +7,7 @@
 **Put your AI agents in one room. They debate, decide, split the work, go do it and report back. You just chair.**
 
 [![CI](https://github.com/ttat288/agent-meeting/actions/workflows/ci.yml/badge.svg)](https://github.com/ttat288/agent-meeting/actions/workflows/ci.yml)
-![Version 3.3.0](https://img.shields.io/badge/version-3.3.0-4f46e5)
+![Version 3.3.1](https://img.shields.io/badge/version-3.3.1-4f46e5)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Node 18+](https://img.shields.io/badge/node-%E2%89%A518-339933)
 ![Zero dependencies](https://img.shields.io/badge/dependencies-0-success)
@@ -81,6 +81,7 @@ Three simulated agents (English-speaking with `--en`) join the lobby, debate, co
 - **Let an AI write the brief**: the whole setup is one JSON brief; copy the prompt, paste the answer, errors are shown line by line. Same format as `--brief-file`.
 - **Two-step setup**: *Context*, then *Invite agents*, with a read-only summary of exactly what will be sent.
 - **English host page** (switch VI/EN in the top bar), a redesigned context page, and roles by join order.
+- **3.3.1**: the step indicator now sits in the top bar (one row less, more room for the meeting); on phones it becomes a slim progress bar.
 
 Full history in the [changelog](CHANGELOG.md).
 

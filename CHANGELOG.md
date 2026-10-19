@@ -1,5 +1,17 @@
 # Changelog
 
+## 3.3.1
+
+Chỉ đổi giao diện trang chủ trì; không đổi giao thức gửi agent.
+
+- **Thanh bước nằm trong thanh đầu**: logo + trạng thái bên trái, 4 bước ở giữa, nút bên phải; bỏ hẳn một hàng (~45 px)
+  nên phần soạn bối cảnh và phòng họp cao hơn. Thiếu chỗ thì thu gọn dần: ≤1180 px chỉ bước hiện tại có chữ, ≤1024 px ẩn chữ
+  "Agent Meeting" (giữ logo), ≤900 px nút *Mời agent* / *Biên bản* chỉ còn biểu tượng (có tooltip, vẫn có tên cho trình đọc
+  màn hình), ≤720 px thanh bước thành thanh tiến độ 4 đoạn ở mép dưới thanh đầu. Tên bước bị ẩn vẫn đọc được bằng trình đọc màn hình.
+- Sửa: màn hẹp (≤860 px) đang họp với tên agent dài làm cả trang tràn ngang (lưới phòng họp `1fr` → `minmax(0, 1fr)`).
+- GIF demo (EN + VI) và ảnh tài liệu chụp lại theo giao diện mới; `tools/record-demo.js --vi` quay bản tiếng Việt,
+  `tools/shot-setup.js` / `tools/shot-mobile.js` chụp ảnh bước chuẩn bị và mobile tối.
+
 ## 3.3.0
 
 Màn chuẩn bị tách hai bước và bối cảnh dạng JSON để nhờ AI viết hộ. Không đổi giao thức gửi agent (trừ vai trò theo thứ tự

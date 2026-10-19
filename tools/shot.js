@@ -2,7 +2,7 @@
 // js (tuỳ chọn) chạy sau khi tải trang, ví dụ đặt localStorage bản nháp / ngôn ngữ rồi chụp lần hai.
 const [url, out, w = 1280, h = 860, dpr = 2, waitMs = 2500, dark = '', js = ''] = process.argv.slice(2);
 const fs = require('fs');
-const ws = new WebSocket('ws://127.0.0.1:9223/session');
+const ws = new WebSocket(`ws://127.0.0.1:${process.env.BIDI_PORT || 9223}/session`);
 let id = 0; const pend = {};
 const cmd = (method, params) => new Promise((res, rej) => { const i = ++id; pend[i] = { res, rej }; ws.send(JSON.stringify({ id: i, method, params })); });
 ws.onmessage = (e) => { const m = JSON.parse(e.data); if (m.id && pend[m.id]) { m.type === 'error' ? pend[m.id].rej(new Error(m.error + ': ' + m.message)) : pend[m.id].res(m.result); } };

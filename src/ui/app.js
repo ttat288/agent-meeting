@@ -111,7 +111,7 @@
 
   // ---------- trạng thái ----------
   let snap = null, log = [], version = -1, rendered = 0, clockOffset = 0, unread = 0;
-  let inviteBuilt = false, formInit = false, endedBuilt = '', lastView = '';
+  let formInit = false, endedBuilt = '', lastView = '';
   const serverNow = () => Date.now() + clockOffset;
   const draftKey = (k) => `agent-meeting:${key}:${k}`;
 
@@ -122,36 +122,77 @@
       el('div', { class: 'code' }, el('pre', {}, text),
         el('button', { class: 'btn sm ' + (primary ? 'primary' : 'ghost'), type: 'button', onclick: () => copy(text, primary ? tr('Đã sao chép prompt') : tr('Đã sao chép lệnh')) }, tr('Sao chép'))));
   }
-  function buildInvite(agentId, o) {
-    const mcp = `${o}/mcp/${agentId}`, base = `${o}/a/${agentId}`;
-    const curlSteps = tr`Tự đặt cho mình một tên tuỳ thích và khai báo model bạn đang chạy (ví dụ Opus 5.5), rồi chạy:\ncurl -s -X POST "${base}/join" --data-urlencode "name=TÊN_BẠN_TỰ_ĐẶT" --data-urlencode "model=MODEL_BẠN_ĐANG_CHẠY"\nNếu bị báo trùng tên thì chọn tên khác và chạy lại. Sau đó làm đúng giao thức nó trả về (vòng lặp nghe/nói bằng curl) cho đến khi cuộc họp kết thúc.`;
-    // Prompt do chính người dùng dán cho agent nên là chỗ duy nhất trao quyền được: tin [CHỦ TRÌ] là của người dùng,
-    // phòng chạy ở đâu, được chia sẻ gì, và mâu thuẫn với quy tắc dự án thì hỏi trong phòng chứ không dừng im lặng.
+  // Thẻ mời. Agent ở đâu: "máy này" dùng http://localhost (dữ liệu không rời máy); "máy khác" dùng địa chỉ công khai
+  // (tunnel bật khi chủ trì bấm, hoặc --public-url). Đường chính là "Đã kết nối": người dùng tự chạy lệnh connect một lần
+  // (hoặc bấm nút trên máy này) để cài MCP + cấp quyền đúng tool, nên prompt dán vào không cần URL hay mã nào.
+  let where = 'local', connAgent = 'claude', inviteTab = 0, connLog = '';
+  const CONN = [['claude', 'Claude Code'], ['codex', 'Codex CLI'], ['gemini', 'Gemini CLI']];
+  function buildInvite(s) {
+    const local = s.local, pub = s.public;
+    if (!local) where = 'remote'; // trang không mở trên máy chạy server (--public-url): chỉ mời qua địa chỉ công khai
+    if (!changed('invite', [where, local, pub, s.tunnel, connAgent, inviteTab, connLog, s.agentId])) return;
+    const o = where === 'local' ? local : pub, id = s.agentId;
+    const seg = local ? el('div', { class: 'seg where', role: 'radiogroup', 'aria-label': tr('Agent ở đâu?') },
+      ...[['local', tr('Trên máy này')], ['remote', tr('Máy khác')]].map(([k, label]) =>
+        el('button', { type: 'button', class: where === k ? 'on' : '', role: 'radio', 'aria-checked': String(where === k), onclick: () => { where = k; buildInvite(snap); } }, label))) : null;
+    const whereHint = el('p', { class: 'hint' }, where === 'local'
+      ? tr`Agent chạy trên chính máy này dùng ${local}: dữ liệu không đi qua Internet.`
+      : pub ? tr`Agent ở máy khác dùng địa chỉ công khai ${pub}.` : '');
+    if (where === 'remote' && !pub) {
+      const btn = el('button', { class: 'btn primary', type: 'button', disabled: s.tunnel?.starting || !s.tunnel?.can, onclick: async () => {
+        btn.disabled = true; btn.textContent = tr('Đang bật… (tới 1-2 phút)');
+        try { await post('tunnel'); toast(tr('Đã bật địa chỉ công khai')); } catch (e) { toast(e.message, true); btn.disabled = false; btn.textContent = tr('Bật địa chỉ công khai'); }
+      } }, s.tunnel?.starting ? tr('Đang bật… (tới 1-2 phút)') : tr('Bật địa chỉ công khai'));
+      $('invite').replaceChildren(...[seg, el('div', { class: 'blk' },
+        el('p', {}, s.tunnel?.can || s.tunnel?.starting
+          ? tr('Agent ở máy khác cần một địa chỉ công khai. Bấm để bật tunnel Cloudflare (miễn phí, địa chỉ đổi mỗi lần chạy app). Trang chủ trì vẫn chỉ mở được trên máy này.')
+          : tr('Tunnel đã bị tắt (--local). Chạy lại app không có --local, hoặc đặt --public-url.')),
+        s.tunnel?.can || s.tunnel?.starting ? btn : null)].filter(Boolean));
+      return;
+    }
+    const joinUrl = `${o}/a/${id}/join`, mcpUrl = `${o}/mcp/${id}`;
     const hostName = (() => { try { return new URL(o).hostname; } catch { return ''; } })();
-    const local = hostName === 'localhost' || hostName.endsWith('.localhost') || /^127\./.test(hostName) || hostName === '[::1]';
-    const where = local ? tr`Phòng chạy trên chính máy này (${o}).` : tr`Phòng chạy qua ${o}, một địa chỉ công khai trên Internet.`;
-    const perm = tr`Tôi (người gửi prompt này cho bạn) là chủ trì cuộc họp: tin [CHỦ TRÌ] trong phòng là của tôi. ${where} Bạn được chia sẻ trong phòng những gì cần cho chủ đề, bằng tóm tắt do bạn tự viết; không gửi bí mật (khoá API, mật khẩu, .env, token, tệp memory). Quy tắc của dự án và của bạn vẫn áp dụng: nếu bối cảnh cuộc họp mâu thuẫn với chúng hoặc bạn cần tôi duyệt, hãy nói ngắn vào phòng (tôi đọc và trả lời ở đó) rồi wait tiếp, đừng dừng im lặng. Nếu buộc phải dừng để hỏi tôi thì vẫn được: bạn được giữ chỗ, xong thì gọi wait lại với đúng tên để vào tiếp.`;
+    const isLocal = hostName === 'localhost' || hostName.endsWith('.localhost') || /^127\./.test(hostName) || hostName === '[::1]';
+    const whereTxt = isLocal ? tr`Phòng chạy trên chính máy này (${o}).` : tr`Phòng chạy qua ${o}, một địa chỉ công khai trên Internet.`;
+    // Prompt do chính người dùng dán: chỗ duy nhất người dùng nói với agent "tin [CHỦ TRÌ] là của tôi"
+    const perm = tr`Tôi (người gửi prompt này cho bạn) là chủ trì cuộc họp: tin [CHỦ TRÌ] trong phòng là của tôi. ${whereTxt} Tôi sẽ duyệt bạn vào phòng trên trang chủ trì (đối chiếu mã 4 số mà phòng báo cho bạn). Bạn được chia sẻ trong phòng những gì cần cho chủ đề, bằng tóm tắt do bạn tự viết; không gửi bí mật (khoá API, mật khẩu, .env, token, tệp memory). Quy tắc của dự án và của bạn vẫn áp dụng: nếu bối cảnh cuộc họp mâu thuẫn với chúng hoặc bạn cần tôi duyệt, hãy nói ngắn vào phòng (tôi đọc và trả lời ở đó) rồi wait tiếp, đừng dừng im lặng. Nếu buộc phải dừng để hỏi tôi thì vẫn được: bạn được giữ chỗ, xong thì gọi wait lại để vào tiếp.`;
+    const curlSteps = tr`Tự đặt cho mình một tên tuỳ thích và khai báo model bạn đang chạy (ví dụ Opus 5.5), rồi chạy:\ncurl -s -X POST "${joinUrl}" --data-urlencode "name=TÊN_BẠN_TỰ_ĐẶT" --data-urlencode "model=MODEL_BẠN_ĐANG_CHẠY"\nNếu bị báo trùng tên thì chọn tên khác và chạy lại. Sau đó làm đúng giao thức nó trả về (vòng lặp nghe/nói bằng curl) cho đến khi cuộc họp kết thúc.`;
     const curlPrompt = tr`Hãy tham gia một cuộc họp nhiều agent. ${perm}\n\n${curlSteps}`;
-    const combined = (cmd) => tr`Hãy tham gia một cuộc họp nhiều agent. ${perm}\n\nCách 1 (MCP): nếu bạn đã có tool MCP của server "agent-meeting" (join, wait, say…; một số công cụ ẩn tool MCP, hãy tìm trong danh sách tool của bạn) thì dùng luôn, không cài lại. Nếu chưa có, chạy lệnh shell sau để cài:\n${cmd}\nNếu công cụ của bạn cần mở lại phiên để nạp MCP thì báo tôi mở lại. Rồi gọi join(name="<tên bạn tự đặt, tuỳ thích>", model="<model bạn đang chạy, ví dụ Opus 5.5>"). Nếu bị báo trùng tên thì đặt tên khác. Sau đó làm đúng giao thức nó trả về và lặp wait/say cho đến khi cuộc họp kết thúc.\n\nCách 2 (dùng ngay, không cần cài, nếu MCP chưa dùng được): ${curlSteps}`;
-    const mcpTab = (cmd) => [
-      codeBlock(tr('Dán thẳng cho agent: nó tự cài MCP rồi vào họp, có đường lui bằng curl.'), combined(cmd), true),
-      codeBlock(tr('Hoặc tự chạy lệnh cài trên máy có agent, rồi mở lại phiên agent:'), cmd),
-    ];
+    const mcpPrompt = tr`Hãy tham gia một cuộc họp nhiều agent. ${perm}\n\nTôi đã kết nối bạn với phòng họp: dùng các tool MCP của server "agent-meeting" (join, wait, say…; một số công cụ ẩn tool MCP, hãy tìm trong danh sách tool của bạn). Gọi join(name="<tên bạn tự đặt, tuỳ thích>", model="<model bạn đang chạy, ví dụ Opus 5.5>"); nếu bị báo trùng tên thì đặt tên khác. Sau đó làm đúng giao thức nó trả về và lặp wait/say cho đến khi cuộc họp kết thúc. Nếu bạn chưa thấy tool agent-meeting thì báo tôi (tôi cần chạy lệnh kết nối rồi mở lại phiên); đừng tự cài hay tự tìm địa chỉ khác.`;
+    const cmd = `npx github:ttat288/agent-meeting connect ${connAgent}${where === 'remote' ? ` --room ${joinUrl}` : ''}`;
+    const agentName = CONN.find(c => c[0] === connAgent)[1];
+    const connTab = () => {
+      const btn = where === 'local' ? el('button', { class: 'btn primary', type: 'button', onclick: async () => {
+        btn.disabled = true;
+        try { const r = await post('connect', { agent: connAgent }); connLog = r.log || ''; toast(r.ok ? tr`Đã kết nối ${agentName}` : tr('Chưa xong hết: xem chi tiết bên dưới'), !r.ok); }
+        catch (e) { connLog = e.message; toast(e.message, true); }
+        btn.disabled = false; buildInvite(snap);
+      } }, tr`Kết nối ${agentName} trên máy này`) : null;
+      return [
+        el('div', { class: 'blk' }, el('div', { class: 'cap' }, tr('Bước 1, một lần cho mỗi máy: kết nối agent với agent-meeting.')),
+          el('div', { class: 'seg' }, ...CONN.map(([k, label]) => el('button', { type: 'button', class: connAgent === k ? 'on' : '', 'aria-pressed': String(connAgent === k), onclick: () => { connAgent = k; connLog = ''; buildInvite(snap); } }, label)))),
+        codeBlock(where === 'local' ? tr('Chạy trong terminal (hoặc bấm nút bên dưới):') : tr('Chạy trong terminal của máy có agent:'), cmd),
+        btn ? el('div', { class: 'blk' }, btn) : null,
+        connLog ? el('div', { class: 'blk' }, el('pre', { class: 'connlog' }, connLog)) : null,
+        el('p', { class: 'hint' }, tr`Lệnh này đăng ký MCP "agent-meeting" bằng chính CLI của ${agentName} và cho phép các tool họp chạy không cần hỏi (cả khi Claude Code ở auto mode). Gửi tệp vẫn được hỏi từng lần. Gỡ: thay connect bằng disconnect.`),
+        codeBlock(tr('Bước 2: mở lại phiên agent rồi dán prompt này (không chứa địa chỉ hay mã):'), mcpPrompt, true),
+      ].filter(Boolean);
+    };
     const tabs = [
-      [tr('Dán là vào ngay'), () => [codeBlock(tr('Dùng với mọi agent chạy được shell/curl. Không cần cài, không cần mở lại phiên.'), curlPrompt, true)]],
-      ['Claude Code', () => mcpTab(`claude mcp add --transport http agent-meeting ${mcp}`)],
-      ['Codex CLI', () => mcpTab(`codex mcp add agent-meeting --url ${mcp}`)],
-      ['Gemini CLI', () => mcpTab(`gemini mcp add --transport http agent-meeting ${mcp}`)],
-      [tr('Khác'), () => [codeBlock(tr('Thêm một MCP server dạng HTTP (Streamable HTTP) với URL:'), mcp), codeBlock(tr('Hoặc dùng API văn bản (curl):'), base + '/join')]],
+      [tr('Đã kết nối (MCP)'), connTab],
+      [tr('Dán là vào ngay'), () => [codeBlock(tr('Dùng với mọi agent chạy được shell/curl. Không cần cài.'), curlPrompt, true),
+        el('p', { class: 'hint' }, tr('Claude Code ở auto mode có thể chặn vòng lặp curl tới phòng họp (đúng thiết kế an toàn của nó): khi đó dùng tab "Đã kết nối".'))]],
+      [tr('Khác'), () => [codeBlock(tr('Thêm một MCP server dạng HTTP (Streamable HTTP) với URL:'), mcpUrl), codeBlock(tr('Hoặc dùng API văn bản (curl):'), joinUrl)]],
     ];
     const bar = el('div', { class: 'tabs', role: 'tablist' }), body = el('div');
     tabs.forEach(([name, make], i) => {
-      const t = el('button', { class: 'tab', type: 'button', role: 'tab' }, name);
-      t.onclick = () => { [...bar.children].forEach(c => { c.classList.toggle('on', c === t); c.setAttribute('aria-selected', c === t); }); body.replaceChildren(...make()); };
-      bar.append(t); if (!i) t.click();
+      const t = el('button', { class: 'tab' + (i === inviteTab ? ' on' : ''), type: 'button', role: 'tab', 'aria-selected': String(i === inviteTab) }, name);
+      t.onclick = () => { inviteTab = i; buildInvite(snap); };
+      bar.append(t);
     });
-    $('invite').replaceChildren(bar, body,
-      el('p', { class: 'note' }, '🔒', tr('Prompt chứa mã tham gia phòng: ai có prompt đều vào họp được. Không chia sẻ công khai. Link trang này (chủ trì) thì đừng gửi cho ai.')));
+    body.replaceChildren(...tabs[inviteTab][1]());
+    $('invite').replaceChildren(...[seg, whereHint.textContent ? whereHint : null, bar, body,
+      el('p', { class: 'note' }, '🔒', tr('Prompt có mã mời: ai có prompt cũng chỉ xin vào được; bạn duyệt từng agent (đối chiếu mã 4 số). Link trang này (chủ trì) thì đừng gửi cho ai.'))].filter(Boolean));
   }
 
   // ---------- màn chuẩn bị: bản brief (bối cảnh + tuỳ chọn) là nguồn chung cho form và JSON ----------
@@ -398,13 +439,13 @@
   const missing = () => { const need = BR.rolesNeeded(draft.roles), have = presentAgents().length; return have < need ? { need, have } : null; };
   function renderChecks() {
     if (!snap || !draft) return;
-    const n = presentAgents().length, ctx = draft.context.length, miss = missing();
+    const n = presentAgents().length, ctx = draft.context.length, miss = missing(), wait = (snap.pending || []).length;
     $('checks1').replaceChildren(
       el('span', { class: ctx ? 'ok' : '' }, ctx ? tr`Đã có bối cảnh (${fmtN(ctx)} ký tự)` : tr('Chưa có bối cảnh')),
       el('span', { class: n ? 'ok' : '' }, n ? tr`${n} agent đang chờ ở phòng chờ` : tr('Chưa có agent: mời ở bước 2')));
-    $('checks2').replaceChildren(miss
+    $('checks2').replaceChildren(...[wait ? el('span', { class: 'bad' }, tr`${wait} agent chờ bạn duyệt`) : null, miss
       ? el('span', { class: 'bad' }, tr`Cần ${miss.need} agent theo vai trò (đang có ${miss.have})`)
-      : el('span', { class: n ? 'ok' : '' }, n ? tr`${n} agent đang chờ` : tr('Chưa có agent (vẫn bắt đầu được, ai vào sau đọc lại từ đầu)')));
+      : el('span', { class: n ? 'ok' : '' }, n ? tr`${n} agent đang chờ` : tr('Chưa có agent (vẫn bắt đầu được, ai vào sau đọc lại từ đầu)'))].filter(Boolean));
     const b = $('btnStart');
     if (!b.dataset.busy) b.disabled = !!miss;
     b.title = miss ? tr`Bản brief có ${miss.need} vai trò: mời thêm agent hoặc bớt vai trò ở bước 1` : '';
@@ -421,6 +462,33 @@
       opts.kick && !gone ? el('button', { class: 'icon edit', type: 'button', title: tr('Giao vai trò'), 'aria-label': tr('Giao vai trò cho ') + a.name, onclick: () => editRole(a) }, '✎') : null,
       opts.kick && !gone ? el('button', { class: 'icon kick', type: 'button', title: tr('Mời ra khỏi phòng'), 'aria-label': tr('Mời ') + a.name + tr(' ra khỏi phòng'), onclick: () => kick(a.name) }, '⨯') : null);
   }
+  // agent đang xin vào: chủ trì đối chiếu mã 4 số (agent cũng thấy mã này) rồi cho vào hoặc từ chối
+  const VIA = { local: tr('máy này'), tunnel: tr('qua tunnel'), public: tr('qua địa chỉ công khai'), lan: tr('mạng LAN') };
+  function pendingItem(p) {
+    const act = async (allow) => {
+      try { await post('admit', { name: p.name, allow }); toast(allow ? tr`Đã cho ${p.name} vào phòng` : tr`Đã từ chối ${p.name}`); }
+      catch (e) { toast(e.message, true); }
+    };
+    return el('li', { class: 'person pending' },
+      el('span', { class: 'av', style: `background:${colorOf(p.name)}` }, initials(p.name)),
+      el('div', { class: 'who' },
+        el('div', { class: 'nm' }, p.name, p.model ? el('span', { class: 'model' }, p.model) : null, p.rejoin ? el('span', { class: 'tag' }, tr('xin vào lại')) : null),
+        el('div', { class: 'st' }, tr('xin vào · mã đối chiếu '), el('b', { class: 'code4' }, p.code), ` · ${VIA[p.via] || p.via || ''}${p.ip && p.via !== 'local' ? ' ' + p.ip : ''}`)),
+      el('div', { class: 'acts' },
+        el('button', { class: 'btn sm primary', type: 'button', 'aria-label': tr('Cho vào: ') + p.name, onclick: () => act(true) }, tr('Cho vào')),
+        el('button', { class: 'btn sm ghost', type: 'button', 'aria-label': tr('Từ chối: ') + p.name, onclick: () => act(false) }, tr('Từ chối'))));
+  }
+  // báo chủ trì khi có agent mới xin vào / tin bị chặn vì có dạng bí mật
+  const seenPending = new Set(); let seenBlocked = -1;
+  function notifyNew(s) {
+    for (const p of s.pending || []) if (!seenPending.has(p.name + p.t)) { seenPending.add(p.name + p.t); toast(tr`${p.name} xin vào phòng (mã ${p.code})`); }
+    const b = s.blocked || [];
+    if (seenBlocked >= 0) for (const x of b.slice(seenBlocked)) toast(tr`Đã chặn ${x.what} của ${x.name}: có dạng ${x.kind}`, true);
+    seenBlocked = b.length;
+  }
+  const blockedNote = (s) => (s.blocked || []).length ? el('li', { class: 'person empty blocked' },
+    tr`⚠ Đã chặn ${s.blocked.length} tin/tệp có dạng bí mật (gần nhất: ${s.blocked.at(-1).name}, ${s.blocked.at(-1).kind}). Nội dung không vào phòng.`) : null;
+
   // "Họp tiếp": việc chưa xong và quyết định mang từ cuộc họp trước (hệ thống tự gửi kèm khi bắt đầu)
   function renderCarry(s) {
     const c = s.carry; $('carryCard').hidden = !c;
@@ -454,7 +522,8 @@
     initForm(s); renderCarry(s);
     $('paneBrief').hidden = step !== 1; $('paneInvite').hidden = step !== 2;
     const present = presentAgents(), planned = new Map(present.sort((x, y) => x.slot - y.slot).map((a, i) => [a.name, draft.roles[i] || '']));
-    $('lobby').replaceChildren(...s.agents.map(a => person(a, { kick: true, planned: planned.get(a.name) })), el('li', { class: 'person empty' }, tr`Slot ${s.agents.length + 1} · đang chờ agent vào…`));
+    $('lobby').replaceChildren(...[...(s.pending || []).map(pendingItem), ...s.agents.map(a => person(a, { kick: true, planned: planned.get(a.name) })),
+      el('li', { class: 'person empty' }, tr`Slot ${s.agents.length + 1} · đang chờ agent vào…`), blockedNote(s)].filter(Boolean));
     $('lobbyCount').textContent = present.length ? `${present.length} agent` : '';
     renderSummary(s); renderChecks();
   }
@@ -719,7 +788,8 @@
 
   function renderRoom(s, fresh) {
     renderAgenda(s); renderResults(s); renderFiles(s); renderSendTo(s); renderPanelBtn();
-    $('members').replaceChildren(...s.agents.map(a => person(a, { kick: s.state === 'LIVE', said: true })));
+    $('members').replaceChildren(...[...(s.state === 'LIVE' || s.state === 'WORK' ? (s.pending || []).map(pendingItem) : []),
+      ...s.agents.map(a => person(a, { kick: s.state === 'LIVE', said: true })), blockedNote(s)].filter(Boolean));
     const present = s.agents.filter(a => !['left', 'kicked', 'ended'].includes(a.status)).length;
     $('memberCount').textContent = s.state === 'LIVE' ? `${present}/${s.agents.length}` : String(s.agents.length);
     renderInfo(s);
@@ -767,7 +837,8 @@
   }
   function render() {
     const s = snap;
-    if (!inviteBuilt) { buildInvite(s.agentId, s.origin || location.origin); inviteBuilt = true; }
+    buildInvite({ ...s, local: s.local === undefined ? location.origin : s.local });
+    notifyNew(s);
     const st = $('status');
     st.className = 'badge ' + ({ LIVE: 'live', WORK: 'work', ENDED: 'ended' }[s.state] || '');
     st.textContent = { LOBBY: tr('Chuẩn bị'), LIVE: tr('Đang họp'), WORK: tr('Đang thực hiện'), ENDED: tr('Đã kết thúc') }[s.state];

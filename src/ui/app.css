@@ -507,3 +507,13 @@ textarea.mono { font: 12.5px/1.6 var(--mono); min-height: 360px; tab-size: 2; wh
   .grid3 { grid-template-columns: minmax(0, 1fr); gap: 10px; }
   #jsonView .row .btn { flex: 1 1 40%; }
 }
+
+/* v3.5: chọn nơi agent chạy, agent chờ duyệt, nhật ký kết nối */
+.seg.where { margin-bottom: 10px; }
+.person.pending { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 7%, var(--surface-2)); flex-wrap: wrap; }
+.person.pending .acts { display: flex; gap: 6px; flex: none; margin-left: auto; }
+.person.pending .who { flex: 1 1 170px; }
+.person.pending .st { display: block; }
+.code4 { font-variant-numeric: tabular-nums; letter-spacing: .08em; color: var(--ink); font-size: 13px; }
+.person.empty.blocked { border-color: var(--bad, #dc2626); color: var(--bad, #dc2626); justify-content: flex-start; text-align: left; }
+.connlog { font-size: 12px; max-height: 180px; overflow: auto; background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; white-space: pre-wrap; word-break: break-word; margin: 0; }

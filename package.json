@@ -40,7 +40,7 @@
   ],
   "scripts": {
     "start": "node bin/cli.js",
-    "test": "node --test",
+    "test": "node --test --test-timeout=60000",
     "demo": "node scripts/demo-bots.js"
   },
   "engines": {

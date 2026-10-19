@@ -47,12 +47,29 @@ const TOOLS = [
 ].map(t => ({ ...t, annotations: t.annotations || CLOSED }));
 const INSTRUCTIONS = 'Phòng họp nhiều agent. Bắt đầu bằng join(name, model): tự đặt tên tuỳ thích và khai báo model đang chạy; nếu bị báo trùng tên thì đặt tên khác. Sau đó làm theo giao thức nó trả về: lặp wait -> say cho tới khi cuộc họp kết thúc, và leave khi không còn gì để bàn. Gửi/nhận tệp bằng lệnh curl trong giao thức.';
 
-// how: { base } khi agent gọi bằng curl, null khi gọi qua MCP; base: địa chỉ API văn bản (lệnh gửi/tải tệp luôn là curl)
-async function invoke(m, tool, a = {}, how, base) {
+const AUTH_TEXT = 'Server không nhận ra bạn: thiếu hoặc sai mã riêng. Hãy dùng ĐÚNG các lệnh trong giao thức bạn nhận lúc join (lệnh curl có -H "Authorization: Bearer …"; MCP thì dùng cùng phiên đã join). Nếu chưa join thì gọi join trước.';
+const PENDING_TEXT = 'Bạn đang chờ chủ trì duyệt vào phòng. Hãy gọi wait để chờ (đừng dừng).';
+const newToken = () => crypto.randomBytes(18).toString('base64url');
+const bearer = (req) => (String(req.headers.authorization || '').match(/^Bearer\s+([\w.~+/=-]+)\s*$/i) || [])[1] || null;
+
+// ctx: { how, base, token?, sid?, via, ip, bridge } — how: { base } khi agent gọi bằng curl, null khi gọi qua MCP;
+// base: địa chỉ API văn bản (lệnh gửi/tải tệp). Mọi tool trừ join chạy dưới danh tính lấy từ mã (curl) hoặc phiên (MCP),
+// KHÔNG từ tham số name: ai có mã mời cũng không nói được dưới tên agent khác.
+async function invoke(m, tool, a = {}, ctx = {}) {
   if (!TOOLS.some(t => t.name === tool)) return null;
   if (!m) return GONE_TEXT;
+  const { how = null, base } = ctx;
+  if (tool === 'join') return m.join(a.name, a.model, how, base, { token: newToken(), presented: ctx.token, sid: ctx.sid, via: ctx.via, ip: ctx.ip, bridge: ctx.bridge });
+  const id = m.identify({ token: ctx.token, sid: ctx.sid });
+  if (!id) return m.state === 'ENDED' ? m.wait('') : AUTH_TEXT;
+  if (id.rejected) return m.rejectText();
+  if (id.pending) {
+    if (tool === 'wait') return m.waitAdmit(id.name);
+    if (tool === 'leave') { m.pending.delete(id.name); m._changed(); return 'Đã huỷ yêu cầu vào phòng. Hãy dừng lại, không gọi thêm tool.'; }
+    return PENDING_TEXT;
+  }
+  a = { ...a, name: id.name };
   switch (tool) {
-    case 'join': return m.join(a.name, a.model, how, base);
     case 'wait': return m.wait(a.name);
     case 'say': return m.say(a.name, a.text);
     case 'pass': return m.pass(a.name);
@@ -64,7 +81,7 @@ async function invoke(m, tool, a = {}, how, base) {
   }
 }
 
-async function rpc(m, msg, base) {
+async function rpc(m, msg, ctx) {
   if (!msg || typeof msg !== 'object') return { jsonrpc: '2.0', id: null, error: { code: -32600, message: 'invalid request' } };
   const ok = (result) => ({ jsonrpc: '2.0', id: msg.id, result });
   const err = (code, message) => ({ jsonrpc: '2.0', id: msg.id, error: { code, message } });
@@ -75,7 +92,7 @@ async function rpc(m, msg, base) {
     case 'ping': return ok({});
     case 'tools/list': return ok({ tools: TOOLS });
     case 'tools/call': {
-      const text = await invoke(m, msg.params?.name, msg.params?.arguments || {}, null, base);
+      const text = await invoke(m, msg.params?.name, msg.params?.arguments || {}, ctx);
       return text === null ? err(-32602, 'unknown tool: ' + msg.params?.name) : ok({ content: [{ type: 'text', text }] });
     }
     default: return err(-32601, 'method not found');
@@ -230,6 +247,8 @@ function createApp(cfg = {}) {
       done: mt.actions.filter(t => t.status === 'done').map(({ n: num, task, owner, note }) => ({ n: num, task, owner, note })),
       // agent cuộc trước (và các cuộc trước nữa) vẫn báo tiến độ được cho việc mang sang
       members: [...new Set([...mt.agents.keys(), ...(mt.carry?.members || [])])],
+      // mã/phiên của các agent đó để họ vẫn chứng minh được danh tính khi báo tiến độ ở cuộc sau
+      creds: [...[...mt.agents.values()].filter(a => a.token && !a.kicked).map(({ name, token, sids }) => ({ name, token, sids: sids || [] })), ...(mt.carry?.creds || [])].slice(0, 50),
     }, mt.actions.filter(t => t.status !== 'done').map(t => ({ ...t })), mt.taskSeq, mt.files.filter(f => !f.gone));
     else dropFiles(mt); // "Cuộc họp mới" không mang tệp sang
     return n;
@@ -247,11 +266,12 @@ function createApp(cfg = {}) {
   // POST /a/<mã agent>/send?name=&to=&file=&note=, thân request là bytes thô của tệp (curl --data-binary @tệp).
   // Kiểm tra quyền và giới hạn TRƯỚC khi nhận (không gửi "100 Continue" nếu từ chối), ghi theo luồng và tính sha256 trong
   // lúc nhận; vượt giới hạn giữa chừng thì dừng ghi, báo lỗi rõ và đóng kết nối.
-  async function receive(req, res, mt, q) {
+  async function receive(req, res, mt, q, who) {
     const reply = (code, t) => { if (res.headersSent) return; res.writeHead(code, { 'content-type': 'text/plain; charset=utf-8', ...SECURITY, ...(code >= 400 ? { connection: 'close' } : {}) }); res.end(t); };
     if (req.method !== 'POST') return reply(405, 'Gửi tệp bằng POST: curl -s -X POST "<địa chỉ>/send?name=TÊN_BẠN&to=TÊN_NGƯỜI_NHẬN&file=TÊN_TỆP" --data-binary @ĐƯỜNG_DẪN_TỆP');
     if (!mt) return reply(404, GONE_TEXT);
-    const chk = mt.sendCheck(q.name, q.to);
+    if (!who || who.pending) return reply(401, who ? PENDING_TEXT : AUTH_TEXT);
+    const chk = mt.sendCheck(who.name, q.to);
     if (typeof chk === 'string') return reply(400, chk);
     const used = mt.files.reduce((n, f) => n + (f.gone ? 0 : f.size), 0);
     const room = Math.min(lim.maxFileMb * MB, lim.maxRoomMb * MB - used), len = Number(req.headers['content-length']);
@@ -311,6 +331,19 @@ function createApp(cfg = {}) {
   const server = http.createServer(handle);
   // curl gửi "Expect: 100-continue" với thân lớn: lệnh gửi tệp chỉ trả 100 sau khi đã kiểm tra quyền và giới hạn
   server.on('checkContinue', (req, res) => { req.expectContinue = true; if (!/^\/a\/\w+\/send(\?|$)/.test(req.url)) res.writeContinue(); handle(req, res); });
+  // Agent ở đâu so với server: 'local' (cùng máy, không qua tunnel/proxy), 'tunnel' (Cloudflare gắn cf-connecting-ip),
+  // 'public' (sau --public-url), 'lan'. Chỉ để hiển thị cho chủ trì và cho luật duyệt 'remote'.
+  const isLoop = (a) => /^(127\.|::1$|::ffff:127\.)/.test(a || '');
+  function where(req) {
+    const cf = req.headers['cf-connecting-ip'] || req.headers['cf-ray'];
+    const loop = isLoop(req.socket.remoteAddress);
+    const ip = req.headers['cf-connecting-ip'] || (loop && req.headers['x-forwarded-for'] ? String(req.headers['x-forwarded-for']).split(',')[0].trim() : req.socket.remoteAddress) || '';
+    const via = cf ? (fixedOrigin ? 'public' : 'tunnel') : loop && !req.headers['x-forwarded-for'] ? 'local' : fixedOrigin ? 'public' : 'lan';
+    return { via, ip: String(ip).replace(/^::ffff:/, '') };
+  }
+  // danh tính agent cho các đường tệp: mã (curl) hoặc phiên MCP (cầu nối)
+  const who = (mt, req) => mt?.identify({ token: bearer(req), sid: req.headers['mcp-session-id'] }) || null;
+
   async function handle(req, res) {
     const u = new URL(req.url, 'http://x'), p = u.pathname;
     const origin = (req.headers['x-forwarded-proto'] || 'http') + '://' + req.headers.host;
@@ -332,7 +365,7 @@ function createApp(cfg = {}) {
         if (!f) return json(404, { error: 'Không tìm thấy tệp.' });
         return serveFile(res, mt, f, () => {});
       }
-      if ((m = p.match(/^\/api\/host\/(\w+)\/(state|start|stop|say|kick|new|next|role|task|minutes\.md|minutes\.json)$/))) {
+      if ((m = p.match(/^\/api\/host\/(\w+)\/(state|start|stop|say|kick|admit|new|next|role|task|minutes\.md|minutes\.json)$/))) {
         const mt = byHost.get(m[1]); if (!mt) return json(404, { error: 'Không tìm thấy cuộc họp (app đã khởi động lại?).' });
         const act = m[2];
         if (act === 'state') {
@@ -357,6 +390,7 @@ function createApp(cfg = {}) {
         if (act === 'role') return json(200, { ok: mt.setRole(d.name, d.role) });
         if (act === 'task') return json(200, { ok: d.remove === true || d.remove === 'true' ? mt.hostRemoveTask(d.n, d.into) : mt.hostTask(d.n, d.status, d.note) });
         if (act === 'kick') return json(200, { ok: mt.kick(d.name) });
+        if (act === 'admit') return json(200, { ok: mt.admit(d.name, !(d.allow === false || d.allow === 'false')) });
         if (act === 'new') {
           if (mt.state === 'LIVE' || mt.state === 'WORK') mt.stop('chủ trì mở cuộc họp mới', true);
           return json(200, { hostKey: renew(mt, d.carry === true || d.carry === 'true').hostKey });
@@ -364,12 +398,13 @@ function createApp(cfg = {}) {
       }
 
       // Tệp giữa các agent: gửi (bytes thô) và tải về
-      if ((m = p.match(/^\/a\/(\w+)\/send$/))) return await receive(req, res, byAgent.get(m[1]), Object.fromEntries(u.searchParams));
+      if ((m = p.match(/^\/a\/(\w+)\/send$/))) { const mt = byAgent.get(m[1]); return await receive(req, res, mt, Object.fromEntries(u.searchParams), who(mt, req)); }
       if ((m = p.match(/^\/a\/(\w+)\/file\/(\w+)$/))) {
         const mt = byAgent.get(m[1]); if (!mt) return text(404, GONE_TEXT);
-        const name = u.searchParams.get('name') || '', f = mt.fileFor(name, m[2]);
+        const id = who(mt, req); if (!id || id.pending) return text(401, id ? PENDING_TEXT : AUTH_TEXT);
+        const f = mt.fileFor(id.name, m[2]);
         if (typeof f === 'string') return text(404, f);
-        return serveFile(res, mt, f, () => mt.gotFile(f, name));
+        return serveFile(res, mt, f, () => mt.gotFile(f, id.name));
       }
 
       // API cho agent dạng văn bản (curl)
@@ -377,8 +412,9 @@ function createApp(cfg = {}) {
         const mt = byAgent.get(m[1]);
         const raw = req.method === 'POST' ? await readBody(req) : '';
         const base = `${fixedOrigin || origin}/a/${m[1]}`;
-        const out = await invoke(mt, m[2], parseArgs(u, raw), { base }, base);
-        return out === null ? text(404, `Không có lệnh "${m[2]}". Các lệnh: ${TOOLS.map(t => t.name).join(', ')}, send, file.`) : text(200, out);
+        const out = await invoke(mt, m[2], parseArgs(u, raw), { how: { base }, base, token: bearer(req), ...where(req) });
+        if (out === null) return text(404, `Không có lệnh "${m[2]}". Các lệnh: ${TOOLS.map(t => t.name).join(', ')}, send, file.`);
+        return text(out === AUTH_TEXT ? 401 : 200, out);
       }
 
       // MCP (JSON-RPC qua HTTP, Streamable HTTP không phiên)
@@ -387,10 +423,19 @@ function createApp(cfg = {}) {
         const mt = byAgent.get(m[1]) || null;
         let msg;
         try { msg = JSON.parse(await readBody(req)); } catch { return json(400, { jsonrpc: '2.0', id: null, error: { code: -32700, message: 'parse error' } }); }
+        // Streamable HTTP có phiên: server cấp Mcp-Session-Id lúc initialize, client gửi lại ở mọi request; danh tính agent
+        // gắn với phiên này (không với tham số name). Client gửi kèm phiên cũ thì giữ nguyên.
+        const init = [].concat(msg).some(x => x?.method === 'initialize');
+        let sid = req.headers['mcp-session-id'];
+        if (!/^[\w-]{16,128}$/.test(sid || '')) sid = init ? crypto.randomBytes(18).toString('base64url') : null;
         const base = `${fixedOrigin || origin}/a/${m[1]}`;
-        const out = Array.isArray(msg) ? (await Promise.all(msg.map(x => rpc(mt, x, base)))).filter(Boolean) : await rpc(mt, msg, base);
-        if (!out || (Array.isArray(out) && !out.length)) { res.writeHead(202, SECURITY); return res.end(); }
-        return json(200, out);
+        const ctx = { how: null, base, sid, bridge: req.headers['x-agent-meeting-bridge'] === '1', ...where(req) };
+        const run = (x) => sid || x?.method === 'initialize' || x?.method === 'ping' || x?.method === 'tools/list' || x?.id === undefined || x?.id === null ? rpc(mt, x, ctx)
+          : { jsonrpc: '2.0', id: x.id, error: { code: -32600, message: 'Missing Mcp-Session-Id header: initialize first' } };
+        const out = Array.isArray(msg) ? (await Promise.all(msg.map(run))).filter(Boolean) : await run(msg);
+        const extra = sid ? { 'mcp-session-id': sid } : {};
+        if (!out || (Array.isArray(out) && !out.length)) { res.writeHead(202, { ...SECURITY, ...extra }); return res.end(); }
+        return send(200, 'application/json; charset=utf-8', JSON.stringify(out), { 'cache-control': 'no-store', ...extra });
       }
       text(404, 'not found');
     } catch (e) { log(`⚠ Lỗi xử lý ${req.method} ${p.replace(/\/(\w{6})\w+/g, '/$1…')}: ${e.message || e}`); if (!res.headersSent) json(500, { error: String(e.message || e) }); else res.end(); }

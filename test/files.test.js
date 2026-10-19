@@ -6,6 +6,7 @@ const http = require('http');
 const crypto = require('crypto');
 const fs = require('fs'), os = require('os'), path = require('path');
 const { createApp } = require('../src/server');
+const auth = require('./auth-shim');
 const { fileName } = require('../src/meeting');
 const minutes = require('../src/minutes');
 
@@ -18,7 +19,9 @@ async function boot(cfg = {}, keys) {
   const api = `${base}/a/${m.id}`;
   const post = (tool, o) => fetch(`${api}/${tool}`, { method: 'POST', body: form(o) }).then(r => r.text());
   const send = (q, body) => fetch(`${api}/send?${form(q)}`, { method: 'POST', body }).then(async r => ({ status: r.status, text: await r.text() }));
-  return { app, base, m, api, post, send };
+  // phần header mã riêng trong các lệnh curl mà giao thức đưa cho agent "name"
+  const H = (name) => ` -H "Authorization: Bearer ${auth.tokenFor(api, name)}"`;
+  return { app, base, m, api, post, send, H };
 }
 const sha = (b) => crypto.createHash('sha256').update(b).digest('hex');
 // gửi bằng http thô: không có content-length (chunked), hoặc có "Expect: 100-continue" như curl với tệp lớn
@@ -46,7 +49,7 @@ test('tên tệp được làm sạch: chỉ basename, không ký tự shell/HTM
 });
 
 test('gửi riêng: chỉ người nhận được báo kèm lệnh tải, người khác không tải được; tải về đúng từng byte, an toàn', async (t) => {
-  const { app, base, m, api, post, send } = await boot(); t.after(() => app.close());
+  const { app, base, m, api, post, send, H } = await boot(); t.after(() => app.close());
   for (const n of ['Lam', 'Minh', 'Tu']) await post('join', { name: n, model: 'x' });
   m.start('Sửa lỗi', '');
   for (const n of ['Lam', 'Minh', 'Tu']) await m.wait(n);
@@ -61,14 +64,15 @@ test('gửi riêng: chỉ người nhận được báo kèm lệnh tải, ngư�
   // Minh nhận thông báo kèm lệnh tải đúng URL; Tu không thấy gì
   const got = await wM;
   assert.match(got, /Lam gửi tệp fix-sub\.patch \(\d+ B, sha256 [0-9a-f]{12}…\) riêng cho Minh\. Ghi chú của Lam: "áp dụng bằng git am"/);
-  assert.ok(got.includes(`Tải: curl -sSf -o "fix-sub.patch" "${api}/file/${f.id}?name=Minh"`), got);
+  assert.ok(got.includes(`Tải: curl -sSf -o "fix-sub.patch" "${api}/file/${f.id}"${H('Minh')}`), got);
   assert.ok(got.includes(`sha256 đúng: ${sha(body)}`));
   assert.match(await wT, /Chưa có tin mới/);
   assert.doesNotMatch(m.history('Tu'), /fix-sub/);
   // tải về: đúng bytes, header an toàn
   const dl = await fetch(`${api}/file/${f.id}?name=Minh`);
   assert.equal(dl.status, 200);
-  assert.deepEqual(Buffer.from(await dl.arrayBuffer()), body);
+  // so bằng sha256: assert so hai Buffer lớn khác nhau sẽ tính diff từng byte (tốn hàng GB RAM, từng làm treo máy)
+  assert.equal(sha(Buffer.from(await dl.arrayBuffer())), sha(body));
   assert.equal(dl.headers.get('content-type'), 'application/octet-stream');
   assert.equal(dl.headers.get('content-disposition'), `attachment; filename="fix-sub.patch"; filename*=UTF-8''fix-sub.patch`);
   assert.equal(dl.headers.get('x-content-type-options'), 'nosniff');
@@ -78,10 +82,11 @@ test('gửi riêng: chỉ người nhận được báo kèm lệnh tải, ngư�
   assert.deepEqual(f.got, ['Minh']);
   assert.equal((await fetch(`${api}/file/${f.id}?name=Lam`)).status, 200); // người gửi tải lại được
   assert.deepEqual(f.got, ['Minh']); // người gửi không tính là "đã tải"
-  for (const q of ['?name=Tu', '', '?name=Khach']) {
-    const x = await fetch(`${api}/file/${f.id}${q}`);
-    assert.equal(x.status, 404, q); assert.match(await x.text(), /Không có tệp này cho bạn/);
-  }
+  const x = await fetch(`${api}/file/${f.id}?name=Tu`);
+  assert.equal(x.status, 404); assert.match(await x.text(), /Không có tệp này cho bạn/);
+  // không có mã riêng (người ngoài có mã mời) thì không tải được; mã của Tu kèm name=Minh vẫn là Tu (không giả tên được)
+  for (const q of ['', '?name=Khach', '?name=Minh']) assert.equal((await auth.raw(`${api}/file/${f.id}${q}`)).status, 401, q);
+  assert.equal((await auth.raw(`${api}/file/${f.id}?name=Minh`, { headers: auth.authHeader(api, 'Tu') })).status, 404);
   assert.equal((await fetch(`${base}/a/${m.hostKey}/file/${f.id}?name=Minh`)).status, 404); // mã chủ trì không phải mã agent
   // chủ trì tải được mọi tệp; trang chủ trì thấy danh sách (người gửi, nhận, cỡ, sha256, đã tải)
   const h = await fetch(`${base}/api/host/${m.hostKey}/file/${f.id}`);
@@ -99,7 +104,7 @@ test('gửi riêng: chỉ người nhận được báo kèm lệnh tải, ngư�
 });
 
 test('gửi cả phòng, tool files (curl và MCP), chờ tệp bằng wait=1', async (t) => {
-  const { app, base, m, api, post, send } = await boot(); t.after(() => app.close());
+  const { app, base, m, api, post, send, H } = await boot(); t.after(() => app.close());
   await post('join', { name: 'Lam', model: 'x' }); await post('join', { name: 'Minh', model: 'x' });
   m.start('x', '');
   // chờ tệp: trả về ngay khi có tệp mới, không phải đợi hết thời gian
@@ -110,10 +115,10 @@ test('gửi cả phòng, tool files (curl và MCP), chờ tệp bằng wait=1', 
   const w = await waiting;
   assert.ok(Date.now() - t0 < 380, 'files wait=1 phải trả về ngay khi có tệp');
   assert.match(w, /^Tệp bạn xem được \(1\):\n1\. repo\.tar\.gz · 2,9 KB · từ Lam → cả phòng · \d\d:\d\d · CHƯA TẢI/);
-  assert.ok(w.includes(`curl -sSf -o "repo.tar.gz" "${api}/file/${m.files[0].id}?name=Minh"`));
-  assert.ok(w.includes(`Gửi tệp: curl -s -X POST "${api}/send?name=Minh&to=TÊN_NGƯỜI_NHẬN&file=TÊN_TỆP" --data-binary @ĐƯỜNG_DẪN_TỆP`));
-  // tệp gửi cả phòng: tải không cần name
-  assert.equal((await fetch(`${api}/file/${m.files[0].id}`)).status, 200);
+  assert.ok(w.includes(`curl -sSf -o "repo.tar.gz" "${api}/file/${m.files[0].id}"${H('Minh')}`));
+  assert.ok(w.includes(`Gửi tệp: curl -s -X POST "${api}/send?to=TÊN_NGƯỜI_NHẬN&file=TÊN_TỆP"${H('Minh')} --data-binary @ĐƯỜNG_DẪN_TỆP`));
+  // tệp gửi cả phòng: vẫn phải là thành viên (có mã riêng)
+  assert.equal((await auth.raw(`${api}/file/${m.files[0].id}`)).status, 401);
   await fetch(`${api}/file/${m.files[0].id}?name=Minh`);
   assert.match(await post('files', { name: 'Minh', wait: '1' }), /bạn đã tải/); // không có tệp mới: chờ hết rồi báo
   assert.match(await post('files', { name: 'Minh', wait: '1' }), /^Chưa có tệp mới gửi cho bạn/);
@@ -121,12 +126,12 @@ test('gửi cả phòng, tool files (curl và MCP), chờ tệp bằng wait=1', 
   // MCP: tool files, có annotations chỉ đọc; giao thức join qua MCP vẫn đưa lệnh curl gửi tệp đúng địa chỉ
   const rpc = async (id, name, args) => (await (await fetch(`${base}/mcp/${m.id}`, { method: 'POST', body: JSON.stringify({ jsonrpc: '2.0', id, method: 'tools/call', params: { name, arguments: args } }) })).json()).result.content[0].text;
   const j = await rpc(1, 'join', { name: 'Codex', model: 'GPT-5' });
-  assert.ok(j.includes(`11. GỬI TỆP / CODE`)); assert.ok(j.includes(`curl -s -X POST "${api}/send?name=Codex&to=`)); assert.match(j, /tool files\(name\)/);
+  assert.ok(j.includes(`11. GỬI TỆP / CODE`)); assert.ok(j.includes(`curl -s -X POST "${api}/send?to=TÊN_NGƯỜI_NHẬN&file=TÊN_TỆP" -H "Authorization: Bearer `)); assert.match(j, /tool files\(name\)/);
   assert.match(await rpc(2, 'files', { name: 'Codex' }), /repo\.tar\.gz/);
   // giao thức curl có luật 11 với lệnh của chính agent
   const jc = await post('join', { name: 'Tu Anh', model: 'x' });
-  assert.ok(jc.includes(`curl -s -X POST "${api}/send?name=Tu%20Anh&to=TÊN_NGƯỜI_NHẬN&file=TÊN_TỆP" --data-binary @ĐƯỜNG_DẪN_TỆP`), jc);
-  assert.ok(jc.includes(`curl -s "${api}/files?name=Tu%20Anh"`));
+  assert.ok(jc.includes(`curl -s -X POST "${api}/send?to=TÊN_NGƯỜI_NHẬN&file=TÊN_TỆP"${H('Tu Anh')} --data-binary @ĐƯỜNG_DẪN_TỆP`), jc);
+  assert.ok(jc.includes(`curl -s "${api}/files"${H('Tu Anh')}`));
   assert.match(jc, /Tối đa 20 MB mỗi tệp/);
 });
 
@@ -137,7 +142,8 @@ test('gửi tệp: từ chối rõ ràng khi chưa họp, sai tên, sai người
   let r = await send({ name: 'Lam', to: 'Minh', file: 'a' }, one);
   assert.equal(r.status, 400); assert.match(r.text, /chưa bắt đầu/);
   m.start('x', '');
-  assert.match((await send({ name: 'Khach', file: 'a' }, one)).text, /không có trong cuộc họp/);
+  r = await send({ name: 'Khach', file: 'a' }, one); // có mã mời nhưng chưa join: không có mã riêng
+  assert.equal(r.status, 401); assert.match(r.text, /không nhận ra bạn/);
   assert.match((await send({ name: 'Lam', to: 'Hoa', file: 'a' }, one)).text, /Không có agent tên "Hoa".*Thành viên: Minh/);
   assert.match((await send({ name: 'Lam', to: 'Lam', file: 'a' }, one)).text, /chính mình/);
   r = await send({ name: 'Lam', file: 'a' }, Buffer.alloc(0));
@@ -153,17 +159,18 @@ test('gửi tệp: từ chối rõ ràng khi chưa họp, sai tên, sai người
 test('giới hạn dung lượng: content-length, chunked, Expect 100-continue, tổng phòng, số tệp', async (t) => {
   const kb = 1 / 1024;
   const { app, m, api, send, post } = await boot({ maxFileMb: 4 * kb, maxRoomMb: 10 * kb, maxFiles: 3 }); t.after(() => app.close());
+  const lam = () => auth.authHeader(api, 'Lam');
   await post('join', { name: 'Lam', model: 'x' }); await post('join', { name: 'Minh', model: 'x' });
   m.start('x', '');
   let r = await send({ name: 'Lam', file: 'big' }, Buffer.alloc(5000));
   assert.equal(r.status, 413); assert.match(r.text, /Tệp quá lớn \(4,9 KB\): tối đa 0.00390625 MB|Tệp quá lớn \(4,9 KB\)/);
   // không có content-length: dừng nhận khi vượt giới hạn, báo lỗi, không lưu gì
-  r = await rawSend(`${api}/send?name=Lam&file=chunked`, [Buffer.alloc(3000), Buffer.alloc(3000)]);
+  r = await rawSend(`${api}/send?name=Lam&file=chunked`, [Buffer.alloc(3000), Buffer.alloc(3000)], lam());
   assert.equal(r.status, 413); assert.match(r.text, /Tệp quá lớn/);
   // curl gửi "Expect: 100-continue": từ chối trước khi agent phải đẩy cả tệp lên
-  r = await rawSend(`${api}/send?name=Lam&file=big2`, [Buffer.alloc(5000)], { expect: '100-continue', 'content-length': 5000 });
+  r = await rawSend(`${api}/send?name=Lam&file=big2`, [Buffer.alloc(5000)], { expect: '100-continue', 'content-length': 5000, ...lam() });
   assert.equal(r.status, 413); assert.equal(r.continued, undefined);
-  r = await rawSend(`${api}/send?name=Lam&file=ok`, [Buffer.alloc(4000, 1)], { expect: '100-continue', 'content-length': 4000 });
+  r = await rawSend(`${api}/send?name=Lam&file=ok`, [Buffer.alloc(4000, 1)], { expect: '100-continue', 'content-length': 4000, ...lam() });
   assert.equal(r.status, 200); assert.equal(r.continued, true);
   assert.equal(m.files.length, 1); assert.equal(m.files[0].sha256, sha(Buffer.alloc(4000, 1)));
   assert.equal((await send({ name: 'Lam', file: 'b' }, Buffer.alloc(4000))).status, 200);
@@ -176,15 +183,15 @@ test('giới hạn dung lượng: content-length, chunked, Expect 100-continue, 
 });
 
 test('giai đoạn thực hiện: agent đã rời vẫn gửi/nhận tệp; chỉ dẫn WORK có lệnh gửi và chờ tệp', async (t) => {
-  const { app, m, api, post, send } = await boot(); t.after(() => app.close());
+  const { app, m, api, post, send, H } = await boot(); t.after(() => app.close());
   await post('join', { name: 'Lam', model: 'x' }); await post('join', { name: 'Minh', model: 'x' });
   m.start('x', '', { followUp: true });
   m.say('Lam', 'KẾT LUẬN: ok\nVIỆC: Lam | sửa sub() rồi gửi patch cho Minh\nVIỆC: Minh | áp dụng patch của Lam, chạy test, commit');
   await post('leave', { name: 'Lam' });
   const left = await post('leave', { name: 'Minh' });
   assert.equal(m.state, 'WORK');
-  assert.ok(left.includes(`curl -s -m 70 "${api}/files?name=Minh&wait=1"`), left);
-  assert.ok(left.includes(`${api}/send?name=Minh&to=TÊN_NGƯỜI_NHẬN`));
+  assert.ok(left.includes(`curl -s -m 70 "${api}/files?wait=1"${H('Minh')}`), left);
+  assert.ok(left.includes(`${api}/send?to=TÊN_NGƯỜI_NHẬN&file=TÊN_TỆP"${H('Minh')}`));
   const waiting = post('files', { name: 'Minh', wait: '1' });
   const r = await send({ name: 'Lam', to: 'Minh', file: 'fix.patch' }, Buffer.from('patch'));
   assert.match(r.text, /riêng cho Minh.*Làm tiếp việc của bạn rồi báo tiến độ/);
@@ -216,7 +223,8 @@ test('--data-dir: tệp ghi ra đĩa (quyền 600), khởi động lại vẫn t
   assert.equal(m2.files[0].name, 'data.bin');
   const api = b.api.replace(/\/a\/\w+$/, `/a/${keys.id}`), host = b.api.replace(/\/a\/\w+$/, `/api/host/${keys.hostKey}`);
   const dl = await fetch(`${api}/file/${id}?name=Minh`);
-  assert.deepEqual(Buffer.from(await dl.arrayBuffer()), body);
+  // so bằng sha256: assert so hai Buffer lớn khác nhau sẽ tính diff từng byte (tốn hàng GB RAM, từng làm treo máy)
+  assert.equal(sha(Buffer.from(await dl.arrayBuffer())), sha(body));
   // Họp tiếp: tệp đi theo, vẫn tải được ở cuộc mới
   await fetch(`${host}/new`, { method: 'POST', body: JSON.stringify({ carry: true }) });
   const m3 = b.app.meetings.get(keys.hostKey);
@@ -241,10 +249,10 @@ test('không có --data-dir: tệp trong bộ nhớ; "Họp tiếp" mang theo, "
   const n = app.meetings.get(hostKey);
   assert.equal((await fetch(`${api}/file/${id}?name=Minh`)).status, 200); // chưa join lại cuộc mới vẫn tải được
   assert.deepEqual(n.files[0].got, ['Minh']); assert.deepEqual(m.files[0].got, []);
-  assert.equal((await fetch(`${api}/file/${id}?name=Tu`)).status, 404);
+  assert.equal((await fetch(`${api}/file/${id}?name=Tu`)).status, 401); // Tu chưa từng là thành viên
   // cuộc mới không mang gì: agent không tải được nữa; chủ trì cuộc vừa bị thay thấy tệp đã xoá (cuộc đầu vẫn giữ vì đang mở để xem)
   const k3 = (await (await fetch(`${base}/api/host/${hostKey}/new`, { method: 'POST', body: '{}' })).json()).hostKey;
-  assert.equal((await fetch(`${api}/file/${id}?name=Minh`)).status, 404);
+  assert.equal((await fetch(`${api}/file/${id}?name=Minh`)).status, 401); // cuộc mới không mang mã của cuộc cũ
   assert.equal(app.meetings.get(k3).files.length, 0);
   assert.equal((await fetch(`${base}/api/host/${m.hostKey}/file/${id}`)).status, 200);
   const m2 = app.create();

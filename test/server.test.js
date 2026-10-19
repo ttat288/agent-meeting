@@ -2,6 +2,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { createApp } = require('../src/server');
+const auth = require('./auth-shim');
 const minutes = require('../src/minutes');
 
 async function boot() {
@@ -27,7 +28,7 @@ test('MCP: initialize, tools/list, tools/call, notification', async (t) => {
   assert.equal(list.result.tools.find(x => x.name === 'history').annotations.readOnlyHint, true);
   const join = await (await rpc(base, m.id, { jsonrpc: '2.0', id: 3, method: 'tools/call', params: { name: 'join', arguments: { name: 'A', model: 'Opus 5.5' } } })).json();
   assert.match(join.result.content[0].text, /slot 1/);
-  const bad = await (await rpc(base, m.id, { jsonrpc: '2.0', id: 4, method: 'tools/call', params: { name: 'nope' } })).json();
+  const bad = await (await rpc(base, m.id, { jsonrpc: '2.0', id: 4, method: 'tools/call', params: { name: 'nope', arguments: { name: 'A' } } })).json();
   assert.equal(bad.error.code, -32602);
 });
 
@@ -35,7 +36,7 @@ test('--public-url: lệnh trong giao thức luôn dùng địa chỉ đã khai 
   const { app, base, m } = await boot(); t.after(() => app.close());
   app.setPublicOrigin('https://meet.example.com', true);
   const j = await fetch(`${base}/a/${m.id}/join`, { method: 'POST', headers: { host: '127.0.0.1:3000' }, body: form({ name: 'A', model: 'x' }) }).then(r => r.text());
-  assert.ok(j.includes(`https://meet.example.com/a/${m.id}/wait?name=A`));
+  assert.ok(j.includes(`curl -s -m 70 "https://meet.example.com/a/${m.id}/wait" -H "Authorization: Bearer `), j);
   assert.ok(j.includes(`--data-urlencode "text@-" <<'HET'`));
 });
 
@@ -61,7 +62,7 @@ test('API curl: join/say/wait dạng văn bản, kèm hướng dẫn curl đúng
   const { app, base, m } = await boot(); t.after(() => app.close());
   const post = (tool, o) => fetch(`${base}/a/${m.id}/${tool}`, { method: 'POST', body: form(o) }).then(r => r.text());
   const j = await post('join', { name: 'GPT', model: 'GPT-5' });
-  assert.ok(j.includes(`${base}/a/${m.id}/wait?name=GPT`));
+  assert.ok(j.includes(`curl -s -m 70 "${base}/a/${m.id}/wait" -H "Authorization: Bearer ${auth.tokenFor(`${base}/a/${m.id}`, 'GPT')}"`), j);
   await post('join', { name: 'Claude', model: 'Opus 5.5' });
   m.start('x', '');
   await fetch(`${base}/a/${m.id}/wait?name=GPT`);
@@ -169,7 +170,8 @@ test('--data-dir: tắt server giữa cuộc họp, bật lại thì họp tiế
   const cfg = { waitMs: 400, idleMs: 60000, tick: 30, dataDir };
   const a1 = createApp(cfg);
   const m1 = a1.create(keys);
-  m1.join('A', 'Haiku 4.5'); m1.join('B', 'Sonnet 5.5');
+  const tokB = 'tok_B_persist_000000000001';
+  m1.join('A', 'Haiku 4.5'); m1.join('B', 'Sonnet 5.5', null, undefined, { token: tokB });
   m1.start('Chọn database', '', { agenda: ['DB', 'Chia việc'], timeLimitMin: 30 });
   await m1.wait('A'); await m1.wait('B');
   m1.say('A', 'XONG MỤC 1: PostgreSQL\nVIỆC: B | viết migration | thứ 6');
@@ -188,9 +190,9 @@ test('--data-dir: tắt server giữa cuộc họp, bật lại thì họp tiế
   assert.ok(m2.version > m1.version);
   assert.ok(m2.endsAt > Date.now() && m2.timers.length); // giới hạn thời gian vẫn chạy tiếp
   // B đang họp: lệnh wait kế tiếp nhận đúng phần chưa đọc, không phải toàn bộ từ đầu
-  const w = await fetch(`${base}/a/${keys.id}/wait?name=B`).then(r => r.text());
+  const w = await fetch(`${base}/a/${keys.id}/wait`, { headers: { authorization: `Bearer ${tokB}` } }).then(r => r.text()); // mã riêng được lưu qua khởi động lại
   assert.match(w, /\[A\] XONG MỤC 1/); assert.match(w, /khởi động lại/); assert.doesNotMatch(w, /Chọn database/);
-  const say = await fetch(`${base}/a/${keys.id}/say`, { method: 'POST', body: form({ name: 'B', text: 'KẾT LUẬN: xong' }) }).then(r => r.text());
+  const say = await fetch(`${base}/a/${keys.id}/say`, { method: 'POST', headers: { authorization: `Bearer ${tokB}` }, body: form({ text: 'KẾT LUẬN: xong' }) }).then(r => r.text());
   assert.match(say, /Đã gửi/);
   const md = await fetch(`${base}/api/host/${keys.hostKey}/minutes.md`).then(r => r.text());
   assert.match(md, /PostgreSQL/); assert.match(md, /viết migration/); assert.match(md, /KẾT LUẬN: xong/);
@@ -254,7 +256,8 @@ test('Giữ phòng báo tiến độ: webhook khi chốt, khi từng việc xong
 test('Họp tiếp: mang việc chưa xong (giữ số, trạng thái, bằng chứng) và quyết định sang cuộc sau', async (t) => {
   const { app, base, m } = await boot(); t.after(() => app.close());
   const host = (k, act, body) => fetch(`${base}/api/host/${k}/${act}`, { method: 'POST', body: JSON.stringify(body || {}) }).then(r => r.json());
-  m.join('Lam', 'x'); m.join('Minh', 'x');
+  const tokMinh = 'tok_minh_carry_0000000001';
+  m.join('Lam', 'x'); m.join('Minh', 'x', null, undefined, { token: tokMinh });
   m.start('Sửa lỗi đăng nhập\nchi tiết', '');
   m.say('Lam', 'KẾT LUẬN: dùng OAuth\nVIỆC: Lam | sửa callback | mai\nVIỆC: Minh | viết test | mai\nVIỆC: Lam | cập nhật docs | thứ 6');
   m.progress('Lam', '1', 'xong', 'commit abc'); m.progress('Minh', '2', 'đang làm', 'đã có 3/5 test');
@@ -266,9 +269,11 @@ test('Họp tiếp: mang việc chưa xong (giữ số, trạng thái, bằng ch
   const s = await (await fetch(`${base}/api/host/${hostKey}/state`)).json();
   assert.equal(s.carry.topic, 'Sửa lỗi đăng nhập'); assert.match(s.carry.decisions[0].text, /dùng OAuth/); assert.equal(s.carry.done[0].n, 1);
   // agent cuộc trước báo tiến độ việc mang sang khi cuộc mới còn ở phòng chờ (chưa join lại)
-  const r = await fetch(`${base}/a/${m.id}/progress`, { method: 'POST', body: form({ name: 'Minh', task: '2', status: 'xong', note: 'PR #9' }) }).then(r => r.text());
+  // (mã riêng của cuộc trước được mang sang để chứng minh danh tính)
+  const r = await fetch(`${base}/a/${m.id}/progress`, { method: 'POST', headers: { authorization: `Bearer ${tokMinh}` }, body: form({ task: '2', status: 'xong', note: 'PR #9' }) }).then(r => r.text());
   assert.match(r, /Đã cập nhật việc #2: xong\. Cuộc họp trước đã đóng/);
-  assert.match(await fetch(`${base}/a/${m.id}/progress`, { method: 'POST', body: form({ name: 'La', task: '3', status: 'xong' }) }).then(r => r.text()), /không có trong cuộc họp/);
+  // chỉ có tên (không có mã) thì không báo được, kể cả tên của thành viên cũ
+  for (const name of ['La', 'Lam']) assert.match(await fetch(`${base}/a/${m.id}/progress`, { method: 'POST', body: form({ name, task: '3', status: 'xong' }) }).then(r => r.text()), /không nhận ra bạn/);
   n.join('Lam', 'x');
   n.start('Họp review tiến độ', '');
   const intro = n.log.find(x => x.type === 'host').text;
@@ -296,7 +301,7 @@ test('MCP: giữ phòng báo tiến độ, agent MCP được hướng dẫn g�
   assert.equal(m.state, 'WORK');
   assert.match(left, /Tool MCP: progress\(name="Codex-1", task="<số việc>", status="xong", note="<bằng chứng>"\)/);
   assert.doesNotMatch(left, /\/progress"/); // báo tiến độ bằng tool; chỉ phần tệp mới dùng curl
-  assert.match(left, new RegExp(`curl -s -X POST "${base}/a/${m.id}/send\\?name=Codex-1`));
+  assert.ok(left.includes(`curl -s -X POST "${base}/a/${m.id}/send?to=TÊN_NGƯỜI_NHẬN&file=TÊN_TỆP" -H "Authorization: Bearer `), left);
   assert.match(await call(4, 'progress', { name: 'Codex-1', task: '1', status: 'xong', note: 'commit 1a2b' }), /phòng đã đóng/);
   assert.equal(m.state, 'ENDED');
 });

@@ -178,6 +178,24 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
 
 ## Trạng thái
 
+- **2026-10-19, nhánh `v3.5-security` (từ main e0316cf), CHƯA merge/push/tag.** package 3.5.0, CHANGELOG 3.5.0, README (EN+VI),
+  GUIDE, REFERENCE (EN+VI), DEPLOY, SECURITY.md, docs/SECURITY-DESIGN.md (threat model, đã duyệt). 124 test xanh.
+  Đã làm: mã riêng từng agent (Bearer / Mcp-Session-Id), chủ trì duyệt (`--admit all|remote|none`), tên dành riêng, trích dẫn tin
+  (`│ `), chặn bí mật, cục bộ trước (127.0.0.1, tunnel theo yêu cầu, trang chủ trì không qua tunnel, Host/Origin), `connect`/
+  `disconnect` + cầu nối stdio `src/bridge.js`, giới hạn tốc độ, `--audit-log`, `--retention`, UI (Máy này/Máy khác, tab Đã kết nối,
+  duyệt agent), demo bots dùng mã riêng (`--admit remote`).
+  - **BẪY (2026-10-19): `npm test` không giới hạn từng làm treo máy người dùng (OOM 7,6 GB)**: assert so hai Buffer lớn khác nhau tính
+    diff O(n²). Đã sửa (so sha256). LUÔN chạy test có giới hạn: `systemd-run --user --scope -q -p MemoryMax=1200M -p MemorySwapMax=0
+    timeout 150 node --test --test-timeout=30000 <file>` từng file.
+  - **CHƯA: bước 4 thử thật** (người dùng ĐÃ đồng ý chạy đủ ca A, B, C). Đã chuẩn bị trong scratchpad của phiên (mất khi hết phiên):
+    sao lưu `~/.claude.json`, `~/.claude/settings.json`, `~/.agent-meeting`; repo thử LabelLoop; prompt chép từ trang (sha256 MCP
+    `ad256a41…`, curl `b55739d9…`). Phiên sau làm lại các bước chuẩn bị đó, rồi: A) Claude Code CLI bản desktop
+    (`~/.config/Claude/claude-code/2.1.289/*/claude -p --permission-mode auto --output-format stream-json --verbose`) với prompt
+    curl localhost + subagent Haiku; B) `node bin/cli.js connect claude` rồi prompt "Đã kết nối" + subagent Sonnet; C) tunnel thật +
+    `connect claude --room <URL>`. Chủ trì duyệt/bắt đầu qua API. Xong: `disconnect claude`, so settings.json với bản sao lưu
+    (KHÔNG chép đè ~/.claude.json: app desktop ghi liên tục). `~/.agent-meeting/rooms.json` hiện trỏ tới phòng thử cổng 3100 (đã tắt).
+  - Chưa: ảnh/GIF mới cho thẻ mời và duyệt agent; hỏi người dùng merge + GitHub Release.
+
 - **2026-10-19, nhánh `v3.4-away` (từ `v3.3.1-header` 36a4e5a). ĐÃ MERGE vào main (fast-forward) + tag `v3.4.0`
   + push (người dùng yêu cầu 2026-10-19); CHƯA tạo GitHub Release. App trong menu đã cài lại từ `v3.4-away` (`--version` = 3.4.0).** package 3.4.0, CHANGELOG 3.4.0,
   README (EN+VI) badge + "What's new in 3.4", GUIDE + REFERENCE (VI+EN). 106 test xanh. Đã làm bước 1–5 và 7 của lộ trình v3.4:

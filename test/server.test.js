@@ -314,3 +314,22 @@ test('chủ trì đổi trạng thái, gộp và xoá việc qua API', async (t)
   const md = await fetch(`${base}/api/host/${m.hostKey}/minutes.md`).then(r => r.text());
   assert.match(md, /Chủ trì gộp việc #2/); assert.match(md, /^\| 1 \| viết parser/m); assert.doesNotMatch(md, /^\| [23] \|/m);
 });
+
+test('bắt đầu bị từ chối (409) khi brief có N vai trò mà chưa đủ N agent, trừ khi force', async (t) => {
+  const { app, base, m } = await boot(); t.after(() => app.close());
+  const start = (body) => fetch(`${base}/api/host/${m.hostKey}/start`, { method: 'POST', body: JSON.stringify(body) });
+  m.join('A', 'x');
+  const r = await start({ context: 'x', roles: ['giám sát', 'dựng MVP'] });
+  assert.equal(r.status, 409);
+  const d = await r.json();
+  assert.match(d.error, /Cần 2 agent theo vai trò \(đang có 1\)/);
+  assert.deepEqual([d.need, d.have], [2, 1]);
+  assert.equal(m.state, 'LOBBY');
+  // vai trò trống ở cuối không giao gì nên không tính; không có vai trò thì như cũ
+  assert.equal((await start({ context: 'x', roles: ['giám sát', ''] })).status, 200);
+  const n = app.create();
+  assert.equal((await fetch(`${base}/api/host/${n.hostKey}/start`, { method: 'POST', body: JSON.stringify({ context: 'x', roles: ['a', 'b'], force: true }) })).status, 200);
+  assert.equal(n.state, 'LIVE');
+  const z = app.create();
+  assert.equal((await fetch(`${base}/api/host/${z.hostKey}/start`, { method: 'POST', body: JSON.stringify({ context: 'x', roles: [] }) })).status, 200);
+});

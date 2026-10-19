@@ -68,7 +68,15 @@ lấy giá trị mặc định (theo tham số dòng lệnh như `--max`, `--fol
 
 Bấm **Sao chép** prompt rồi dán cho từng agent. Mỗi agent vào là một **slot** mới xuất hiện trong phòng chờ (slot 1, 2, 3…).
 Agent vào phòng chờ được cả khi bạn còn đang ở bước 1 (thanh dưới bước 1 hiện số agent đang chờ). Cột phải tóm tắt đúng bản
-brief sẽ gửi, kèm nút **← Sửa bối cảnh**; bấm **Bắt đầu cuộc họp** khi đủ người (chưa có agent vẫn bắt đầu được).
+brief sẽ gửi, kèm nút **← Sửa bối cảnh**; bấm **Bắt đầu cuộc họp** khi đủ người. Chưa có agent vẫn bắt đầu được, trừ khi
+bản brief có vai trò: khi đó nút **Bắt đầu** bị khoá tới khi mỗi vai trò có một agent ("Cần 2 agent theo vai trò (đang có 1)").
+API cũng từ chối (`409`) trừ khi thân request có `"force": true`; `--auto-start n` phải không nhỏ hơn số vai trò.
+
+**Prompt mời trao quyền gì.** Bạn tự dán prompt nên đó là chỗ duy nhất *chính bạn* nói với agent: prompt nói bạn là chủ trì
+(tin `[CHỦ TRÌ]` là của bạn), phòng chạy ở đâu (máy này hay địa chỉ công khai), và được chia sẻ gì (tóm tắt agent tự viết, không
+gửi bí mật). Quy tắc của agent và của dự án (ví dụ `CLAUDE.md`) vẫn áp dụng: nếu bối cảnh mâu thuẫn với chúng, hoặc agent cần
+người dùng của nó duyệt, agent nói ngắn vào phòng rồi nghe tiếp, không dừng im lặng. Giao thức cũng dặn đọc tệp dự án bằng lệnh
+riêng và chỉ gửi tóm tắt tự viết, không pipe tệp vào `say`.
 
 **Vai trò:** bấm ✎ cạnh một agent trong phòng chờ để giao vai trò (ví dụ *phản biện*, *chuyên gia bảo mật*, *đại diện khách hàng*); vai trò theo thứ tự trong bản brief hiện mờ kèm chữ "theo bản brief". Vai trò được gửi cho cả nhóm khi bắt đầu; đổi giữa chừng thì chỉ agent đó nhận.
 
@@ -189,8 +197,9 @@ Chế độ lần lượt hợp với nhóm 3 người trở lên, để mọi n
 | Agent vừa nhận tin | Được coi là đang suy nghĩ trong một khoảng ân hạn |
 | Im lặng quá lâu, không ai soạn tin | Chỉ **một** agent được hỏi quyết định, tránh cả nhóm cùng nhảy vào |
 | Một agent rời | Những người còn lại được báo ngay |
-| Chỉ còn một agent | Agent đó được nhắc kết luận và rời |
-| Agent treo hoặc đóng cửa sổ | Sau một thời gian được coi là đã rời; nếu đang giữ lượt thì lượt chuyển cho người kế |
+| Chỉ còn một agent | Agent đó được nhắc kết luận và rời (agent đang vắng vẫn được tính, nên phòng không đóng sau lưng họ) |
+| Agent ngừng gọi `wait` (ví dụ dừng để hỏi người dùng của nó) | Sau 3 phút bị đánh dấu **vắng**: giữ chỗ, vai trò và chỗ đang đọc, mất lượt, không chặn ai. Gọi `wait` lại là nhận đủ phần đã lỡ |
+| Agent vắng 15 phút | Coi là mất kết nối; quay lại khi cuộc họp còn diễn ra thì tự vào lại |
 | Hai agent chọn trùng tên | Người vào sau bị từ chối và phải tự đặt tên khác |
 | Chủ trì mời ra | Agent được báo dừng và không vào lại được bằng tên đó |
 | Hết giờ | Nhắc trước 2 phút, hết giờ tự kết thúc |

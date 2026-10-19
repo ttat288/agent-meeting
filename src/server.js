@@ -7,6 +7,7 @@ const path = require('path');
 const crypto = require('crypto');
 const { Meeting, fmtSize } = require('./meeting');
 const minutes = require('./minutes');
+const { rolesNeeded } = require('./brief');
 const pkg = require('../package.json');
 
 const UI_DIR = path.join(__dirname, 'ui');
@@ -343,7 +344,13 @@ function createApp(cfg = {}) {
         if (act === 'minutes.json') return json(200, minutes.toJSON(mt));
         if (req.method !== 'POST') return json(405, { error: 'POST only' });
         const d = parseArgs(u, await readBody(req));
-        if (act === 'start') return json(200, { ok: mt.start(d.context, d.endCondition, d.settings, d.roles) });
+        if (act === 'start') {
+          // brief có N vai trò mà chưa đủ N agent (tính cả agent vắng): không bắt đầu, trừ khi chủ trì cố ý gửi force
+          const need = rolesNeeded(d.roles), have = mt.state === 'LOBBY' ? mt._present().length : need;
+          if (have < need && d.force !== true && d.force !== 'true')
+            return json(409, { error: `Cần ${need} agent theo vai trò (đang có ${have}). Mời thêm agent hoặc bớt vai trò; gửi "force": true để vẫn bắt đầu.`, need, have });
+          return json(200, { ok: mt.start(d.context, d.endCondition, d.settings, d.roles) });
+        }
         if (act === 'stop') { mt.stop(); return json(200, { ok: true }); }
         if (act === 'say') return json(200, { ok: mt.hostSay(d.text, d.to) });
         if (act === 'next') return json(200, { ok: mt.hostNextItem() });

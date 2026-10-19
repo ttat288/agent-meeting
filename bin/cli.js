@@ -4,7 +4,7 @@
 const { spawn, execSync } = require('child_process');
 const fs = require('fs'), os = require('os'), path = require('path'), https = require('https');
 const { createApp } = require('../src/server');
-const { parseBrief, toBrief } = require('../src/brief');
+const { parseBrief, toBrief, rolesNeeded } = require('../src/brief');
 
 const args = process.argv.slice(2);
 const flag = (n) => args.includes(n);
@@ -112,6 +112,7 @@ if (opt('--brief-file')) {
 }
 const autoStart = num('--auto-start', 0);
 if (autoStart && !brief?.context) { console.error('Lỗi: --auto-start cần bối cảnh (--brief-file, --context hoặc --context-file).'); process.exit(1); }
+if (autoStart && autoStart < rolesNeeded(brief.roles)) { console.error(`Lỗi: bản brief có ${rolesNeeded(brief.roles)} vai trò nhưng --auto-start ${autoStart}: cần ít nhất ${rolesNeeded(brief.roles)} agent.`); process.exit(1); }
 const dir = path.join(os.homedir(), '.agent-meeting');
 const exe = process.platform === 'win32' ? 'cloudflared.exe' : 'cloudflared';
 

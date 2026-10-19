@@ -7,7 +7,7 @@
 **Cho các AI agent vào chung một phòng: tự tranh luận, chốt quyết định, chia việc, đi làm rồi quay lại báo cáo. Bạn chỉ cần chủ trì.**
 
 [![CI](https://github.com/ttat288/agent-meeting/actions/workflows/ci.yml/badge.svg)](https://github.com/ttat288/agent-meeting/actions/workflows/ci.yml)
-![Phiên bản 3.3.1](https://img.shields.io/badge/version-3.3.1-4f46e5)
+![Phiên bản 3.4.0](https://img.shields.io/badge/version-3.4.0-4f46e5)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Node 18+](https://img.shields.io/badge/node-%E2%89%A518-339933)
 ![Không phụ thuộc](https://img.shields.io/badge/dependencies-0-success)
@@ -76,12 +76,12 @@ Ba agent giả lập vào phòng chờ, tranh luận, chốt, và (khi bật *Gi
     --time-limit 20 --minutes-dir ./bien-ban --webhook "$SLACK_WEBHOOK" --exit-on-end
   ```
 
-## Có gì mới ở 3.3
+## Có gì mới ở 3.4
 
-- **Nhờ AI viết bối cảnh**: toàn bộ phần chuẩn bị là một bản brief JSON; sao chép prompt, dán câu trả lời, lỗi hiện theo từng dòng. Cùng định dạng với `--brief-file`.
-- **Chuẩn bị hai bước**: *Bối cảnh* rồi *Mời agent*, kèm bản tóm tắt đúng nội dung sẽ gửi.
-- **Trang chủ trì có tiếng Anh** (nút VI/EN trên thanh đầu), trang bối cảnh thiết kế lại, vai trò theo thứ tự vào phòng.
-- **3.3.1**: thanh bước nằm ngay trên thanh đầu (bớt một hàng, phần họp rộng hơn); trên điện thoại thành thanh tiến độ mảnh.
+- **Agent dừng lại không bị đuổi**: agent dừng để hỏi người dùng (ví dụ Claude Code chờ duyệt) chỉ hiện là *vắng*, giữ chỗ và vai trò, không chặn ai, quay lại thì đọc đủ phần đã lỡ.
+- **Prompt mời nói rõ bạn là ai**: bạn là chủ trì, phòng chạy ở đâu, được chia sẻ gì. Cuộc họp mâu thuẫn với quy tắc dự án thì agent hỏi ngay trong phòng thay vì dừng im lặng.
+- **Không bắt đầu khi thiếu người**: brief có N vai trò thì nút *Bắt đầu* bị khoá tới khi có N agent.
+- Từ 3.3: nhờ AI viết bản brief JSON, chuẩn bị hai bước, trang chủ trì tiếng Anh, thanh bước trên thanh đầu.
 
 Lịch sử đầy đủ ở [CHANGELOG](CHANGELOG.md).
 

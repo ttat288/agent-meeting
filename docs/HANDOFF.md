@@ -178,6 +178,27 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
 
 ## Trạng thái
 
+- **2026-10-19, nhánh `v3.4-away` (từ `v3.3.1-header` 36a4e5a), CHƯA merge/push/tag.** package 3.4.0, CHANGELOG 3.4.0,
+  README (EN+VI) badge + "What's new in 3.4", GUIDE + REFERENCE (VI+EN). 106 test xanh. Đã làm bước 1–5 và 7 của lộ trình v3.4:
+  - Agent VẮNG (`a.away`, `a.awaySince`; snapshot `status: 'away'` + `awaySince`): `_reap` hết `staleMs` → `_setAway` (giữ
+    slot/vai trò/cursor, mất lượt ngay), vắng thêm `cfg.awayMs` (mặc định 15 phút) → `a.lost = true` + `leave('mất kết nối')`.
+    `_seen(a)` (gọi từ `_agent`, `progress`, `listFiles`) bỏ vắng, hoặc cho agent `lost` vào lại nếu phòng LIVE/LOBBY; `a.back`
+    = số phút im lặng, lần `wait` kế tiếp báo "Bạn đã vắng ~N phút…" (trả ngay kể cả khi không có tin mới). `_active()` (có mặt,
+    không vắng) dùng cho lượt (`_advance`, lượt đầu), `passStreak`, người được hỏi chốt khi im lặng; `_present()` (tính cả vắng)
+    vẫn dùng cho vai trò theo vị trí, "chỉ còn mình bạn", "mọi agent đã rời phòng". `join` cùng tên + model khi đang vắng thì vào
+    lại. `changedSince` (long-poll của trang chủ trì) cũng gọi `_reap` để phát hiện vắng khi không agent nào đang `wait`.
+    Đã thử trên server thật: Grok im 3 phút → "vắng" trên trang, chủ trì nhắn, Grok `wait` lại nhận đủ tin đã lỡ + giữ vai trò.
+  - Giao thức: luật 6 thêm "trong phạm vi quy tắc của dự án và của chính bạn"; luật 12 (cần duyệt/mâu thuẫn: say ngắn rồi wait
+    tiếp, dừng hỏi người dùng thì vẫn giữ chỗ) và 13 (tách lệnh đọc tệp với lệnh gửi, không gửi bí mật); số luật là 11/12 khi
+    agent không có `a.base`.
+  - Prompt mời (`perm` trong `buildInvite`, VI + EN): người dán là chủ trì, phòng chạy trên máy này / địa chỉ công khai (theo
+    hostname của origin), chia sẻ gì, mâu thuẫn thì nói vào phòng. KHÔNG thêm trường `permissions` vào brief (cần hỏi người dùng).
+  - Chặn Bắt đầu: `rolesNeeded(roles)` trong src/brief.js (bỏ vai trò trống ở CUỐI, "" ở giữa vẫn tính); UI khoá `#btnStart`
+    (+ `title`), `#checks2` báo "Cần N agent theo vai trò (đang có M)" (class `bad`); server 409 `{error, need, have}` trừ khi
+    `force: true`; CLI `--auto-start n` < số vai trò thì thoát lỗi.
+  - CHƯA: bước 6 (thử với agent thật: subagent Sonnet + Haiku với workspace "build nothing", và Claude Code CLI thật ở auto mode
+    qua tunnel: hỏi người dùng trước); GIF/ảnh chưa chụp lại (giao diện chỉ thêm trạng thái vắng + nút khoá).
+
 - **2026-10-19, nhánh `v3.3.1-header` (từ main bf9ee8e), CHƯA merge/push/tag.** package 3.3.1, CHANGELOG 3.3.1, README (EN+VI)
   badge + "What's new". 96 test xanh.
   - **Thanh bước lên header** (người dùng yêu cầu: "mang progress bar lên header cho rộng phần body"): `index.html` header =
@@ -486,7 +507,7 @@ bước 1 bấm "Tiếp" sang bước 2, chờ agent vào rồi mới Bắt đ�
 Không đổi giao thức agent trong v3.3 (trừ `roles` theo slot, nếu làm). Nếu phải đổi văn bản gửi agent thì thử lại bằng
 subagent Haiku + Sonnet như các phiên trước.
 
-## Lộ trình v3.4: agent thật (Claude Code) bỏ họp giữa chừng + chặn Bắt đầu khi thiếu agent (BÀN GIAO, CHƯA LÀM)
+## Lộ trình v3.4: agent thật (Claude Code) bỏ họp giữa chừng + chặn Bắt đầu khi thiếu agent (nhánh v3.4-away, còn bước 6)
 
 Người dùng báo 2026-10-19, đánh giá **lỗi rất nghiêm trọng**. Làm trên nhánh mới tách từ `v3.3.1-header` (header mới, chưa
 merge; nếu người dùng đã merge thì tách từ main). Mỗi bước test xong mới sang bước sau.
@@ -550,8 +571,8 @@ phòng. Hãy dừng lại, không gọi thêm tool." → agent dừng hẳn. Age
 
 Theo thứ tự ưu tiên:
 
-1. **Lộ trình v3.4 ở trên** (lỗi nghiêm trọng, người dùng yêu cầu sửa ở phiên kế): agent bị tính "rời phòng" khi dừng hỏi
-   người dùng; prompt mời chưa trao quyền/ngữ cảnh; chặn Bắt đầu khi thiếu agent cho vai trò.
+1. **Lộ trình v3.4, bước 6: thử với agent thật** (code đã xong trên nhánh `v3.4-away`). Hỏi người dùng có cho chạy subagent
+   Sonnet + Haiku và Claude Code CLI thật (auto mode, qua tunnel) không. Sau đó hỏi merge `v3.3.1-header` + `v3.4-away`.
 2. **Hỏi người dùng**: (a) merge `v3.3.1-header` vào main + push chưa (người dùng đã dùng thử: bản trong menu đã cài 3.3.1 từ
    nhánh này, 2026-10-19); (b) tag + GitHub Release; KHÔNG tự merge/push/tag/release. README (EN + VI) luôn ghi phiên bản mới
    nhất; đổi giao diện thì quay lại GIF (`tools/record-demo.js`, `--vi`) và chụp lại ảnh (`tools/shot-setup.js`, `tools/shot-mobile.js`).

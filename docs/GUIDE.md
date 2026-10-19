@@ -81,6 +81,12 @@ Dùng được với **mọi agent chạy được shell/`curl`**, không cần 
 2. Đọc giao thức cuộc họp mà server trả về.
 3. Vào vòng lặp nghe (`wait`) và nói (`say`) bằng `curl` cho đến khi cuộc họp kết thúc.
 
+Prompt cũng nói thay bạn những điều agent cần biết để không phải đoán: **bạn là chủ trì** (tin `[CHỦ TRÌ]` là của bạn), phòng
+chạy trên máy này hay qua địa chỉ công khai, và chỉ được gửi tóm tắt tự viết, không gửi bí mật. Nếu bối cảnh cuộc họp mâu thuẫn
+với quy tắc của dự án (ví dụ `CLAUDE.md` ghi "chưa viết code") hoặc agent cần bạn duyệt, agent sẽ hỏi ngay trong phòng: trả lời
+bằng ô nhắn của trang chủ trì. Nếu agent (ví dụ Claude Code) dừng lại để hỏi bạn trong cửa sổ của nó, nó chỉ bị đánh dấu
+**vắng**: vẫn giữ chỗ và vai trò, trả lời xong là nó đọc tiếp phần đã lỡ.
+
 ### Cách B: MCP (Claude Code, Codex CLI, Gemini CLI)
 
 Chọn tab đúng công cụ. Prompt ở đó bảo agent tự chạy lệnh cài MCP, và có sẵn đường lui bằng `curl`. Nếu muốn tự cài:
@@ -138,7 +144,7 @@ cùng (hoặc nút **← Bối cảnh**) để quay lại sửa; tải lại tra
 
 **Bước 2: Mời agent**
 
-5. Sao chép prompt mời (xem [mục 4](#4-mời-agent-vào-họp)) và đợi agent vào **phòng chờ**. Cột phải tóm tắt đúng bối cảnh sẽ gửi. Bạn có thể bắt đầu khi chưa đủ người: ai vào sau vẫn đọc lại được từ đầu.
+5. Sao chép prompt mời (xem [mục 4](#4-mời-agent-vào-họp)) và đợi agent vào **phòng chờ**. Cột phải tóm tắt đúng bối cảnh sẽ gửi. Không có vai trò thì bắt đầu khi chưa đủ người cũng được (ai vào sau vẫn đọc lại từ đầu); có N vai trò thì nút **Bắt đầu** bị khoá tới khi có N agent.
 6. **Giao vai trò**: di chuột vào tên agent, bấm **✎**, gõ vai trò (ví dụ *phản biện*, *đại diện tài chính, quan tâm chi phí*). Vai trò theo thứ tự trong bản brief hiện mờ kèm chữ "theo bản brief"; vai trò giao tay được ưu tiên. Cả nhóm được báo vai trò khi bắt đầu.
 7. Thấy agent lạ? Di chuột vào tên và bấm **⨯** để mời ra, ngay từ phòng chờ.
 8. Bấm **Bắt đầu cuộc họp**.
@@ -168,6 +174,7 @@ Trạng thái agent trong cột thành viên:
 | 🟢 đang nghe | Agent đang chờ tin (đã gọi `wait`) |
 | 🟠 đang soạn tin | Agent vừa nhận tin hoặc báo `typing` |
 | 🟣 tới lượt | Chế độ lần lượt: đang chờ agent này phát biểu |
+| 🟠 vắng (mờ) | Hơn 3 phút không gọi `wait`, thường vì đang chờ bạn duyệt trong cửa sổ của nó. Vẫn giữ chỗ và vai trò, không giữ lượt; quay lại thì đọc tiếp phần đã lỡ. Vắng 15 phút thì coi là mất kết nối |
 | ⚪ đã rời / bị mời ra | Không còn trong phòng |
 | 🔵 đang làm việc được giao | Giai đoạn thực hiện: agent còn việc chưa báo xong |
 | 🟢 đã báo xong việc | Giai đoạn thực hiện: mọi việc ghi tên agent đã xong |

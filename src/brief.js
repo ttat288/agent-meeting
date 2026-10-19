@@ -318,5 +318,13 @@
     ].join('\n');
   }
 
-  return { SCHEMA, LIMITS, defaults, parseBrief, toBrief, stringify, aiPrompt, PLACEHOLDER };
+  // Số agent tối thiểu để bắt đầu: vai trò giao theo vị trí, "" ở giữa vẫn chiếm một chỗ; "" ở cuối không giao gì nên không tính.
+  function rolesNeeded(roles) {
+    const rs = Array.isArray(roles) ? roles : typeof roles === 'string' ? roles.split('\n') : [];
+    let n = rs.length;
+    while (n && !String(rs[n - 1] ?? '').trim()) n--;
+    return n;
+  }
+
+  return { SCHEMA, LIMITS, defaults, parseBrief, toBrief, stringify, aiPrompt, PLACEHOLDER, rolesNeeded };
 });

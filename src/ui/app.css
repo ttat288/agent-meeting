@@ -128,6 +128,8 @@ textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
 .checks span::before { content: "○"; margin-right: 6px; }
 .checks .ok { color: var(--ok); }
 .checks .ok::before { content: "✓"; }
+.checks .bad { color: var(--bad); }
+.checks .bad::before { content: "!"; font-weight: 700; }
 
 /* ---------- invite ---------- */
 .tabs { display: flex; gap: 4px; flex-wrap: wrap; background: var(--surface-2); border: 1px solid var(--line); padding: 4px; border-radius: 10px; margin-bottom: 12px; }
@@ -158,6 +160,8 @@ textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
 .s-thinking i, i.s-thinking { background: var(--warn); animation: pulse 1.2s infinite; }
 .s-turn i, i.s-turn { background: var(--accent); animation: pulse 1.2s infinite; }
 .s-left i, .s-kicked i, .s-ended i { background: var(--line-2); }
+.s-away i, i.s-away { background: var(--warn); }
+.s-away { opacity: .6; }
 .s-working i { background: var(--accent); } .s-finished i { background: var(--ok); }
 .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; background: var(--mute); }
 .model { font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 99px; background: var(--surface-2); border: 1px solid var(--line); color: var(--mute); white-space: nowrap; }

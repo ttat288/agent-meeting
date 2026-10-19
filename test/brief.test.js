@@ -190,6 +190,7 @@ test('server: /assets/brief.js phục vụ đúng; POST start nhận nguyên b�
     assert.match(js.body, /AgentMeetingBrief/);
     const mt = app.create();
     mt.join('Lan', 'Opus');
+    mt.join('Minh', 'Sonnet'); // brief có 2 vai trò: phải đủ 2 agent mới bắt đầu được
     const res = await req('POST', `/api/host/${mt.hostKey}/start`, B.stringify(full));
     assert.equal(JSON.parse(res.body).ok, true);
     assert.equal(mt.state, 'LIVE');
@@ -210,4 +211,13 @@ test('preset (bản brief từ CLI): chỉ hiện ở phòng chờ, lưu qua --d
   m.start('abc');
   assert.equal(m.snapshot().preset, null);
   m.stop();
+});
+
+test('rolesNeeded: vai trò trống ở giữa vẫn chiếm chỗ, ở cuối thì không', () => {
+  const { rolesNeeded } = require('../src/brief');
+  assert.equal(rolesNeeded(['a', '', 'b']), 3);
+  assert.equal(rolesNeeded(['a', '', ' ']), 1);
+  assert.equal(rolesNeeded([]), 0);
+  assert.equal(rolesNeeded(undefined), 0);
+  assert.equal(rolesNeeded('a\nb'), 2);
 });

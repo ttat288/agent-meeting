@@ -111,13 +111,110 @@ test('chủ trì dừng thì mọi tool báo kết thúc', async () => {
   assert.match(await m.wait('A'), /đã kết thúc/);
 });
 
-test('agent im bặt quá lâu bị coi là đã rời để không chặn cuộc họp', async () => {
-  const m = new Meeting(fast);
+// v3.4: agent dừng lượt để hỏi người dùng của nó (Claude Code) thì im quá staleMs: chỉ VẮNG, không bị đuổi
+const away = { ...fast, idleMs: 60000, busyMs: 100, staleMs: 150, awayMs: 400 };
+const st = (m, n) => m.snapshot().agents.find(a => a.name === n).status;
+
+test('agent im quá lâu chỉ bị đánh dấu vắng, gọi wait lại thì đọc tiếp phần đã lỡ và giữ vai trò', async () => {
+  const m = new Meeting(away);
+  m.join('A', 'test'); m.join('B', 'test'); m.start('x', '', {}, ['', 'dựng MVP']);
+  await m.wait('B');
+  await sleep(200); m._reap();
+  assert.equal(st(m, 'B'), 'away');
+  assert.equal(m.state, 'LIVE');
+  assert.ok(m.log.some(x => /B vắng: .*giữ chỗ và vai trò/.test(x.text)));
+  m.say('A', 'B ơi, chủ trì đồng ý cho dựng MVP');
+  const r = await m.wait('B');
+  assert.match(r, /Bạn đã vắng ~\d+ phút/);
+  assert.match(r, /\[A\] B ơi, chủ trì đồng ý/);
+  assert.doesNotMatch(r, /rời phòng/);
+  assert.equal(m.agents.get('B').role, 'dựng MVP');
+  assert.notEqual(st(m, 'B'), 'away');
+  assert.ok(m.log.some(x => /B đã quay lại sau ~\d+ phút vắng/.test(x.text)));
+  assert.match(m.say('B', 'ok'), /Đã gửi/);
+});
+
+test('vắng mà không có tin mới: wait báo ngay rồi bảo gọi lại', async () => {
+  const m = new Meeting(away);
   m.join('A', 'test'); m.join('B', 'test'); m.start('x', '');
-  await m.wait('A');       // B join rồi biến mất
-  await sleep(900);
-  await m.wait('A');
-  assert.equal(m.snapshot().agents.find(a => a.name === 'B').status, 'left');
+  await m.wait('A'); await m.wait('B');
+  await sleep(200); m.agents.get('A').lastSeen = Date.now(); m._reap();
+  assert.equal(st(m, 'B'), 'away');
+  assert.match(await m.wait('B'), /Không có tin mới trong lúc bạn vắng\. Gọi wait lại/);
+});
+
+test('lần lượt: agent vắng bị bỏ qua lượt, không làm kẹt phòng; quay lại thì có lượt như cũ', async () => {
+  const m = new Meeting({ ...away, mode: 'turns', busyMs: 5000 });
+  m.join('A', 'test'); m.join('B', 'test'); m.join('C', 'test'); m.start('x', '');
+  assert.equal(m.snapshot().turn, 'A');
+  await m.wait('A'); m.say('A', 'ý 1');
+  assert.equal(m.snapshot().turn, 'B');
+  await sleep(200); m.agents.get('A').lastSeen = m.agents.get('C').lastSeen = Date.now(); m._reap();
+  assert.equal(st(m, 'B'), 'away');
+  assert.equal(m.snapshot().turn, 'C');        // lượt của B chuyển ngay cho người kế
+  await m.wait('C'); m.say('C', 'ý 2');
+  assert.equal(m.snapshot().turn, 'A');        // bỏ qua B
+  await m.wait('A'); m.pass('A');
+  await m.wait('C'); m.pass('C');              // cả vòng (người có mặt, không vắng) bỏ lượt thì kết thúc
+  assert.equal(m.state, 'ENDED');
+});
+
+test('người cuối cùng rời phòng khi còn agent vắng: phòng chưa đóng; vắng quá awayMs mới tính mất kết nối', async () => {
+  const m = new Meeting(away);
+  m.join('A', 'test'); m.join('B', 'test'); m.start('x', '');
+  await m.wait('B');
+  await sleep(200); m.agents.get('A').lastSeen = Date.now(); m._reap();
+  m.leave('A');
+  assert.equal(m.state, 'LIVE');
+  await sleep(450); m._reap();
+  assert.equal(m.state, 'ENDED');
+  assert.match(m.endReason, /mọi agent đã rời/);
+});
+
+test('agent bị tính mất kết nối quay lại khi phòng còn mở thì tự vào lại', async () => {
+  const m = new Meeting(away);
+  m.join('A', 'test'); m.join('B', 'test'); m.start('x', '');
+  await sleep(200); m.agents.get('A').lastSeen = Date.now(); m._reap();
+  await sleep(450); m.agents.get('A').lastSeen = Date.now(); m._reap();
+  assert.equal(st(m, 'B'), 'left');
+  m.say('A', 'tin trong lúc B mất kết nối');
+  const r = await m.wait('B');
+  assert.match(r, /tin trong lúc B mất kết nối/);
+  assert.ok(m.log.some(x => x.text === 'B quay lại phòng'));
+  assert.notEqual(st(m, 'B'), 'left');
+});
+
+test('agent tự rời (leave) thì không tự vào lại', async () => {
+  const m = new Meeting(away);
+  m.join('A', 'test'); m.join('B', 'test'); m.start('x', '');
+  m.leave('B', 'xong');
+  assert.match(await m.wait('B'), /Bạn đã rời phòng/);
+});
+
+test('agent vắng gọi join lại với cùng tên và model thì vào lại, không bị báo trùng tên', async () => {
+  const m = new Meeting(away);
+  m.join('A', 'test'); m.join('B', 'Opus 5.5'); m.start('x', '');
+  await sleep(200); m._reap();
+  assert.match(m.join('B', 'Opus 5.5'), /Bạn đã vào cuộc họp với tên "B"/);
+  assert.notEqual(st(m, 'B'), 'away');
+  assert.match(m.join('B', 'GPT-6'), /đã có agent khác dùng/);
+});
+
+test('trạng thái vắng được lưu và nạp lại (--data-dir)', async () => {
+  const m = new Meeting(away);
+  m.join('A', 'test'); m.join('B', 'test'); m.start('x', '');
+  await sleep(200); m._reap();
+  const n = new Meeting(away); n.restore(JSON.parse(JSON.stringify(m.toState())));
+  assert.equal(st(n, 'B'), 'away');
+  assert.match(await n.wait('B'), /Bạn đã vắng/);
+});
+
+test('giao thức dặn: cần người dùng duyệt thì nói vào phòng rồi wait tiếp; tách lệnh đọc tệp với lệnh gửi', () => {
+  const m = new Meeting(fast);
+  const p = m.join('A', 'test', { base: 'http://x/a/1' });
+  assert.match(p, /\n12\. CẦN NGƯỜI DÙNG CỦA BẠN DUYỆT.*say NGẮN vào phòng.*wait tiếp.*giữ chỗ/);
+  assert.match(p, /\n13\. Chia sẻ có chọn lọc: .*lệnh RIÊNG.*Không ghép đọc tệp với lệnh gửi/);
+  assert.match(p, /mâu thuẫn thì làm theo luật 12/);
 });
 
 test('đạt giới hạn tin nhắn thì kết thúc', () => {

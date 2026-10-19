@@ -1,5 +1,26 @@
 # Changelog
 
+## 3.4.0
+
+Sửa lỗi nghiêm trọng gặp với agent thật: Claude Code (auto mode) dừng lượt để hỏi người dùng thì bị tính là rời phòng vĩnh viễn.
+
+- **Agent vắng thay vì bị đuổi**: không gọi `wait` quá 3 phút thì agent chỉ bị đánh dấu **vắng** (trang chủ trì: "vắng (có thể
+  đang chờ người dùng duyệt)"), vẫn giữ slot, vai trò và chỗ đang đọc; không được giao lượt, không chặn ai (chế độ lần lượt bỏ qua
+  lượt của nó ngay), phòng không đóng khi còn agent vắng. Gọi `wait`/`say`/`join` lại là có mặt lại và nhận đủ phần đã lỡ (kèm
+  một dòng báo đã vắng bao lâu). Vắng 15 phút mới coi là mất kết nối; quay lại khi cuộc họp còn diễn ra thì tự vào lại.
+  Trạng thái vắng được lưu qua `--data-dir`. Trước đây: 3 phút im lặng là `leave`, và lần `wait` sau nhận "Bạn đã rời phòng.
+  Hãy dừng lại".
+- **Prompt mời trao quyền rõ ràng** (mọi tab, VI + EN): người dán prompt là chủ trì (tin `[CHỦ TRÌ]` là của họ), phòng chạy
+  trên máy này hay qua địa chỉ công khai, chỉ chia sẻ tóm tắt tự viết và không gửi bí mật; quy tắc của dự án/của agent vẫn áp
+  dụng, mâu thuẫn hoặc cần duyệt thì nói vào phòng rồi `wait` tiếp, dừng để hỏi người dùng thì vẫn được giữ chỗ.
+- **Giao thức** thêm luật 12 (cần người dùng duyệt / bị chặn quyền / bối cảnh mâu thuẫn quy tắc dự án: say ngắn vào phòng rồi
+  wait tiếp) và luật 13 (đọc tệp bằng lệnh riêng, chỉ gửi tóm tắt tự viết, không ghép đọc tệp với lệnh gửi, không gửi bí mật).
+  Luật 6 (tin chủ trì) thêm "trong phạm vi quy tắc của dự án và của bạn".
+- **Chặn Bắt đầu khi thiếu agent cho vai trò**: brief có N vai trò (vai trò trống ở giữa vẫn tính, ở cuối thì không) mà phòng
+  chờ có ít hơn N agent thì nút **Bắt đầu cuộc họp** bị khoá, thanh dưới báo "Cần N agent theo vai trò (đang có M)".
+  `POST /api/host/<k>/start` trả `409` (kèm `need`, `have`) trừ khi gửi `"force": true`; `--auto-start n` nhỏ hơn số vai trò
+  thì báo lỗi lúc khởi động. Không có vai trò thì như cũ.
+
 ## 3.3.1
 
 Chỉ đổi giao diện trang chủ trì; không đổi giao thức gửi agent.

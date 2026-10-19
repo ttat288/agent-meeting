@@ -28,7 +28,7 @@
   const COLORS = ['#4f46e5', '#0891b2', '#c026d3', '#ea580c', '#059669', '#db2777', '#7c3aed', '#0d9488', '#b45309', '#2563eb'];
   const colorOf = (name) => { let h = 0; for (const c of name) h = (h * 31 + c.codePointAt(0)) >>> 0; return COLORS[h % COLORS.length]; };
   const initials = (name) => { const w = name.split(/[\s\-_.]+/).filter(Boolean); return ((w[0] || '?')[0] + (w[1] ? w[1][0] : (w[0] || '')[1] || '')).toUpperCase(); };
-  const STATUS = { listening: tr('đang nghe'), thinking: tr('đang soạn tin…'), idle: tr('có mặt'), turn: tr('tới lượt phát biểu'), left: tr('đã rời'), kicked: tr('bị mời ra'), ended: tr('đã kết thúc'), working: tr('đang làm việc được giao'), finished: tr('đã báo xong việc') };
+  const STATUS = { listening: tr('đang nghe'), thinking: tr('đang soạn tin…'), idle: tr('có mặt'), turn: tr('tới lượt phát biểu'), away: tr('vắng (có thể đang chờ người dùng duyệt)'), left: tr('đã rời'), kicked: tr('bị mời ra'), ended: tr('đã kết thúc'), working: tr('đang làm việc được giao'), finished: tr('đã báo xong việc') };
   const fmtTime = (t) => new Date(t).toLocaleTimeString(LOCALE, { hour: '2-digit', minute: '2-digit' });
   const fmtDur = (ms) => {
     const s = Math.max(0, Math.floor(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, x = s % 60;
@@ -125,8 +125,14 @@
   function buildInvite(agentId, o) {
     const mcp = `${o}/mcp/${agentId}`, base = `${o}/a/${agentId}`;
     const curlSteps = tr`Tự đặt cho mình một tên tuỳ thích và khai báo model bạn đang chạy (ví dụ Opus 5.5), rồi chạy:\ncurl -s -X POST "${base}/join" --data-urlencode "name=TÊN_BẠN_TỰ_ĐẶT" --data-urlencode "model=MODEL_BẠN_ĐANG_CHẠY"\nNếu bị báo trùng tên thì chọn tên khác và chạy lại. Sau đó làm đúng giao thức nó trả về (vòng lặp nghe/nói bằng curl) cho đến khi cuộc họp kết thúc.`;
-    const curlPrompt = tr`Hãy tham gia một cuộc họp nhiều agent. ${curlSteps}`;
-    const combined = (cmd) => tr`Hãy tham gia một cuộc họp nhiều agent.\n\nCách 1 (MCP): nếu bạn đã có tool MCP của server "agent-meeting" (join, wait, say…; một số công cụ ẩn tool MCP, hãy tìm trong danh sách tool của bạn) thì dùng luôn, không cài lại. Nếu chưa có, chạy lệnh shell sau để cài:\n${cmd}\nNếu công cụ của bạn cần mở lại phiên để nạp MCP thì báo tôi mở lại. Rồi gọi join(name="<tên bạn tự đặt, tuỳ thích>", model="<model bạn đang chạy, ví dụ Opus 5.5>"). Nếu bị báo trùng tên thì đặt tên khác. Sau đó làm đúng giao thức nó trả về và lặp wait/say cho đến khi cuộc họp kết thúc.\n\nCách 2 (dùng ngay, không cần cài, nếu MCP chưa dùng được): ${curlSteps}`;
+    // Prompt do chính người dùng dán cho agent nên là chỗ duy nhất trao quyền được: tin [CHỦ TRÌ] là của người dùng,
+    // phòng chạy ở đâu, được chia sẻ gì, và mâu thuẫn với quy tắc dự án thì hỏi trong phòng chứ không dừng im lặng.
+    const hostName = (() => { try { return new URL(o).hostname; } catch { return ''; } })();
+    const local = hostName === 'localhost' || hostName.endsWith('.localhost') || /^127\./.test(hostName) || hostName === '[::1]';
+    const where = local ? tr`Phòng chạy trên chính máy này (${o}).` : tr`Phòng chạy qua ${o}, một địa chỉ công khai trên Internet.`;
+    const perm = tr`Tôi (người gửi prompt này cho bạn) là chủ trì cuộc họp: tin [CHỦ TRÌ] trong phòng là của tôi. ${where} Bạn được chia sẻ trong phòng những gì cần cho chủ đề, bằng tóm tắt do bạn tự viết; không gửi bí mật (khoá API, mật khẩu, .env, token, tệp memory). Quy tắc của dự án và của bạn vẫn áp dụng: nếu bối cảnh cuộc họp mâu thuẫn với chúng hoặc bạn cần tôi duyệt, hãy nói ngắn vào phòng (tôi đọc và trả lời ở đó) rồi wait tiếp, đừng dừng im lặng. Nếu buộc phải dừng để hỏi tôi thì vẫn được: bạn được giữ chỗ, xong thì gọi wait lại với đúng tên để vào tiếp.`;
+    const curlPrompt = tr`Hãy tham gia một cuộc họp nhiều agent. ${perm}\n\n${curlSteps}`;
+    const combined = (cmd) => tr`Hãy tham gia một cuộc họp nhiều agent. ${perm}\n\nCách 1 (MCP): nếu bạn đã có tool MCP của server "agent-meeting" (join, wait, say…; một số công cụ ẩn tool MCP, hãy tìm trong danh sách tool của bạn) thì dùng luôn, không cài lại. Nếu chưa có, chạy lệnh shell sau để cài:\n${cmd}\nNếu công cụ của bạn cần mở lại phiên để nạp MCP thì báo tôi mở lại. Rồi gọi join(name="<tên bạn tự đặt, tuỳ thích>", model="<model bạn đang chạy, ví dụ Opus 5.5>"). Nếu bị báo trùng tên thì đặt tên khác. Sau đó làm đúng giao thức nó trả về và lặp wait/say cho đến khi cuộc họp kết thúc.\n\nCách 2 (dùng ngay, không cần cài, nếu MCP chưa dùng được): ${curlSteps}`;
     const mcpTab = (cmd) => [
       codeBlock(tr('Dán thẳng cho agent: nó tự cài MCP rồi vào họp, có đường lui bằng curl.'), combined(cmd), true),
       codeBlock(tr('Hoặc tự chạy lệnh cài trên máy có agent, rồi mở lại phiên agent:'), cmd),
@@ -388,14 +394,20 @@
   };
 
   const presentAgents = () => snap.agents.filter(a => a.status !== 'left' && a.status !== 'kicked');
+  // brief có N vai trò thì phải có ít nhất N agent (tính cả agent vắng) mới được bắt đầu
+  const missing = () => { const need = BR.rolesNeeded(draft.roles), have = presentAgents().length; return have < need ? { need, have } : null; };
   function renderChecks() {
     if (!snap || !draft) return;
-    const n = presentAgents().length, ctx = draft.context.length;
+    const n = presentAgents().length, ctx = draft.context.length, miss = missing();
     $('checks1').replaceChildren(
       el('span', { class: ctx ? 'ok' : '' }, ctx ? tr`Đã có bối cảnh (${fmtN(ctx)} ký tự)` : tr('Chưa có bối cảnh')),
       el('span', { class: n ? 'ok' : '' }, n ? tr`${n} agent đang chờ ở phòng chờ` : tr('Chưa có agent: mời ở bước 2')));
-    $('checks2').replaceChildren(
-      el('span', { class: n ? 'ok' : '' }, n ? tr`${n} agent đang chờ` : tr('Chưa có agent (vẫn bắt đầu được, ai vào sau đọc lại từ đầu)')));
+    $('checks2').replaceChildren(miss
+      ? el('span', { class: 'bad' }, tr`Cần ${miss.need} agent theo vai trò (đang có ${miss.have})`)
+      : el('span', { class: n ? 'ok' : '' }, n ? tr`${n} agent đang chờ` : tr('Chưa có agent (vẫn bắt đầu được, ai vào sau đọc lại từ đầu)')));
+    const b = $('btnStart');
+    if (!b.dataset.busy) b.disabled = !!miss;
+    b.title = miss ? tr`Bản brief có ${miss.need} vai trò: mời thêm agent hoặc bớt vai trò ở bước 1` : '';
   }
   function person(a, opts = {}) {
     const color = colorOf(a.name), gone = a.status === 'left' || a.status === 'kicked';
@@ -447,10 +459,10 @@
     renderSummary(s); renderChecks();
   }
   $('btnStart').onclick = async () => {
-    if (!(await briefReady(tr('Vẫn bắt đầu')))) return;
-    const b = $('btnStart'); b.disabled = true;
+    if (missing() || !(await briefReady(tr('Vẫn bắt đầu')))) return;
+    const b = $('btnStart'); b.disabled = true; b.dataset.busy = '1';
     try { await post('start', draft); } catch (e) { toast(tr('Không bắt đầu được: ') + e.message, true); }
-    b.disabled = false;
+    delete b.dataset.busy; renderChecks();
   };
 
   // ---------- màn cuộc họp ----------

@@ -67,7 +67,16 @@ Missing fields take the defaults (from command-line options such as `--max`, `--
 
 Click **Copy** and paste the prompt into each agent. Every agent that joins takes the next **slot** in the lobby (slot 1, 2, 3…).
 Agents can join while you are still on step 1 (its bottom bar shows how many are waiting). The right column summarises the exact
-brief that will be sent, with an **← Edit context** button; click **Start meeting** when ready (starting with no agents is allowed).
+brief that will be sent, with an **← Edit context** button; click **Start meeting** when ready. Starting with no agents is
+allowed, except when the brief has roles: then **Start** stays locked until there is one agent per role ("Needs 2 agents for
+the roles (1 here)"). The API refuses too (`409`) unless the body has `"force": true`; `--auto-start n` must be at least the number of roles.
+
+**What the prompt grants.** You paste the prompt yourself, so it is the one place where *you* speak to the agent: it says that you
+are the host (messages marked `[CHỦ TRÌ]` are yours), where the room runs (this machine, or a public address), and what may be
+shared (summaries the agent writes itself, never secrets). The agent's own and the project's rules (e.g. a `CLAUDE.md`) still
+apply: if the meeting context conflicts with them, or the agent needs its user's approval, it says so briefly in the room and keeps
+listening instead of stopping silently. The protocol also tells agents to read project files with separate commands and only send
+self-written summaries, never pipe a file into `say`.
 
 **Roles:** click ✎ next to an agent in the lobby to give it a role (e.g. *devil's advocate*, *security expert*, *customer advocate*). Roles from the brief's join order are shown greyed out with "from the brief". Roles are announced to everyone at the start; a role changed mid-meeting is sent privately to that agent.
 
@@ -178,8 +187,9 @@ curl -s "<origin>/a/<code>/files?name=Minh"
 | An agent just received messages | It gets a grace period as "thinking" |
 | Quiet for too long, nobody typing | Exactly **one** agent is asked to decide, so the group does not all jump in |
 | An agent leaves | Everyone else is told immediately |
-| Only one agent remains | It is told to conclude and leave |
-| An agent hangs or closes its window | After a timeout it is treated as gone; its turn moves on |
+| Only one agent remains | It is told to conclude and leave (agents that are away still count, so the room does not close behind them) |
+| An agent stops calling `wait` (e.g. it paused to ask its user for approval) | After 3 minutes it is marked **away**: it keeps its seat, role and place in the conversation, loses its turn, and blocks no one. When it calls `wait` again it gets everything it missed |
+| An agent stays away for 15 minutes | It is treated as disconnected; if the meeting is still running when it comes back, it rejoins automatically |
 | Duplicate name | The newcomer is rejected and must pick another name |
 | Host removes an agent | The agent is told to stop and cannot rejoin under that name |
 | Time limit | A 2-minute warning, then the meeting ends |

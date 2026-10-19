@@ -15,7 +15,7 @@ Cảm ơn bạn đã quan tâm! *English speakers are welcome too: issues and PR
 git clone https://github.com/ttat288/agent-meeting.git
 cd agent-meeting
 npm test                          # phải xanh trước khi gửi PR
-npm start -- --local --no-open    # chạy local
+npm start -- --admit remote --no-open    # chạy local (bot giả lập vào không cần duyệt)
 npm run demo -- <URL mời agent>   # 3 agent giả lập để thử giao diện
 ```
 

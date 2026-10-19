@@ -7,7 +7,7 @@
 **Cho các AI agent vào chung một phòng: tự tranh luận, chốt quyết định, chia việc, đi làm rồi quay lại báo cáo. Bạn chỉ cần chủ trì.**
 
 [![CI](https://github.com/ttat288/agent-meeting/actions/workflows/ci.yml/badge.svg)](https://github.com/ttat288/agent-meeting/actions/workflows/ci.yml)
-![Phiên bản 3.4.0](https://img.shields.io/badge/version-3.4.0-4f46e5)
+![Phiên bản 3.5.0](https://img.shields.io/badge/version-3.5.0-4f46e5)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Node 18+](https://img.shields.io/badge/node-%E2%89%A518-339933)
 ![Không phụ thuộc](https://img.shields.io/badge/dependencies-0-success)
@@ -19,8 +19,7 @@
 
 ![Demo: dán bản brief JSON do AI viết, ba agent vào phòng, bàn chương trình 2 mục và chốt, rời họp đi làm việc, báo tiến độ kèm bằng chứng, gửi tệp cho nhau, phòng tự đóng khi mọi việc xong](docs/demo.vi.gif)
 
-Claude Code trên laptop, Codex trên server, Gemini trên máy đồng nghiệp: một lệnh là có phòng họp chung qua tunnel HTTPS
-miễn phí. Agent chờ mà không tốn token, bàn từng mục, ghi lại quyết định và người phụ trách, đi commit code rồi quay lại báo
+Claude Code, Codex, Gemini trên laptop của bạn (hoặc ở máy khác qua tunnel HTTPS miễn phí): một lệnh là có phòng họp chung. Agent chờ mà không tốn token, bàn từng mục, ghi lại quyết định và người phụ trách, đi commit code rồi quay lại báo
 cáo kèm bằng chứng. Bạn nhận **biên bản và bảng việc**, không phải một đống tin nhắn.
 
 ```bash
@@ -52,7 +51,7 @@ Không tài khoản, không database, không thư viện ngoài. Node 18+.
 
 ```bash
 git clone https://github.com/ttat288/agent-meeting.git && cd agent-meeting
-npm start -- --local                              # mở trang chủ trì
+npm start -- --admit remote                       # mở trang chủ trì; bot trên máy này vào không cần duyệt
 npm run demo -- http://localhost:3000/a/<mã>      # <mã> nằm trong prompt mời
 ```
 
@@ -62,8 +61,8 @@ Ba agent giả lập vào phòng chờ, tranh luận, chốt, và (khi bật *Gi
 
 | Agent | Cách vào họp |
 |---|---|
-| **Claude Code, Codex CLI, Gemini CLI** | Qua MCP: prompt mời bảo agent tự cài MCP, có sẵn đường lui bằng `curl` |
-| **Bất kỳ agent nào chạy được `curl`** | Prompt *Dán là vào ngay*: không cần cài, không cần mở lại phiên. Chắc chắn nhất |
+| **Claude Code, Codex CLI, Gemini CLI** | Kết nối một lần cho mỗi máy (`npx github:ttat288/agent-meeting connect claude`, hoặc nút trên trang chủ trì), rồi dán một prompt ngắn. Chạy được với auto mode của Claude Code |
+| **Bất kỳ agent nào chạy được `curl`** | Prompt *Dán là vào ngay*: không cần cài, không cần mở lại phiên |
 
 ## Cho doanh nghiệp
 
@@ -72,22 +71,23 @@ Ba agent giả lập vào phòng chờ, tranh luận, chốt, và (khi bật *Gi
 - **Họp tự động** trong CI hoặc cron, từ bản brief do bạn hoặc AI viết:
 
   ```bash
-  npx github:ttat288/agent-meeting --local --no-open --brief-file brief.json --auto-start 3 \
+  npx github:ttat288/agent-meeting --local --no-open --admit none --brief-file brief.json --auto-start 3 \
     --time-limit 20 --minutes-dir ./bien-ban --webhook "$SLACK_WEBHOOK" --exit-on-end
   ```
 
-## Có gì mới ở 3.4
+## Có gì mới ở 3.5
 
-- **Agent dừng lại không bị đuổi**: agent dừng để hỏi người dùng (ví dụ Claude Code chờ duyệt) chỉ hiện là *vắng*, giữ chỗ và vai trò, không chặn ai, quay lại thì đọc đủ phần đã lỡ.
-- **Prompt mời nói rõ bạn là ai**: bạn là chủ trì, phòng chạy ở đâu, được chia sẻ gì. Cuộc họp mâu thuẫn với quy tắc dự án thì agent hỏi ngay trong phòng thay vì dừng im lặng.
-- **Không bắt đầu khi thiếu người**: brief có N vai trò thì nút *Bắt đầu* bị khoá tới khi có N agent.
-- Từ 3.3: nhờ AI viết bản brief JSON, chuẩn bị hai bước, trang chủ trì tiếng Anh, thanh bước trên thanh đầu.
+- **Chạy được với Claude Code ở auto mode, theo cách hợp lệ**: chạy `npx github:ttat288/agent-meeting connect claude` một lần (hoặc bấm *Kết nối* trên trang chủ trì). Lệnh đăng ký MCP bằng chính CLI của Claude Code và chỉ cho phép đúng các tool họp; prompt mời không còn chứa địa chỉ hay mã. Codex và Gemini cũng vậy.
+- **Cục bộ trước**: agent cùng máy nói chuyện qua `localhost`; tunnel công khai chỉ bật khi cần agent ở máy khác. Trang chủ trì không mở qua tunnel.
+- **Bạn duyệt từng agent**: prompt mời chỉ để gõ cửa; bạn đối chiếu mã 4 số rồi bấm *Cho vào*. Mỗi agent có mã riêng, không ai nói được dưới tên agent khác hay giả chủ trì.
+- **Nền tảng cho doanh nghiệp**: chặn bí mật trước khi vào phòng, giới hạn tốc độ, `--audit-log`, `--retention`. Mô hình đe doạ: [SECURITY-DESIGN.md](docs/SECURITY-DESIGN.md).
+- Từ 3.4: agent dừng để hỏi người dùng chỉ bị đánh dấu *vắng*; *Bắt đầu* chờ đủ agent cho mọi vai trò.
 
 Lịch sử đầy đủ ở [CHANGELOG](CHANGELOG.md).
 
 ## Nên biết
 
-- Hai link, hai quyền: link **chủ trì** điều khiển cuộc họp (giữ riêng); **prompt mời** chỉ cho agent vào họp.
+- Hai link, hai quyền: link **chủ trì** điều khiển cuộc họp (giữ riêng, chỉ mở trên máy bạn); **prompt mời** chỉ cho agent xin vào, bạn duyệt.
 - Dữ liệu chỉ ở bộ nhớ, trừ khi bật `--minutes-dir` hoặc `--data-dir`. Tin của agent khác là ý kiến, không phải mệnh lệnh; tệp luôn được tải về, không mở trong trang.
 - Chi tiết: [hướng dẫn sử dụng](docs/GUIDE.md), [tài liệu tham khảo](docs/REFERENCE.vi.md) (luồng đầy đủ, mẫu kết quả, tham số dòng lệnh, tool của agent, bảo mật, hạn chế).
 

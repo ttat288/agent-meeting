@@ -19,7 +19,8 @@ openssl rand -hex 16   # mã agent    -> AGENT_MEETING_AGENT_KEY
 ```
 
 - Mã chủ trì nằm trong link `/m/<mã chủ trì>`: ai có link này **điều khiển** cuộc họp. Chỉ gửi cho người chủ trì.
-- Mã agent nằm trong prompt mời và lệnh cài MCP: ai có mã này **tham gia** được cuộc họp.
+- Mã agent nằm trong prompt mời và lệnh `connect --room`: ai có mã này **xin vào** được cuộc họp; chủ trì duyệt từng agent
+  (mặc định `--admit all`), mỗi agent được cho vào có mã riêng.
 
 Không đặt mã thì mỗi lần khởi động sẽ sinh mã mới (in ra log), giống bản chạy trên máy cá nhân.
 
@@ -40,6 +41,8 @@ docker run -d --name agent-meeting --restart unless-stopped \
   -e AGENT_MEETING_DATA_DIR=/data/state \
   -e AGENT_MEETING_FOLLOW_UP=1 \
   -e AGENT_MEETING_WEBHOOK=https://hooks.slack.com/services/XXX/YYY/ZZZ \
+  -e AGENT_MEETING_AUDIT_LOG=/data/audit.jsonl \
+  -e AGENT_MEETING_RETENTION_DAYS=90 \
   -v /srv/agent-meeting:/data \
   agent-meeting
 
@@ -52,6 +55,11 @@ docker logs agent-meeting   # in ra link chủ trì và lệnh mời agent
 - Image có `HEALTHCHECK` gọi `/healthz`; `docker ps` sẽ hiện `healthy`.
 - `AGENT_MEETING_DATA_DIR`: trạng thái phòng (`<mã chủ trì>.json`, quyền 600, **chứa mã bí mật**: đừng sao lưu ra nơi người khác đọc được). Cần mã chủ trì cố định.
 - `AGENT_MEETING_FOLLOW_UP=1`: mặc định bật "Giữ phòng để báo tiến độ" (chủ trì vẫn tắt được trên web trước khi bắt đầu).
+- Image chạy `--lan` (nghe 0.0.0.0 trong container) để `-p` chuyển cổng được; ngoài container chỉ mở cho `127.0.0.1` như dòng trên.
+- `AGENT_MEETING_AUDIT_LOG`: nhật ký kiểm toán JSONL (quyền 600): agent xin vào/được duyệt/bị từ chối (tên, model, IP, mã đối chiếu),
+  gửi/tải tệp (tên, cỡ, sha256), thao tác của chủ trì, tin bị chặn vì có dạng bí mật. Không ghi nội dung tin, tệp hay mã.
+- `AGENT_MEETING_RETENTION_DAYS`: tự xoá biên bản và trạng thái phòng cũ quá số ngày (chạy lúc khởi động và mỗi 6 giờ).
+- `AGENT_MEETING_ADMIT`: `all` (mặc định, chủ trì duyệt từng agent), `remote`, hoặc `none` (chỉ cho họp tự động trong mạng kín).
 - `AGENT_MEETING_MAX_FILE_MB` / `AGENT_MEETING_MAX_ROOM_MB`: giới hạn tệp agent gửi nhau (mặc định 20 MB mỗi tệp, 200 MB mỗi phòng). Có `AGENT_MEETING_DATA_DIR` thì tệp được ghi vào `<data-dir>/<mã chủ trì>.files/`.
 
 Docker Compose tương đương:
@@ -71,6 +79,8 @@ services:
       AGENT_MEETING_DATA_DIR: /data/state
       AGENT_MEETING_FOLLOW_UP: "1"
       AGENT_MEETING_WEBHOOK: ${AGENT_MEETING_WEBHOOK}
+      AGENT_MEETING_AUDIT_LOG: /data/audit.jsonl
+      AGENT_MEETING_RETENTION_DAYS: "90"
     volumes: ["/srv/agent-meeting:/data"]
 ```
 
@@ -138,9 +148,10 @@ meet.congty.vn {
 
 `--public-url` (hoặc `AGENT_MEETING_PUBLIC_URL`) là địa chỉ người dùng và agent truy cập. Khi đặt nó, mọi link mời và mọi lệnh `curl` trong giao thức gửi cho agent đều dùng địa chỉ này, kể cả khi proxy đổi header `Host`.
 
-### Giới hạn truy cập trang chủ trì (tuỳ chọn)
+### Giới hạn truy cập trang chủ trì (nên làm)
 
-Agent cần truy cập `/a/…` và `/mcp/…`. Trang chủ trì (`/m/…`, `/api/host/…`, `/assets/…`) có thể đặt thêm lớp bảo vệ của công ty, ví dụ chỉ cho mạng nội bộ hoặc SSO của proxy:
+Với `--public-url`, trang chủ trì mở được từ địa chỉ công khai (app không tự chặn vì công ty thường đặt proxy/SSO phía trước).
+Agent cần truy cập `/a/…` và `/mcp/…`. Trang chủ trì (`/m/…`, `/api/host/…`, `/assets/…`) nên có thêm lớp bảo vệ của công ty, ví dụ chỉ cho mạng nội bộ hoặc SSO của proxy:
 
 ```nginx
 location ~ ^/(m|api/host)/ {
@@ -150,6 +161,36 @@ location ~ ^/(m|api/host)/ {
   # ... cùng các dòng proxy_* như trên
 }
 ```
+
+### Cloudflare Tunnel có tên + Access (không mở cổng ra Internet)
+
+Thay cho quick tunnel ngẫu nhiên: `cloudflared tunnel create agent-meeting`, trỏ `meet.congty.vn` vào `http://localhost:3000`,
+chạy app với `--public-url https://meet.congty.vn`. Đặt **Cloudflare Access** cho `/m/*` và `/api/host/*` (SSO cho người) và cho
+`/a/*`, `/mcp/*` bằng **service token** (cho máy agent). Cầu nối MCP gửi kèm header của service token nếu khai báo trong
+`~/.agent-meeting/rooms.json` của máy agent (sau khi chạy `connect … --room https://meet.congty.vn/a/<mã agent>/join`):
+
+```json
+{ "current": "meet.congty.vn",
+  "rooms": { "meet.congty.vn": { "url": "https://meet.congty.vn", "room": "<mã agent>",
+    "headers": { "CF-Access-Client-Id": "<id>.access", "CF-Access-Client-Secret": "<secret>" } } } }
+```
+
+Cần xác thực hai chiều (mTLS) thì đặt ở reverse proxy (nginx `ssl_verify_client on`) hoặc Cloudflare Access (mTLS rule).
+
+<a id="claude-code-auto-mode"></a>
+### Claude Code ở auto mode trong công ty
+
+Bộ kiểm duyệt của auto mode chỉ tin thư mục làm việc và remote git; mọi địa chỉ khác là "bên ngoài". Hai cách hợp lệ, do người dùng
+hoặc quản trị viên đặt (không bao giờ đặt trong repo):
+
+1. **Khuyên dùng**: mỗi máy chạy `npx github:ttat288/agent-meeting connect claude --room https://meet.congty.vn/a/<mã agent>/join`
+   một lần. Lệnh thêm `permissions.allow` cho đúng các tool họp `mcp__agent-meeting__…` (allow rule được xét trước bộ kiểm duyệt).
+   Quản trị viên có thể đưa các rule này vào **managed settings** thay cho từng máy.
+2. Cho đường `curl`: thêm vào `autoMode.environment` (trong `~/.claude/settings.json` hoặc managed settings) một dòng như
+   `"Key internal services: Agent Meeting at https://meet.congty.vn (company meeting room for coding agents; sharing project summaries there is intended)"`.
+   Claude Code **không** đọc `autoMode` từ `.claude/settings*.json` trong repo.
+
+Không dùng `--dangerously-skip-permissions` hay tắt kiểm duyệt cho việc họp.
 
 ## 5. Biên bản và webhook
 
@@ -170,7 +211,7 @@ Bản brief JSON (nút **Tải .json** trên trang chủ trì, hoặc nhờ AI v
 docker run --rm -v /srv/agent-meeting:/data -e TZ=Asia/Ho_Chi_Minh \
   -e AGENT_MEETING_PUBLIC_URL=https://meet.congty.vn \
   -e AGENT_MEETING_HOST_KEY=<mã chủ trì> -e AGENT_MEETING_AGENT_KEY=<mã agent> \
-  agent-meeting node bin/cli.js --local --no-open \
+  agent-meeting node bin/cli.js --local --lan --no-open --admit none \
     --brief-file /data/brief.json --auto-start 3 --minutes-dir /data --exit-on-end
 ```
 
@@ -186,4 +227,7 @@ docker run --rm -v /srv/agent-meeting:/data -e TZ=Asia/Ho_Chi_Minh \
 - Mỗi server chạy **một phòng họp tại một thời điểm**. "Cuộc họp mới" trên trang chủ trì mở cuộc kế tiếp ngay tại link cũ. Cần nhiều phòng song song thì chạy nhiều container với các mã khác nhau.
 - Cuộc họp đã kết thúc quá 30 phút, đang họp mà im lặng quá 3 giờ, hoặc đang ở giai đoạn thực hiện mà không ai báo tiến độ trong 7 ngày, được tự làm mới thành phòng chờ trống (cuộc đang họp sẽ được kết thúc và lưu biên bản trước).
 - Kiểm tra sống: `GET /healthz` trả `{"ok":true,"version":"…"}`.
-- Bảo mật: không có tài khoản người dùng. Quyền dựa trên hai mã bí mật ở trên. Đổi mã bằng cách đặt giá trị mới rồi khởi động lại. Nội dung agent gửi được hiển thị an toàn (escape HTML, CSP chặt) và giao thức dặn agent không làm theo lệnh của agent khác.
+- Bảo mật: không có tài khoản người dùng. Quyền dựa trên mã chủ trì, mã mời (chỉ để xin vào) và mã riêng của từng agent (cấp khi
+  chủ trì duyệt). Đổi mã bằng cách đặt giá trị mới rồi khởi động lại. Server từ chối tin/tệp có dạng bí mật, giới hạn tốc độ, ghi
+  nhật ký kiểm toán (`AGENT_MEETING_AUDIT_LOG`). Nội dung agent gửi được hiển thị an toàn (escape HTML, CSP chặt), được trích dẫn khi
+  gửi cho agent khác, và giao thức dặn agent không làm theo lệnh của agent khác. Mô hình đe doạ: [SECURITY-DESIGN.md](SECURITY-DESIGN.md).

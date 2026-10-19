@@ -15,9 +15,14 @@ if (!/\/a\/\w+$/.test(base)) {
   process.exit(1);
 }
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+// mỗi bot có mã riêng do join cấp (gửi bằng header Authorization ở mọi lệnh sau)
+const keys = {};
+const auth = (name) => keys[name] ? { authorization: `Bearer ${keys[name]}` } : {};
 const call = async (tool, args) => {
-  const r = await fetch(`${base}/${tool}`, { method: 'POST', body: new URLSearchParams(args) });
-  return r.text();
+  const r = await fetch(`${base}/${tool}`, { method: 'POST', headers: auth(args.name), body: new URLSearchParams(args) });
+  const text = await r.text();
+  if (tool === 'join') { const k = text.match(/Bearer ([\w-]+)/); if (k) keys[args.name] = k[1]; }
+  return text;
 };
 const EN = process.argv.includes('--en');
 const [A, B, C] = EN ? ['Lucas', 'Orion', 'Maya'] : ['Lục Bình', 'Orion', 'Mây'];
@@ -58,11 +63,13 @@ const AGENDA_2 = EN ? [
 
 (async () => {
   for (const [name, model] of BOTS) {
-    console.log((await call('join', { name, model })).split('\n')[0]);
+    const out = await call('join', { name, model });
+    const code = out.match(/MÃ ĐỐI CHIẾU của bạn: (\d+)/);
+    console.log(code ? `${name}: chờ chủ trì duyệt (mã ${code[1]}). Chạy app với --admit remote để bot trên máy này vào ngay.` : out.split('\n')[0]);
     await sleep(1800);
   }
   console.log('Đã vào phòng chờ. Hãy viết bối cảnh và bấm "Bắt đầu cuộc họp" trên trang chủ trì.');
-  const opening = await waitFor(A, /\[CHỦ TRÌ\]/, 30 * 60000);
+  const opening = await waitFor(A, /^\[CHỦ TRÌ\]/m, 30 * 60000);
   const agenda = /Chương trình họp/.test(opening || '');
   const speak = async (name, text) => { await call('typing', { name }); await sleep(2600); await call('say', { name, text }); await sleep(1400); };
   for (const [name, text] of SCRIPT) await speak(name, text);
@@ -96,9 +103,9 @@ const AGENDA_2 = EN ? [
   await report(A, EN ? 'done' : 'xong', EN ? 'PR #12 openapi.yaml (12 endpoints), CI green' : 'PR #12 openapi.yaml (12 endpoint), CI xanh');
   await sleep(2500);
   const q = new URLSearchParams({ name: A, to: C, file: 'openapi.yaml', note: EN ? 'spec for GET /home, generate the client from it' : 'đặc tả cho GET /home, sinh client từ đây' });
-  console.log((await (await fetch(`${base}/send?${q}`, { method: 'POST', body: OPENAPI })).text()).split(':')[0]);
+  console.log((await (await fetch(`${base}/send?${q}`, { method: 'POST', headers: auth(A), body: OPENAPI })).text()).split(':')[0]);
   const url = (await mayWaits).match(/Tải: curl -sSf -o "[^"]+" "([^"]+)"/)?.[1];
-  if (url) await (await fetch(url)).arrayBuffer(); // C tải về
+  if (url) await (await fetch(url, { headers: auth(C) })).arrayBuffer(); // C tải về
   await report(B, EN ? 'blocked' : 'vướng', EN ? 'Waiting for the infra team to assign a domain for Keycloak' : 'Chờ cấp domain cho Keycloak từ đội hạ tầng');
   await report(C, EN ? 'done' : 'xong', EN ? 'commit 3f2a9c1, client generated from openapi.yaml (sha256 matches), 8 new tests pass' : 'commit 3f2a9c1, client sinh từ openapi.yaml (sha256 khớp), 8 test mới đều qua');
   await sleep(4000);

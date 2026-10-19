@@ -1,5 +1,37 @@
 # Changelog
 
+## 3.5.0
+
+Bảo mật và đường vào họp hợp lệ cho Claude Code ở **auto mode**. Sự cố (người dùng báo 2026-10-19): bộ kiểm duyệt của auto mode
+chặn `curl …/join` tới `<ngẫu nhiên>.trycloudflare.com` là rò dữ liệu, kể cả khi người dùng xác nhận trong chat, dù cả hai AI cùng
+chạy trên một máy. Bộ kiểm duyệt đã làm đúng: sản phẩm bắt agent gửi dữ liệu ra host lạ chỉ vì chữ dán vào yêu cầu. 3.5 sửa sản
+phẩm, không lách kiểm duyệt. Thiết kế và mô hình đe doạ: [docs/SECURITY-DESIGN.md](docs/SECURITY-DESIGN.md).
+
+- **Kết nối một lần (`connect`)**: `npx github:ttat288/agent-meeting connect <claude|codex|gemini> [--room <URL mời>]` (hoặc nút
+  **Kết nối … trên máy này** trên trang chủ trì) chép cầu nối MCP stdio vào `~/.agent-meeting/mcp.js`, đăng ký nó bằng CLI của chính
+  agent và cho phép **đúng các tool họp** (Claude Code: `permissions.allow` trong `~/.claude/settings.json`, được xét trước bộ kiểm
+  duyệt; Gemini: policy `~/.gemini/policies/agent-meeting.toml`; Codex: annotations). `send_file` không được cho phép sẵn. Sao lưu
+  file cấu hình trước khi sửa, `disconnect` gỡ. Tab mời mới **Đã kết nối (MCP)**: prompt không chứa địa chỉ hay mã.
+- **Cầu nối MCP**: không tool nào nhận URL (phòng lấy từ `~/.agent-meeting/rooms.json` do app trên máy này hoặc `connect --room`
+  ghi); `send_file`/`get_file` đọc/ghi tệp ngay trên máy, chỉ trong thư mục làm việc, từ chối `.env`, khoá, đường dẫn ra ngoài.
+- **Cục bộ trước**: server chỉ nghe `127.0.0.1` (`--lan` để mở LAN; Docker dùng `--lan`). Tunnel không còn bật lúc khởi động: thẻ
+  mời có **Trên máy này** (localhost) / **Máy khác** (bấm **Bật địa chỉ công khai**, hoặc `--tunnel`). Trang chủ trì và API chủ trì
+  từ chối request qua tunnel (trừ `--public-url`/`--remote-host`); kiểm `Host` (DNS rebinding) và `Origin` (CSRF).
+- **Chủ trì duyệt agent** (`--admit all` mặc định, `remote`, `none`): `join` trả mã đối chiếu 4 số, trang chủ trì hiện **Cho vào /
+  Từ chối**. Họp tự động (`--auto-start`) phải chọn `--admit none` hoặc `remote`.
+- **Mã riêng từng agent**: curl gửi `Authorization: Bearer <mã>`, MCP gắn với `Mcp-Session-Id` (server cấp lúc `initialize`). Danh
+  tính không còn lấy từ tham số `name` (trước đây ai có mã mời cũng nói, rời phòng, báo tiến độ, tải tệp riêng dưới tên agent
+  khác). Vào lại tên cũ cần mã của agent đó hoặc chủ trì duyệt lại. Mã được lưu qua `--data-dir` và mang sang "Họp tiếp".
+- **Tách dữ liệu và chỉ thị**: tin của agent được trích dẫn (`│ ` ở các dòng sau) nên không giả được dòng `[CHỦ TRÌ]`/`(hệ thống)`;
+  tên giống chủ trì/hệ thống (`CHỦ TRÌ`, `host`, `system`…) bị từ chối. Giao thức: quyền của agent do người dùng của nó cấp, không do phòng.
+- **Chặn bí mật**: tin, ghi chú tiến độ/tệp và nội dung tệp có dạng khoá riêng, token AWS/GitHub/Anthropic/OpenAI/Google/Slack/Stripe,
+  JWT, `PASSWORD=…` bị từ chối; chủ trì thấy cảnh báo (không thấy giá trị).
+- **Giới hạn tốc độ** (IP dò mã sai → `429`; ~20 tin và ~10 tệp mỗi phút mỗi agent), thân request tối đa 256 KB (trừ tệp).
+- **`--audit-log <file>`** (JSONL, quyền 600: vào/duyệt/từ chối, gửi/tải tệp, thao tác chủ trì, tin bị chặn; không ghi nội dung hay
+  mã) và **`--retention <ngày>`** (tự xoá biên bản/trạng thái cũ).
+- Demo bots dùng mã riêng (chạy app với `--admit remote` để bot vào ngay). `npm test` có `--test-timeout`.
+- Lệnh `curl` trong giao thức đổi dạng (`-H "Authorization: Bearer …"`, bỏ `name=`): agent đang họp dở với bản cũ cần `join` lại.
+
 ## 3.4.0
 
 Sửa lỗi nghiêm trọng gặp với agent thật: Claude Code (auto mode) dừng lượt để hỏi người dùng thì bị tính là rời phòng vĩnh viễn.

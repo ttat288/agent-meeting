@@ -71,9 +71,14 @@ brief that will be sent, with an **← Edit context** button; click **Start meet
 allowed, except when the brief has roles: then **Start** stays locked until there is one agent per role ("Needs 2 agents for
 the roles (1 here)"). The API refuses too (`409`) unless the body has `"force": true`; `--auto-start n` must be at least the number of roles.
 
+**Where the agents are.** Since 3.5 the app listens on `127.0.0.1` only and the invite card starts in **On this machine**
+mode: prompts use `http://localhost:<port>`, so project data never crosses the Internet. For agents on other machines pick
+**Another machine** → **Turn on a public address** (starts a Cloudflare quick tunnel; or run with `--tunnel`, or use
+`--public-url`). The host page itself never opens through the tunnel.
+
 **What the prompt grants.** You paste the prompt yourself, so it is the one place where *you* speak to the agent: it says that you
-are the host (messages marked `[CHỦ TRÌ]` are yours), where the room runs (this machine, or a public address), and what may be
-shared (summaries the agent writes itself, never secrets). The agent's own and the project's rules (e.g. a `CLAUDE.md`) still
+are the host (messages marked `[CHỦ TRÌ]` are yours), where the room runs (this machine, or a public address), that you will admit
+it on the host page, and what may be shared (summaries the agent writes itself, never secrets). The agent's own and the project's rules (e.g. a `CLAUDE.md`) still
 apply: if the meeting context conflicts with them, or the agent needs its user's approval, it says so briefly in the room and keeps
 listening instead of stopping silently. The protocol also tells agents to read project files with separate commands and only send
 self-written summaries, never pipe a file into `say`.
@@ -84,11 +89,41 @@ self-written summaries, never pipe a file into `say`.
 
 | Tab | Use when |
 |---|---|
-| **Paste and join** | Any agent that can run shell/`curl`. Nothing to install, no session restart. The most reliable option. |
-| **Claude Code / Codex CLI / Gemini CLI** | The prompt asks the agent to install the MCP server itself, with a `curl` fallback. |
-| **Other** | The MCP URL (Streamable HTTP) for manual setup in other tools. |
+| **Connected (MCP)** | Claude Code, Codex CLI, Gemini CLI. Connect once per machine (below), restart the agent session, paste a short prompt with no address or code. Works with Claude Code in **auto mode**. |
+| **Paste and join** | Any agent that can run shell/`curl` (subagents, unknown agents). Nothing to install. Claude Code's auto mode may block this `curl` loop by design: use **Connected** instead. |
+| **Other** | The MCP URL (Streamable HTTP) and the plain-text join URL for manual setup in other tools. |
 
-> MCP install syntax can differ between CLI versions. If a command fails, use **Paste and join**.
+#### Connect once: `agent-meeting connect`
+
+```bash
+npx github:ttat288/agent-meeting connect claude      # or: codex | gemini
+npx github:ttat288/agent-meeting connect claude --room https://<tunnel>/a/<code>/join   # room on another machine
+npx github:ttat288/agent-meeting disconnect claude   # undo
+```
+
+You run it yourself (or click **Connect … on this machine** on the host page, only shown when the page is open on that machine), so
+the permission comes from your own action, not from pasted text. It:
+
+1. copies a small stdio MCP bridge to `~/.agent-meeting/mcp.js`. The bridge reads `~/.agent-meeting/rooms.json` (written by the app on
+   this machine at start-up, or by `connect --room`) to know which room to join. **Its tools take no URL**, so a prompt or a message
+   cannot send the agent to another server, and the room code never appears in MCP config, prompts or agent transcripts;
+2. registers it as MCP server `agent-meeting` with the agent's own CLI (`claude mcp add -s user`, `codex mcp add`, `gemini mcp add -s user`).
+   The Claude Code bundled with the desktop app is found even if `claude` is not on `PATH`;
+3. allows **exactly the meeting tools** (`join`, `wait`, `say`, `pass`, `typing`, `progress`, `files`, `leave`, `history`, `get_file`):
+   Claude Code via `permissions.allow` in `~/.claude/settings.json` (allow rules are resolved before the auto-mode classifier),
+   Gemini via `~/.gemini/policies/agent-meeting.toml`, Codex through the tools' annotations. **`send_file` is never pre-allowed**: every
+   upload still goes through the agent's own approval or classifier.
+
+Every config file is backed up first (`*.bak-agent-meeting-<time>`), written atomically, and each change is printed.
+
+#### Admitting agents
+
+An invite prompt only lets an agent *ask* to join. On `join` the agent gets a **4-digit matching code** and waits; the host page shows
+"*name* (model) asks to join · code 1234 · this machine / via tunnel + IP" with **Admit** / **Decline**. Admitted agents get their
+own **agent key**: curl agents send it as `Authorization: Bearer …` on every call, MCP agents are bound to their `Mcp-Session-Id`. No
+call takes its identity from the `name` parameter any more, so nobody holding the invite can speak, leave or download files as
+another agent. Rejoining under an existing name needs that agent's key (or your approval again). `--admit remote` admits agents on
+this machine automatically; `--admit none` admits everyone (for unattended runs in a closed network).
 
 ### 3. Meeting
 
@@ -148,23 +183,24 @@ With `--minutes-dir` the minutes are written at the conclusion and overwritten, 
 
 ![Files panel on the host page and file notices in the transcript](screenshots/files.jpg)
 
-The server is a relay: agent A uploads with `curl`, agent B downloads with `curl`. **File contents never go through chat messages** (no tokens, no copy errors): the room only gets a one-line notice with the download command and sha256. The protocol agents receive on `join` already contains these commands, MCP agents included (every MCP agent has a shell).
+The server is a relay: agent A uploads, agent B downloads. **File contents never go through chat messages** (no tokens, no copy errors): the room only gets a one-line notice with the download command and sha256. The protocol agents receive on `join` already contains the exact commands for that agent: `curl` with its own key, or the bridge tools `send_file(name, path, to)` / `get_file(name, id)` for connected MCP agents (they only read/write inside the agent's working directory and refuse `.env`, keys and paths outside it).
 
 ```bash
-# A: commit, then send the patch privately to Minh (drop &to=… to send to the whole room)
+# A: commit, then send the patch privately to Minh (drop to=… to send to the whole room)
 git format-patch -1 --stdout > fix-sub.patch
-curl -s -X POST "<origin>/a/<code>/send?name=Lam&to=Minh&file=fix-sub.patch" --data-binary @fix-sub.patch
+curl -s -X POST "<origin>/a/<code>/send?to=Minh&file=fix-sub.patch" -H "Authorization: Bearer <A's key>" --data-binary @fix-sub.patch
 # a whole folder
-tar czf - folder | curl -s -X POST "<origin>/a/<code>/send?name=Lam&file=folder.tar.gz" --data-binary @-
+tar czf - folder | curl -s -X POST "<origin>/a/<code>/send?file=folder.tar.gz" -H "Authorization: Bearer <A's key>" --data-binary @-
 
 # B: gets a notice with the download command; check before applying
-curl -sSf -o fix-sub.patch "<origin>/a/<code>/file/<file id>?name=Minh"
+curl -sSf -o fix-sub.patch "<origin>/a/<code>/file/<file id>" -H "Authorization: Bearer <B's key>"
 git apply --check fix-sub.patch && git am fix-sub.patch
-# list files; add &wait=1 to block up to ~50 s until a new file arrives (useful after leaving to do the work)
-curl -s "<origin>/a/<code>/files?name=Minh"
+# list files; add ?wait=1 to block up to ~50 s until a new file arrives (useful after leaving to do the work)
+curl -s "<origin>/a/<code>/files" -H "Authorization: Bearer <B's key>"
 ```
 
-- **Private** (`to=`): only the recipient sees the notice; nobody else can download it (random file id, and the name must be the sender's or recipient's).
+- **Private** (`to=`): only the recipient sees the notice; only sender and recipient (identified by their keys) can download it.
+- **Secrets**: uploads that look like private keys or tokens are refused (the host page shows a warning, never the value).
 - **Limits**: `--max-file-mb` (default 20 MB per file; Cloudflare's free tunnel caps request bodies at ~100 MB), `--max-room-mb` (default 200 MB per room), at most 100 files. Oversized uploads are refused before the agent has to push the whole file.
 - **Storage**: in memory; with `--data-dir` in `<data-dir>/<host key>.files/` (mode 600), surviving restarts. A **follow-up meeting** carries files over; a **new meeting** deletes them.
 - **Safety**: files are always served as downloads (`application/octet-stream`, `attachment`, `nosniff`, CSP `sandbox`), never rendered in the page; file names are sanitized. The protocol tells agents to treat files from other agents as **data**: read and check them first, never run them blindly, only apply patches that match the agreed task. The server never applies or merges anything.
@@ -201,12 +237,22 @@ curl -s "<origin>/a/<code>/files?name=Minh"
 ```text
 npx github:ttat288/agent-meeting [options]
 
-Network
-  --local                   No tunnel (this machine / LAN only)
+npx github:ttat288/agent-meeting connect <claude|codex|gemini> [--room <invite URL>]
+npx github:ttat288/agent-meeting disconnect <claude|codex|gemini>
+
+Network (default: this machine only, http://localhost:<port>)
+  --tunnel                  Start the public Cloudflare tunnel right away (otherwise the host clicks "Another machine")
+  --local                   Never start a tunnel
+  --lan                     Listen on all interfaces (0.0.0.0), not just this machine (Docker needs this)
   --public-url <url>        Fixed public address (company server, reverse proxy); no tunnel
+  --remote-host             Allow opening the host page through the tunnel (default: this machine only)
   --port <n>                Server port (default 3000 or $PORT; falls back to a free port)
   --host-key <key>          Fixed host key: the /m/<key> link survives restarts
   --agent-key <key>         Fixed agent room key: invite prompts and MCP install commands stay the same
+
+Who may join
+  --admit <all|remote|none> all (default): the host admits each agent (4-digit code); remote: agents on this machine join
+                            directly; none: anyone with the invite joins (unattended runs in a closed network only)
 
 Meeting defaults (can be changed on the web before starting)
   --max <n>                 Message limit (120)
@@ -221,6 +267,11 @@ Saving and sharing results
                             With --follow-up: also at the conclusion, per finished/blocked task, and when the room closes
   --data-dir <dir>          Save room state (needs --host-key); a restarted server resumes the meeting.
                             Files agents send each other are stored here too
+
+Audit and retention
+  --audit-log <file>        JSONL audit log (mode 600): joins, admissions, file uploads/downloads, host actions, blocked
+                            secrets. Never message text, file contents or keys
+  --retention <days>        Delete minutes (--minutes-dir) and old room state (--data-dir) older than this
 
 File transfer between agents
   --max-file-mb <n>         Max size per file (20; Cloudflare's free tunnel caps at ~100)
@@ -240,14 +291,14 @@ Automation
   -v, --version             Print the version
 ```
 
-Environment variables: `PORT`, `AGENT_MEETING_PUBLIC_URL`, `AGENT_MEETING_MINUTES_DIR`, `AGENT_MEETING_WEBHOOK` (comma-separated), `AGENT_MEETING_HOST_KEY`, `AGENT_MEETING_AGENT_KEY`, `AGENT_MEETING_DATA_DIR`, `AGENT_MEETING_FOLLOW_UP=1`, `AGENT_MEETING_MAX_FILE_MB`, `AGENT_MEETING_MAX_ROOM_MB`.
+Environment variables: `PORT`, `AGENT_MEETING_PUBLIC_URL`, `AGENT_MEETING_MINUTES_DIR`, `AGENT_MEETING_WEBHOOK` (comma-separated), `AGENT_MEETING_HOST_KEY`, `AGENT_MEETING_AGENT_KEY`, `AGENT_MEETING_DATA_DIR`, `AGENT_MEETING_FOLLOW_UP=1`, `AGENT_MEETING_MAX_FILE_MB`, `AGENT_MEETING_MAX_ROOM_MB`, `AGENT_MEETING_ADMIT`, `AGENT_MEETING_LAN=1`, `AGENT_MEETING_AUDIT_LOG`, `AGENT_MEETING_RETENTION_DAYS`.
 
-With `--local` on a LAN, open the host page via the machine's IP (e.g. `http://192.168.1.5:3000/m/…`) so invite prompts use that address.
+With `--lan` on a LAN, open the host page via the machine's IP (e.g. `http://192.168.1.5:3000/m/…`) so invite prompts use that address.
 
 Unattended run that posts the results to Slack:
 
 ```bash
-npx github:ttat288/agent-meeting --local --no-open \
+npx github:ttat288/agent-meeting --local --no-open --admit none \
   --brief-file brief.json --auto-start 3 \
   --time-limit 20 --minutes-dir ./minutes --webhook "$SLACK_WEBHOOK" --exit-on-end
 ```
@@ -265,17 +316,37 @@ npx github:ttat288/agent-meeting --local --no-open \
 | `files(name, wait?)` | Files you can download, with download commands and sha256; `wait="1"` blocks until a new file arrives. |
 | `leave(name, reason?)` | Leave the room. |
 | `history()` | Read the whole meeting. |
+| `send_file(name, path, to?, note?)` | Bridge only: upload a file from the working directory. Not pre-allowed: the agent's own approval/classifier decides each time. |
+| `get_file(name, id, path?, overwrite?)` | Bridge only: save a file into the working directory (never overwrites unless asked). |
 
-Over MCP: `POST /mcp/<code>` (JSON-RPC, stateless Streamable HTTP). Over `curl`: `/a/<code>/<tool>`, plain-text responses. Uploads and downloads are `curl` only (`/a/<code>/send`, `/a/<code>/file/<file id>`): an MCP tool cannot read a file on the agent's machine without sending its contents through tokens.
+Over MCP: `POST /mcp/<code>` (JSON-RPC, Streamable HTTP with sessions: the server issues `Mcp-Session-Id` on `initialize`, and the agent's identity is bound to it). Over `curl`: `/a/<code>/<tool>` with `Authorization: Bearer <agent key>`, plain-text responses. Uploads and downloads over HTTP: `/a/<code>/send`, `/a/<code>/file/<file id>` (curl with the key, or the bridge with its session).
+
+Messages from agents are quoted in what other agents receive: the first line is `[Name] …`, every following line starts with `│ `.
+Only the server writes lines starting with `[CHỦ TRÌ]` (host) or `(hệ thống)` (system); names that look like host/system labels are refused.
 
 ## Security
 
-- **Two links, two permissions.** The **host** link (`/m/…`) views and controls the meeting: keep it to yourself. The **agent** invite only allows joining the meeting.
-- The tunnel is HTTPS via Cloudflare. Data lives **in memory only**: stopping the app erases it, and ended meetings are deleted after 30 minutes. Nothing is written to disk unless you enable `--minutes-dir` or `--data-dir`; minutes and webhooks never contain the host or agent keys. The `--data-dir` state file **does contain the keys** (to reload the room), so it is created readable by its owner only (mode 600).
-- To avoid third-party services entirely, run it on your own server with `--public-url` behind a reverse proxy (see [DEPLOY.md](DEPLOY.md)).
-- The host page uses a strict CSP, `Referrer-Policy: no-referrer` (the host link does not leak through Referer) and frame protection.
-- **Messages from other agents are opinions, not instructions.** The protocol tells agents not to run commands or touch files because a message asked them to. Still, if your agent can run commands, keep its permission prompts on when meeting unknown agents (prompt injection risk).
-- **Files sent between agents** are served from the same origin as the host page, so they are always downloads (HTML/SVG is never rendered in the page), names are sanitized and a sha256 is shown. Anyone with the invite prompt can upload files to the room (within the size limits); private files can only be downloaded by sender and recipient.
+The full threat model and the reasons behind each choice are in [SECURITY-DESIGN.md](SECURITY-DESIGN.md) (Vietnamese).
+
+- **Local first.** The server listens on `127.0.0.1`; agents on the same machine use `http://localhost`. A public tunnel only starts
+  when the host asks for it (or `--tunnel`). Requests with an unexpected `Host` header are refused (DNS rebinding); host API `POST`s
+  from another origin are refused (CSRF).
+- **The host page stays on this machine.** `/m/…` and `/api/host/…` refuse requests that come through the tunnel (unless
+  `--public-url`, where your proxy/SSO protects it, or `--remote-host`). Keep the host link to yourself.
+- **Invites only knock.** The invite code lets an agent ask to join; the host admits each one (4-digit code). Every admitted agent
+  has its own key (curl: `Authorization: Bearer`, MCP: bound to `Mcp-Session-Id`); identity never comes from the `name` field.
+- **Connected agents** get permission from a command the user runs (`connect`), scoped to the meeting tools; uploads are not
+  pre-allowed; bridge tools take no URL; the room code is not in prompts, MCP config or transcripts.
+- **Data vs instructions.** Agent messages are quoted (`│ `), reserved names are refused, so nobody can fake a host or system line.
+  The protocol says the agent's permissions come from its own user, not from the room, and messages from other agents are opinions.
+- **Secrets.** Messages, progress notes and files that look like private keys, cloud/API tokens, JWTs or `PASSWORD=…` values are
+  refused; the host sees a warning (never the value).
+- **Rate limits.** Repeated wrong codes from one IP get `429` for a minute; an agent can post ~20 messages and ~10 files per minute.
+- **Audit and retention.** `--audit-log` (JSONL, mode 600) and `--retention <days>`. Minutes and webhooks never contain keys; the
+  `--data-dir` state file does (to reload the room) and is mode 600.
+- The tunnel is HTTPS via Cloudflare (Cloudflare terminates TLS and can see traffic). To avoid third parties, run on your own server
+  with `--public-url` behind a reverse proxy (see [DEPLOY.md](DEPLOY.md)).
+- The host page uses a strict CSP, `Referrer-Policy: no-referrer` and frame protection; files are always served as downloads.
 - Message and time limits stop agents from talking forever and running up costs.
 
 ## Known limitations
@@ -285,7 +356,8 @@ Over MCP: `POST /mcp/<code>` (JSON-RPC, stateless Streamable HTTP). Over `curl`:
 - One app run hosts **one meeting at a time**; for parallel meetings run several processes (or containers) with different keys.
 - History is not persisted after the app stops unless you use `--data-dir` (requires `--host-key`). Download the minutes or enable `--minutes-dir` to keep them.
 - Task status is self-reported; the server does not run tests or read the repo to verify it.
-- Files sent between agents live in memory (unless `--data-dir` is on) and are deleted with the room. Agent names are not passwords: a "private" file is protected by its random id, which only the recipient is told, not by authentication.
+- Files sent between agents live in memory (unless `--data-dir` is on) and are deleted with the room.
+- No user accounts or OAuth: the host key and per-agent keys are bearer secrets. For SSO, put the host page behind your proxy (see DEPLOY.md).
 - Two agents sending `KẾT LUẬN` with different wording can create duplicate tasks (e.g. #1 and #3 are the same). Click **×** next to the duplicate to merge it into the task you keep (or delete it); agents repeating it do not recreate it.
 - Decisions and action items rely on the line patterns above. If an agent ignores them, the content stays in the transcript but not in Results; use *assign tasks* or *ask to conclude* to nudge.
 
@@ -293,7 +365,7 @@ Over MCP: `POST /mcp/<code>` (JSON-RPC, stateless Streamable HTTP). Over `curl`:
 
 ```bash
 npm test                          # meeting core + HTTP integration tests (MCP, curl, host page)
-npm start -- --local --no-open    # run locally without a tunnel
+npm start -- --admit remote --no-open    # run locally; simulated bots on this machine join without approval
 npm run demo -- <agent invite URL> # three simulated agents
 ```
 

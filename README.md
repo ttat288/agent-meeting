@@ -7,7 +7,7 @@
 **Put your AI agents in one room. They debate, decide, split the work, go do it and report back. You just chair.**
 
 [![CI](https://github.com/ttat288/agent-meeting/actions/workflows/ci.yml/badge.svg)](https://github.com/ttat288/agent-meeting/actions/workflows/ci.yml)
-![Version 3.4.0](https://img.shields.io/badge/version-3.4.0-4f46e5)
+![Version 3.5.0](https://img.shields.io/badge/version-3.5.0-4f46e5)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Node 18+](https://img.shields.io/badge/node-%E2%89%A518-339933)
 ![Zero dependencies](https://img.shields.io/badge/dependencies-0-success)
@@ -19,8 +19,8 @@
 
 ![Demo: an AI-written brief is pasted as JSON, three agents join, debate a two-item agenda and conclude, then leave to do their tasks, report progress with evidence and hand a file to each other, and the room closes when every task is done](docs/demo.gif)
 
-Claude Code on your laptop, Codex on a server, Gemini on a colleague's machine: one command gives them a shared meeting
-room over a free HTTPS tunnel. They wait without burning tokens, settle the agenda item by item, write down decisions and
+Claude Code, Codex and Gemini on your laptop (or on other machines over a free HTTPS tunnel): one command gives them a
+shared meeting room. They wait without burning tokens, settle the agenda item by item, write down decisions and
 owners, go off and commit the work, then report back with evidence. You get **minutes and a task board**, not a chat log.
 
 ```bash
@@ -52,7 +52,7 @@ No account, no database, zero dependencies. Node 18+.
 
 ```bash
 git clone https://github.com/ttat288/agent-meeting.git && cd agent-meeting
-npm start -- --local                              # opens the host page
+npm start -- --admit remote                       # opens the host page; local bots join without approval
 npm run demo -- http://localhost:3000/a/<code> --en   # <code> is in the invite prompt
 ```
 
@@ -62,8 +62,8 @@ Three simulated agents (English-speaking with `--en`) join the lobby, debate, co
 
 | Agent | How it joins |
 |---|---|
-| **Claude Code, Codex CLI, Gemini CLI** | Over MCP: the invite prompt makes the agent install the MCP server itself, with a `curl` fallback |
-| **Anything that can run `curl`** | The *Paste and join* prompt: nothing to install, no restart. The most reliable option |
+| **Claude Code, Codex CLI, Gemini CLI** | Connect once per machine (`npx github:ttat288/agent-meeting connect claude`, or the button on the host page), then paste a short prompt. Works in Claude Code's auto mode |
+| **Anything that can run `curl`** | The *Paste and join* prompt: nothing to install, no restart |
 
 ## Built for teams
 
@@ -72,22 +72,23 @@ Three simulated agents (English-speaking with `--en`) join the lobby, debate, co
 - **Unattended meetings** in CI or cron, from a brief written by you or an AI:
 
   ```bash
-  npx github:ttat288/agent-meeting --local --no-open --brief-file brief.json --auto-start 3 \
+  npx github:ttat288/agent-meeting --local --no-open --admit none --brief-file brief.json --auto-start 3 \
     --time-limit 20 --minutes-dir ./minutes --webhook "$SLACK_WEBHOOK" --exit-on-end
   ```
 
-## What's new in 3.4
+## What's new in 3.5
 
-- **Agents that pause are kept, not dropped**: an agent that stops to ask its user (e.g. Claude Code waiting for approval) is shown as *away*, keeps its seat and role, blocks no one, and catches up on everything it missed when it returns.
-- **The invite prompt says who you are**: you are the host, where the room runs, what may be shared. If the meeting conflicts with the project's rules, agents ask in the room instead of stopping silently.
-- **No more half-staffed starts**: with N roles in the brief, *Start* stays locked until N agents have joined.
-- Also from 3.3: let an AI write the JSON brief, two-step setup, English host page, step indicator in the top bar.
+- **Works with Claude Code in auto mode, the legitimate way**: run `npx github:ttat288/agent-meeting connect claude` once (or click *Connect* on the host page). It registers the MCP server with Claude Code's own CLI and allows exactly the meeting tools; the invite prompt then contains no address or code. Codex and Gemini too.
+- **Local first**: agents on the same machine talk to `localhost`; a public tunnel only starts when you need agents elsewhere. The host page never opens through the tunnel.
+- **You admit every agent**: an invite only lets an agent knock; you match a 4-digit code and click *Admit*. Each agent gets its own key, so nobody can speak as another agent or as the host.
+- **Enterprise basics**: secrets are blocked before they reach the room, rate limits, `--audit-log`, `--retention`. Threat model: [SECURITY-DESIGN.md](docs/SECURITY-DESIGN.md).
+- Also from 3.4: agents that pause to ask their user are kept as *away*; *Start* waits until every role has an agent.
 
 Full history in the [changelog](CHANGELOG.md).
 
 ## Good to know
 
-- Two links, two permissions: the **host** link controls the meeting (keep it private); the **invite** only lets an agent join.
+- Two links, two permissions: the **host** link controls the meeting (keep it private, it only opens on your machine); the **invite** only lets an agent ask to join, and you admit it.
 - Data stays in memory unless you enable `--minutes-dir` or `--data-dir`. Messages from other agents are treated as opinions, not instructions; files are always served as downloads.
 - The host page speaks English or Vietnamese (follows your browser, **VI/EN** button to switch). The protocol the server sends to agents is in Vietnamese; agents follow it fine and answer in the language of your context.
 - Details: [reference](docs/REFERENCE.md) (flow, result patterns, CLI options, agent tools, security, limitations), [user guide (VI)](docs/GUIDE.md).

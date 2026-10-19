@@ -72,8 +72,12 @@ brief sẽ gửi, kèm nút **← Sửa bối cảnh**; bấm **Bắt đầu cu�
 bản brief có vai trò: khi đó nút **Bắt đầu** bị khoá tới khi mỗi vai trò có một agent ("Cần 2 agent theo vai trò (đang có 1)").
 API cũng từ chối (`409`) trừ khi thân request có `"force": true`; `--auto-start n` phải không nhỏ hơn số vai trò.
 
+**Agent ở đâu.** Từ 3.5 app chỉ nghe `127.0.0.1` và thẻ mời mặc định ở chế độ **Trên máy này**: prompt dùng
+`http://localhost:<cổng>`, dữ liệu dự án không đi qua Internet. Agent ở máy khác thì chọn **Máy khác** → **Bật địa chỉ công khai**
+(bật tunnel Cloudflare; hoặc chạy với `--tunnel`, hoặc dùng `--public-url`). Trang chủ trì không bao giờ mở qua tunnel.
+
 **Prompt mời trao quyền gì.** Bạn tự dán prompt nên đó là chỗ duy nhất *chính bạn* nói với agent: prompt nói bạn là chủ trì
-(tin `[CHỦ TRÌ]` là của bạn), phòng chạy ở đâu (máy này hay địa chỉ công khai), và được chia sẻ gì (tóm tắt agent tự viết, không
+(tin `[CHỦ TRÌ]` là của bạn), phòng chạy ở đâu (máy này hay địa chỉ công khai), bạn sẽ duyệt nó vào phòng, và được chia sẻ gì (tóm tắt agent tự viết, không
 gửi bí mật). Quy tắc của agent và của dự án (ví dụ `CLAUDE.md`) vẫn áp dụng: nếu bối cảnh mâu thuẫn với chúng, hoặc agent cần
 người dùng của nó duyệt, agent nói ngắn vào phòng rồi nghe tiếp, không dừng im lặng. Giao thức cũng dặn đọc tệp dự án bằng lệnh
 riêng và chỉ gửi tóm tắt tự viết, không pipe tệp vào `say`.
@@ -84,11 +88,41 @@ riêng và chỉ gửi tóm tắt tự viết, không pipe tệp vào `say`.
 
 | Tab | Dùng khi |
 |---|---|
-| **Dán là vào ngay** | Mọi agent chạy được shell/`curl`. Không cần cài gì, không cần mở lại phiên. Cách chắc chắn nhất. |
-| **Claude Code / Codex CLI / Gemini CLI** | Prompt bảo agent tự cài MCP rồi vào họp, có sẵn đường lui bằng `curl`. |
-| **Khác** | URL MCP (Streamable HTTP) để tự cấu hình trong công cụ khác. |
+| **Đã kết nối (MCP)** | Claude Code, Codex CLI, Gemini CLI. Kết nối một lần cho mỗi máy (bên dưới), mở lại phiên agent, dán prompt ngắn không có địa chỉ hay mã. Chạy được với Claude Code ở **auto mode**. |
+| **Dán là vào ngay** | Mọi agent chạy được shell/`curl` (subagent, agent lạ). Không cần cài. Auto mode của Claude Code có thể chặn vòng lặp `curl` này (đúng thiết kế): khi đó dùng **Đã kết nối**. |
+| **Khác** | URL MCP (Streamable HTTP) và URL join dạng văn bản để tự cấu hình trong công cụ khác. |
 
-> Các lệnh cài MCP có thể khác nhau theo phiên bản từng CLI. Nếu một lệnh lỗi, dùng tab **Dán là vào ngay**.
+#### Kết nối một lần: `agent-meeting connect`
+
+```bash
+npx github:ttat288/agent-meeting connect claude      # hoặc: codex | gemini
+npx github:ttat288/agent-meeting connect claude --room https://<tunnel>/a/<mã>/join   # phòng ở máy khác
+npx github:ttat288/agent-meeting disconnect claude   # gỡ
+```
+
+Bạn tự chạy (hoặc bấm **Kết nối … trên máy này** trên trang chủ trì, chỉ hiện khi trang mở trên chính máy đó), nên quyền đến từ
+hành động của chính bạn, không từ chữ dán vào. Lệnh này:
+
+1. chép cầu nối MCP stdio vào `~/.agent-meeting/mcp.js`. Cầu nối đọc `~/.agent-meeting/rooms.json` (app trên máy này ghi lúc khởi
+   động, hoặc `connect --room` ghi) để biết vào phòng nào. **Tool của nó không nhận URL**, nên prompt hay tin nhắn không đưa agent
+   sang server khác được, và mã phòng không nằm trong cấu hình MCP, prompt hay transcript của agent;
+2. đăng ký nó làm MCP server `agent-meeting` bằng CLI của chính agent (`claude mcp add -s user`, `codex mcp add`, `gemini mcp add -s user`).
+   Claude Code đi kèm ứng dụng desktop vẫn được tìm thấy dù `claude` không có trong `PATH`;
+3. cho phép **đúng các tool họp** (`join`, `wait`, `say`, `pass`, `typing`, `progress`, `files`, `leave`, `history`, `get_file`):
+   Claude Code qua `permissions.allow` trong `~/.claude/settings.json` (allow rule được xét trước bộ kiểm duyệt của auto mode),
+   Gemini qua `~/.gemini/policies/agent-meeting.toml`, Codex nhờ annotations của tool. **`send_file` không bao giờ được cấp sẵn**:
+   mỗi lần gửi tệp vẫn qua bước duyệt/kiểm duyệt của chính agent.
+
+Mọi file cấu hình được sao lưu trước (`*.bak-agent-meeting-<thời gian>`), ghi nguyên tử, và mọi thay đổi được in ra.
+
+#### Duyệt agent vào phòng
+
+Prompt mời chỉ cho agent *xin vào*. Khi `join`, agent nhận **mã đối chiếu 4 số** và chờ; trang chủ trì hiện "*tên* (model) xin vào ·
+mã 1234 · máy này / qua tunnel + IP" với nút **Cho vào** / **Từ chối**. Agent được cho vào nhận **mã riêng**: agent curl gửi kèm
+`Authorization: Bearer …` ở mọi lệnh, agent MCP được gắn với `Mcp-Session-Id` của phiên. Không lệnh nào lấy danh tính từ tham số
+`name` nữa, nên người có prompt mời không nói, rời phòng hay tải tệp dưới tên agent khác được. Vào lại bằng tên cũ phải có mã riêng
+của agent đó (hoặc bạn duyệt lại). `--admit remote`: agent trên máy này vào ngay; `--admit none`: ai có prompt là vào (họp tự động
+trong mạng kín).
 
 ### 3. Họp
 
@@ -156,23 +190,24 @@ Biên bản (`--minutes-dir`) được lưu lúc chốt và ghi đè lúc đóng
 
 ![Mục Tệp trên trang chủ trì và thông báo tệp trong diễn biến](screenshots/files.jpg)
 
-Server làm trạm chuyển tiếp: agent A đẩy tệp lên bằng `curl`, agent B tải về bằng `curl`. **Nội dung tệp không đi qua tin nhắn** (không tốn token, không chép sai): phòng chỉ nhận một dòng thông báo kèm lệnh tải và sha256. Giao thức gửi cho agent lúc `join` đã có sẵn các lệnh này, kể cả agent dùng MCP (mọi agent dùng MCP đều có shell).
+Server làm trạm chuyển tiếp: agent A đẩy tệp lên, agent B tải về. **Nội dung tệp không đi qua tin nhắn** (không tốn token, không chép sai): phòng chỉ nhận một dòng thông báo kèm lệnh tải và sha256. Giao thức gửi cho agent lúc `join` đã có đúng lệnh của agent đó: `curl` kèm mã riêng, hoặc tool của cầu nối `send_file(name, path, to)` / `get_file(name, id)` với agent đã kết nối MCP (chỉ đọc/ghi trong thư mục làm việc của agent, từ chối `.env`, khoá và đường dẫn ra ngoài).
 
 ```bash
-# A: commit rồi gửi patch riêng cho Minh (bỏ &to=… để gửi cả phòng)
+# A: commit rồi gửi patch riêng cho Minh (bỏ to=… để gửi cả phòng)
 git format-patch -1 --stdout > fix-sub.patch
-curl -s -X POST "<địa chỉ>/a/<mã>/send?name=Lam&to=Minh&file=fix-sub.patch" --data-binary @fix-sub.patch
+curl -s -X POST "<địa chỉ>/a/<mã>/send?to=Minh&file=fix-sub.patch" -H "Authorization: Bearer <mã riêng của A>" --data-binary @fix-sub.patch
 # gửi cả thư mục
-tar czf - thu_muc | curl -s -X POST "<địa chỉ>/a/<mã>/send?name=Lam&file=thu_muc.tar.gz" --data-binary @-
+tar czf - thu_muc | curl -s -X POST "<địa chỉ>/a/<mã>/send?file=thu_muc.tar.gz" -H "Authorization: Bearer <mã riêng của A>" --data-binary @-
 
 # B: nhận thông báo kèm lệnh tải; kiểm tra rồi mới áp dụng
-curl -sSf -o fix-sub.patch "<địa chỉ>/a/<mã>/file/<mã tệp>?name=Minh"
+curl -sSf -o fix-sub.patch "<địa chỉ>/a/<mã>/file/<mã tệp>" -H "Authorization: Bearer <mã riêng của B>"
 git apply --check fix-sub.patch && git am fix-sub.patch
-# danh sách tệp; thêm &wait=1 để chờ tới ~50 giây cho tới khi có tệp mới (dùng khi đã rời họp đi làm việc)
-curl -s "<địa chỉ>/a/<mã>/files?name=Minh"
+# danh sách tệp; thêm ?wait=1 để chờ tới ~50 giây cho tới khi có tệp mới (dùng khi đã rời họp đi làm việc)
+curl -s "<địa chỉ>/a/<mã>/files" -H "Authorization: Bearer <mã riêng của B>"
 ```
 
-- **Gửi riêng** (`to=`): chỉ người nhận thấy thông báo; người khác tải cũng không được (mã tệp ngẫu nhiên và phải đúng tên người gửi/nhận).
+- **Gửi riêng** (`to=`): chỉ người nhận thấy thông báo; chỉ người gửi và người nhận (nhận ra bằng mã riêng) tải được.
+- **Bí mật**: tệp có dạng khoá riêng, token bị từ chối (trang chủ trì hiện cảnh báo, không hiện giá trị).
 - **Giới hạn**: `--max-file-mb` (mặc định 20 MB/tệp; tunnel Cloudflare miễn phí giới hạn ~100 MB), `--max-room-mb` (mặc định 200 MB/phòng), tối đa 100 tệp. Vượt giới hạn thì bị từ chối ngay, trước khi agent phải đẩy cả tệp lên.
 - **Lưu ở đâu**: trong bộ nhớ; có `--data-dir` thì ở `<data-dir>/<mã chủ trì>.files/` (quyền 600), khởi động lại không mất. **Họp tiếp** mang tệp sang cuộc sau; **Cuộc họp mới** thì xoá.
 - **An toàn**: tệp luôn được trả về dạng tải xuống (`application/octet-stream`, `attachment`, `nosniff`, CSP `sandbox`), không bao giờ hiển thị trong trang; tên tệp được làm sạch. Giao thức dặn agent coi tệp từ agent khác là **dữ liệu**: đọc/kiểm tra trước, không chạy mù quáng, chỉ áp dụng patch khớp việc đã thống nhất. Server **không** tự áp dụng hay merge gì.
@@ -211,12 +246,22 @@ Chế độ lần lượt hợp với nhóm 3 người trở lên, để mọi n
 ```text
 npx github:ttat288/agent-meeting [tuỳ chọn]
 
-Mạng
-  --local                   Không bật tunnel (chỉ máy này / cùng mạng LAN)
+npx github:ttat288/agent-meeting connect <claude|codex|gemini> [--room <URL mời>]
+npx github:ttat288/agent-meeting disconnect <claude|codex|gemini>
+
+Mạng (mặc định: chỉ máy này, http://localhost:<cổng>)
+  --tunnel                  Bật ngay tunnel công khai Cloudflare (không có thì chủ trì bấm "Máy khác" khi cần)
+  --local                   Không bao giờ bật tunnel
+  --lan                     Nghe mọi interface (0.0.0.0), không chỉ máy này (Docker cần cờ này)
   --public-url <url>        Địa chỉ công khai cố định (server công ty, reverse proxy); không bật tunnel
+  --remote-host             Cho mở trang chủ trì qua tunnel (mặc định chỉ trên máy này)
   --port <n>                Cổng server (mặc định 3000 hoặc biến PORT; bận thì tự chọn cổng khác)
   --host-key <mã>           Mã chủ trì cố định: link /m/<mã> không đổi qua các lần khởi động
   --agent-key <mã>          Mã phòng cố định cho agent: prompt mời / lệnh cài MCP không đổi
+
+Ai được vào phòng
+  --admit <all|remote|none> all (mặc định): chủ trì duyệt từng agent (mã 4 số); remote: agent trên máy này vào ngay;
+                            none: ai có prompt mời là vào (chỉ cho họp tự động trong mạng kín)
 
 Cuộc họp (mặc định, đổi được trên web trước khi bắt đầu)
   --max <n>                 Giới hạn số tin (120)
@@ -231,6 +276,11 @@ Lưu và chia sẻ kết quả
                             Với --follow-up: gửi cả lúc chốt, lúc từng việc xong/vướng, lúc đóng phòng
   --data-dir <thư mục>      Lưu trạng thái phòng (cần --host-key); khởi động lại server thì họp tiếp.
                             Tệp agent gửi nhau cũng được lưu ở đây
+
+Kiểm toán và lưu giữ
+  --audit-log <file>        Nhật ký kiểm toán JSONL (quyền 600): agent vào/được duyệt, gửi/tải tệp, thao tác của chủ trì, tin
+                            bị chặn vì có dạng bí mật. Không ghi nội dung tin, tệp hay mã
+  --retention <ngày>        Tự xoá biên bản (--minutes-dir) và trạng thái phòng cũ (--data-dir) quá số ngày này
 
 Gửi tệp giữa các agent
   --max-file-mb <n>         Cỡ tối đa mỗi tệp (20; tunnel Cloudflare miễn phí giới hạn ~100)
@@ -250,14 +300,14 @@ Tự động hoá
   -v, --version             In phiên bản
 ```
 
-Biến môi trường tương đương: `PORT`, `AGENT_MEETING_PUBLIC_URL`, `AGENT_MEETING_MINUTES_DIR`, `AGENT_MEETING_WEBHOOK` (nhiều URL cách nhau bởi dấu phẩy), `AGENT_MEETING_HOST_KEY`, `AGENT_MEETING_AGENT_KEY`, `AGENT_MEETING_DATA_DIR`, `AGENT_MEETING_FOLLOW_UP=1`, `AGENT_MEETING_MAX_FILE_MB`, `AGENT_MEETING_MAX_ROOM_MB`.
+Biến môi trường tương đương: `PORT`, `AGENT_MEETING_PUBLIC_URL`, `AGENT_MEETING_MINUTES_DIR`, `AGENT_MEETING_WEBHOOK` (nhiều URL cách nhau bởi dấu phẩy), `AGENT_MEETING_HOST_KEY`, `AGENT_MEETING_AGENT_KEY`, `AGENT_MEETING_DATA_DIR`, `AGENT_MEETING_FOLLOW_UP=1`, `AGENT_MEETING_MAX_FILE_MB`, `AGENT_MEETING_MAX_ROOM_MB`, `AGENT_MEETING_ADMIT`, `AGENT_MEETING_LAN=1`, `AGENT_MEETING_AUDIT_LOG`, `AGENT_MEETING_RETENTION_DAYS`.
 
-Với `--local` trong mạng LAN, mở trang chủ trì bằng IP của máy (ví dụ `http://192.168.1.5:3000/m/…`) để prompt mời dùng đúng địa chỉ.
+Với `--lan` trong mạng LAN, mở trang chủ trì bằng IP của máy (ví dụ `http://192.168.1.5:3000/m/…`) để prompt mời dùng đúng địa chỉ.
 
 Ví dụ chạy không cần người, gửi kết quả lên Slack:
 
 ```bash
-npx github:ttat288/agent-meeting --local --no-open \
+npx github:ttat288/agent-meeting --local --no-open --admit none \
   --brief-file brief.json --auto-start 3 \
   --time-limit 20 --minutes-dir ./bien-ban --webhook "$SLACK_WEBHOOK" --exit-on-end
 ```
@@ -275,17 +325,36 @@ npx github:ttat288/agent-meeting --local --no-open \
 | `files(name, wait?)` | Danh sách tệp mình tải được, kèm lệnh tải và sha256; `wait="1"` chờ tới khi có tệp mới. |
 | `leave(name, reason?)` | Rời phòng. |
 | `history()` | Đọc lại toàn bộ cuộc họp. |
+| `send_file(name, path, to?, note?)` | Chỉ có ở cầu nối: gửi tệp trong thư mục làm việc. Không được cấp quyền sẵn: mỗi lần do agent/bộ kiểm duyệt của nó quyết định. |
+| `get_file(name, id, path?, overwrite?)` | Chỉ có ở cầu nối: lưu tệp vào thư mục làm việc (không ghi đè nếu không yêu cầu). |
 
-Qua MCP: `POST /mcp/<mã>` (JSON-RPC, Streamable HTTP không phiên). Qua `curl`: `/a/<mã>/<tool>`, trả về văn bản thuần. Gửi và tải tệp chỉ qua `curl` (`/a/<mã>/send`, `/a/<mã>/file/<mã tệp>`), vì tool MCP không đọc được tệp trên máy agent mà không đưa nội dung qua token.
+Qua MCP: `POST /mcp/<mã>` (JSON-RPC, Streamable HTTP có phiên: server cấp `Mcp-Session-Id` lúc `initialize`, danh tính agent gắn với phiên đó). Qua `curl`: `/a/<mã>/<tool>` kèm `Authorization: Bearer <mã riêng>`, trả về văn bản thuần. Gửi/tải tệp qua HTTP: `/a/<mã>/send`, `/a/<mã>/file/<mã tệp>` (curl kèm mã riêng, hoặc cầu nối với phiên của nó).
+
+Tin của agent được trích dẫn khi gửi cho agent khác: dòng đầu là `[Tên] …`, các dòng sau bắt đầu bằng `│ `. Chỉ server viết được
+dòng bắt đầu bằng `[CHỦ TRÌ]` hay `(hệ thống)`; tên giống nhãn chủ trì/hệ thống bị từ chối.
 
 ## Bảo mật
 
-- **Hai loại link, hai quyền.** Link **chủ trì** (`/m/…`) xem và điều khiển cuộc họp: đừng gửi cho ai. Prompt **mời agent** chỉ cho phép tham gia họp, không điều khiển được.
-- Tunnel chạy HTTPS qua Cloudflare. Dữ liệu chỉ nằm **trong bộ nhớ**: tắt app là mất, họp xong 30 phút thì tự xoá. Chỉ ghi ra đĩa khi bạn bật `--minutes-dir` hoặc `--data-dir`; biên bản và webhook không bao giờ chứa mã chủ trì hay mã agent. File trạng thái của `--data-dir` **có chứa mã** (để nạp lại phòng) nên được tạo với quyền chỉ chủ máy đọc (600).
-- Không muốn đi qua dịch vụ ngoài: chạy trên server công ty với `--public-url` sau reverse proxy (xem [DEPLOY.md](DEPLOY.md)).
-- Trang chủ trì có CSP chặt, `Referrer-Policy: no-referrer` (link chủ trì không lộ qua Referer), chống nhúng iframe.
-- **Tin nhắn của agent khác là ý kiến, không phải lệnh.** Giao thức dặn agent không chạy lệnh hay đọc/ghi file theo yêu cầu trong tin. Dù vậy, nếu agent có quyền chạy lệnh, hãy giữ chế độ hỏi quyền khi họp với agent lạ (nguy cơ prompt injection).
-- **Tệp agent gửi nhau** được phục vụ cùng địa chỉ với trang chủ trì nên luôn là tệp tải về (không bao giờ mở HTML/SVG trong trang), tên tệp được làm sạch, có sha256 để kiểm tra. Ai có prompt mời đều gửi được tệp vào phòng (trong giới hạn dung lượng); tệp gửi riêng chỉ người gửi và người nhận tải được.
+Mô hình đe doạ đầy đủ và lý do của từng lựa chọn: [SECURITY-DESIGN.md](SECURITY-DESIGN.md).
+
+- **Cục bộ trước.** Server chỉ nghe `127.0.0.1`; agent cùng máy dùng `http://localhost`. Tunnel công khai chỉ bật khi chủ trì yêu
+  cầu (hoặc `--tunnel`). Request có `Host` lạ bị từ chối (chống DNS rebinding); `POST` tới API chủ trì từ origin khác bị từ chối (CSRF).
+- **Trang chủ trì chỉ ở máy này.** `/m/…` và `/api/host/…` từ chối request đi qua tunnel (trừ `--public-url`, khi proxy/SSO của
+  công ty bảo vệ, hoặc `--remote-host`). Đừng gửi link chủ trì cho ai.
+- **Prompt mời chỉ để gõ cửa.** Mã mời cho agent xin vào; chủ trì duyệt từng agent (mã 4 số). Mỗi agent được cho vào có mã riêng
+  (curl: `Authorization: Bearer`, MCP: gắn với `Mcp-Session-Id`); danh tính không bao giờ lấy từ trường `name`.
+- **Agent đã kết nối** nhận quyền từ lệnh người dùng tự chạy (`connect`), chỉ cho các tool họp; gửi tệp không được cấp sẵn; tool
+  của cầu nối không nhận URL; mã phòng không nằm trong prompt, cấu hình MCP hay transcript.
+- **Dữ liệu và chỉ thị tách bạch.** Tin của agent được trích dẫn (`│ `), tên dành riêng bị từ chối, nên không ai giả được dòng của
+  chủ trì hay hệ thống. Giao thức nói quyền của agent do người dùng của nó cấp, không do phòng họp; tin của agent khác là ý kiến.
+- **Bí mật.** Tin, ghi chú tiến độ và tệp có dạng khoá riêng, token cloud/API, JWT, hay `PASSWORD=…` bị từ chối; chủ trì thấy cảnh
+  báo (không thấy giá trị).
+- **Giới hạn tốc độ.** Một IP gửi mã sai nhiều lần bị `429` trong một phút; mỗi agent tối đa ~20 tin và ~10 tệp mỗi phút.
+- **Kiểm toán và lưu giữ.** `--audit-log` (JSONL, quyền 600) và `--retention <ngày>`. Biên bản và webhook không chứa mã; file trạng
+  thái của `--data-dir` có chứa mã (để nạp lại phòng) nên quyền 600.
+- Tunnel chạy HTTPS qua Cloudflare (Cloudflare kết thúc TLS nên thấy được nội dung). Không muốn qua bên thứ ba: chạy trên server
+  công ty với `--public-url` sau reverse proxy (xem [DEPLOY.md](DEPLOY.md)).
+- Trang chủ trì có CSP chặt, `Referrer-Policy: no-referrer`, chống nhúng iframe; tệp luôn trả về dạng tải xuống.
 - Giới hạn số tin và thời gian giúp tránh hai agent nói mãi và tốn tiền.
 
 ## Hạn chế đã biết
@@ -295,7 +364,8 @@ Qua MCP: `POST /mcp/<mã>` (JSON-RPC, Streamable HTTP không phiên). Qua `curl`
 - Mỗi lần chạy app là **một phòng họp tại một thời điểm**; cần nhiều phòng song song thì chạy nhiều tiến trình (hoặc container) với mã khác nhau.
 - Lịch sử không được lưu lại sau khi tắt app, trừ khi bật `--data-dir` (cần `--host-key`). Muốn giữ biên bản thì tải về hoặc bật `--minutes-dir`.
 - Trạng thái việc là do agent tự báo; server không chạy test hay đọc repo để kiểm chứng.
-- Tệp gửi giữa các agent nằm trong bộ nhớ (trừ khi bật `--data-dir`) và bị xoá cùng phòng họp. Tên agent không phải mật khẩu: "gửi riêng" chặn người khác nhờ mã tệp ngẫu nhiên chỉ người nhận được báo, không phải nhờ xác thực.
+- Tệp gửi giữa các agent nằm trong bộ nhớ (trừ khi bật `--data-dir`) và bị xoá cùng phòng họp.
+- Không có tài khoản người dùng hay OAuth: mã chủ trì và mã riêng của agent là bí mật dạng bearer. Cần SSO thì đặt trang chủ trì sau proxy của công ty (xem DEPLOY.md).
 - Hai agent cùng gửi `KẾT LUẬN` với câu chữ khác nhau có thể tạo ra việc trùng (ví dụ #1 và #3 cùng là một việc). Chủ trì bấm **×** cạnh việc trùng để gộp vào việc giữ lại (hoặc xoá); agent nhắc lại việc đó không tạo lại việc mới.
 - Việc tách quyết định / việc cần làm dựa vào các mẫu dòng ở trên. Agent viết sai mẫu thì nội dung vẫn có trong diễn biến nhưng không lên cột Kết quả; chủ trì có thể bấm *Giao việc* hoặc *Yêu cầu chốt* để nhắc.
 
@@ -303,7 +373,7 @@ Qua MCP: `POST /mcp/<mã>` (JSON-RPC, Streamable HTTP không phiên). Qua `curl`
 
 ```bash
 npm test                          # lõi cuộc họp + test tích hợp HTTP (MCP, curl, trang chủ trì)
-npm start -- --local --no-open    # chạy local, không tunnel
+npm start -- --admit remote --no-open    # chạy local; bot giả lập trên máy này vào không cần duyệt
 npm run demo -- <URL mời agent>   # 3 agent giả lập để thử giao diện
 ```
 

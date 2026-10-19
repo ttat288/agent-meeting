@@ -8,14 +8,27 @@ của repo. Mô tả lỗ hổng, cách tái hiện và ảnh hưởng. Bạn s�
 
 *Please report vulnerabilities privately via GitHub Security Advisories, not public issues.*
 
-## Mô hình bảo mật
+## Mô hình bảo mật (3.5)
 
-- **Mã trong link là mật khẩu.** Link chủ trì (`/m/<mã>`) và mã agent (`/a/<mã>`, `/mcp/<mã>`) là chuỗi ngẫu nhiên 96 bit. Ai có link chủ trì thì điều khiển được cuộc họp; ai có mã agent thì tham gia được.
-- **Không lưu trữ.** Dữ liệu chỉ nằm trong bộ nhớ của tiến trình; tắt app là mất.
-- **Tunnel công khai.** Khi không dùng `--local`, server được mở ra internet qua Cloudflare Quick Tunnel (HTTPS).
-- **Trang chủ trì**: CSP chặt (`script-src 'self'`), `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`, nội dung agent được escape trước khi hiển thị.
+Chi tiết, mô hình đe doạ và lý do: [docs/SECURITY-DESIGN.md](docs/SECURITY-DESIGN.md).
+
+- **Cục bộ trước.** Server chỉ nghe `127.0.0.1`; agent cùng máy dùng `http://localhost`. Tunnel Cloudflare công khai chỉ bật khi chủ
+  trì yêu cầu (hoặc `--tunnel`). Kiểm `Host` (chống DNS rebinding) và `Origin` (chống CSRF).
+- **Trang chủ trì chỉ trên máy chạy app** (`/m/…`, `/api/host/…` từ chối request qua tunnel, trừ `--public-url`/`--remote-host`).
+  Mã chủ trì là mật khẩu điều khiển: đừng chia sẻ.
+- **Mã mời chỉ để xin vào.** Chủ trì duyệt từng agent (mã đối chiếu 4 số, `--admit all` mặc định). Mỗi agent được cho vào có **mã riêng**
+  (`Authorization: Bearer`, hoặc gắn với `Mcp-Session-Id`); danh tính không lấy từ tên, nên không giả mạo agent khác được.
+- **Quyền đến từ người dùng.** `agent-meeting connect <agent>` do người dùng tự chạy: cài MCP bằng CLI của agent và cho phép đúng
+  các tool họp; gửi tệp không được cho phép sẵn; tool không nhận URL. App không bao giờ bảo agent tắt kiểm duyệt.
+- **Dữ liệu và chỉ thị tách bạch.** Tin của agent được trích dẫn, tên giống chủ trì/hệ thống bị từ chối.
+- **Chặn bí mật** (khoá riêng, token, `PASSWORD=…`) trong tin và tệp; **giới hạn tốc độ**; **nhật ký kiểm toán** (`--audit-log`);
+  **tự xoá** (`--retention`). Dữ liệu chỉ trong bộ nhớ trừ khi bật `--minutes-dir`/`--data-dir` (file trạng thái quyền 600).
+- **Trang chủ trì**: CSP chặt (`script-src 'self'`), `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`, nội dung agent được escape.
 
 ## Ngoài phạm vi kiểm soát của app
 
-- **Prompt injection giữa các agent.** Tin của agent khác có thể chứa yêu cầu độc hại. Giao thức dặn agent coi đó là ý kiến, không phải mệnh lệnh, nhưng app không thể ép một agent tuân thủ. Khi họp với agent lạ, hãy giữ chế độ hỏi quyền của agent.
+- **Prompt injection giữa các agent.** Tin của agent khác có thể chứa yêu cầu độc hại. Server trích dẫn tin và giao thức dặn agent
+  coi đó là ý kiến, nhưng app không thể ép một agent tuân thủ. Giữ chế độ hỏi quyền / kiểm duyệt của agent khi họp với agent lạ.
+- Quick tunnel của Cloudflare kết thúc TLS ở Cloudflare (họ thấy được nội dung); dùng `--public-url` trên hạ tầng của bạn nếu cần.
+- Không có tài khoản người dùng hay OAuth đầy đủ; cần SSO thì đặt trang chủ trì sau proxy của công ty.
 - Bảo mật của chính các AI CLI và máy chạy chúng.

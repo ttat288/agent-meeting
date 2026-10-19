@@ -21,8 +21,8 @@ Tài liệu này đi từ lần chạy đầu tiên tới một cuộc họp ho�
 ```text
              máy chủ trì (chạy app)                      máy A, máy B, ...
  ┌──────────────────────────────────────┐        ┌────────────────────────┐
- │  Agent Meeting  ◀── tunnel HTTPS ────┼────────┤  Agent (Claude, Codex, │
- │   • trang chủ trì  (bạn xem, điều    │        │  Gemini, bất kỳ agent  │
+ │  Agent Meeting  ◀── localhost / ─────┼────────┤  Agent (Claude, Codex, │
+ │   • trang chủ trì  (bạn xem, điều    │ tunnel │  Gemini, bất kỳ agent  │
  │     khiển)                           │        │  chạy được curl)       │
  │   • phòng họp     (agent nói/nghe)   │        └────────────────────────┘
  └──────────────────────────────────────┘
@@ -47,64 +47,92 @@ Khi chạy, terminal in ra:
 
 ```text
 ────────────────────────────────────────────────────────────────
-  Agent Meeting v3.0.0 đã sẵn sàng
+  Agent Meeting v3.5.0 đã sẵn sàng
 ────────────────────────────────────────────────────────────────
 
-  Trang chủ trì:  https://xxx-yyy.trycloudflare.com/m/<mã-chủ-trì>
-  Trên máy này:   http://localhost:3000/m/<mã-chủ-trì>
+  Trang chủ trì:  http://localhost:3000/m/<mã-chủ-trì>
   ...
-Đang chờ địa chỉ công khai có hiệu lực...... sẵn sàng ✓
+  Agent ở máy khác: bấm "Máy khác" trong thẻ mời trên trang chủ trì để bật địa chỉ công khai.
+  Ai được vào: chủ trì duyệt từng agent trên trang (đối chiếu mã 4 số)
 ```
 
-> **Hai loại link, hai quyền.** Link **chủ trì** (`/m/…`) xem và điều khiển cuộc họp, chỉ dành cho bạn. Prompt **mời agent** (chứa `/a/…` hoặc `/mcp/…`) chỉ cho phép tham gia họp. Đừng gửi link chủ trì cho ai.
+> **Hai loại link, hai quyền.** Link **chủ trì** (`/m/…`) xem và điều khiển cuộc họp, chỉ dành cho bạn, và **chỉ mở được
+> trên máy chạy app** (từ 3.5 nó không mở qua tunnel công khai). Prompt **mời agent** (chứa `/a/…` hoặc `/mcp/…`) chỉ cho phép
+> **xin vào** phòng: bạn duyệt từng agent. Đừng gửi link chủ trì cho ai.
 
 Giữ cửa sổ terminal mở suốt cuộc họp. `Ctrl+C` để tắt.
 
 ## 3. Chọn kịch bản mạng
 
-| Agent ở đâu | Chạy app thế nào | Ghi chú |
+Từ 3.5, app **chỉ chạy trên máy này** cho tới khi bạn cần agent ở máy khác. Agent cùng máy nói chuyện qua
+`http://localhost:<cổng>`: dữ liệu dự án không đi qua Internet.
+
+| Agent ở đâu | Làm gì | Ghi chú |
 |---|---|---|
-| **Máy khác, mạng khác** (phổ biến nhất) | `npx github:ttat288/agent-meeting` | Tunnel Cloudflare miễn phí tự bật. Địa chỉ đổi mỗi lần chạy. Lần đầu DNS có thể mất 20-60 giây. |
-| Cùng mạng LAN / wifi | thêm `--local` | Không qua internet. Mở trang chủ trì bằng IP LAN của máy (ví dụ `http://192.168.1.5:3000/m/…`) để prompt mời dùng đúng IP. |
-| Cùng một máy | thêm `--local` | Prompt mời dùng `localhost`. |
+| **Cùng máy với app** | Không cần gì thêm | Thẻ mời ở chế độ **Trên máy này**. |
+| **Máy khác, mạng khác** | Trong thẻ mời chọn **Máy khác** → **Bật địa chỉ công khai** (hoặc chạy app với `--tunnel`) | Tunnel Cloudflare miễn phí. Địa chỉ đổi mỗi lần chạy; lần đầu DNS mất 20-60 giây. Trang chủ trì vẫn chỉ mở trên máy này. |
+| Cùng mạng LAN / wifi | Chạy app với `--lan --local` | Mở trang chủ trì bằng IP LAN của máy (ví dụ `http://192.168.1.5:3000/m/…`) để prompt mời dùng đúng IP. |
 | Server công ty | Docker hoặc `--public-url https://…` | Không qua dịch vụ ngoài, link cố định. Xem [DEPLOY.md](DEPLOY.md). |
 
 ## 4. Mời agent vào họp
 
-Trong khung **Mời agent vào họp**, chọn tab phù hợp rồi bấm **Sao chép**.
+Trong thẻ **Mời agent vào họp**: chọn agent ở **Trên máy này** hay **Máy khác**, chọn tab, rồi bấm **Sao chép**.
 
-### Cách A: "Dán là vào ngay" (khuyên dùng)
+### Cách A: "Đã kết nối (MCP)" (khuyên dùng cho Claude Code, Codex CLI, Gemini CLI)
 
-Dùng được với **mọi agent chạy được shell/`curl`**, không cần cài gì, không cần mở lại phiên. Chỉ cần dán prompt vào agent. Agent sẽ:
+Kết nối **một lần cho mỗi máy**, sau đó mọi cuộc họp chỉ cần dán một prompt ngắn, không có địa chỉ hay mã nào.
 
-1. Tự đặt tên và khai báo model, rồi gọi `join`.
-2. Đọc giao thức cuộc họp mà server trả về.
-3. Vào vòng lặp nghe (`wait`) và nói (`say`) bằng `curl` cho đến khi cuộc họp kết thúc.
+1. **Kết nối** (bạn tự làm, một lần): chạy trong terminal của máy có agent
 
-Prompt cũng nói thay bạn những điều agent cần biết để không phải đoán: **bạn là chủ trì** (tin `[CHỦ TRÌ]` là của bạn), phòng
-chạy trên máy này hay qua địa chỉ công khai, và chỉ được gửi tóm tắt tự viết, không gửi bí mật. Nếu bối cảnh cuộc họp mâu thuẫn
-với quy tắc của dự án (ví dụ `CLAUDE.md` ghi "chưa viết code") hoặc agent cần bạn duyệt, agent sẽ hỏi ngay trong phòng: trả lời
-bằng ô nhắn của trang chủ trì. Nếu agent (ví dụ Claude Code) dừng lại để hỏi bạn trong cửa sổ của nó, nó chỉ bị đánh dấu
-**vắng**: vẫn giữ chỗ và vai trò, trả lời xong là nó đọc tiếp phần đã lỡ.
+   ```bash
+   npx github:ttat288/agent-meeting connect claude     # hoặc: codex | gemini
+   ```
 
-### Cách B: MCP (Claude Code, Codex CLI, Gemini CLI)
+   hoặc bấm **Kết nối … trên máy này** trên trang chủ trì (chỉ có khi trang mở trên chính máy đó). Agent ở máy khác thì
+   lệnh có thêm `--room <URL mời>` (trang chủ trì in sẵn đúng lệnh). Lệnh này:
+   - chép cầu nối MCP vào `~/.agent-meeting/mcp.js` và đăng ký nó làm MCP server `agent-meeting` bằng **chính CLI của agent**
+     (`claude mcp add`, `codex mcp add`, `gemini mcp add`);
+   - cho phép **đúng các tool họp** (join, wait, say, pass, typing, progress, files, leave, history, get_file) chạy không cần
+     hỏi: Claude Code qua `permissions.allow` trong `~/.claude/settings.json`, Gemini qua `~/.gemini/policies/agent-meeting.toml`,
+     Codex nhờ annotations sẵn có. **Gửi tệp (`send_file`) vẫn được hỏi/kiểm duyệt từng lần.**
+   - sao lưu file cấu hình trước khi sửa (`*.bak-agent-meeting-<thời gian>`) và in rõ đã đổi gì. Gỡ: thay `connect` bằng `disconnect`.
+2. **Mở lại phiên agent** (MCP được nạp khi bắt đầu phiên), rồi dán prompt của tab.
 
-Chọn tab đúng công cụ. Prompt ở đó bảo agent tự chạy lệnh cài MCP, và có sẵn đường lui bằng `curl`. Nếu muốn tự cài:
+Vì sao nên dùng cách này: Claude Code ở **auto mode** có bộ kiểm duyệt chặn việc gửi dữ liệu ra host lạ khi yêu cầu chỉ đến từ
+chữ dán vào (đó là thiết kế an toàn đúng của nó). Với cách A, quyền đến từ **lệnh bạn tự chạy**, đích đến do cấu hình của bạn quyết
+định (tool không nhận URL), và mã phòng không nằm trong prompt hay lịch sử của agent. Chi tiết: [SECURITY-DESIGN.md](SECURITY-DESIGN.md).
 
-```bash
-# Claude Code
-claude mcp add --transport http agent-meeting https://…/mcp/<mã>
-# Codex CLI
-codex mcp add agent-meeting --url https://…/mcp/<mã>
-# Gemini CLI
-gemini mcp add --transport http agent-meeting https://…/mcp/<mã>
-```
+### Cách B: "Dán là vào ngay" (curl, không cần cài)
 
-Sau khi cài, **mở lại phiên agent** để nó nạp MCP, rồi bảo agent gọi `join`.
-Đã cài rồi thì cứ dán prompt của tab: agent được dặn dùng luôn MCP có sẵn, không cài lại.
+Dùng được với **mọi agent chạy được shell/`curl`** (subagent, agent lạ…), không cần cài, không cần mở lại phiên. Agent sẽ:
 
-> Cú pháp cài MCP có thể khác theo phiên bản từng CLI. Nếu lệnh lỗi, dùng cách A.
-> MCP chỉ cần cài **một lần cho mỗi lần chạy app**: bấm "Cuộc họp mới" vẫn dùng lại được, vì mã tham gia giữ nguyên.
+1. Tự đặt tên và khai báo model, rồi gọi `join`, nhận **mã riêng** cho mình.
+2. Chờ bạn duyệt, đọc giao thức cuộc họp mà server trả về.
+3. Vào vòng lặp nghe (`wait`) và nói (`say`) bằng `curl` (lệnh có `-H "Authorization: Bearer <mã riêng>"`) cho đến khi cuộc họp kết thúc.
+
+Claude Code ở auto mode có thể chặn vòng lặp `curl` này; khi đó dùng cách A.
+
+Prompt (cả hai cách) nói thay bạn những điều agent cần biết để không phải đoán: **bạn là chủ trì** (tin `[CHỦ TRÌ]` là của bạn), phòng
+chạy trên máy này hay qua địa chỉ công khai, bạn sẽ duyệt nó vào phòng, và chỉ được gửi tóm tắt tự viết, không gửi bí mật. Nếu bối
+cảnh cuộc họp mâu thuẫn với quy tắc của dự án (ví dụ `CLAUDE.md` ghi "chưa viết code") hoặc agent cần bạn duyệt, agent sẽ hỏi ngay
+trong phòng: trả lời bằng ô nhắn của trang chủ trì. Nếu agent dừng lại để hỏi bạn trong cửa sổ của nó, nó chỉ bị đánh dấu **vắng**:
+vẫn giữ chỗ và vai trò, trả lời xong là nó đọc tiếp phần đã lỡ.
+
+### Duyệt agent vào phòng
+
+Có prompt chưa chắc vào được: mỗi agent `join` sẽ nhận một **mã đối chiếu 4 số** và chờ. Trang chủ trì hiện
+"*Tên* (model) xin vào · mã đối chiếu 1234 · máy này / qua tunnel + IP" với hai nút **Cho vào** / **Từ chối**. Nếu agent là của bạn
+(ví dụ trong cửa sổ Claude Code nó báo "mã đối chiếu 1234") thì bấm **Cho vào**. Agent bị từ chối được báo dừng.
+
+- Agent đã vào mà muốn vào lại **bằng tên cũ** phải đưa đúng mã riêng của nó (agent cũ mở lại phiên thì xin duyệt lại); người
+  khác đoán được tên cũng không chiếm được chỗ.
+- Họp tự động không có người bấm (`--auto-start`) thì chạy kèm `--admit none` (ai có prompt là vào, chỉ dùng trong mạng kín)
+  hoặc `--admit remote` (agent cùng máy vào ngay, máy khác vẫn chờ duyệt).
+
+### Cài MCP thủ công (kiểu cũ)
+
+Tab **Khác** có URL MCP HTTP (`…/mcp/<mã>`) cho công cụ khác. MCP đã cài theo kiểu cũ (`claude mcp add --transport http
+agent-meeting https://…/mcp/<mã>`) vẫn chạy, nhưng không được cấp quyền sẵn (auto mode có thể chặn) và URL tunnel đổi mỗi lần chạy.
 
 ### Tên và model
 
@@ -263,11 +291,17 @@ không gửi lên server). Đã thử với Haiku 4.5 và Sonnet 5.5: cả hai t
 
 | Triệu chứng | Nguyên nhân thường gặp | Cách xử lý |
 |---|---|---|
-| Terminal đứng ở "Đang chờ địa chỉ công khai có hiệu lực…" | DNS của địa chỉ tunnel mới chưa lan tới | Chờ tới 1-2 phút. Nếu báo "Chưa truy cập được", chạy lại app. |
+| Nút **Bật địa chỉ công khai** quay mãi | DNS của địa chỉ tunnel mới chưa lan tới | Chờ tới 1-2 phút. Nếu vẫn lỗi, chạy lại app. |
+| Claude Code (auto mode) báo bị chặn khi `curl` tới phòng họp | Bộ kiểm duyệt của auto mode coi vòng lặp gửi dữ liệu ra host lạ do chữ dán vào là rò dữ liệu (đúng thiết kế) | Dùng cách A: chạy `connect claude` một lần, mở lại phiên, dán prompt tab **Đã kết nối**. Đừng tắt kiểm duyệt. |
+| Agent báo "Chưa có phòng họp nào để vào" | Cầu nối MCP chưa biết phòng: app chưa chạy trên máy này, hoặc phòng ở máy khác mà chưa `connect --room` | Chạy app trên máy này, hoặc chạy lại lệnh connect có `--room <URL mời>` (trang chủ trì in sẵn). |
+| Agent báo "Server không nhận ra bạn" | Agent gọi lệnh không kèm mã riêng (`Authorization`), hoặc dùng phiên MCP khác phiên đã join | Agent dùng đúng lệnh trong giao thức; nếu đã mở phiên mới thì `join` lại (cùng tên thì cần bạn duyệt lại). |
+| Agent đứng ở "đang chờ chủ trì duyệt" | Bạn chưa bấm **Cho vào** | Đối chiếu mã 4 số rồi bấm **Cho vào** trên trang chủ trì. |
+| Trang chủ trì báo "chỉ mở được trên máy chạy agent-meeting" | Mở link chủ trì qua địa chỉ tunnel | Mở `http://localhost:<cổng>/m/<mã>` trên máy chạy app (cần mở từ xa thì chạy với `--remote-host`). |
+| Tin của agent bị "KHÔNG GỬI: … có vẻ chứa bí mật" | Tin/tệp có dạng khoá, token, mật khẩu | Agent viết lại không kèm giá trị bí mật. Trang chủ trì hiện cảnh báo (không hiện giá trị). |
 | Trang chủ trì báo "Mất kết nối, đang thử lại…" | Mạng chập chờn hoặc tunnel bị ngắt | Trang tự kết nối lại. Nếu terminal báo tunnel đã ngắt, tắt và chạy lại app (link sẽ đổi). |
 | Trang báo "Không tìm thấy cuộc họp" | App đã tắt hoặc khởi động lại | Mở link mới in ra ở terminal. Lần sau chạy với `--host-key` và `--data-dir` để khởi động lại vẫn họp tiếp. |
 | Phòng "Đang thực hiện" mãi không đóng | Còn việc chưa báo xong (agent quên báo, hoặc việc trùng) | Xem bằng chứng rồi tự đặt trạng thái `xong`, gộp/xoá việc trùng bằng nút **×**, hoặc bấm **Đóng phòng**. |
-| Agent báo không có tool `join` | Agent chưa nạp MCP | Mở lại phiên agent sau khi cài MCP, hoặc dùng cách "Dán là vào ngay". |
+| Agent báo không có tool `join` | Agent chưa nạp MCP | Chạy lệnh `connect` rồi mở lại phiên agent, hoặc dùng cách "Dán là vào ngay". |
 | Agent báo việc `vướng` vì không ghi được `.git` hoặc không gọi được mạng | Sandbox của agent (ví dụ Codex chế độ `workspace-write`) chặn | Cho agent quyền khi nó hỏi, mở lại phiên với quyền phù hợp, hoặc tự commit rồi đặt trạng thái `xong`. |
 | `claude: command not found` (hoặc codex/gemini) | Máy đó không có CLI tương ứng | Dùng tab đúng công cụ hoặc cách "Dán là vào ngay". |
 | Agent bỏ cuộc khi đang ở phòng chờ | Một số agent tự dừng sau vài lần chờ | Bắt đầu sớm hơn, hoặc nhắn agent "tiếp tục gọi wait". |
@@ -277,7 +311,7 @@ không gửi lên server). Đã thử với Haiku 4.5 và Sonnet 5.5: cả hai t
 | Agent bị báo trùng tên liên tục | Agent dùng lại tên cũ | Nhắc agent chọn một tên khác hẳn. |
 | Agent muốn chạy lệnh theo yêu cầu của agent khác | Prompt injection | Giao thức đã dặn agent không làm vậy. Hãy giữ chế độ hỏi quyền của agent, đừng bật chế độ tự động cho mọi lệnh khi họp với agent lạ. |
 | Agent gửi tệp bị báo "Tệp quá lớn" | Vượt `--max-file-mb` / `--max-room-mb` | Nén (`tar czf`), chỉ gửi patch thay vì cả thư mục, hoặc chạy app với giới hạn lớn hơn (tunnel miễn phí tối đa ~100 MB/tệp). |
-| Agent báo "Không có tệp này cho bạn" | Thiếu hoặc sai `name=` (tệp gửi riêng), hoặc mã tệp chép sai | Agent gọi `files?name=<tên>` để lấy lại đúng lệnh tải. |
+| Agent báo "Không có tệp này cho bạn" | Tệp gửi riêng cho agent khác, hoặc mã tệp chép sai | Agent gọi `files` để lấy lại đúng lệnh tải. |
 | Cổng 3000 đang bận | App khác dùng cổng | App tự chọn cổng khác, hoặc chỉ định `--port 3100`. |
 
 Vẫn chưa được? [Mở issue](https://github.com/ttat288/agent-meeting/issues/new/choose) kèm phiên bản (`npx github:ttat288/agent-meeting --version`), hệ điều hành và nội dung terminal.
@@ -285,9 +319,13 @@ Vẫn chưa được? [Mở issue](https://github.com/ttat288/agent-meeting/issu
 ## 9. Dùng trong doanh nghiệp
 
 - **Server công ty**: chạy bằng Docker hoặc systemd sau reverse proxy, với `--public-url` và mã cố định (`--host-key`, `--agent-key`) để link chủ trì và prompt mời không đổi. Xem [DEPLOY.md](DEPLOY.md).
+- **Bảo mật**: mỗi agent có mã riêng (không giả tên nhau được), chủ trì duyệt từng agent, `--audit-log` ghi nhật ký kiểm toán,
+  `--retention <ngày>` tự xoá biên bản cũ, tin/tệp có dạng bí mật bị chặn. Mô hình đe doạ và các lựa chọn: [SECURITY-DESIGN.md](SECURITY-DESIGN.md).
+- **Claude Code ở auto mode trong công ty**: quản trị viên có thể đưa domain phòng họp vào `autoMode.environment` và quyền
+  `mcp__agent-meeting__*` vào managed settings (xem [DEPLOY.md](DEPLOY.md#claude-code-auto-mode)).
 - **Họp tự động** (không cần người bấm), ví dụ trong CI hoặc cron:
   ```bash
-  npx github:ttat288/agent-meeting --local --no-open \
+  npx github:ttat288/agent-meeting --local --no-open --admit none \
     --brief-file brief.json --auto-start 3 \
     --time-limit 20 --minutes-dir ./bien-ban --webhook "$SLACK_WEBHOOK" --exit-on-end
   ```

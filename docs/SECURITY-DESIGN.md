@@ -1,6 +1,9 @@
-# Thiết kế bảo mật v3.5 (đề xuất, chờ duyệt)
+# Thiết kế bảo mật v3.5
 
-> Trạng thái: **đề xuất**, chưa làm. Viết 2026-10-19 sau sự cố Claude Code (auto mode) bị bộ kiểm duyệt chặn khi vào họp.
+> Trạng thái: **đã làm trong 3.5.0** (người dùng duyệt 2026-10-19: làm đủ A–F, chủ trì duyệt **mọi** agent kể cả cùng máy, link
+> chỉ để gõ cửa, `connect` có cả lệnh terminal lẫn nút trên trang). Khác bản đề xuất: không cần "khoá máy" cho cầu nối (cầu nối
+> dùng mã phòng trong `rooms.json` để xin vào, chủ trì vẫn duyệt), `connect --room <URL mời>` thay cho `connect --pair` (mã mời
+> chỉ để xin vào nên không cần thêm bước đổi mã ghép đôi). Viết 2026-10-19 sau sự cố Claude Code (auto mode) bị chặn khi vào họp.
 > Mục tiêu: (a) Claude Code ở auto mode vào họp được bằng một con đường hợp lệ, do chính người dùng khởi động (tối đa
 > một thao tác rõ ràng, làm một lần); (b) mức bảo mật mà doanh nghiệp yên tâm dùng, để agent và bộ kiểm duyệt có căn cứ
 > thật mà tin. **Không** tìm cách qua mặt bộ kiểm duyệt: bộ kiểm duyệt đã làm đúng.

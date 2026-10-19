@@ -178,8 +178,8 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
 
 ## Trạng thái
 
-- **2026-10-19, nhánh `v3.4-away` (từ `v3.3.1-header` 36a4e5a). ĐÃ PUSH cả `v3.3.1-header` và `v3.4-away` lên origin
-  (người dùng yêu cầu); CHƯA merge vào main, CHƯA tag/release. App trong menu đã cài lại từ `v3.4-away` (`--version` = 3.4.0).** package 3.4.0, CHANGELOG 3.4.0,
+- **2026-10-19, nhánh `v3.4-away` (từ `v3.3.1-header` 36a4e5a). ĐÃ MERGE vào main (fast-forward) + tag `v3.4.0`
+  + push (người dùng yêu cầu 2026-10-19); CHƯA tạo GitHub Release. App trong menu đã cài lại từ `v3.4-away` (`--version` = 3.4.0).** package 3.4.0, CHANGELOG 3.4.0,
   README (EN+VI) badge + "What's new in 3.4", GUIDE + REFERENCE (VI+EN). 106 test xanh. Đã làm bước 1–5 và 7 của lộ trình v3.4:
   - Agent VẮNG (`a.away`, `a.awaySince`; snapshot `status: 'away'` + `awaySince`): `_reap` hết `staleMs` → `_setAway` (giữ
     slot/vai trò/cursor, mất lượt ngay), vắng thêm `cfg.awayMs` (mặc định 15 phút) → `a.lost = true` + `leave('mất kết nối')`.
@@ -576,8 +576,8 @@ Theo thứ tự ưu tiên:
    có thể đang tự dùng thử: hỏi họ kết quả trước). Hỏi người dùng có cho chạy subagent Sonnet + Haiku (workspace có `CLAUDE.md`
    "build nothing", brief bảo dựng MVP, 2 vai trò, prompt chép từ trang, không dặn thêm) và Claude Code CLI thật (auto mode, qua
    tunnel) không. Kỳ vọng: agent dừng hỏi thì chỉ "vắng"; xung đột thì nói vào phòng; không gộp đọc tệp + curl.
-2. **Hỏi người dùng merge** `v3.4-away` (đã chứa `v3.3.1-header`) vào main, tag `v3.4.0` + GitHub Release. Không tự làm.
-   Trước khi phát hành: cân nhắc quay lại GIF/ảnh nếu muốn thấy trạng thái "vắng" và nút Bắt đầu bị khoá (không bắt buộc).
+2. **GitHub Release v3.4.0** (tag đã có, đã merge vào main): hỏi người dùng có tạo Release không (ghi chú lấy từ CHANGELOG
+   3.3.1 + 3.4.0 vì 3.3.x chưa có release). Cân nhắc quay lại GIF/ảnh nếu muốn thấy trạng thái "vắng" và nút Bắt đầu bị khoá (không bắt buộc).
    README (EN + VI) luôn ghi phiên bản mới nhất; đổi giao diện thì quay lại GIF (`tools/record-demo.js`, `--vi`) và chụp lại
    ảnh (`tools/shot-setup.js`, `tools/shot-mobile.js`).
 3. **Cân nhắc chỉnh prompt nhờ AI** (cần thử lại Haiku + Sonnet): Haiku hay viết "VIỆC: [agent role] | …" vào context; agent

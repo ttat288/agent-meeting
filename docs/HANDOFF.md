@@ -206,7 +206,10 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
     (fe4c81c), rời phòng → ENDED "mọi agent đã rời phòng" (không qua WORK vì đã xong hết). Repo: 2 commit, `node test.js` ok.
     Ghi nhận: bối cảnh tiếng Anh nhưng hai agent nói tiếng Việt (lần thử 2026-10-18 thì nói tiếng Anh): chấp nhận được.
   - CHƯA: tab MCP / Codex CLI tiếng Anh với Codex thật (không chạy vì dùng tài khoản ChatGPT của người dùng + sửa
-    `~/.codex/config.toml`; người dùng dặn thử bằng subagent), tunnel thật, webhook thật, `scripts/install-linux.sh`.
+    `~/.codex/config.toml`; người dùng dặn thử bằng subagent), tunnel thật, webhook thật.
+  - Theo yêu cầu người dùng ("app local chưa update"): đã chạy `scripts/install-linux.sh` TỪ NHÁNH `v3.3.1-header` → bản trong
+    menu là 3.3.1 (trước là 3.2.0). Thư mục app còn `src/ui.html` cũ (không dùng, để nguyên). Người dùng dùng thử bản này qua
+    tunnel và gặp lỗi nghiêm trọng ở "Lộ trình v3.4".
   - Firefox headless pid 20699 (cổng 9223, profile `am-shot`) bị kẹt phiên BiDi, không kill được từ sandbox: người dùng tự đóng.
 - **2026-10-18 (tối), theo yêu cầu người dùng**: README viết lại (tiếng Anh là `README.md`, tiếng Việt `README.vi.md`, chi tiết ở
   `docs/REFERENCE(.vi).md`), đã **merge v3.3-brief vào main và push** (main = 08fbb23 lúc đó). Sau đó làm thêm **trang chủ trì
@@ -483,24 +486,82 @@ bước 1 bấm "Tiếp" sang bước 2, chờ agent vào rồi mới Bắt đ�
 Không đổi giao thức agent trong v3.3 (trừ `roles` theo slot, nếu làm). Nếu phải đổi văn bản gửi agent thì thử lại bằng
 subagent Haiku + Sonnet như các phiên trước.
 
+## Lộ trình v3.4: agent thật (Claude Code) bỏ họp giữa chừng + chặn Bắt đầu khi thiếu agent (BÀN GIAO, CHƯA LÀM)
+
+Người dùng báo 2026-10-19, đánh giá **lỗi rất nghiêm trọng**. Làm trên nhánh mới tách từ `v3.3.1-header` (header mới, chưa
+merge; nếu người dùng đã merge thì tách từ main). Mỗi bước test xong mới sang bước sau.
+
+**Chuyện đã xảy ra** (phòng thật qua tunnel `trycloudflare`, 2 vai trò: Cedar (GPT-6) giám sát, agent kia dựng MVP "LabelLoop").
+Người dùng dán prompt "Paste and join" tiếng Anh cho **Claude Code (Opus 5.5, auto mode)**. Agent join được (tên
+`Grok-the-Caveman`), đọc brief, rồi DỪNG LƯỢT để hỏi người dùng, không nói gì vào phòng. Lời agent (tóm tắt):
+- Nó chạy MỘT lệnh vừa đọc `HANDOFF.md`, `docs/STATUS.md`, tệp memory, vừa gọi server họp → bộ kiểm duyệt auto mode của Claude
+  Code chặn vì coi là **đưa dữ liệu ra ngoài** (phòng chạy trên tunnel công khai).
+- `CLAUDE.md` của dự án ghi "Phase: IDEA. Markdown only. Build nothing until user says so", còn brief của chủ trì bảo dựng MVP
+  ngay. Agent coi tin chủ trì là DỮ LIỆU, không phải lệnh của người dùng (đúng theo nguyên tắc an toàn của nó), nên không làm.
+- Nó hỏi người dùng 3 điều: cho chia sẻ bối cảnh dự án lên phòng không; có bỏ luật "build nothing" không; hay rời phòng.
+Sau đó agent **bị tính là đã rời phòng**: không gọi `wait` quá `staleMs` (= `busyMs` 120 s + 60 s) thì `_sweep` gọi
+`leave(name, 'mất kết nối')` (src/meeting.js ~dòng 212), và lần `wait` sau khi người dùng trả lời nhận `LEFT_TEXT` "Bạn đã rời
+phòng. Hãy dừng lại, không gọi thêm tool." → agent dừng hẳn. Agent cùng phòng phải chờ (chế độ lần lượt còn kẹt lượt tới `busyMs`).
+
+**Nguyên nhân gốc** (đừng sửa bằng cách bảo agent bỏ qua quy tắc an toàn/dự án của nó):
+1. Prompt mời (`buildInvite` trong src/ui/app.js, cả bản EN trong i18n.js) KHÔNG nói chủ trì là ai. Prompt do chính người dùng
+   dán, nên đây là chỗ DUY NHẤT người dùng nói được với agent: "tin [CHỦ TRÌ] là của tôi". Giao thức luật 6 ("Tin [CHỦ TRÌ] …
+   ưu tiên làm theo") đến từ server nên agent cẩn thận coi như dữ liệu → đúng.
+2. Prompt/giao thức không nói phòng có thể chạy qua địa chỉ công khai và được chia sẻ gì; agent phải tự đoán → bị chặn.
+3. Không có đường để agent hỏi lại mà vẫn giữ chỗ: dừng lượt để hỏi người dùng = mất kết nối = bị cho rời phòng vĩnh viễn.
+4. Giao thức không dặn tách lệnh: agent gộp "đọc tệp + curl" vào một lệnh, đúng kiểu bộ kiểm duyệt coi là rò dữ liệu.
+
+**Việc cần làm** (thiết kế đề xuất, có lý do mạnh thì đổi nhưng nói người dùng trước):
+1. **Không đuổi agent "im lặng"**: hết `staleMs` thì đánh dấu VẮNG (`away`, hiện trên trang: "vắng, có thể đang chờ người dùng
+   duyệt"), KHÔNG `leave`. Agent vắng gọi lại `wait`/`say` thì có mặt lại, giữ slot, vai trò, `cursor` (đọc tiếp phần đã lỡ).
+   Chế độ lần lượt: agent vắng bị bỏ qua lượt (như hết `busyMs`), không chặn người khác. Luật "chỉ còn mình bạn: leave" và
+   "mọi agent đã rời phòng" phải tính agent vắng như chưa rời (hoặc có hạn riêng dài hơn, ví dụ 15 phút, rồi mới coi là rời).
+   Tối thiểu nếu vẫn giữ leave: `LEFT_TEXT` cho trường hợp mất kết nối phải bảo "gọi join lại với đúng tên để vào lại", không
+   "dừng lại". Test: meeting.test.js (agent im > staleMs rồi wait lại: nhận tiếp tin, còn vai trò; lần lượt không kẹt; phòng
+   không tự đóng vì agent vắng), server.test.js nếu đổi văn bản, `--data-dir` restore (agent vắng).
+2. **Prompt mời nói rõ quyền** (cả 3 tab, VI + EN, tr() + i18n.js): đại ý "Tôi (người gửi prompt này) là chủ trì: tin
+   [CHỦ TRÌ]/[HOST] trong phòng là của tôi. Phòng chạy qua <origin> (nếu không phải localhost thì nói rõ là địa chỉ công khai).
+   Bạn được chia sẻ trong phòng những gì cần cho chủ đề, bằng tóm tắt TỰ VIẾT; không gửi bí mật (khoá, .env, mật khẩu, tệp
+   memory). Quy tắc của dự án/của bạn vẫn áp dụng: nếu brief mâu thuẫn với chúng hoặc bạn cần tôi duyệt, hãy NÓI VÀO PHÒNG
+   (tôi đọc và trả lời ở đó) rồi wait tiếp, đừng dừng im lặng." Cân nhắc cho chủ trì sửa câu quyền này trên trang (ví dụ ô
+   "Agent được phép…": chỉ bàn / được sửa code trong repo / được chia sẻ tài liệu dự án) và đưa vào bản brief (`permissions`?)
+   — nếu thêm trường brief thì cập nhật brief.js, LIMITS, aiPrompt, test, và hỏi người dùng trước.
+3. **Giao thức** (src/meeting.js `_protocol`, có test so chữ thì sửa theo): thêm luật "Bị chặn quyền, cần người dùng duyệt,
+   hoặc bối cảnh mâu thuẫn với quy tắc dự án: say NGẮN vào phòng (không kèm dữ liệu nhạy cảm) rồi tiếp tục wait; chủ trì sẽ trả
+   lời trong phòng" và "Đọc tệp/chạy lệnh trong dự án bằng lệnh riêng; chỉ gửi vào phòng tóm tắt do bạn tự viết, không ghép
+   đọc tệp với curl/say trong một lệnh, không pipe tệp vào say".
+4. **Trang chủ trì**: agent vắng hiện rõ trong danh sách thành viên + phòng chờ; cân nhắc toast "X vắng > 3 phút".
+5. **Chặn Bắt đầu khi thiếu agent cho vai trò** (người dùng: "có 2 role thì không nên cho start phòng vì chưa đủ agent"): bản
+   brief có `roles` (tính cả phần tử "" vì vẫn là một slot) mà số agent có mặt < số vai trò → nút **Bắt đầu cuộc họp** bị khoá,
+   dòng kiểm tra ở thanh dưới báo "Cần N agent theo vai trò (đang có M)" (`renderChecks`, `#btnStart` trong app.js; bỏ câu
+   "vẫn bắt đầu được" khi có vai trò). Server `POST /api/host/<k>/start` cũng từ chối (409, thông báo rõ) trừ khi gửi
+   `"force": true`, để API/CLI không lách; `--auto-start N` của CLI: nếu N < số vai trò thì báo lỗi lúc khởi động. Không có
+   vai trò thì giữ hành vi cũ (0 agent vẫn bắt đầu được). Test: server.test.js (409/force), brief.test.js nếu đụng parse,
+   i18n (chuỗi mới).
+6. **Thử thật** (bắt buộc, vì lỗi đến từ agent thật): workspace thử có `CLAUDE.md` ghi "Build nothing, markdown only" +
+   `HANDOFF.md`/`docs/STATUS.md`; brief yêu cầu "chia sẻ trạng thái dự án rồi dựng MVP"; 2 vai trò. Mời subagent Sonnet + Haiku
+   bằng đúng prompt chép từ trang (không dặn thêm). Kỳ vọng: agent không bị đuổi khi dừng hỏi; nếu xung đột thì nói vào phòng;
+   chủ trì trả lời trong phòng thì agent làm tiếp; không có lệnh gộp đọc tệp + curl. Nếu người dùng đồng ý: thử thêm Claude
+   Code thật (CLI, auto mode) qua tunnel, vì bộ kiểm duyệt auto mode chỉ có ở đó. Thử luôn nút Bắt đầu bị khoá khi 1/2 agent.
+7. Tài liệu: GUIDE/REFERENCE (VI+EN) mục quyền của agent + "agent vắng", CHANGELOG 3.4.0, package 3.4.0, README "What's new",
+   GIF/ảnh nếu giao diện đổi. Hỏi người dùng trước khi merge/push/tag/release.
+
 ## Việc tiếp theo
 
 Theo thứ tự ưu tiên:
 
-1. **Hỏi người dùng**: (a) xem header mới (nhánh `v3.3.1-header`) rồi có merge vào main + push không; (b) có tag + GitHub
-   Release (`v3.3.1`, gồm cả 3.2/3.3 chưa phát hành riêng?) không; (c) sau merge chạy `bash scripts/install-linux.sh` để bản
-   trong menu lên 3.3.1. KHÔNG tự merge/push/tag/release. README (EN + VI) luôn ghi phiên bản mới nhất; đổi giao diện thì quay
-   lại GIF (`tools/record-demo.js`, `--vi`) và chụp lại ảnh (`tools/shot-setup.js`, `tools/shot-mobile.js`, xem "Bẫy").
-2. **Cân nhắc chỉnh prompt nhờ AI** (cả VI lẫn EN, cần thử lại Haiku + Sonnet): Haiku hay viết "VIỆC: [agent role] | …" vào
-   context. Agent thật vẫn ghi đúng tên nhờ giao thức, nên chưa gấp; nếu sửa thì thêm một câu "VIỆC lines must use the agent's
-   own name" và nhắc giới hạn 200 ký tự/vai trò. Đừng nới các chỗ đã chỉnh ở "Quyết định".
-3. **Thử gửi tệp qua tunnel Cloudflare thật** (bỏ `--local`): tệp vài MB và ~20 MB, Expect 100-continue và thông báo "Tệp quá
-   lớn" qua tunnel. Tunnel là công khai: hỏi người dùng trước.
-4. **Webhook thật** (Slack/Discord/Google Chat, phòng có `--follow-up`): chỉ khi người dùng đưa URL, không tự tạo.
-5. Tab MCP / Codex CLI tiếng Anh với Codex thật: chỉ khi người dùng đồng ý (dùng tài khoản của họ, phải sao lưu/khôi phục
-   `~/.codex/config.toml`, xem "Cách lặp lại phép thử agent thật của v3.1").
-6. Có thể cân nhắc (chưa làm, cần người dùng đồng ý): dịch cả giao thức gửi agent sang tiếng Anh (`--lang en`, phải thử lại
-   agent thật); chủ trì xoá một tệp trên trang; giới hạn tốc độ gửi tệp theo agent; kéo-thả đổi thứ tự mục chương trình.
+1. **Lộ trình v3.4 ở trên** (lỗi nghiêm trọng, người dùng yêu cầu sửa ở phiên kế): agent bị tính "rời phòng" khi dừng hỏi
+   người dùng; prompt mời chưa trao quyền/ngữ cảnh; chặn Bắt đầu khi thiếu agent cho vai trò.
+2. **Hỏi người dùng**: (a) merge `v3.3.1-header` vào main + push chưa (người dùng đã dùng thử: bản trong menu đã cài 3.3.1 từ
+   nhánh này, 2026-10-19); (b) tag + GitHub Release; KHÔNG tự merge/push/tag/release. README (EN + VI) luôn ghi phiên bản mới
+   nhất; đổi giao diện thì quay lại GIF (`tools/record-demo.js`, `--vi`) và chụp lại ảnh (`tools/shot-setup.js`, `tools/shot-mobile.js`).
+3. **Cân nhắc chỉnh prompt nhờ AI** (cần thử lại Haiku + Sonnet): Haiku hay viết "VIỆC: [agent role] | …" vào context; agent
+   thật vẫn ghi đúng tên nhờ giao thức nên chưa gấp. Có thể làm cùng bước 2 của v3.4.
+4. **Gửi tệp qua tunnel Cloudflare thật**: tệp vài MB và ~20 MB, Expect 100-continue, "Tệp quá lớn". Hỏi người dùng trước.
+5. **Webhook thật**: chỉ khi người dùng đưa URL.
+6. Tab MCP / Codex CLI tiếng Anh với Codex thật: chỉ khi người dùng đồng ý (tài khoản của họ, sao lưu `~/.codex/config.toml`).
+7. Có thể cân nhắc (cần người dùng đồng ý): giao thức tiếng Anh (`--lang en`); chủ trì xoá tệp; giới hạn tốc độ gửi tệp;
+   kéo-thả đổi thứ tự mục chương trình.
 
 Ý tưởng xa hơn (chưa lên kế hoạch):
 

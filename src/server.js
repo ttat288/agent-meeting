@@ -341,6 +341,28 @@ function createApp(cfg = {}) {
     const via = cf ? (fixedOrigin ? 'public' : 'tunnel') : loop && !req.headers['x-forwarded-for'] ? 'local' : fixedOrigin ? 'public' : 'lan';
     return { via, ip: String(ip).replace(/^::ffff:/, '') };
   }
+  // Chống DNS rebinding: server chỉ nghe máy này (mặc định) thì chỉ nhận Host là localhost hoặc địa chỉ tunnel/--public-url
+  // của chính nó. --lan (nghe cả mạng LAN) thì không kiểm (Host có thể là IP bất kỳ của máy).
+  const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]', '::1']);
+  function hostOk(req) {
+    if (cfg.lan) return true;
+    let h; try { h = new URL('http://' + (req.headers.host || '')).hostname; } catch { return false; }
+    if (LOCAL_HOSTS.has(h) || h.endsWith('.localhost')) return true;
+    return [publicOrigin, fixedOrigin].some(o => { try { return o && new URL(o).hostname === h; } catch { return false; } });
+  }
+  // Trang chủ trì và API chủ trì không mở qua tunnel công khai (lộ link chủ trì = mất quyền điều khiển từ bất kỳ đâu),
+  // trừ khi chạy --public-url (công ty tự bảo vệ bằng proxy/SSO) hoặc --remote-host.
+  const hostPageOk = (req) => cfg.remoteHost || where(req).via !== 'tunnel';
+  // CSRF: request đổi trạng thái từ trình duyệt phải cùng origin với trang chủ trì
+  const sameOrigin = (req) => { const o = req.headers.origin; if (!o) return true; try { return new URL(o).host === req.headers.host; } catch { return false; } };
+  let tunnelStarting = null;
+  async function openTunnel() {
+    if (publicOrigin) return publicOrigin;
+    if (!cfg.startTunnel) throw new Error('Tunnel đã bị tắt (--local). Chạy lại không có --local, hoặc dùng --public-url.');
+    tunnelStarting ||= cfg.startTunnel().then(o => { publicOrigin = o; return o; }).finally(() => { tunnelStarting = null; });
+    return tunnelStarting;
+  }
+
   // danh tính agent cho các đường tệp: mã (curl) hoặc phiên MCP (cầu nối)
   const who = (mt, req) => mt?.identify({ token: bearer(req), sid: req.headers['mcp-session-id'] }) || null;
 
@@ -352,6 +374,10 @@ function createApp(cfg = {}) {
     const json = (code, o) => send(code, 'application/json; charset=utf-8', JSON.stringify(o), { 'cache-control': 'no-store' });
     let m;
     try {
+      if (!hostOk(req)) return text(421, 'Host không hợp lệ cho server này.');
+      if ((p.startsWith('/m/') || p.startsWith('/api/host/')) && !hostPageOk(req))
+        return text(403, 'Trang chủ trì chỉ mở được trên máy chạy agent-meeting (http://localhost:<cổng>/m/<mã>), không qua địa chỉ công khai.');
+      if (p.startsWith('/api/host/') && req.method === 'POST' && !sameOrigin(req)) return json(403, { error: 'Sai origin.' });
       if (p === '/') return text(200, 'agent-meeting đang chạy. Hãy mở link chủ trì in ra ở terminal.');
       if (p === '/healthz') return json(200, { ok: true, version: pkg.version });
       if (ASSETS[p]) return send(200, assets[p].type, assets[p].body, { 'cache-control': 'no-cache' });
@@ -365,13 +391,17 @@ function createApp(cfg = {}) {
         if (!f) return json(404, { error: 'Không tìm thấy tệp.' });
         return serveFile(res, mt, f, () => {});
       }
-      if ((m = p.match(/^\/api\/host\/(\w+)\/(state|start|stop|say|kick|admit|new|next|role|task|minutes\.md|minutes\.json)$/))) {
+      if ((m = p.match(/^\/api\/host\/(\w+)\/(state|start|stop|say|kick|admit|tunnel|connect|new|next|role|task|minutes\.md|minutes\.json)$/))) {
         const mt = byHost.get(m[1]); if (!mt) return json(404, { error: 'Không tìm thấy cuộc họp (app đã khởi động lại?).' });
         const act = m[2];
         if (act === 'state') {
           const v = Number.parseInt(u.searchParams.get('v'), 10), from = Number.parseInt(u.searchParams.get('from'), 10);
           // long-poll thay cho SSE vì tunnel miễn phí của Cloudflare không hỗ trợ SSE
-          return json(200, { ...(await mt.changedSince(Number.isNaN(v) ? -1 : v, 25000, Number.isNaN(from) ? 0 : from)), origin: publicOrigin || origin });
+          // local: địa chỉ cho agent cùng máy; public: địa chỉ cho agent máy khác (tunnel hoặc --public-url), null nếu chưa bật
+          const loc = where(req).via === 'local';
+          return json(200, { ...(await mt.changedSince(Number.isNaN(v) ? -1 : v, 25000, Number.isNaN(from) ? 0 : from)),
+            origin: fixedOrigin || (loc ? origin : publicOrigin || origin), local: loc && !fixedOrigin ? origin : null, public: fixedOrigin || publicOrigin,
+            tunnel: { can: !fixedOrigin && !publicOrigin && !!cfg.startTunnel, starting: !!tunnelStarting } });
         }
         if (act === 'minutes.md') return send(200, 'text/markdown; charset=utf-8', minutes.toMarkdown(mt), { 'cache-control': 'no-store' });
         if (act === 'minutes.json') return json(200, minutes.toJSON(mt));
@@ -390,6 +420,15 @@ function createApp(cfg = {}) {
         if (act === 'role') return json(200, { ok: mt.setRole(d.name, d.role) });
         if (act === 'task') return json(200, { ok: d.remove === true || d.remove === 'true' ? mt.hostRemoveTask(d.n, d.into) : mt.hostTask(d.n, d.status, d.note) });
         if (act === 'kick') return json(200, { ok: mt.kick(d.name) });
+        if (act === 'tunnel') {
+          try { const o = await openTunnel(); log(`🌐 Địa chỉ công khai cho agent ở máy khác: ${o}`); mt._changed(); return json(200, { origin: o }); }
+          catch (e) { return json(400, { error: e.message }); }
+        }
+        if (act === 'connect') {
+          // sửa cấu hình agent trên MÁY CHẠY SERVER: chỉ khi trang chủ trì mở trên chính máy đó
+          if (where(req).via !== 'local' || !cfg.connect) return json(403, { error: 'Chỉ kết nối được trên máy chạy agent-meeting (mở trang chủ trì bằng http://localhost). Ở máy khác: chạy lệnh connect trong terminal.' });
+          try { return json(200, cfg.connect(String(d.agent || ''))); } catch (e) { return json(400, { error: e.message }); }
+        }
         if (act === 'admit') return json(200, { ok: mt.admit(d.name, !(d.allow === false || d.allow === 'false')) });
         if (act === 'new') {
           if (mt.state === 'LIVE' || mt.state === 'WORK') mt.stop('chủ trì mở cuộc họp mới', true);

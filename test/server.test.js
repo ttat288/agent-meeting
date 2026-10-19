@@ -87,7 +87,9 @@ test('Chủ trì: long-poll nhận thay đổi, bắt đầu và kết thúc; to
   assert.equal(live.state, 'LIVE');
   assert.equal(live.origin, base); // chưa đặt địa chỉ công khai thì dùng địa chỉ của request
   app.setPublicOrigin('https://vi-du.trycloudflare.com');
-  assert.equal((await (await fetch(`${base}/api/host/${m.hostKey}/state`)).json()).origin, 'https://vi-du.trycloudflare.com');
+  // trang mở trên máy này: mời agent cùng máy bằng địa chỉ cục bộ, địa chỉ công khai để riêng cho agent máy khác
+  const st = await (await fetch(`${base}/api/host/${m.hostKey}/state`)).json();
+  assert.deepEqual([st.origin, st.local, st.public], [base, base, 'https://vi-du.trycloudflare.com']);
   assert.equal((await fetch(`${base}/api/host/${m.id}/stop`, { method: 'POST' })).status, 404);
   await fetch(`${base}/api/host/${m.hostKey}/stop`, { method: 'POST' });
   assert.equal(m.state, 'ENDED');

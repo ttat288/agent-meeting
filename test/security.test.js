@@ -166,3 +166,51 @@ test('HTTP: phòng có duyệt — chủ trì thấy mã đối chiếu, bấm c
   assert.match((await call('wait', {}, b.tok)).text, /không cho bạn vào/);
   assert.deepEqual([...m.agents.keys()], ['Lan']);
 });
+
+test('cục bộ trước: trang chủ trì không mở qua tunnel; Host lạ bị từ chối; POST khác origin bị chặn; tunnel bật theo yêu cầu', async (t) => {
+  let started = 0;
+  const { app, base, m } = await boot({ startTunnel: async () => { started++; await new Promise(r => setTimeout(r, 20)); return 'https://abc-def.trycloudflare.com'; } });
+  t.after(() => app.close());
+  const http = require('http');
+  const get = (path, headers = {}, method = 'GET') => new Promise((ok, fail) => {
+    const req = http.request(base + path, { method, headers }, (r) => { let b = ''; r.on('data', c => { b += c; }); r.on('end', () => ok({ status: r.statusCode, body: b })); });
+    req.on('error', fail); req.end();
+  });
+  const k = m.hostKey;
+  assert.equal((await get(`/m/${k}`)).status, 200);
+  assert.equal((await get(`/m/${k}`, { 'cf-connecting-ip': '203.0.113.9' })).status, 403);
+  assert.equal((await get(`/api/host/${k}/state?v=-1`, { 'cf-ray': 'x' })).status, 403);
+  assert.equal((await get('/healthz', { host: 'evil.example' })).status, 421);
+  assert.equal((await get(`/api/host/${k}/stop`, { origin: 'http://evil.example' }, 'POST')).status, 403);
+  // agent vẫn vào được qua tunnel (chỉ trang chủ trì bị chặn)
+  assert.equal((await get(`/a/${m.id}/join?name=Xa&model=x`, { 'cf-connecting-ip': '203.0.113.9', host: 'abc-def.trycloudflare.com' }, 'POST')).status, 421); // chưa bật tunnel: Host đó lạ
+  let s = await (await fetch(`${base}/api/host/${k}/state?v=-1`)).json();
+  assert.equal(s.public, null); assert.equal(s.local, base); assert.deepEqual(s.tunnel, { can: true, starting: false });
+  // bật tunnel một lần dù bấm hai lần
+  const [r1, r2] = await Promise.all([1, 2].map(() => fetch(`${base}/api/host/${k}/tunnel`, { method: 'POST' }).then(r => r.json())));
+  assert.deepEqual([r1, r2], [{ origin: 'https://abc-def.trycloudflare.com' }, { origin: 'https://abc-def.trycloudflare.com' }]);
+  assert.equal(started, 1);
+  s = await (await fetch(`${base}/api/host/${k}/state?v=-1`)).json();
+  assert.equal(s.public, 'https://abc-def.trycloudflare.com'); assert.equal(s.tunnel.can, false);
+  const j = await get(`/a/${m.id}/join?name=Xa&model=x`, { 'cf-connecting-ip': '203.0.113.9', host: 'abc-def.trycloudflare.com', 'x-forwarded-proto': 'https' }, 'POST');
+  assert.equal(j.status, 200); assert.match(j.body, /https:\/\/abc-def\.trycloudflare\.com\/a\//);
+  s = await (await fetch(`${base}/api/host/${k}/state?v=-1`)).json();
+  assert.deepEqual(s.agents.map(a => [a.name, a.via]), [['Xa', 'tunnel']]);
+});
+
+test('--local: không có tunnel, API báo rõ', async (t) => {
+  const { app, base, m } = await boot(); t.after(() => app.close());
+  const r = await fetch(`${base}/api/host/${m.hostKey}/tunnel`, { method: 'POST' });
+  assert.equal(r.status, 400); assert.match((await r.json()).error, /--local/);
+});
+
+test('nút Kết nối trên trang chủ trì: chỉ chạy khi trang mở trên chính máy chạy server', async (t) => {
+  const seen = [];
+  const { app, base, m } = await boot({ connect: (agent) => { seen.push(agent); if (agent !== 'claude') throw new Error('agent phải là: claude, codex, gemini'); return { ok: true, log: 'xong' }; } });
+  t.after(() => app.close());
+  const post = (body, headers = {}) => fetch(`${base}/api/host/${m.hostKey}/connect`, { method: 'POST', headers, body: JSON.stringify(body) }).then(async r => [r.status, await r.json()]);
+  assert.deepEqual(await post({ agent: 'claude' }), [200, { ok: true, log: 'xong' }]);
+  assert.equal((await post({ agent: 'x' }))[0], 400);
+  assert.equal((await post({ agent: 'claude' }, { 'x-forwarded-for': '10.0.0.5' }))[0], 403); // qua proxy: không phải máy này
+  assert.deepEqual(seen, ['claude', 'x']);
+});

@@ -145,16 +145,17 @@ function webhookBody(url, m, event = 'ended', task) {
 // Giới hạn tốc độ kiểu token bucket, trong bộ nhớ: key -> { n: số lượt còn, t: lần nạp cuối }
 function limiter() {
   const b = new Map();
-  const take = (key, perMin, burst) => {
+  const fill = (key, perMin, burst) => {
     const now = Date.now(), x = b.get(key) || { n: burst, t: now };
     x.n = Math.min(burst, x.n + (now - x.t) * perMin / 60000); x.t = now;
     if (b.size > 10000) b.clear(); // chống phình bộ nhớ khi bị quét từ rất nhiều IP
     b.set(key, x);
-    if (x.n < 1) return false;
-    x.n -= 1; return true;
+    return x;
   };
-  const left = (key) => b.get(key)?.n ?? Infinity;
-  return { take, left };
+  // take: dùng một lượt (false nếu hết); ok: còn lượt không (không dùng)
+  const take = (key, perMin, burst) => { const x = fill(key, perMin, burst); if (x.n < 1) return false; x.n -= 1; return true; };
+  const ok = (key, perMin, burst) => fill(key, perMin, burst).n >= 1;
+  return { take, ok };
 }
 
 function createApp(cfg = {}) {
@@ -309,7 +310,8 @@ function createApp(cfg = {}) {
     if (!who || who.pending) return reply(401, who ? PENDING_TEXT : AUTH_TEXT);
     const chk = mt.sendCheck(who.name, q.to);
     if (typeof chk === 'string') return reply(400, chk);
-    if (!rate.take(`send:${mt.id}:${chk.from}`, 10, 5)) return reply(429, 'Gửi tệp quá nhanh (tối đa ~10 tệp mỗi phút). Hãy gộp các tệp (tar czf) rồi gửi lại sau ít giây.');
+    // chỉ tính tệp gửi thành công (tệp bị từ chối vì quá lớn… không tính)
+    if (!rate.ok(`send:${mt.id}:${chk.from}`, 10, 5)) return reply(429, 'Gửi tệp quá nhanh (tối đa ~10 tệp mỗi phút). Hãy gộp các tệp (tar czf) rồi gửi lại sau ít giây.');
     const used = mt.files.reduce((n, f) => n + (f.gone ? 0 : f.size), 0);
     const room = Math.min(lim.maxFileMb * MB, lim.maxRoomMb * MB - used), len = Number(req.headers['content-length']);
     const tooBig = (n) => `Tệp quá lớn${n ? ` (${fmtSize(n)})` : ''}: tối đa ${lim.maxFileMb} MB mỗi tệp, ${lim.maxRoomMb} MB cho cả phòng (đã dùng ${fmtSize(used)}). Hãy nén (tar czf), chia nhỏ, hoặc chỉ gửi phần cần thiết (git format-patch thay vì cả thư mục).`;
@@ -352,6 +354,7 @@ function createApp(cfg = {}) {
     const sha256 = hash.digest('hex');
     const r = mt.addFile({ id, name: q.file, size, sha256, from: chk.from, to: chk.to, note: q.note });
     if (!mt.files.some(f => f.id === id)) { blobs.delete(id); if (out) try { fs.rmSync(blobPath(mt, id), { force: true }); } catch {} return reply(400, r); }
+    rate.take(`send:${mt.id}:${chk.from}`, 10, 5);
     audit('file_send', { room: rid(mt), agent: chk.from, to: chk.to || '*', file: mt.files.at(-1).name, size, sha256 });
     return reply(200, r);
   }
@@ -489,7 +492,7 @@ function createApp(cfg = {}) {
 
       // Agent: IP đã gửi quá nhiều yêu cầu sai mã (dò mã phòng / mã riêng) thì tạm chặn
       const W = where(req), bad = () => rate.take(`bad:${W.ip}`, 20, 30);
-      if ((p.startsWith('/a/') || p.startsWith('/mcp/')) && rate.left(`bad:${W.ip}`) < 1) {
+      if ((p.startsWith('/a/') || p.startsWith('/mcp/')) && !rate.ok(`bad:${W.ip}`, 20, 30)) {
         res.writeHead(429, { 'content-type': 'text/plain; charset=utf-8', 'retry-after': '60', ...SECURITY });
         return res.end('Quá nhiều yêu cầu sai mã từ địa chỉ này. Thử lại sau 1 phút, và dùng đúng URL/lệnh trong giao thức.');
       }

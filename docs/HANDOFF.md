@@ -178,7 +178,8 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
 
 ## Trạng thái
 
-- **2026-10-19, nhánh `v3.4-away` (từ `v3.3.1-header` 36a4e5a), CHƯA merge/push/tag.** package 3.4.0, CHANGELOG 3.4.0,
+- **2026-10-19, nhánh `v3.4-away` (từ `v3.3.1-header` 36a4e5a). ĐÃ PUSH cả `v3.3.1-header` và `v3.4-away` lên origin
+  (người dùng yêu cầu); CHƯA merge vào main, CHƯA tag/release. App trong menu đã cài lại từ `v3.4-away` (`--version` = 3.4.0).** package 3.4.0, CHANGELOG 3.4.0,
   README (EN+VI) badge + "What's new in 3.4", GUIDE + REFERENCE (VI+EN). 106 test xanh. Đã làm bước 1–5 và 7 của lộ trình v3.4:
   - Agent VẮNG (`a.away`, `a.awaySince`; snapshot `status: 'away'` + `awaySince`): `_reap` hết `staleMs` → `_setAway` (giữ
     slot/vai trò/cursor, mất lượt ngay), vắng thêm `cfg.awayMs` (mặc định 15 phút) → `a.lost = true` + `leave('mất kết nối')`.
@@ -571,11 +572,14 @@ phòng. Hãy dừng lại, không gọi thêm tool." → agent dừng hẳn. Age
 
 Theo thứ tự ưu tiên:
 
-1. **Lộ trình v3.4, bước 6: thử với agent thật** (code đã xong trên nhánh `v3.4-away`). Hỏi người dùng có cho chạy subagent
-   Sonnet + Haiku và Claude Code CLI thật (auto mode, qua tunnel) không. Sau đó hỏi merge `v3.3.1-header` + `v3.4-away`.
-2. **Hỏi người dùng**: (a) merge `v3.3.1-header` vào main + push chưa (người dùng đã dùng thử: bản trong menu đã cài 3.3.1 từ
-   nhánh này, 2026-10-19); (b) tag + GitHub Release; KHÔNG tự merge/push/tag/release. README (EN + VI) luôn ghi phiên bản mới
-   nhất; đổi giao diện thì quay lại GIF (`tools/record-demo.js`, `--vi`) và chụp lại ảnh (`tools/shot-setup.js`, `tools/shot-mobile.js`).
+1. **Lộ trình v3.4, bước 6: thử với agent thật** (code đã xong, đã push nhánh `v3.4-away`, app menu đã là 3.4.0 nên người dùng
+   có thể đang tự dùng thử: hỏi họ kết quả trước). Hỏi người dùng có cho chạy subagent Sonnet + Haiku (workspace có `CLAUDE.md`
+   "build nothing", brief bảo dựng MVP, 2 vai trò, prompt chép từ trang, không dặn thêm) và Claude Code CLI thật (auto mode, qua
+   tunnel) không. Kỳ vọng: agent dừng hỏi thì chỉ "vắng"; xung đột thì nói vào phòng; không gộp đọc tệp + curl.
+2. **Hỏi người dùng merge** `v3.4-away` (đã chứa `v3.3.1-header`) vào main, tag `v3.4.0` + GitHub Release. Không tự làm.
+   Trước khi phát hành: cân nhắc quay lại GIF/ảnh nếu muốn thấy trạng thái "vắng" và nút Bắt đầu bị khoá (không bắt buộc).
+   README (EN + VI) luôn ghi phiên bản mới nhất; đổi giao diện thì quay lại GIF (`tools/record-demo.js`, `--vi`) và chụp lại
+   ảnh (`tools/shot-setup.js`, `tools/shot-mobile.js`).
 3. **Cân nhắc chỉnh prompt nhờ AI** (cần thử lại Haiku + Sonnet): Haiku hay viết "VIỆC: [agent role] | …" vào context; agent
    thật vẫn ghi đúng tên nhờ giao thức nên chưa gấp. Có thể làm cùng bước 2 của v3.4.
 4. **Gửi tệp qua tunnel Cloudflare thật**: tệp vài MB và ~20 MB, Expect 100-continue, "Tệp quá lớn". Hỏi người dùng trước.

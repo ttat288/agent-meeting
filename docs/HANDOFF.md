@@ -29,7 +29,8 @@ src/brief.js      bản brief JSON (agent-meeting/brief@1): parseBrief / toBrief
 src/ui/           trang chủ trì: index.html + app.css + app.js + i18n.js (từ điển VI→EN, v3.3) (+ /assets/brief.js),
                   không build, CSP chặt
 scripts/          install-linux.sh (launcher menu), demo-bots.js (3 agent giả lập, `--en` nói tiếng Anh)
-tools/            công cụ phát triển, KHÔNG phát hành: shot.js (chụp ảnh Firefox BiDi), record-demo.js (quay GIF), make-gif.py
+tools/            công cụ phát triển, KHÔNG phát hành: shot.js (chụp ảnh Firefox BiDi), record-demo.js (quay GIF, --vi),
+                  make-gif.py, shot-setup.js (ảnh bước 1/2 + tab JSON), shot-mobile.js (mobile tối giữa cuộc họp); BIDI_PORT=…
 test/             node:test; meeting.test.js (luật) + server.test.js (HTTP/MCP) + minutes.test.js + files.test.js + brief.test.js
 Dockerfile        node:22-alpine, CMD --local --no-open; docs/DEPLOY.md (proxy, systemd, mã cố định)
 ```
@@ -161,10 +162,52 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
   - (v3.3) Subagent đôi khi trả JSON trong `SubagentHandback` hoặc chỉ trong text trước đó và báo cáo cuối chỉ là câu tóm
     tắt: lấy đúng chữ từ transcript (`tool_use` SubagentHandback `input.message`, hoặc các khối `text` của assistant).
   - (v3.3) Heredoc không có dấu nháy (`<<EOF`) ăn mất dấu `\`: viết script JS/Python có `\n` bằng công cụ Write.
+  - (3.3.1) Firefox BiDi: phiên tạo bằng `session.new` KHÔNG tự hết khi WebSocket đóng; quên `session.end` thì mọi lần sau
+    báo "Maximum number of active sessions" và không đóng được Firefox đó nữa (snap: `kill` bị từ chối). Script luôn
+    `session.end` (hoặc `browser.close`) kể cả khi lỗi; kẹt thì chạy Firefox khác với profile/cổng khác (`BIDI_PORT=9224`).
+  - (3.3.1) Trang chủ trì ghi bản nháp/tab vào localStorage khi rời trang: đặt localStorage rồi reload sẽ bị ghi đè. Đặt từ
+    một URL cùng origin không chạy app (`/favicon.svg`) rồi mới mở trang (xem `tools/shot-setup.js`).
+  - (3.3.1) CSP chặn `<style>` chèn bằng script (kể cả khi chụp ảnh); chỉnh CSS lúc chạy bằng CSSOM (`el.style.x = …`).
+  - (3.3.1) Ảnh tối: Firefox headless cần profile có `user.js` với
+    `user_pref("layout.css.prefers-color-scheme.content-override", 0);` (shot.js `dark` đặt `data-theme`, CSS không dùng).
+    Thanh cuộn headless vẫn sáng: ẩn bằng `scrollbarWidth = 'none'` trước khi chụp (`tools/shot-mobile.js`).
+  - (3.3.1) Lưới `grid-template-columns: 1fr` có min = nội dung: dải thành viên ở màn hẹp kéo rộng cả trang. Dùng `minmax(0, 1fr)`.
+  - (3.3.1) Header là lưới `1fr auto 1fr` (thanh bước ở giữa); `.top-l`/`.top-r` KHÔNG được `min-width: 0`, không thì cột
+    phải bị ép và nút chồng lên thanh bước. Thêm nút vào header thì đo lại ở 721–1280 px (lúc LIVE có 3 nút) cả VI lẫn EN.
 - Commit kết thúc bằng dòng `Co-Authored-By` theo hướng dẫn của phiên; cập nhật CHANGELOG + README/GUIDE cho thay đổi người dùng thấy được; `bash scripts/install-linux.sh` để cập nhật bản trong menu.
 
 ## Trạng thái
 
+- **2026-10-19, nhánh `v3.3.1-header` (từ main bf9ee8e), CHƯA merge/push/tag.** package 3.3.1, CHANGELOG 3.3.1, README (EN+VI)
+  badge + "What's new". 96 test xanh.
+  - **Thanh bước lên header** (người dùng yêu cầu: "mang progress bar lên header cho rộng phần body"): `index.html` header =
+    `.top-l` (logo + trạng thái) | `nav.steps` | `.top-r` (VI/EN, kết nối, nút); CSS lưới `1fr auto 1fr`. Thu gọn: ≤1180 chỉ
+    bước hiện tại có chữ (chữ khác sr-only), ≤1024 ẩn chữ "Agent Meeting", ≤900 `#btnInvite`/`#btnMinutes` chỉ icon (thêm
+    `title`, chữ sr-only), ≤720 thanh tiến độ 4 đoạn 3 px ở mép dưới header (nút bước sr-only). Bỏ được một hàng ~45 px.
+    Sửa kèm: tràn ngang ở ≤860 px khi đang họp (`.room` `1fr` → `minmax(0, 1fr)`; lỗi có từ trước).
+  - Đã kiểm tra (trình duyệt tích hợp): đo chồng lấn/tràn bằng JS ở 1280/1180/1100/1024/900/800/768/721/720/640/375, cả LIVE
+    (3 nút) lẫn LOBBY, VI và EN: không chồng, không tràn ngang; ảnh 1280 sáng (bước 1, 2, kết thúc), 768 tối, 375 sáng/tối
+    (LOBBY + LIVE); bấm bước 2 trên header vẫn chuyển bước + focus tiêu đề; tooltip EN đúng. Console chỉ có lỗi
+    ERR_CONNECTION_REFUSED lúc khởi động lại server. CHƯA: bàn phím thật (Tab qua các bước), trình đọc màn hình, Safari/iOS.
+  - GIF `docs/demo.gif` (EN) + `docs/demo.vi.gif` quay lại; ảnh `docs/screenshots/en/*` và ảnh VI `setup`, `invite`,
+    `brief-json`, `meeting`, `work` (giờ 1280×680 như bản EN), `files`, `ended`, `mobile-dark` chụp lại (Firefox BiDi).
+    `carry.jpg` không có header nên giữ. Công cụ mới: `tools/record-demo.js --vi`, `tools/shot-setup.js`, `tools/shot-mobile.js`,
+    `BIDI_PORT` cho mọi script.
+  - **"Nhờ AI viết" tiếng Anh với AI thật** (việc #2 cũ): prompt chép từ trang `?lang=en` khớp sha256 `aiPrompt(defaults(),'en')`
+    (3564 ký tự). Haiku 4.5 + Sonnet 5.5 × 2 mô tả (repo calc có followUp; review bảo mật 3 agent lần lượt, chỉ bàn): 4/4 JSON
+    hợp lệ, đúng ý (calc: followUp=true, agenda chỉ phần bàn; bảo mật: turns, followUp=false, 3 vai trò). Điểm yếu: Haiku (2/2)
+    viết mẫu `VIỆC: [agent role] | …` thay vì dặn ghi tên agent; Haiku tự chèn đường dẫn thư mục làm việc của chính nó (môi
+    trường subagent, AI chat thường không có); Sonnet viết 1 vai trò >200 ký tự (bị cắt, trang hiện cảnh báo). Chưa sửa prompt.
+    Dán nguyên văn (có ```json) vào trang: form điền đúng, bước 2 tóm tắt đúng.
+  - **Agent thật họp theo brief do AI viết** (việc #3 cũ): brief Haiku/calc (chỉ đổi đường dẫn repo) dán vào trang, mời
+    Haiku + Sonnet bằng prompt "Paste and join" EN chép từ trang, bấm Bắt đầu trên trang. Vai trò theo slot đúng (Sonnet slot 1
+    "fixer", Haiku slot 2 "implementer"), 3 mục chuyển đúng, KẾT LUẬN + 2 VIỆC ghi ĐÚNG tên agent (`Sonnet-Lan (fixer)`) dù brief
+    chỉ ghi "[agent role]", Sonnet rời phòng đi làm, commit 1878595, báo progress; Haiku làm mul() ngay trong phòng rồi báo
+    (fe4c81c), rời phòng → ENDED "mọi agent đã rời phòng" (không qua WORK vì đã xong hết). Repo: 2 commit, `node test.js` ok.
+    Ghi nhận: bối cảnh tiếng Anh nhưng hai agent nói tiếng Việt (lần thử 2026-10-18 thì nói tiếng Anh): chấp nhận được.
+  - CHƯA: tab MCP / Codex CLI tiếng Anh với Codex thật (không chạy vì dùng tài khoản ChatGPT của người dùng + sửa
+    `~/.codex/config.toml`; người dùng dặn thử bằng subagent), tunnel thật, webhook thật, `scripts/install-linux.sh`.
+  - Firefox headless pid 20699 (cổng 9223, profile `am-shot`) bị kẹt phiên BiDi, không kill được từ sandbox: người dùng tự đóng.
 - **2026-10-18 (tối), theo yêu cầu người dùng**: README viết lại (tiếng Anh là `README.md`, tiếng Việt `README.vi.md`, chi tiết ở
   `docs/REFERENCE(.vi).md`), đã **merge v3.3-brief vào main và push** (main = 08fbb23 lúc đó). Sau đó làm thêm **trang chủ trì
   tiếng Anh** + bot demo `--en` + GIF tiếng Anh (`docs/demo.gif`; bản Việt `docs/demo.vi.gif`) + ảnh `docs/screenshots/en/`,
@@ -444,23 +487,20 @@ subagent Haiku + Sonnet như các phiên trước.
 
 Theo thứ tự ưu tiên:
 
-1. **Hỏi người dùng**: (a) kết quả kiểm tra giao diện v3.2/v3.3 (main đã có v3.3); (b) có tag + GitHub Release `v3.3.0`
-   (và `v3.2.0` riêng?) không; (c) chạy `bash scripts/install-linux.sh` để bản trong menu lên 3.3.0. KHÔNG tự tag/release.
-   README (EN + VI) phải luôn ghi phiên bản mới nhất (badge + "What's new"); mỗi lần đổi giao diện thì quay lại GIF tiếng Anh
-   bằng `tools/record-demo.js` và chụp lại `docs/screenshots/en/` (người dùng yêu cầu).
-2. **Thử "Nhờ AI viết" tiếng Anh** bằng subagent Haiku + Sonnet với đúng prompt lấy từ trang `?lang=en` (như phép thử tiếng
-   Việt), và tab MCP tiếng Anh (Codex `exec` nếu cần).
-3. **Thử agent thật họp theo brief do AI viết** (sau khi merge hoặc ngay trên nhánh): lấy một JSON Haiku/Sonnet đã viết
-   (ví dụ repo calc, `followUp: true`, roles theo slot), dán vào trang, mời 2 subagent bằng prompt "Dán là vào ngay", kiểm
-   tra vai trò theo slot hiện đúng trong tin mở đầu và agent không chờ nhau trong phòng (agenda chỉ phần bàn bạc).
-4. **Thử gửi tệp qua tunnel Cloudflare thật** (bỏ `--local`): tệp vài MB và ~20 MB, kiểm tra Expect 100-continue và
-   thông báo "Tệp quá lớn" qua tunnel. Tunnel là công khai: hỏi người dùng trước.
-5. **Webhook thật** (Slack/Discord/Google Chat, phòng có `--follow-up`): chỉ khi người dùng đưa URL, không tự tạo.
-6. Ảnh tiếng Việt `meeting.jpg`, `mobile-dark.jpg` vẫn là bản v3.0 (800px; bản EN đã mới); `tools/shot.js` ở "Cách lặp lại phép thử" dùng lại
-   được, chế độ tối cần `prefers-color-scheme` (CSS không có `[data-theme]`): dùng BiDi `emulation` hoặc profile tối.
-7. Có thể cân nhắc (chưa làm, cần người dùng đồng ý): dịch cả giao thức gửi agent sang tiếng Anh (`--lang en`, phải thử lại
-   agent thật);: chủ trì xoá một tệp trên trang; giới hạn tốc độ gửi tệp theo agent;
-   kéo-thả để đổi thứ tự mục chương trình (hiện có nút ↑↓ và Alt+↑/↓).
+1. **Hỏi người dùng**: (a) xem header mới (nhánh `v3.3.1-header`) rồi có merge vào main + push không; (b) có tag + GitHub
+   Release (`v3.3.1`, gồm cả 3.2/3.3 chưa phát hành riêng?) không; (c) sau merge chạy `bash scripts/install-linux.sh` để bản
+   trong menu lên 3.3.1. KHÔNG tự merge/push/tag/release. README (EN + VI) luôn ghi phiên bản mới nhất; đổi giao diện thì quay
+   lại GIF (`tools/record-demo.js`, `--vi`) và chụp lại ảnh (`tools/shot-setup.js`, `tools/shot-mobile.js`, xem "Bẫy").
+2. **Cân nhắc chỉnh prompt nhờ AI** (cả VI lẫn EN, cần thử lại Haiku + Sonnet): Haiku hay viết "VIỆC: [agent role] | …" vào
+   context. Agent thật vẫn ghi đúng tên nhờ giao thức, nên chưa gấp; nếu sửa thì thêm một câu "VIỆC lines must use the agent's
+   own name" và nhắc giới hạn 200 ký tự/vai trò. Đừng nới các chỗ đã chỉnh ở "Quyết định".
+3. **Thử gửi tệp qua tunnel Cloudflare thật** (bỏ `--local`): tệp vài MB và ~20 MB, Expect 100-continue và thông báo "Tệp quá
+   lớn" qua tunnel. Tunnel là công khai: hỏi người dùng trước.
+4. **Webhook thật** (Slack/Discord/Google Chat, phòng có `--follow-up`): chỉ khi người dùng đưa URL, không tự tạo.
+5. Tab MCP / Codex CLI tiếng Anh với Codex thật: chỉ khi người dùng đồng ý (dùng tài khoản của họ, phải sao lưu/khôi phục
+   `~/.codex/config.toml`, xem "Cách lặp lại phép thử agent thật của v3.1").
+6. Có thể cân nhắc (chưa làm, cần người dùng đồng ý): dịch cả giao thức gửi agent sang tiếng Anh (`--lang en`, phải thử lại
+   agent thật); chủ trì xoá một tệp trên trang; giới hạn tốc độ gửi tệp theo agent; kéo-thả đổi thứ tự mục chương trình.
 
 Ý tưởng xa hơn (chưa lên kế hoạch):
 

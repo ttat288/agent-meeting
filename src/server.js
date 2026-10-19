@@ -5,7 +5,7 @@ const { EventEmitter } = require('events');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const { Meeting, fmtSize } = require('./meeting');
+const { Meeting, fmtSize, findSecret } = require('./meeting');
 const minutes = require('./minutes');
 const { rolesNeeded } = require('./brief');
 const pkg = require('../package.json');
@@ -59,9 +59,15 @@ async function invoke(m, tool, a = {}, ctx = {}) {
   if (!TOOLS.some(t => t.name === tool)) return null;
   if (!m) return GONE_TEXT;
   const { how = null, base } = ctx;
-  if (tool === 'join') return m.join(a.name, a.model, how, base, { token: newToken(), presented: ctx.token, sid: ctx.sid, via: ctx.via, ip: ctx.ip, bridge: ctx.bridge });
+  if (tool === 'join') {
+    const token = newToken();
+    const out = m.join(a.name, a.model, how, base, { token, presented: ctx.token, sid: ctx.sid, via: ctx.via, ip: ctx.ip, bridge: ctx.bridge });
+    const id = m.identify({ token }) || m.identify({ token: ctx.token, sid: ctx.sid });
+    if (id) ctx.audit?.('join', { agent: id.name, model: String(a.model || '').slice(0, 40), via: ctx.via, ip: ctx.ip, pending: !!id.pending, mcp: !how, bridge: !!ctx.bridge });
+    return out;
+  }
   const id = m.identify({ token: ctx.token, sid: ctx.sid });
-  if (!id) return m.state === 'ENDED' ? m.wait('') : AUTH_TEXT;
+  if (!id) { ctx.bad?.(); return m.state === 'ENDED' ? m.wait('') : AUTH_TEXT; }
   if (id.rejected) return m.rejectText();
   if (id.pending) {
     if (tool === 'wait') return m.waitAdmit(id.name);
@@ -69,6 +75,9 @@ async function invoke(m, tool, a = {}, ctx = {}) {
     return PENDING_TEXT;
   }
   a = { ...a, name: id.name };
+  // một agent gửi dồn dập (vòng lặp lỗi, hoặc cố tình làm ngập phòng): chặn tạm, báo rõ
+  if ((tool === 'say' || tool === 'progress') && ctx.rate && !ctx.rate.take(`say:${m.id}:${id.name}`, 20, 10))
+    return 'Bạn gửi quá nhanh (tối đa ~20 tin mỗi phút). Hãy chờ khoảng 30 giây, gộp ý vào một tin, rồi gửi lại.';
   switch (tool) {
     case 'wait': return m.wait(a.name);
     case 'say': return m.say(a.name, a.text);
@@ -101,7 +110,8 @@ async function rpc(m, msg, ctx) {
 
 const readBody = (req) => new Promise((res, rej) => {
   let b = ''; req.setEncoding('utf8');
-  req.on('data', c => { b += c; if (b.length > 1e6) { rej(new Error('body too large')); req.destroy(); } });
+  // tin dài nhất 4000 ký tự, bản brief tối đa 64 KB: 256 KB là quá đủ
+  req.on('data', c => { b += c; if (b.length > 256 * 1024) { rej(new Error('body too large')); req.destroy(); } });
   req.on('end', () => res(b)); req.on('error', rej);
 });
 const parseArgs = (u, raw) => {
@@ -132,8 +142,33 @@ function webhookBody(url, m, event = 'ended', task) {
   return { event, text, content: text, ...(task ? { task: meeting.actions.find(a => a.id === task.n) } : {}), meeting };
 }
 
+// Giới hạn tốc độ kiểu token bucket, trong bộ nhớ: key -> { n: số lượt còn, t: lần nạp cuối }
+function limiter() {
+  const b = new Map();
+  const take = (key, perMin, burst) => {
+    const now = Date.now(), x = b.get(key) || { n: burst, t: now };
+    x.n = Math.min(burst, x.n + (now - x.t) * perMin / 60000); x.t = now;
+    if (b.size > 10000) b.clear(); // chống phình bộ nhớ khi bị quét từ rất nhiều IP
+    b.set(key, x);
+    if (x.n < 1) return false;
+    x.n -= 1; return true;
+  };
+  const left = (key) => b.get(key)?.n ?? Infinity;
+  return { take, left };
+}
+
 function createApp(cfg = {}) {
   const log = cfg.log || (() => {});
+  // Nhật ký kiểm toán (--audit-log): JSONL, quyền 600. Ai vào/được duyệt/bị từ chối, ai gửi/tải tệp nào, chủ trì làm gì.
+  // KHÔNG ghi nội dung tin nhắn, nội dung tệp hay mã bí mật.
+  function audit(ev, data = {}) {
+    if (!cfg.auditLog) return;
+    try { fs.appendFileSync(cfg.auditLog, JSON.stringify({ t: new Date().toISOString(), ev, ...data }) + '\n', { mode: 0o600 }); }
+    catch (e) { log(`⚠ Không ghi được nhật ký kiểm toán: ${e.message}`); }
+  }
+  const rate = limiter();
+  // nhãn phòng trong nhật ký: băm mã chủ trì (không ghi mã thật)
+  const rid = (m) => crypto.createHash('sha256').update(m.hostKey).digest('hex').slice(0, 8);
   // Khi cuộc họp chốt (WORK) hoặc kết thúc: tự lưu biên bản và gửi webhook (nếu được bật).
   // Phòng có giai đoạn thực hiện được lưu hai lần vào cùng một file: lúc chốt và lúc đóng hẳn.
   async function onEnded(m, event = 'ended') {
@@ -195,6 +230,7 @@ function createApp(cfg = {}) {
     // giai đoạn thực hiện: báo ngay khi một việc xong hoặc bị vướng (việc cuối cùng xong thì tóm tắt cuối cũng được gửi)
     m.ev.on('task', (t) => { if (m.state === 'WORK' && (t.status === 'done' || t.status === 'blocked')) notify(m, 'task', { ...t }); });
     if (cfg.dataDir && m.fixed) m.ev.on('change', () => saveSoon(m));
+    m.ev.on('blocked', (b) => audit('blocked_secret', { room: m.hostKey.slice(0, 6), agent: b.name, kind: b.kind, what: b.what }));
     return m;
   };
 
@@ -273,6 +309,7 @@ function createApp(cfg = {}) {
     if (!who || who.pending) return reply(401, who ? PENDING_TEXT : AUTH_TEXT);
     const chk = mt.sendCheck(who.name, q.to);
     if (typeof chk === 'string') return reply(400, chk);
+    if (!rate.take(`send:${mt.id}:${chk.from}`, 10, 5)) return reply(429, 'Gửi tệp quá nhanh (tối đa ~10 tệp mỗi phút). Hãy gộp các tệp (tar czf) rồi gửi lại sau ít giây.');
     const used = mt.files.reduce((n, f) => n + (f.gone ? 0 : f.size), 0);
     const room = Math.min(lim.maxFileMb * MB, lim.maxRoomMb * MB - used), len = Number(req.headers['content-length']);
     const tooBig = (n) => `Tệp quá lớn${n ? ` (${fmtSize(n)})` : ''}: tối đa ${lim.maxFileMb} MB mỗi tệp, ${lim.maxRoomMb} MB cho cả phòng (đã dùng ${fmtSize(used)}). Hãy nén (tar czf), chia nhỏ, hoặc chỉ gửi phần cần thiết (git format-patch thay vì cả thư mục).`;
@@ -281,7 +318,7 @@ function createApp(cfg = {}) {
     if (len === 0) return reply(400, 'Tệp trống, không gửi. Kiểm tra lại đường dẫn sau --data-binary @');
     if (req.expectContinue) res.writeContinue();
     const id = crypto.randomBytes(12).toString('hex'), hash = crypto.createHash('sha256'), chunks = [];
-    let size = 0, out = null, tmp = null;
+    let size = 0, out = null, tmp = null, tail = '', secret = null;
     if (onDisk(mt)) {
       fs.mkdirSync(filesDir(mt), { recursive: true, mode: 0o700 });
       tmp = blobPath(mt, id) + '.tmp'; out = fs.createWriteStream(tmp, { mode: 0o600 });
@@ -296,6 +333,9 @@ function createApp(cfg = {}) {
           return;
         }
         hash.update(c);
+        // tệp có dạng bí mật (khoá riêng, token…): nhận nốt rồi bỏ, không lưu (quét theo từng đoạn, có phần gối đầu)
+        if (!secret) { const s2 = tail + c.toString('latin1'); secret = findSecret(s2); tail = s2.slice(-200); }
+        if (secret) return;
         if (!out) chunks.push(c);
         else if (!out.write(c)) { req.pause(); out.once('drain', () => req.resume()); }
       });
@@ -303,13 +343,16 @@ function createApp(cfg = {}) {
       req.on('error', () => resolve(false)); req.on('aborted', () => resolve(false));
     });
     if (!ok) return discard();
+    if (secret) { discard(); return reply(400, mt._blocked(chk.from, secret, 'tệp')); }
     if (!size) { discard(); return reply(400, 'Tệp trống, không gửi. Kiểm tra lại đường dẫn sau --data-binary @'); }
     try {
       if (out) { await new Promise((r, j) => out.end((e) => e ? j(e) : r())); fs.renameSync(tmp, blobPath(mt, id)); }
       else blobs.set(id, Buffer.concat(chunks));
     } catch (e) { discard(); log(`⚠ Không lưu được tệp: ${e.message}`); return reply(500, 'Server không lưu được tệp, thử lại sau.'); }
-    const r = mt.addFile({ id, name: q.file, size, sha256: hash.digest('hex'), from: chk.from, to: chk.to, note: q.note });
+    const sha256 = hash.digest('hex');
+    const r = mt.addFile({ id, name: q.file, size, sha256, from: chk.from, to: chk.to, note: q.note });
     if (!mt.files.some(f => f.id === id)) { blobs.delete(id); if (out) try { fs.rmSync(blobPath(mt, id), { force: true }); } catch {} return reply(400, r); }
+    audit('file_send', { room: rid(mt), agent: chk.from, to: chk.to || '*', file: mt.files.at(-1).name, size, sha256 });
     return reply(200, r);
   }
   // Tệp được phục vụ CÙNG origin với trang chủ trì: luôn là tải về (octet-stream + attachment + nosniff + CSP sandbox),
@@ -412,46 +455,62 @@ function createApp(cfg = {}) {
           const need = rolesNeeded(d.roles), have = mt.state === 'LOBBY' ? mt._present().length : need;
           if (have < need && d.force !== true && d.force !== 'true')
             return json(409, { error: `Cần ${need} agent theo vai trò (đang có ${have}). Mời thêm agent hoặc bớt vai trò; gửi "force": true để vẫn bắt đầu.`, need, have });
-          return json(200, { ok: mt.start(d.context, d.endCondition, d.settings, d.roles) });
+          const ok = mt.start(d.context, d.endCondition, d.settings, d.roles);
+          if (ok) audit('start', { room: rid(mt), agents: mt._present().map(a => a.name), force: have < need });
+          return json(200, { ok });
         }
-        if (act === 'stop') { mt.stop(); return json(200, { ok: true }); }
+        if (act === 'stop') { mt.stop(); audit('stop', { room: rid(mt), state: mt.state }); return json(200, { ok: true }); }
         if (act === 'say') return json(200, { ok: mt.hostSay(d.text, d.to) });
         if (act === 'next') return json(200, { ok: mt.hostNextItem() });
         if (act === 'role') return json(200, { ok: mt.setRole(d.name, d.role) });
         if (act === 'task') return json(200, { ok: d.remove === true || d.remove === 'true' ? mt.hostRemoveTask(d.n, d.into) : mt.hostTask(d.n, d.status, d.note) });
-        if (act === 'kick') return json(200, { ok: mt.kick(d.name) });
+        if (act === 'kick') { const ok = mt.kick(d.name); if (ok) audit('kick', { room: rid(mt), agent: String(d.name).slice(0, 40) }); return json(200, { ok }); }
         if (act === 'tunnel') {
-          try { const o = await openTunnel(); log(`🌐 Địa chỉ công khai cho agent ở máy khác: ${o}`); mt._changed(); return json(200, { origin: o }); }
+          try { const o = await openTunnel(); log(`🌐 Địa chỉ công khai cho agent ở máy khác: ${o}`); audit('tunnel', { room: rid(mt), origin: o }); mt._changed(); return json(200, { origin: o }); }
           catch (e) { return json(400, { error: e.message }); }
         }
         if (act === 'connect') {
           // sửa cấu hình agent trên MÁY CHẠY SERVER: chỉ khi trang chủ trì mở trên chính máy đó
           if (where(req).via !== 'local' || !cfg.connect) return json(403, { error: 'Chỉ kết nối được trên máy chạy agent-meeting (mở trang chủ trì bằng http://localhost). Ở máy khác: chạy lệnh connect trong terminal.' });
-          try { return json(200, cfg.connect(String(d.agent || ''))); } catch (e) { return json(400, { error: e.message }); }
+          try { const r = cfg.connect(String(d.agent || '')); audit('connect', { agent: String(d.agent), ok: !!r.ok }); return json(200, r); } catch (e) { return json(400, { error: e.message }); }
         }
-        if (act === 'admit') return json(200, { ok: mt.admit(d.name, !(d.allow === false || d.allow === 'false')) });
+        if (act === 'admit') {
+          const allow = !(d.allow === false || d.allow === 'false'), p0 = mt.pending.get(String(d.name ?? '')) || [...mt.pending.values()].find(x => x.name.toLowerCase() === String(d.name ?? '').trim().toLowerCase());
+          const ok = mt.admit(d.name, allow);
+          if (ok) audit(allow ? 'admit' : 'reject', { room: rid(mt), agent: p0?.name, model: p0?.model, via: p0?.via, ip: p0?.ip, code: p0?.code });
+          return json(200, { ok });
+        }
         if (act === 'new') {
+          audit('new', { room: rid(mt), carry: d.carry === true || d.carry === 'true' });
           if (mt.state === 'LIVE' || mt.state === 'WORK') mt.stop('chủ trì mở cuộc họp mới', true);
           return json(200, { hostKey: renew(mt, d.carry === true || d.carry === 'true').hostKey });
         }
       }
 
+      // Agent: IP đã gửi quá nhiều yêu cầu sai mã (dò mã phòng / mã riêng) thì tạm chặn
+      const W = where(req), bad = () => rate.take(`bad:${W.ip}`, 20, 30);
+      if ((p.startsWith('/a/') || p.startsWith('/mcp/')) && rate.left(`bad:${W.ip}`) < 1) {
+        res.writeHead(429, { 'content-type': 'text/plain; charset=utf-8', 'retry-after': '60', ...SECURITY });
+        return res.end('Quá nhiều yêu cầu sai mã từ địa chỉ này. Thử lại sau 1 phút, và dùng đúng URL/lệnh trong giao thức.');
+      }
       // Tệp giữa các agent: gửi (bytes thô) và tải về
       if ((m = p.match(/^\/a\/(\w+)\/send$/))) { const mt = byAgent.get(m[1]); return await receive(req, res, mt, Object.fromEntries(u.searchParams), who(mt, req)); }
       if ((m = p.match(/^\/a\/(\w+)\/file\/(\w+)$/))) {
-        const mt = byAgent.get(m[1]); if (!mt) return text(404, GONE_TEXT);
-        const id = who(mt, req); if (!id || id.pending) return text(401, id ? PENDING_TEXT : AUTH_TEXT);
+        const mt = byAgent.get(m[1]); if (!mt) { bad(); return text(404, GONE_TEXT); }
+        const id = who(mt, req); if (!id || id.pending) { if (!id) bad(); return text(401, id ? PENDING_TEXT : AUTH_TEXT); }
         const f = mt.fileFor(id.name, m[2]);
         if (typeof f === 'string') return text(404, f);
+        audit('file_get', { room: rid(mt), agent: id.name, file: f.name, sha256: f.sha256, ...where(req) });
         return serveFile(res, mt, f, () => mt.gotFile(f, id.name));
       }
 
       // API cho agent dạng văn bản (curl)
       if ((m = p.match(/^\/a\/(\w+)\/(\w+)$/))) {
         const mt = byAgent.get(m[1]);
+        if (!mt) bad();
         const raw = req.method === 'POST' ? await readBody(req) : '';
         const base = `${fixedOrigin || origin}/a/${m[1]}`;
-        const out = await invoke(mt, m[2], parseArgs(u, raw), { how: { base }, base, token: bearer(req), ...where(req) });
+        const out = await invoke(mt, m[2], parseArgs(u, raw), { how: { base }, base, token: bearer(req), ...W, rate, bad, audit: mt && ((ev, d) => audit(ev, { room: rid(mt), ...d })) });
         if (out === null) return text(404, `Không có lệnh "${m[2]}". Các lệnh: ${TOOLS.map(t => t.name).join(', ')}, send, file.`);
         return text(out === AUTH_TEXT ? 401 : 200, out);
       }
@@ -460,6 +519,7 @@ function createApp(cfg = {}) {
       if ((m = p.match(/^\/mcp\/(\w+)$/))) {
         if (req.method !== 'POST') { res.writeHead(405, { allow: 'POST', ...SECURITY }); return res.end(); }
         const mt = byAgent.get(m[1]) || null;
+        if (!mt) bad();
         let msg;
         try { msg = JSON.parse(await readBody(req)); } catch { return json(400, { jsonrpc: '2.0', id: null, error: { code: -32700, message: 'parse error' } }); }
         // Streamable HTTP có phiên: server cấp Mcp-Session-Id lúc initialize, client gửi lại ở mọi request; danh tính agent
@@ -468,7 +528,7 @@ function createApp(cfg = {}) {
         let sid = req.headers['mcp-session-id'];
         if (!/^[\w-]{16,128}$/.test(sid || '')) sid = init ? crypto.randomBytes(18).toString('base64url') : null;
         const base = `${fixedOrigin || origin}/a/${m[1]}`;
-        const ctx = { how: null, base, sid, bridge: req.headers['x-agent-meeting-bridge'] === '1', ...where(req) };
+        const ctx = { how: null, base, sid, bridge: req.headers['x-agent-meeting-bridge'] === '1', ...W, rate, bad, audit: mt && ((ev, d) => audit(ev, { room: rid(mt), ...d })) };
         const run = (x) => sid || x?.method === 'initialize' || x?.method === 'ping' || x?.method === 'tools/list' || x?.id === undefined || x?.id === null ? rpc(mt, x, ctx)
           : { jsonrpc: '2.0', id: x.id, error: { code: -32600, message: 'Missing Mcp-Session-Id header: initialize first' } };
         const out = Array.isArray(msg) ? (await Promise.all(msg.map(run))).filter(Boolean) : await run(msg);

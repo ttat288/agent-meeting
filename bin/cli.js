@@ -71,6 +71,11 @@ Lưu và chia sẻ kết quả
                            thì nạp lại và họp tiếp. File chứa mã bí mật, chỉ chủ máy đọc được (quyền 600).
                            Tệp agent gửi nhau cũng được ghi ở đây (<mã chủ trì>.files/)
 
+Kiểm toán và lưu giữ
+  --audit-log <file>       Ghi nhật ký kiểm toán JSONL (quyền 600): agent vào/được duyệt/bị từ chối, gửi/tải tệp,
+                           thao tác của chủ trì, tin bị chặn vì có dạng bí mật. Không ghi nội dung tin, tệp hay mã
+  --retention <ngày>       Tự xoá biên bản (--minutes-dir) và trạng thái phòng cũ (--data-dir) quá số ngày này
+
 Gửi tệp giữa các agent (curl --data-binary; nội dung không đi qua tin nhắn)
   --max-file-mb <n>        Cỡ tối đa mỗi tệp (mặc định 20; tunnel Cloudflare miễn phí giới hạn ~100)
   --max-room-mb <n>        Tổng dung lượng tệp mỗi phòng (mặc định 200), tối đa 100 tệp
@@ -91,7 +96,7 @@ Khác
 
 Biến môi trường tương đương: PORT, AGENT_MEETING_MINUTES_DIR, AGENT_MEETING_WEBHOOK (nhiều URL cách nhau bởi dấu phẩy),
 AGENT_MEETING_PUBLIC_URL, AGENT_MEETING_HOST_KEY, AGENT_MEETING_AGENT_KEY, AGENT_MEETING_DATA_DIR, AGENT_MEETING_FOLLOW_UP=1,
-AGENT_MEETING_MAX_FILE_MB, AGENT_MEETING_MAX_ROOM_MB, AGENT_MEETING_ADMIT, AGENT_MEETING_LAN=1.`);
+AGENT_MEETING_MAX_FILE_MB, AGENT_MEETING_MAX_ROOM_MB, AGENT_MEETING_ADMIT, AGENT_MEETING_LAN=1, AGENT_MEETING_AUDIT_LOG, AGENT_MEETING_RETENTION_DAYS.`);
   process.exit(0);
 }
 
@@ -118,6 +123,8 @@ const cfg = {
   maxFileMb: num('--max-file-mb', Number(env.AGENT_MEETING_MAX_FILE_MB) || 20),
   maxRoomMb: num('--max-room-mb', Number(env.AGENT_MEETING_MAX_ROOM_MB) || 200),
   webhooks, admit, lan, remoteHost: flag('--remote-host'),
+  auditLog: opt('--audit-log') || env.AGENT_MEETING_AUDIT_LOG || '',
+  retentionDays: num('--retention', Number(env.AGENT_MEETING_RETENTION_DAYS) || 0),
   log: (x) => console.log(x),
 };
 // Bản brief (bối cảnh + tuỳ chọn dạng JSON, cùng định dạng với trang chủ trì): --brief-file, hoặc ghép từ --context-file…
@@ -180,6 +187,11 @@ function listen(server, port, host) {
   let origin = local;
   if (publicUrl) { origin = publicUrl; app.setPublicOrigin(origin, true); }
   else if (flag('--tunnel') && cfg.startTunnel) { origin = await cfg.startTunnel(); app.setPublicOrigin(origin); }
+  if (cfg.retentionDays) {
+    const { prune } = require('../src/retention');
+    const run = () => prune({ minutesDir: cfg.minutesDir, dataDir, days: cfg.retentionDays, keep: [...app.meetings.keys()] }, cfg.log);
+    run(); setInterval(run, 6 * 3600 * 1000).unref();
+  }
   ['SIGINT', 'SIGTERM'].forEach(s => process.on(s, () => { app.flush(); console.log('\nĐã tắt Agent Meeting.'); process.exit(0); }));
 
   // trang chủ trì luôn mở trên máy này (trừ --public-url: công ty tự bảo vệ bằng proxy)
@@ -197,7 +209,7 @@ function listen(server, port, host) {
   MCP (Streamable HTTP):  ${origin}/mcp/${meeting.id}${origin === local && cfg.startTunnel ? `
   Agent ở máy khác: bấm "Máy khác" trong thẻ mời trên trang chủ trì để bật địa chỉ công khai.` : ''}
   Ai được vào: ${{ all: 'chủ trì duyệt từng agent trên trang (đối chiếu mã 4 số)', remote: 'agent máy này vào ngay, agent máy khác chờ chủ trì duyệt', none: 'ai có prompt mời là vào (--admit none)' }[admit]}
-${cfg.minutesDir ? `\n  Biên bản sẽ tự lưu vào: ${path.resolve(cfg.minutesDir)}` : ''}${dataDir ? `\n  Trạng thái phòng lưu ở: ${path.resolve(dataDir)} (khởi động lại thì họp tiếp)` : ''}${webhooks.length ? `\n  Gửi tóm tắt tới ${webhooks.length} webhook khi kết thúc` : ''}${cfg.followUp ? '\n  Giữ phòng để báo tiến độ sau khi chốt (--follow-up)' : ''}${autoStart ? `\n  Tự bắt đầu khi đủ ${autoStart} agent trong phòng chờ` : ''}
+${cfg.auditLog ? `\n  Nhật ký kiểm toán: ${path.resolve(cfg.auditLog)}` : ''}${cfg.retentionDays ? `\n  Tự xoá biên bản/trạng thái cũ hơn ${cfg.retentionDays} ngày` : ''}${cfg.minutesDir ? `\n  Biên bản sẽ tự lưu vào: ${path.resolve(cfg.minutesDir)}` : ''}${dataDir ? `\n  Trạng thái phòng lưu ở: ${path.resolve(dataDir)} (khởi động lại thì họp tiếp)` : ''}${webhooks.length ? `\n  Gửi tóm tắt tới ${webhooks.length} webhook khi kết thúc` : ''}${cfg.followUp ? '\n  Giữ phòng để báo tiến độ sau khi chốt (--follow-up)' : ''}${autoStart ? `\n  Tự bắt đầu khi đủ ${autoStart} agent trong phòng chờ` : ''}
 
   Giữ cửa sổ này mở suốt cuộc họp. Ctrl+C để tắt.
   Link chủ trì chứa mã bí mật: đừng chia sẻ.\n${line}`);

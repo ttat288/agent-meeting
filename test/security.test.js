@@ -214,3 +214,59 @@ test('nút Kết nối trên trang chủ trì: chỉ chạy khi trang mở trên
   assert.equal((await post({ agent: 'claude' }, { 'x-forwarded-for': '10.0.0.5' }))[0], 403); // qua proxy: không phải máy này
   assert.deepEqual(seen, ['claude', 'x']);
 });
+
+test('nhật ký kiểm toán: vào/duyệt/gửi/tải tệp/chặn bí mật; không có nội dung tin, tệp hay mã', async (t) => {
+  const fs = require('fs'), os = require('os'), path = require('path');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'am-audit-')), file = path.join(dir, 'audit.jsonl');
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+  const { app, base, m, api, call, join } = await boot({ admit: 'all', auditLog: file }); t.after(() => app.close());
+  const a = await join('Lan'), b = await join('Minh');
+  for (const n of ['Lan', 'Minh']) await fetch(`${base}/api/host/${m.hostKey}/admit`, { method: 'POST', body: JSON.stringify({ name: n }) });
+  await fetch(`${base}/api/host/${m.hostKey}/start`, { method: 'POST', body: JSON.stringify({ context: 'bí mật kinh doanh XYZ' }) });
+  await call('say', { text: 'nội dung riêng tư ABC' }, a.tok);
+  const fake = 'ghp_' + 'z'.repeat(36);
+  assert.match((await call('say', { text: `token ${fake}` }, a.tok)).text, /KHÔNG GỬI/);
+  const up = await fetch(`${api}/send?file=x.txt&to=Minh`, { method: 'POST', headers: { authorization: `Bearer ${a.tok}` }, body: 'dữ liệu tệp QWE' });
+  assert.equal(up.status, 200);
+  const leak = await fetch(`${api}/send?file=k.pem`, { method: 'POST', headers: { authorization: `Bearer ${a.tok}` }, body: 'abc\n-----BEGIN RSA PRIVATE KEY-----\nMIIE' });
+  assert.equal(leak.status, 400); assert.match(await leak.text(), /KHÔNG GỬI.*khoá riêng/);
+  assert.equal(m.files.length, 1);
+  await fetch(`${api}/file/${m.files[0].id}`, { headers: { authorization: `Bearer ${b.tok}` } });
+  const lines = fs.readFileSync(file, 'utf8').trim().split('\n').map(l => JSON.parse(l));
+  assert.deepEqual(lines.map(l => l.ev), ['join', 'join', 'admit', 'admit', 'start', 'blocked_secret', 'file_send', 'blocked_secret', 'file_get']);
+  assert.equal(lines[0].pending, true); assert.equal(lines[0].via, 'local');
+  assert.match(lines[2].code, /^\d{4}$/);
+  const raw = fs.readFileSync(file, 'utf8');
+  for (const secret of [a.tok, b.tok, m.hostKey, m.id, 'ABC', 'XYZ', 'QWE', fake, 'MIIE']) assert.ok(!raw.includes(secret), secret);
+  if (process.platform !== 'win32') assert.equal(fs.statSync(file).mode & 0o777, 0o600);
+});
+
+test('giới hạn tốc độ: dò mã sai bị chặn tạm (429); agent gửi dồn dập bị báo chậm lại', async (t) => {
+  const { app, base, m, call, join } = await boot(); t.after(() => app.close());
+  const a = await join('Lan'); m.start('x', '');
+  let last;
+  for (let i = 0; i < 32; i++) last = await fetch(`${base}/a/khong_co_phong_${i}/wait`).then(r => r.status);
+  assert.equal(last, 429);
+  assert.equal((await fetch(`${base}/a/${m.id}/wait`, { headers: { authorization: `Bearer ${a.tok}` } })).status, 429); // cùng IP
+  const app2 = await boot(); t.after(() => app2.app.close());
+  const x = await app2.join('X'); app2.m.start('x', '');
+  const outs = [];
+  for (let i = 0; i < 12; i++) outs.push((await app2.call('say', { text: `tin ${i}` }, x.tok)).text);
+  assert.match(outs.at(-1), /gửi quá nhanh/);
+  assert.equal(app2.m.log.filter(l => l.type === 'chat').length, 10);
+});
+
+test('--retention: xoá biên bản và trạng thái phòng cũ, giữ phòng đang chạy', () => {
+  const fs = require('fs'), os = require('os'), path = require('path');
+  const { prune } = require('../src/retention');
+  const d = fs.mkdtempSync(path.join(os.tmpdir(), 'am-ret-')), mins = path.join(d, 'm'), data = path.join(d, 's');
+  fs.mkdirSync(mins); fs.mkdirSync(path.join(data, 'cu.files'), { recursive: true });
+  const old = Date.now() / 1000 - 40 * 86400;
+  for (const [f, age] of [[path.join(mins, 'a.md'), old], [path.join(mins, 'b.md'), null], [path.join(data, 'cu.json'), old], [path.join(data, 'dang.json'), old]]) {
+    fs.writeFileSync(f, 'x'); if (age) fs.utimesSync(f, age, age);
+  }
+  fs.utimesSync(path.join(data, 'cu.files'), old, old);
+  assert.equal(prune({ minutesDir: mins, dataDir: data, days: 30, keep: ['dang'] }), 3);
+  assert.deepEqual([fs.readdirSync(mins), fs.readdirSync(data)], [['b.md'], ['dang.json']]);
+  fs.rmSync(d, { recursive: true, force: true });
+});

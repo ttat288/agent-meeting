@@ -28,10 +28,11 @@ svg .fill { fill: currentColor; stroke: none; }
 .muted { color: var(--mute); font-weight: 500; }
 
 /* ---------- header ---------- */
-.top { display: flex; align-items: center; gap: 10px; padding: 10px 20px; background: var(--surface); border-bottom: 1px solid var(--line); flex: none; position: relative; z-index: 5; }
+.top { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; padding: 10px 20px; min-height: 57px; background: var(--surface); border-bottom: 1px solid var(--line); flex: none; position: relative; z-index: 5; }
+.top-l, .top-r { display: flex; align-items: center; gap: 10px; }
+.top-r { justify-content: flex-end; }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; letter-spacing: -.01em; }
 .brand img { border-radius: 8px; }
-.spacer { flex: 1; }
 .badge { padding: 3px 10px; border-radius: 99px; font-size: 12.5px; font-weight: 600; background: var(--surface-2); color: var(--mute); border: 1px solid var(--line); white-space: nowrap; }
 .badge.live { background: var(--ok-soft); color: var(--ok); border-color: transparent; }
 .badge.live::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: currentColor; margin-right: 6px; vertical-align: 1px; animation: pulse 1.6s infinite; }
@@ -59,20 +60,49 @@ svg .fill { fill: currentColor; stroke: none; }
 .chip { border: 1px solid var(--line-2); background: var(--surface); border-radius: 99px; padding: 4px 12px; font-size: 13px; font-weight: 600; color: var(--ink-2); cursor: pointer; }
 .chip:hover { border-color: var(--accent); color: var(--accent); }
 
-/* ---------- stepper ---------- */
-.steps { background: var(--surface); border-bottom: 1px solid var(--line); flex: none; }
-.steps ol { display: flex; gap: 6px; list-style: none; margin: 0 auto; padding: 10px 20px; max-width: 1240px; overflow-x: auto; }
+/* ---------- stepper (giữa header; ≤640px thành thanh tiến độ ở mép dưới header) ---------- */
+.steps { min-width: 0; }
+.steps ol { display: flex; align-items: center; list-style: none; margin: 0; padding: 0; }
 .steps li { display: flex; align-items: center; color: var(--mute); font-size: 13.5px; font-weight: 600; white-space: nowrap; }
-.stepbtn { display: flex; align-items: center; gap: 8px; border: 0; background: none; color: inherit; font: inherit; padding: 4px 8px 4px 4px; border-radius: 99px; }
+.stepbtn { display: flex; align-items: center; gap: 8px; border: 0; background: none; color: inherit; font: inherit; padding: 4px 10px 4px 4px; border-radius: 99px; }
 button.stepbtn:not(:disabled) { cursor: pointer; }
 button.stepbtn:not(:disabled):hover { background: var(--surface-2); color: var(--ink); }
 button.stepbtn:disabled { cursor: default; }
-.steps li:not(:last-child)::after { content: ""; width: 32px; height: 1px; background: var(--line-2); margin: 0 4px 0 6px; }
+.steps li:not(:last-child)::after { content: ""; width: 24px; height: 1px; background: var(--line-2); margin: 0 6px 0 2px; }
+.steps li.done:not(:last-child)::after { background: var(--ok); opacity: .5; }
 .steps b { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; background: var(--surface-2); border: 1px solid var(--line-2); }
 .steps li.done { color: var(--ink-2); }
 .steps li.done b { background: var(--ok-soft); color: var(--ok); border-color: transparent; }
 .steps li.on { color: var(--accent); }
+.steps li.on .stepbtn { background: var(--accent-soft); }
 .steps li.on b { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+@media (max-width: 1180px) {
+  /* thiếu chỗ: chỉ bước hiện tại có chữ */
+  .top { gap: 12px; }
+  .steps li:not(.on) .stepbtn { padding-right: 4px; }
+  .steps li:not(.on) .stepbtn > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .steps li:not(:last-child)::after { width: 14px; margin: 0 4px 0 2px; }
+}
+
+@media (max-width: 1024px) {
+  .brand span { display: none; }
+}
+@media (max-width: 900px) {
+  /* nút có icon thành nút icon; chữ vẫn là tên đọc được (sr-only) */
+  #btnInvite > span, #btnMinutes > span { display: block; position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  #btnInvite, #btnMinutes { padding: 7px 9px; }
+}
+@media (max-width: 720px) {
+  .top { display: flex; }
+  .top-l { flex: 1; }
+  .steps { position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; }
+  .steps ol { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px; height: 100%; }
+  .steps li { height: 100%; background: var(--line-2); }
+  .steps li.done, .steps li.on { background: var(--accent); }
+  .steps li.done { opacity: .55; }
+  .steps li::after { display: none !important; }
+  .steps .stepbtn { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
 
 /* ---------- cards & forms ---------- */
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; box-shadow: var(--shadow); }
@@ -215,7 +245,7 @@ textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
 
 /* ---------- responsive ---------- */
 @media (max-width: 860px) {
-  .room { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
+  .room { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); }
   .side { border-right: 0; border-bottom: 1px solid var(--line); flex-direction: row; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
   .side::-webkit-scrollbar { display: none; }
   .side-sec { border-bottom: 0; padding: 10px 14px; }
@@ -228,18 +258,17 @@ textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
   .typing { padding: 0 14px; }
 }
 @media (max-width: 640px) {
-  .top { padding: 8px 12px; gap: 6px; }
+  .top { padding: 8px 12px; gap: 6px; min-height: 53px; }
+  .top-l { gap: 8px; }
+  .top-r { gap: 6px; }
   .top .btn { padding: 7px 9px; }
   .conn.ok { display: none; }
   .quick { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-left: -14px; margin-right: -14px; padding: 0 14px; }
   .quick::-webkit-scrollbar { display: none; }
   .quick .chip { flex: none; }
-  .brand span { display: none; }
   .btn span:not(:only-child) { display: none; }
   #btnStop span { display: inline; }
   .conn span { display: none; }
-  .steps ol { padding: 8px 14px; }
-  .steps li:not(:last-child)::after { width: 14px; }
   .card { padding: 16px; }
   .checks { font-size: 12.5px; gap: 4px 10px; flex-basis: 100%; }
   .startbar-in { padding: 10px 14px 12px; gap: 10px; }
@@ -473,6 +502,4 @@ textarea.mono { font: 12.5px/1.6 var(--mono); min-height: 360px; tab-size: 2; wh
   .startbar .checks { order: -1; }
   .grid3 { grid-template-columns: minmax(0, 1fr); gap: 10px; }
   #jsonView .row .btn { flex: 1 1 40%; }
-  .steps li .stepbtn > span { display: none; }
-  .steps li.on .stepbtn > span { display: inline; }
 }

@@ -10,28 +10,30 @@
 </head>
 <body>
 <header class="top">
-  <div class="brand"><img src="/favicon.svg" alt="" width="28" height="28"><span>Agent Meeting</span></div>
-  <span class="badge" id="status">Đang tải…</span>
-  <span class="spacer"></span>
-  <button class="btn ghost sm langbtn" type="button" id="btnLang"></button>
-  <span class="conn" id="conn" title="Kết nối tới server"><i></i><span>Đang kết nối</span></span>
-  <button class="btn ghost" id="btnInvite" hidden>
-    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg><span>Mời agent</span>
-  </button>
-  <button class="btn ghost" id="btnMinutes" hidden>
-    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v10m0 0-4-4m4 4 4-4M4 16h12"/></svg><span>Biên bản</span>
-  </button>
-  <button class="btn danger" id="btnStop" hidden><span>Kết thúc</span></button>
+  <div class="top-l">
+    <div class="brand"><img src="/favicon.svg" alt="" width="28" height="28"><span>Agent Meeting</span></div>
+    <span class="badge" id="status">Đang tải…</span>
+  </div>
+  <nav class="steps" aria-label="Quy trình">
+    <ol id="steps">
+      <li data-step="1"><button type="button" class="stepbtn" data-go="1"><b>1</b><span>Bối cảnh</span></button></li>
+      <li data-step="2"><button type="button" class="stepbtn" data-go="2"><b>2</b><span>Mời agent</span></button></li>
+      <li data-step="3"><span class="stepbtn"><b>3</b><span>Họp</span></span></li>
+      <li data-step="4"><span class="stepbtn"><b>4</b><span>Biên bản</span></span></li>
+    </ol>
+  </nav>
+  <div class="top-r">
+    <button class="btn ghost sm langbtn" type="button" id="btnLang"></button>
+    <span class="conn" id="conn" title="Kết nối tới server"><i></i><span>Đang kết nối</span></span>
+    <button class="btn ghost" id="btnInvite" title="Mời agent" hidden>
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg><span>Mời agent</span>
+    </button>
+    <button class="btn ghost" id="btnMinutes" title="Biên bản" hidden>
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v10m0 0-4-4m4 4 4-4M4 16h12"/></svg><span>Biên bản</span>
+    </button>
+    <button class="btn danger" id="btnStop" hidden><span>Kết thúc</span></button>
+  </div>
 </header>
-
-<nav class="steps" aria-label="Quy trình">
-  <ol id="steps">
-    <li data-step="1"><button type="button" class="stepbtn" data-go="1"><b>1</b><span>Bối cảnh</span></button></li>
-    <li data-step="2"><button type="button" class="stepbtn" data-go="2"><b>2</b><span>Mời agent</span></button></li>
-    <li data-step="3"><span class="stepbtn"><b>3</b><span>Họp</span></span></li>
-    <li data-step="4"><span class="stepbtn"><b>4</b><span>Biên bản</span></span></li>
-  </ol>
-</nav>
 
 <!-- Màn chuẩn bị (server: LOBBY), hai bước phía trình duyệt: #boi-canh và #moi-agent -->
 <main class="setup" id="setup" hidden>

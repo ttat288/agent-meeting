@@ -119,6 +119,7 @@
     "boundedLocalConnectRerun": {
       "exit": 0,
       "passed": 4
-    }
+    },
+    "fixtureFollowup": "The bridge passed after IPv4 normalization. The fixture direct-upload fetch also used localhost against its IPv4 listener; it now uses 127.0.0.1 while bridge registration still tests localhost normalization."
   }
 }

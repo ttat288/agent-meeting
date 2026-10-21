@@ -109,8 +109,8 @@ test('cầu nối: chạy được khi chưa có phòng; vào phòng trên máy 
 
   const app = createApp({ waitMs: 300, idleMs: 60000, tick: 20 });
   await new Promise(r => app.server.listen(0, '127.0.0.1', r)); t.after(() => app.close());
-  const base = `http://localhost:${app.server.address().port}`, m = app.create();
-  conn.setLocalRoom(base, m.id);
+  const base = `http://127.0.0.1:${app.server.address().port}`, m = app.create();
+  conn.setLocalRoom(`http://localhost:${app.server.address().port}`, m.id);
   assert.equal(JSON.parse(fs.readFileSync(conn.roomsPath(), 'utf8')).rooms.local.url, `http://127.0.0.1:${app.server.address().port}`);
   const j = await b.tool('join', { name: 'Lan', model: 'Opus 5.5' });
   assert.match(j, /tên "Lan"/); assert.match(j, /send_file\(name="Lan", path="ĐƯỜNG_DẪN_TỆP"/); assert.doesNotMatch(j, /Bearer|curl -s -X POST/);

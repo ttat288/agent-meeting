@@ -1,3 +1,9 @@
 node_modules/
 .DS_Store
 *.log
+
+# Local third-party source checkouts; never include in project commits.
+/.local-tools/
+
+# Project-local UI/UX Pro Max skill and its bundled scripts/data/references.
+/.agents/skills/ui-ux-pro-max/

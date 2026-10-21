@@ -1,0 +1,31 @@
+{
+  "checks": [
+    "utility inventory and Enter/Escape return",
+    "Invite drawer trap/Escape",
+    "End retains confirm, cancel keeps LIVE",
+    "sheet native summary boundaries and nested modal double Escape",
+    "all five quick prompts; selected prompt sends immediately with recipient (intercepted request)",
+    "network refresh failure preserves tasks; retry recovers",
+    "system follows light/dark media and reduced-motion",
+    "2240-character report fully rendered without slicing (response fixture)"
+  ],
+  "media": [
+    {
+      "scheme": "light",
+      "theme": "system",
+      "bg": "#f5f6f8",
+      "motion": true
+    },
+    {
+      "scheme": "dark",
+      "theme": "system",
+      "bg": "#0b0d12",
+      "motion": true
+    }
+  ],
+  "low": {
+    "shell": 52,
+    "feed": 495,
+    "composer": 62
+  }
+}

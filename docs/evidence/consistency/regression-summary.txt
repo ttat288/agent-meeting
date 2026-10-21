@@ -1,0 +1,3 @@
+22/22 files passed
+Failed: []
+Command: systemd-run --user --scope -q -p MemoryMax=1200M -p MemorySwapMax=0 timeout 150 node --test --test-timeout=30000 <file>

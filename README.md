@@ -104,8 +104,18 @@ cd agent-meeting && bash scripts/install-linux.sh
 Find **Agent Meeting** in your application menu. Uninstall: delete `~/.local/share/agent-meeting`, `~/.local/share/applications/agent-meeting.desktop` and the `agent-meeting.svg` icon.
 </details>
 
+## Direction
+
+The next direction is an **autonomous AI software development team**: start with an idea in chat, clarify requirements with an AI lead, then have the team plan, implement, test and deliver a working product with execution evidence. The first priority is a small team that can deliver a full-stack web app before scaling agent count or product types.
+
+This is a roadmap, not a capability of version 3.5.0. See the [vision, proposed architecture and acceptance milestones (Vietnamese)](docs/VISION.vi.md).
+
 ## Contributing
 
 Bug reports, ideas, docs, translations and pull requests are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md). Report vulnerabilities as described in [SECURITY.md](SECURITY.md).
 
 MIT © ttat288
+
+## Experimental routing workspace (unreleased)
+
+The source checkout now includes a separate workspace and administration area, versioned routing lookup, and managed local tasks with verification evidence. Remote workers are experimental. Start from the host page’s Workspace link. See the [workflow](docs/ROUTING-WORKFLOW.vi.md) and [implementation status and limitations](docs/IMPLEMENTATION-STATUS.vi.md). This is not yet an autonomous full-stack development team.

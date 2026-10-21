@@ -32,3 +32,14 @@ Chi tiết, mô hình đe doạ và lý do: [docs/SECURITY-DESIGN.md](docs/SECUR
 - Quick tunnel của Cloudflare kết thúc TLS ở Cloudflare (họ thấy được nội dung); dùng `--public-url` trên hạ tầng của bạn nếu cần.
 - Không có tài khoản người dùng hay OAuth đầy đủ; cần SSO thì đặt trang chủ trì sau proxy của công ty.
 - Bảo mật của chính các AI CLI và máy chạy chúng.
+
+## Routing/workspace thử nghiệm (chưa release)
+
+- `/m/<hostKey>/workspace|admin` và cấu hình/thực thi yêu cầu quyền chủ trì. API mới chỉ nhận điều khiển local, kể cả khi bật `--remote-host`; mã mời hoặc token worker không cấp quyền admin.
+- Lookup MCP riêng (`bin/routing.js --stdio`) chỉ đọc, có giới hạn; không thêm execution vào `connect.ALLOWED` hoặc tool hội thoại.
+- Lưu admin/task/run là thao tác ghi bền vững độc lập với `--data-dir` của phòng cũ: mặc định dưới `~/.agent-meeting/config` và `work`, thư mục 700/tệp 600, atomic/CAS/backup. Không đưa credential vào catalog. Chỉ token hash worker được giữ ở coordinator.
+- Thực thi ghi mã và kiểm chứng managed cần Linux/bwrap hoạt động; thiếu thì fail closed. Biên hiện tại là **ghi filesystem**, không ngăn đọc host hoặc mạng. Không dùng cho code/agent không tin cậy với yêu cầu cách ly secret/network; chưa có sandbox đầy đủ cho trường hợp đó.
+- Worker phải được người vận hành cấu hình origin, workspace và allowlist model/adapter; HTTPS khi khác máy. Lease/generation/source snapshot ngăn chấp nhận kết quả cũ; lost không chứng minh tiến trình cũ đã dừng. Remote artifact tải như attachment/sandbox, luôn chưa kiểm chứng, không tự áp dụng.
+- Giới hạn và hạng mục chưa nghiệm thu (revoke/reconcile, đa file, session resume, máy vật lý thứ hai) tại [IMPLEMENTATION-STATUS.vi.md](docs/IMPLEMENTATION-STATUS.vi.md).
+
+- Lát cắt thống nhất: mở Kế hoạch sẽ lưu ánh xạ VIỆC và trích đoạn nguồn vào kho work bền vững như task trước đây; chỉ dùng Hội thoại không tự khởi tạo kho work. Bản nháp điều kiện chạy lưu localStorage theo host/task/revision. workKey là định danh kho nội bộ, không phải token quyền; không công khai trong snapshot agent. Carry giữ kho, room cũ chặn sửa kế hoạch đã tiếp tục.

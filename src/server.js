@@ -9,9 +9,18 @@ const { Meeting, fmtSize, findSecret } = require('./meeting');
 const minutes = require('./minutes');
 const { rolesNeeded } = require('./brief');
 const pkg = require('../package.json');
+const os = require('os');
+const routing = require('./routing');
+const { ConfigStore } = require('./config-store');
+const { WorkManager, safeFile } = require('./work');
+const runtime = require('./runtime');
+const { RemoteCoordinator } = require('./remote');
+const { aggregateResults } = require('./evaluation');
 
 const UI_DIR = path.join(__dirname, 'ui');
 const ASSETS = {
+  '/assets/workspace.css': ['workspace.css', 'text/css; charset=utf-8'],
+  '/assets/workspace.js': ['workspace.js', 'text/javascript; charset=utf-8'],
   '/assets/app.css': ['app.css', 'text/css; charset=utf-8'],
   '/assets/app.js': ['app.js', 'text/javascript; charset=utf-8'],
   '/assets/i18n.js': ['i18n.js', 'text/javascript; charset=utf-8'],
@@ -108,10 +117,10 @@ async function rpc(m, msg, ctx) {
   }
 }
 
-const readBody = (req) => new Promise((res, rej) => {
+const readBody = (req, limit = 256 * 1024) => new Promise((res, rej) => {
   let b = ''; req.setEncoding('utf8');
   // tin dài nhất 4000 ký tự, bản brief tối đa 64 KB: 256 KB là quá đủ
-  req.on('data', c => { b += c; if (b.length > 256 * 1024) { rej(new Error('body too large')); req.destroy(); } });
+  req.on('data', c => { b += c; if (Buffer.byteLength(b) > limit) { rej(new Error('body too large')); req.destroy(); } });
   req.on('end', () => res(b)); req.on('error', rej);
 });
 const parseArgs = (u, raw) => {
@@ -160,6 +169,25 @@ function limiter() {
 
 function createApp(cfg = {}) {
   const log = cfg.log || (() => {});
+  const configStore = new ConfigStore({ dir: cfg.configDir, defaults: routing.defaults, validate: routing.validate });
+  const workManagers = new Map();
+  let remoteCoordinator;
+  const remoteFor = () => remoteCoordinator ||= new RemoteCoordinator({ dir: cfg.remoteDir || path.join(cfg.workDir || path.join(os.homedir(), '.agent-meeting', 'work'), 'remote') });
+  const workKeyFor = room => room.workKey || crypto.createHash('sha256').update(room.hostKey).digest('hex');
+  function workFor(key) {
+    const room = byHost.get(key), workKey = workKeyFor(room);
+    if (!/^[a-f0-9]{64}$/.test(workKey)) throw Object.assign(new Error('Invalid session work identity'), { status: 409 });
+    if (!workManagers.has(workKey)) workManagers.set(workKey, new WorkManager({ dir: path.join(cfg.workDir || path.join(os.homedir(), '.agent-meeting', 'work'), workKey), configStore, runner: cfg.runCli }));
+    const work = workManagers.get(workKey);
+    work.refreshSource = () => {
+      const current = [...byHost.values()].filter(r => workKeyFor(r) === workKey).sort((a,b) => b.createdAt - a.createdAt)[0];
+      if (!current || work.read().sessionCreatedAt > current.createdAt) throw Object.assign(new Error('Restore the current meeting before executing this plan'), { status: 409 });
+      work.syncRoom(current);
+    };
+    work.refreshSource();
+    return work;
+  }
+
   // Nhật ký kiểm toán (--audit-log): JSONL, quyền 600. Ai vào/được duyệt/bị từ chối, ai gửi/tải tệp nào, chủ trì làm gì.
   // KHÔNG ghi nội dung tin nhắn, nội dung tệp hay mã bí mật.
   function audit(ev, data = {}) {
@@ -221,6 +249,7 @@ function createApp(cfg = {}) {
   let fixedOrigin = null;  // --public-url: người vận hành đã khai báo, dùng cho cả lệnh trong giao thức (proxy có thể đổi header Host)
   const assets = Object.fromEntries(Object.entries(ASSETS).map(([k, [f, type]]) => [k, { body: fs.readFileSync(path.join(UI_DIR, f)), type }]));
   const index = fs.readFileSync(path.join(UI_DIR, 'index.html'));
+  const workspaceIndex = fs.readFileSync(path.join(UI_DIR, 'workspace.html'));
   // fixed: mã chủ trì cố định (--host-key), link chủ trì không bao giờ hỏng; cuộc họp mới dùng lại đúng mã đó
   const create = (overrides = {}) => {
     const m = new Meeting({ ...cfg, maxFileMb: lim.maxFileMb, ...overrides });
@@ -276,6 +305,7 @@ function createApp(cfg = {}) {
   const renew = (mt, carry) => {
     const s = mt.cfg;
     const n = create({ id: mt.id, hostKey: mt.fixed ? mt.hostKey : undefined, fixed: mt.fixed, mode: s.mode, maxMsgs: s.maxMsgs, idleMs: s.idleMs, timeLimitMin: s.timeLimitMin, followUp: s.followUp });
+    if (carry) { n.workKey = workKeyFor(mt); n.createdAt = Math.max(n.createdAt, mt.createdAt + 1); }
     n.configure({ agenda: mt.agenda });
     n.preset = mt.preset;
     if (carry) n.carryIn({
@@ -428,6 +458,124 @@ function createApp(cfg = {}) {
       if (p === '/healthz') return json(200, { ok: true, version: pkg.version });
       if (ASSETS[p]) return send(200, assets[p].type, assets[p].body, { 'cache-control': 'no-cache' });
 
+      // Worker tokens are scoped to a single registered host; never part of meeting tool auto-allow.
+      if ((m = p.match(/^\/api\/worker\/([\w-]+)\/(register|claim|heartbeat|complete)$/))) {
+        if (req.method !== 'POST') return json(405, { error: 'POST only' });
+        if (!sameOrigin(req)) return json(403, { error: 'Invalid Origin' });
+        if (!rate.take('worker:' + m[1], 120, 20)) return json(429, { error: 'Worker request rate exceeded' });
+        try {
+          const remote = remoteFor(), token = bearer(req); remote.auth(m[1], token);
+          const data = JSON.parse(await readBody(req, 2 * MB));
+          const result = m[2] === 'claim' ? remote.claim(m[1], token) : remote[m[2]](m[1], token, data);
+          return json(200, result);
+        } catch (e) { return json(e.status || 400, { error: e.message }); }
+      }
+
+      // Host capability remains mandatory. Invitation links cannot open admin or start processes.
+      if ((m = p.match(/^\/m\/(\w+)\/workspace$/)) && byHost.has(m[1]))
+        return send(302, 'text/plain', '', { location: '/m/' + m[1] + u.search + '#plan', 'cache-control': 'no-store' });
+      if ((m = p.match(/^\/m\/(\w+)\/(workspace|admin)$/)))
+        return send(byHost.has(m[1]) ? 200 : 404, 'text/html; charset=utf-8', workspaceIndex, { 'cache-control': 'no-store', 'content-security-policy': CSP });
+      if ((m = p.match(/^\/api\/host\/(\w+)\/(config(?:\/(?:reset|history))?|metrics|remote(?:\/(?:enroll|queue|reassign|artifact))?|routing\/recommend|runtime(?:\/probe)?|work(?:\/tasks(?:\/[\w-]+\/(?:run|configure))?|\/runs\/[\w-]+\/(?:cancel|verify|integrate|rebase|artifact|handoff))?)$/))) {
+        if (!byHost.has(m[1])) return json(404, { error: 'Host capability not found' });
+        const action = m[2];
+        // Process launch, workspace writes and machine metadata are local controls even with remoteHost enabled.
+        if (where(req).via !== 'local') return json(403, { error: 'Configuration and execution controls require the local host' });
+        try {
+          if (!['GET','POST'].includes(req.method)) return json(405, { error: 'GET or POST only' });
+          if (action === 'config') {
+            if (req.method === 'GET') return json(200, configStore.read());
+            const body = JSON.parse(await readBody(req, 600 * 1024));
+            const saved = configStore.save(body.config, body.expectedRevision); audit('config-save', { revision: saved.revision }); return json(200, saved);
+          }
+          if (action === 'config/history' && req.method === 'GET') {
+            const current = configStore.read();
+            let previous = null;
+            if (fs.existsSync(configStore.backupFile)) { const stat = fs.lstatSync(configStore.backupFile); if (!stat.isFile() || stat.size > 1024 * 1024) throw new Error('Unsafe config backup'); previous = JSON.parse(fs.readFileSync(configStore.backupFile, 'utf8')); routing.validate(previous); }
+            return json(200, { currentRevision: current.revision, previousRevision: previous?.revision ?? null });
+          }
+          if (action === 'config/reset' && req.method === 'POST') {
+            const body = JSON.parse(await readBody(req)), next = configStore.read(), defaults = routing.defaults();
+            if (!['models','policy','runtimes'].includes(body.group)) return json(400, { error: 'Unknown configuration group' });
+            next[body.group] = defaults[body.group]; if (body.group !== 'policy') next.profiles = defaults.profiles;
+            return json(200, configStore.save(next, body.expectedRevision));
+          }
+          const work = workFor(m[1]);
+          if (req.method === 'POST' && work.read().sessionCreatedAt > byHost.get(m[1]).createdAt) return json(409, { error: 'Meeting continued; use the current session to change this plan' });
+          if (action === 'metrics' && req.method === 'GET') return json(200, aggregateResults({ runs: work.read().runs, remoteRuns: remoteFor().read().runs }));
+
+          if (action === 'remote/artifact' && req.method === 'GET') {
+            const result = remoteFor().getResult(u.searchParams.get('runId'), u.searchParams.has('generation') ? Number(u.searchParams.get('generation')) : undefined);
+            const artifact = result?.artifacts.find(a => a.name === u.searchParams.get('name'));
+            if (!artifact?.content) return json(404, { error: 'Artifact bytes are unavailable' });
+            const bytes = Buffer.from(artifact.content, 'base64');
+            if (crypto.createHash('sha256').update(bytes).digest('hex') !== artifact.sha256) return json(409, { error: 'Artifact hash mismatch' });
+            return send(200, 'application/octet-stream', bytes, { 'content-disposition': 'attachment; filename="artifact.json"', 'content-security-policy': 'sandbox', 'cache-control': 'no-store' });
+          }
+          if (/^work\/runs\/[\w-]+\/(artifact|handoff)$/.test(action) && req.method === 'GET') {
+            const parts = action.split('/'), state = work.read(), run = state.runs.find(r => r.id === parts[2]), task = run && state.tasks.find(t => t.id === run.taskId);
+            if (!run) return json(404, { error: 'Run not found' });
+            if (parts[3] === 'handoff') return json(200, { schema: 'agent-meeting/handoff@1', task, runId: run.id, status: run.status, configRevision: run.configRevision, baseRevision: run.baseRevision, actualModel: run.reportedModel, runtime: run.adapter, changes: run.changes, verification: run.evidence, integrationVerification: run.integrationEvidence || [], usage: run.usage, costUsd: run.costUsd, limitations: ['Single-file automatic integration', 'Filesystem write isolation only', ...(run.status !== 'integrated' ? ['Not accepted as completed'] : [])] });
+            const file = u.searchParams.get('path'), change = run.changes.find(c => c.file === file);
+            if (!change?.after) return json(404, { error: 'Changed file bytes are unavailable' });
+            const bytes = fs.readFileSync(safeFile(run.workspace, file));
+            if (crypto.createHash('sha256').update(bytes).digest('hex') !== change.after) return json(409, { error: 'Workspace artifact changed' });
+            return send(200, 'application/octet-stream', bytes, { 'content-disposition': 'attachment; filename="result.bin"; filename*=UTF-8\'\'' + encodeURIComponent(path.basename(file)), 'content-security-policy': 'sandbox', 'cache-control': 'no-store' });
+          }
+          if (action === 'remote' && req.method === 'GET') return json(200, remoteFor().read());
+          if (action.startsWith('remote/') && req.method === 'POST') {
+            const body = JSON.parse(await readBody(req));
+            if (action === 'remote/enroll') return json(201, remoteFor().enroll(body));
+            if (action === 'remote/reassign') return json(200, remoteFor().reassign(body.runId, { hostId: body.hostId }));
+            const task = work.read().tasks.find(t => t.id === body.taskId);
+            if (!task || task.purpose !== 'execute' || task.topology === 'local' || task.management === 'invited') return json(409, { error: 'A remote managed execution task is required' });
+            work.assertCurrent(task.id);
+            const config = configStore.read(), profile = config.profiles.find(p => p.id === body.profileId), model = profile && config.models.find(x => x.id === profile.modelId);
+            if (!profile?.enabled || !model?.enabled || model.verification !== 'verified') return json(409, { error: 'Enable and verify the selected model/profile first' });
+            const host = remoteFor().read().hosts.find(h => h.id === body.hostId);
+            if (!host || Date.now() - host.lastSeen > 60000) return json(409, { error: 'Worker is offline or has not registered recently' });
+            if (!task.baseRevision || task.baseRevision !== host.baseRevision) return json(409, { error: 'Remote task base revision must match the registered worker' });
+            const adapter = { 'claude-code': 'claude', agy: 'agy' }[profile.runtimeId];
+            if (!adapter) return json(409, { error: 'No remote adapter for this runtime' });
+            // Explicit operator dispatch records unknown model access. The worker must verify its own adapter/model allowlist.
+            if (!host.capabilities.includes(adapter)) return json(409, { error: 'Worker does not advertise the selected adapter' });
+            routing.validateTask(task);
+            const runtimeProfile = config.runtimes.find(r => r.id === profile.runtimeId);
+            if ((task.requiredCapabilities || []).some(c => !model.capabilities.includes(c) && !runtimeProfile.capabilities.includes(c)) || (task.requiredModalities || []).some(c => !model.modalities.includes(c))) return json(409, { error: 'Profile cannot satisfy the required capabilities/modalities' });
+            if ((task.requiredTools || []).length || (task.requiredPermissions || []).length) return json(409, { error: 'Remote tool/permission evidence is not available for this task' });
+            const tiers = { low: 1, medium: 2, high: 3 };
+
+            const ceiling = Math.min(...[config.policy.budget.maxCostTier, task.budget?.maxCostTier].filter(Boolean).map(t => tiers[t]), 3);
+            if (tiers[model.costTier] > ceiling) return json(409, { error: 'Task exceeds routing budget' });
+            const assignment = remoteFor().enqueue({ taskId: task.id, runId: crypto.randomUUID(), hostId: host.id, workspaceId: host.workspaceId, baseRevision: host.baseRevision, requirementRevision: task.requirementRevision, adapter, modelId: model.providerModelId, configRevision: config.revision, configSnapshot: config, routingDecision: { selection: 'operator-explicit', profileId: profile.id, unknowns: ['model-access','quota'], reviewRequired: task.risk === 'high' || task.scope === 'large' || (task.reviewReasons || []).some(r => config.policy.reviewRequiredFor.includes(r)) }, writePaths: task.writePaths, prompt: JSON.stringify({ goal: task.goal, origin: task.origin || null, acceptance: task.acceptance, sources: task.sources, facts: task.facts, unknowns: task.unknowns, scope: task.writePaths }) });
+            audit('remote-queue', { runId: assignment.runId, hostId: host.id, configRevision: config.revision });
+            return json(202, { ...assignment, configRevision: config.revision, selection: 'operator-explicit', access: 'unknown' });
+          }
+
+          if (action === 'runtime' && req.method === 'GET') return json(200, { observations: work.environment(), checks: runtime.ADAPTERS.map(runtime.checkRuntime) });
+          if (action === 'work' && req.method === 'GET') {
+            const room = byHost.get(m[1]);
+            return json(200, { ...work.read(), metrics: aggregateResults({ runs: work.read().runs, remoteRuns: remoteFor().read().runs.filter(r => work.read().tasks.some(t => t.id === r.taskId)) }), session: { createdAt: room.createdAt, state: room.state, context: room.context || room.preset?.context || '', decisions: room.log.filter(x => x.conclusion).map(x => ({ messageIndex: x.i, text: x.text, name: x.name })) } });
+          }
+          if (req.method !== 'POST') return json(405, { error: 'POST only' });
+          const body = JSON.parse(await readBody(req));
+          if (action === 'routing/recommend') return json(200, routing.recommend(configStore.read(), body, work.environment()));
+          if (action === 'runtime/probe') return json(200, await work.probe(body.profileId));
+          if (action === 'work/tasks') return json(201, work.createTask(body));
+          const bits = action.split('/');
+          if (bits[1] === 'tasks' && bits[3] === 'configure') return json(200, work.configureTask(bits[2], body));
+          if (bits[1] === 'tasks' && bits[3] === 'run') return json(202, work.start(bits[2], body.profileId));
+          if (bits[1] === 'runs' && bits[3] === 'rebase') return json(200, work.rebase(bits[2]));
+          if (bits[1] === 'runs' && bits[3] === 'cancel') return json(202, work.cancel(bits[2]));
+          if (bits[1] === 'runs' && bits[3] === 'verify') return json(200, await work.verify(bits[2]));
+          if (bits[1] === 'runs' && bits[3] === 'integrate') return json(200, await work.integrate(bits[2]));
+          return json(404, { error: 'Unsupported work operation' });
+        } catch (e) {
+          const status = e.status || (['CONFIG_CONFLICT','CONFIG_LOCKED'].includes(e.code) ? 409 : e.code === 'CONFIG_CORRUPT' ? 500 : 400);
+          return json(status, { error: e.message, code: e.code, currentRevision: e.currentRevision });
+        }
+      }
+
       // Giao diện chủ trì
       if ((m = p.match(/^\/m\/(\w+)$/)))
         return send(byHost.has(m[1]) ? 200 : 404, 'text/html; charset=utf-8', index, { 'cache-control': 'no-store', 'content-security-policy': CSP });
@@ -543,7 +691,7 @@ function createApp(cfg = {}) {
     } catch (e) { log(`⚠ Lỗi xử lý ${req.method} ${p.replace(/\/(\w{6})\w+/g, '/$1…')}: ${e.message || e}`); if (!res.headersSent) json(500, { error: String(e.message || e) }); else res.end(); }
   }
   server.requestTimeout = 0; // long-poll và wait giữ kết nối lâu
-  const app = { server, create, renew, meetings: byHost, limits: lim, ev: new EventEmitter(), setPublicOrigin: (o, fixed) => { publicOrigin = o; if (fixed) fixedOrigin = o; }, flush, restore, close: () => { clearInterval(sweep); flush(); server.close(); server.closeAllConnections?.(); } };
+  const app = { configStore, server, create, renew, meetings: byHost, limits: lim, ev: new EventEmitter(), setPublicOrigin: (o, fixed) => { publicOrigin = o; if (fixed) fixedOrigin = o; }, flush, restore, close: () => { for (const manager of workManagers.values()) manager.close(); clearInterval(sweep); flush(); server.close(); server.closeAllConnections?.(); } };
   return app;
 }
 

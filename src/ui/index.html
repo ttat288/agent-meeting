@@ -7,13 +7,37 @@
 <title>Agent Meeting</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/assets/app.css">
+<link rel="stylesheet" href="/assets/workspace.css">
 </head>
 <body>
+<a class="skip-link" href="#sessionNav">Điều hướng phiên</a>
 <header class="top">
-  <div class="top-l">
-    <div class="brand"><img src="/favicon.svg" alt="" width="28" height="28"><span>Agent Meeting</span></div>
+  <div class="brand"><img src="/favicon.svg" alt="" width="24" height="24"><span>Agent Meeting</span></div>
+  <nav class="session-nav" id="sessionNav" aria-label="Phiên làm việc">
+    <a href="#conversation">Hội thoại</a><a href="#plan">Kế hoạch</a><a href="#execute">Thực hiện</a><a href="#results">Kết quả</a>
+  </nav>
+  <div class="top-r">
     <span class="badge" id="status">Đang tải…</span>
+    <span class="conn" id="conn" role="status" title="Kết nối tới server"><i></i><span>Đang kết nối</span></span>
+    <button class="btn ghost" type="button" id="btnPanel" aria-expanded="true" aria-controls="side">Chi tiết</button>
+    <div class="utility">
+      <button class="btn ghost" type="button" id="btnOptions" aria-expanded="false" aria-controls="optionsPanel">Tùy chọn</button>
+      <div class="utility-panel" id="optionsPanel" hidden>
+        <div class="menu-group"><h2>Phiên</h2>
+          <button class="btn ghost" id="btnInvite" type="button" hidden>Mời agent</button>
+          <button class="btn ghost" id="btnMinutes" type="button" hidden>Biên bản</button>
+        </div>
+        <div class="menu-group"><h2>Ứng dụng</h2><a class="btn ghost" id="sessionAdmin">Quản trị</a></div>
+        <div class="menu-group" id="displayOptions"><h2>Hiển thị</h2><button class="btn ghost langbtn" type="button" id="btnLang"></button></div>
+        <div class="menu-group"><button class="btn danger" type="button" id="btnStop" hidden><span>Kết thúc</span></button></div>
+      </div>
+    </div>
   </div>
+</header>
+<main id="workView" class="session-work" hidden tabindex="-1"><div id="page"></div></main>
+<div id="notice" class="ws-notice" role="status" aria-live="polite" hidden></div>
+<!-- Màn chuẩn bị (server: LOBBY), hai bước phía trình duyệt: #boi-canh và #moi-agent -->
+<main class="setup" id="setup" hidden>
   <nav class="steps" aria-label="Quy trình">
     <ol id="steps">
       <li data-step="1"><button type="button" class="stepbtn" data-go="1"><b>1</b><span>Bối cảnh</span></button></li>
@@ -22,21 +46,7 @@
       <li data-step="4"><span class="stepbtn"><b>4</b><span>Biên bản</span></span></li>
     </ol>
   </nav>
-  <div class="top-r">
-    <button class="btn ghost sm langbtn" type="button" id="btnLang"></button>
-    <span class="conn" id="conn" title="Kết nối tới server"><i></i><span>Đang kết nối</span></span>
-    <button class="btn ghost" id="btnInvite" title="Mời agent" hidden>
-      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg><span>Mời agent</span>
-    </button>
-    <button class="btn ghost" id="btnMinutes" title="Biên bản" hidden>
-      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v10m0 0-4-4m4 4 4-4M4 16h12"/></svg><span>Biên bản</span>
-    </button>
-    <button class="btn danger" id="btnStop" hidden><span>Kết thúc</span></button>
-  </div>
-</header>
 
-<!-- Màn chuẩn bị (server: LOBBY), hai bước phía trình duyệt: #boi-canh và #moi-agent -->
-<main class="setup" id="setup" hidden>
   <!-- Bước 1: bối cảnh -->
   <div class="pane" id="paneBrief">
     <div class="pane-in">
@@ -67,13 +77,11 @@
                 <input id="endc" maxlength="1000" placeholder="Để trống: các agent tự bàn đến khi chốt, gửi KẾT LUẬN rồi tự rời phòng">
               </div>
             </div>
-            <div class="card">
-              <div class="card-h"><h2>Chương trình họp <em>tuỳ chọn</em></h2><span class="muted" id="agendaNum"></span></div>
+            <details class="card"><summary>Chương trình họp <span class="muted" id="agendaNum"></span></summary>
               <p class="hint">Các mục được bàn lần lượt; khi chốt xong một mục, agent báo <code>XONG MỤC n</code> và phòng chuyển sang mục kế.</p>
               <ol class="items" id="agendaEd"></ol>
-            </div>
-            <div class="card">
-              <div class="card-h"><h2>Tuỳ chọn</h2></div>
+            </details>
+            <details class="card"><summary>Tuỳ chọn</summary>
               <div class="opt">
                 <label class="switch">
                   <input type="checkbox" role="switch" id="followUp">
@@ -102,7 +110,7 @@
                 <p class="hint">Agent vào phòng thứ nhất nhận vai trò 1, thứ hai nhận vai trò 2… khi bắt đầu. Ở bước 2 bạn vẫn giao tay cho từng agent (vai trò giao tay được giữ).</p>
                 <ol class="items" id="rolesEd"></ol>
               </div>
-            </div>
+            </details>
           </section>
           <section id="jsonView" role="tabpanel" aria-labelledby="tabJson" hidden>
             <div class="card">
@@ -185,7 +193,7 @@
 
 <!-- Màn 2: cuộc họp -->
 <main class="room" id="room" hidden>
-  <aside class="side" id="side">
+  <aside class="side" id="side" aria-label="Chi tiết phiên"><button class="btn ghost side-close" id="sideClose" type="button">Đóng chi tiết</button>
     <div class="side-sec">
       <h3>Thành viên <span class="muted" id="memberCount"></span></h3>
       <ul class="people" id="members"></ul>
@@ -204,26 +212,23 @@
       <ul class="files" id="files"></ul>
       <p class="note verify">ⓘ Tệp do agent gửi nhau qua server (không qua tin nhắn). Luôn được tải về, không mở trong trang; kiểm tra bằng sha256.</p>
     </div>
-    <div class="side-sec">
-      <h3>Thông tin</h3>
+    <details class="side-sec room-details"><summary>Thông tin</summary>
       <dl class="info" id="info"></dl>
-    </div>
-    <div class="side-sec grow">
       <h3>Bối cảnh</h3>
       <div class="ctx" id="ctxView"></div>
-    </div>
-    <button class="panel-toggle" type="button" id="btnPanel" aria-expanded="false" aria-controls="side"></button>
+    </details>
   </aside>
   <section class="main">
+    <h1 class="sr-only">Hội thoại</h1>
     <div class="feed" id="feed" aria-live="polite"><div class="feed-in" id="feedIn"></div></div>
     <button class="newpill" id="newPill" hidden>↓ Có tin mới</button>
     <div class="typing" id="typing"></div>
     <form class="composer" id="composer" autocomplete="off">
-      <div class="quick" id="quick"></div>
       <div class="send">
         <select id="sendTo" title="Gửi tới" aria-label="Gửi tới"><option value="">Tất cả</option></select>
-        <textarea id="hostMsg" rows="1" placeholder="Nhắn với tư cách chủ trì…" title="Ctrl+Enter để gửi"></textarea>
+        <textarea id="hostMsg" aria-label="Tin nhắn chủ trì" rows="1" placeholder="Nhắn với tư cách chủ trì…" title="Ctrl+Enter để gửi"></textarea>
         <button class="btn primary" id="btnSend" type="submit" title="Gửi (Ctrl+Enter)">Gửi</button>
+        <div class="utility quick-menu"><button class="btn ghost" type="button" id="btnQuick" aria-expanded="false" aria-controls="quick">Gợi ý</button><div class="utility-panel" id="quick" hidden></div></div>
       </div>
     </form>
     <div class="endcard" id="ended" hidden></div>
@@ -253,5 +258,6 @@
 <script src="/assets/i18n.js"></script>
 <script src="/assets/brief.js"></script>
 <script src="/assets/app.js"></script>
+<script src="/assets/workspace.js"></script>
 </body>
 </html>

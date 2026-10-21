@@ -1,0 +1,58 @@
+'use strict';
+const test = require('node:test'), assert = require('node:assert/strict');
+const fs = require('fs'), os = require('os'), path = require('path');
+const { execFileSync } = require('child_process');
+const { ConfigStore } = require('../src/config-store');
+const routing = require('../src/routing');
+const { WorkManager, checkTask, safeFile } = require('../src/work');
+function setup(t, runner) {
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'am-work-test-')); t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
+ const source=path.join(dir,'source');fs.mkdirSync(source); fs.mkdirSync(path.join(source,'test'));
+ fs.writeFileSync(path.join(source,'sum.js'),'module.exports = (a,b) => a-b;\n');
+ fs.writeFileSync(path.join(source,'test/sum.test.js'),"const assert=require('node:assert/strict');require('node:test')('sum',()=>assert.equal(require('../sum')(2,3),5));\n");
+ execFileSync('git',['init','-q',source]);execFileSync('git',['-C',source,'add','.']);execFileSync('git',['-C',source,'-c','user.name=Test','-c','user.email=test@example.invalid','commit','-qm','fixture']);
+ const config=routing.defaults(), m=config.models.find(m=>m.id==='opus');Object.assign(m,{providerModelId:'claude-opus-5-5',enabled:true,verification:'verified',source:{...m.source,checkedAt:new Date().toISOString(),confidence:'user-configured'}});config.profiles.find(p=>p.id==='opus-claude').enabled=true;
+ const store=new ConfigStore({dir:path.join(dir,'config'),defaults:()=>config,validate:routing.validate});
+ const work=new WorkManager({dir:path.join(dir,'work'),configStore:store,runner:runner||(async args=>{if(args.prompt.includes('READY'))return{status:'reported',reportedModel:'claude-opus-5-5'};fs.writeFileSync(path.join(args.workspace,'sum.js'),'module.exports = (a,b) => a+b;\n');return{status:'reported',reportedModel:'claude-opus-5-5',text:'done',exitCode:0};})});
+ t.after(()=>work.close());return{dir,source,store,work};
+}
+const wait = async work => {for(let i=0;i<100&&work.active.size;i++)await new Promise(r=>setTimeout(r,5));assert.equal(work.active.size,0);};
+const task = source => ({goal:'Correct sum',acceptance:['sum(2,3)=5'],purpose:'execute',topology:'local',management:'managed',workspace:source,writePaths:['sum.js'],testFiles:['test/sum.test.js']});
+test('local run snapshots config, reports then independently tests and integrates one scoped file',async t=>{
+ const {source,store,work}=setup(t);await work.probe('opus-claude');const job=work.createTask(task(source));const run=work.start(job.id,'opus-claude');
+ const changed=store.read();changed.policy.maxCandidates=2;store.save(changed,changed.revision);
+ await wait(work);assert.equal(work.read().runs[0].status,'reported');assert.equal(work.read().tasks[0].status,'verifying');assert.equal(run.configRevision,1);assert.equal(work.read().runs[0].configSnapshot.policy.maxCandidates,3);
+ const checked=await work.verify(run.id);assert.equal(checked.status,'verified');assert.equal(checked.evidence[0].exitCode,0);
+ assert.equal(fs.readFileSync(path.join(source,'sum.js'),'utf8').includes('a-b'),true);
+ await work.integrate(run.id);assert.equal(work.read().tasks[0].status,'done');assert.equal(require(path.join(source,'sum.js'))(2,3),5);
+ const restored=new WorkManager({dir:work.dir,configStore:store});assert.equal(restored.read().runs[0].status,'integrated');
+});
+test('unverified access and remote modes cannot launch; stale probe revision rejected',async t=>{
+ const{source,store,work}=setup(t);const job=work.createTask(task(source));assert.throws(()=>work.start(job.id,'opus-claude'),/probe/);await work.probe('opus-claude');
+ const next=store.read();next.policy.maxCandidates=2;store.save(next,1);assert.equal(work.environment().length,0);assert.throws(()=>work.start(job.id,'opus-claude'),/probe/);
+ const remote=work.createTask({...task(source),topology:'remote'});assert.throws(()=>work.start(remote.id,'opus-claude'),/local/);
+});
+test('source dependency changes without HEAD change block integration',async t=>{
+ const{source,work}=setup(t);await work.probe('opus-claude');const job=work.createTask(task(source)),run=work.start(job.id,'opus-claude');await wait(work);await work.verify(run.id);
+ fs.appendFileSync(path.join(source,'test/sum.test.js'),'// changed\n');await assert.rejects(()=>work.integrate(run.id),/Source snapshot changed/);assert.match(fs.readFileSync(path.join(source,'sum.js'),'utf8'),/a-b/);
+});
+test('worker writes outside scope are rejected and not accepted',async t=>{
+ const{source,work}=setup(t,async a=>{if(!a.prompt.includes('READY'))fs.writeFileSync(path.join(a.workspace,'extra.js'),'bad');return{status:'reported',reportedModel:'claude-opus-5-5',text:'done',exitCode:0};});await work.probe('opus-claude');const j=work.createTask(task(source));const r=work.start(j.id,'opus-claude');await wait(work);assert.equal(work.read().runs[0].status,'rejected');await assert.rejects(()=>work.verify(r.id),/no report/);assert.equal(fs.existsSync(path.join(source,'extra.js')),false);
+});
+test('unknown actual model cannot verify, failures and cancellation stay separate',async t=>{
+ const{source,work}=setup(t,async a=>({status:'reported',reportedModel:a.prompt.includes('READY')?'claude-opus-5-5':'unknown',text:'done',exitCode:0}));await work.probe('opus-claude');const j=work.createTask(task(source)),r=work.start(j.id,'opus-claude');await wait(work);await assert.rejects(()=>work.verify(r.id),/identity/);assert.notEqual(work.read().tasks[0].status,'done');
+});
+test('validation rejects traversal, symlinks and mutable verification source',t=>{
+ const{source}=setup(t);assert.throws(()=>checkTask({...task(source),writePaths:['../escape']}),/paths/);assert.throws(()=>checkTask({...task(source),writePaths:['test']}),/Verification/);
+ fs.symlinkSync('/tmp/nonexistent-am-path',path.join(source,'link'));assert.throws(()=>safeFile(source,'link/payload'),/Symlinks/);
+});
+test('task budget and independent-review policy cannot be bypassed at dispatch/integration',async t=>{
+ const{source,work}=setup(t);await work.probe('opus-claude');const low=work.createTask({...task(source),budget:{maxCostTier:'low'}});assert.throws(()=>work.start(low.id,'opus-claude'),/constraints/);
+ const high=work.createTask({...task(source),risk:'high'}),run=work.start(high.id,'opus-claude');await wait(work);assert.equal(work.read().runs.find(r=>r.id===run.id).decision.review.required,true);await work.verify(run.id);await assert.rejects(()=>work.integrate(run.id),/independent review/);
+});
+test('explicit refresh invalidates verification and preserves original config while rebasing unchanged paths',async t=>{
+ const{source,work}=setup(t);await work.probe('opus-claude');const job=work.createTask(task(source)),run=work.start(job.id,'opus-claude');await wait(work);await work.verify(run.id);fs.writeFileSync(path.join(source,'extra.txt'),'new context');const rebased=work.rebase(run.id);assert.equal(rebased.status,'reported');assert.deepEqual(rebased.evidence,[]);assert.equal(rebased.configRevision,1);assert.equal(fs.readFileSync(path.join(rebased.workspace,'extra.txt'),'utf8'),'new context');await work.verify(run.id);assert.equal((await work.integrate(run.id)).status,'integrated');
+});
+test('protected output files are rejected instead of disappearing from scope checks',async t=>{
+ const{source,work}=setup(t,async a=>{if(!a.prompt.includes('READY')){fs.mkdirSync(path.join(a.workspace,'.claude'));fs.writeFileSync(path.join(a.workspace,'.claude/settings.json'),'{}');}return{status:'reported',reportedModel:'claude-opus-5-5',text:'done',exitCode:0};});await work.probe('opus-claude');const taskId=work.createTask(task(source)).id;work.start(taskId,'opus-claude');await wait(work);assert.equal(work.read().runs[0].status,'failed');assert.match(work.read().runs[0].error,/protected/);
+});

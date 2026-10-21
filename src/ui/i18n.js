@@ -12,6 +12,12 @@
   document.documentElement.lang = lang;
 
   const EN = new Map([
+    ['Tùy chọn', 'Options'], ['Phiên', 'Session'], ['Ứng dụng', 'Application'], ['Hiển thị', 'Display'], ['Đóng chi tiết', 'Close details'], ['Chi tiết phiên', 'Session details'], ['Tin nhắn chủ trì', 'Host message'], ['Gợi ý', 'Prompts'],
+    ['Kế hoạch →', 'Plan →'], ['Điều hướng phiên', 'Session navigation'],
+    ['Tiến độ tự báo ({0}/{1} xong)', 'Self-reported progress ({0}/{1} done)'], ['Tiến độ tự báo việc #{0}', 'Self-reported progress for task #{0}'],
+    ['Tiến độ ở đây do agent hoặc chủ trì khai báo. Kết quả chạy đã kiểm chứng và tích hợp được hiển thị riêng.', 'Progress here is declared by an agent or host. Verified and integrated execution results are shown separately.'],
+    ['Đã lên kế hoạch', 'Planned'], ['Chờ kiểm tra điều kiện', 'Awaiting readiness checks'], ['Đang chạy', 'Running'], ['Chờ kiểm chứng', 'Awaiting verification'], ['Chờ tích hợp', 'Awaiting integration'], ['Đã tích hợp', 'Integrated'], ['Yêu cầu đã thay đổi', 'Requirements changed'], ['Thất bại', 'Failed'], ['Đã hủy', 'Cancelled'], ['Bị gián đoạn', 'Interrupted'],
+    ['Phiên làm việc', 'Work session'], ['Hội thoại', 'Conversation'], ['Kế hoạch', 'Plan'], ['Thực hiện', 'Execute'], ['Kết quả', 'Results'], ['Quản trị', 'Administration'],
     // ---------- index.html ----------
     [`Đang tải…`, `Loading…`],
     [`XONG MỤC n`, `XONG MỤC n`], // từ khoá giao thức, giữ nguyên
@@ -389,6 +395,7 @@
     [`chủ trì kết thúc`, `ended by the host`],
   ]);
 
+  EN.set('Không gian làm việc', 'Workspace');
   const fill = (s, args) => s.replace(/\{(\d+)\}/g, (m, i) => (i < args.length ? String(args[i] ?? '') : m));
   // tr('câu') hoặc tr`câu ${x}`
   function tr(s, ...args) {

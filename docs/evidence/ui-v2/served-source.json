@@ -1,0 +1,38 @@
+[
+  {
+    "file": "app.css",
+    "http": 200,
+    "matchesSource": true,
+    "sha256": "888edd0a9c413e6e839ed33de59ee32b68cb09beb50ba8a7146b8b52da5c6f4d"
+  },
+  {
+    "file": "app.js",
+    "http": 200,
+    "matchesSource": true,
+    "sha256": "4b60cf7324be0b0c729c5411728684bb115c38ede694811d1e3e6ea2b3325bf0"
+  },
+  {
+    "file": "index.html",
+    "http": 200,
+    "matchesSource": true,
+    "sha256": "6ec4d7a5bb031f2eb660e82ff752271968f717a4a5b429f9a3b1613e9d4d8022"
+  },
+  {
+    "file": "i18n.js",
+    "http": 200,
+    "matchesSource": true,
+    "sha256": "94a5cea4f85ea2e6a88a3284b5ffe13fe4045a8144e805181670bb203f0c3774"
+  },
+  {
+    "file": "workspace.css",
+    "http": 200,
+    "matchesSource": true,
+    "sha256": "059b07b4e3587443456fbe66105c88144d25ee3eea10e7d938d03a209bb10dad"
+  },
+  {
+    "file": "workspace.js",
+    "http": 200,
+    "matchesSource": true,
+    "sha256": "c5bfaaf3853e0a339b349251b4c03c1f8ba47f094503bbdaa671fac963f59e48"
+  }
+]

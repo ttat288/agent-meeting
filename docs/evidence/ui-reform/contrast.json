@@ -1,0 +1,26 @@
+[
+  {
+    "theme": "dark",
+    "ink/surface": 14.77,
+    "secondary/surface2": 11.2,
+    "primary text": 7.14,
+    "link/surface": 6.53,
+    "control boundary/surface": 5.76
+  },
+  {
+    "theme": "light",
+    "ink/surface": 17.74,
+    "secondary/surface2": 9.86,
+    "primary text": 6.29,
+    "link/surface": 6.29,
+    "control boundary/surface": 4.83
+  },
+  {
+    "theme": "system",
+    "ink/surface": 14.77,
+    "secondary/surface2": 11.2,
+    "primary text": 7.14,
+    "link/surface": 6.53,
+    "control boundary/surface": 5.76
+  }
+]

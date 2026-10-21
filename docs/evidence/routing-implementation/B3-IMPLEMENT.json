@@ -1,0 +1,253 @@
+{
+  "id": "2083eb54-4721-41ad-b98d-813a418195d5",
+  "taskId": "767fa0f4-f77a-4ab5-b65a-475a969f844f",
+  "requirementRevision": 1,
+  "status": "integrated",
+  "source": "/home/theo/workspace/agent-meeting",
+  "workspace": "/tmp/am-b3-real-u3P8VY/work/runs/2083eb54-4721-41ad-b98d-813a418195d5/workspace",
+  "baseRevision": "556b9f69c39a1b1dd6fb9cc71d1b9ddfe5798b47",
+  "configRevision": 1,
+  "decision": {
+    "schema": "agent-meeting/routing@1",
+    "revision": 1,
+    "outcome": "candidates",
+    "candidates": [
+      {
+        "profileId": "opus-claude",
+        "modelId": "opus",
+        "providerModelId": "claude-opus-5-5",
+        "runtimeId": "claude-code",
+        "score": 1,
+        "reasons": [
+          "eligible"
+        ],
+        "checkedAt": "2026-10-21T04:02:57.375Z",
+        "reviewRequired": false,
+        "claimConfidence": "observed"
+      }
+    ],
+    "totalEligible": 1,
+    "truncated": false,
+    "rejected": [
+      {
+        "profileId": "flash-gemini",
+        "reasons": [
+          "disabled",
+          "model-unverified",
+          "selection-locked",
+          "environment-unknown"
+        ]
+      },
+      {
+        "profileId": "astra-codex",
+        "reasons": [
+          "disabled",
+          "model-unverified",
+          "selection-locked",
+          "environment-unknown"
+        ]
+      }
+    ],
+    "unknowns": [
+      {
+        "profileId": "flash-gemini",
+        "fields": [
+          "runtime-access",
+          "quota",
+          "tools",
+          "permissions"
+        ]
+      },
+      {
+        "profileId": "astra-codex",
+        "fields": [
+          "runtime-access",
+          "quota",
+          "tools",
+          "permissions"
+        ]
+      }
+    ],
+    "classificationUnknown": false,
+    "review": {
+      "required": false,
+      "reasons": [],
+      "independent": false
+    },
+    "fallback": "explicit-decision-required"
+  },
+  "profileId": "opus-claude",
+  "adapter": "claude",
+  "requestedModel": "claude-opus-5-5",
+  "reportedModel": "claude-opus-5-5",
+  "startedAt": "2026-10-21T04:13:10.644Z",
+  "evidence": [
+    {
+      "command": [
+        "/usr/bin/node",
+        "--max-old-space-size=256",
+        "--test",
+        "--test-timeout=20000",
+        "test/runtime-denial.test.js"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "cancelled": false,
+      "output": "TAP version 13\n# Subtest: explicit runtime errors override a success marker and plausible prose\nok 1 - explicit runtime errors override a success marker and plausible prose\n  ---\n  duration_ms: 1.856071\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 139.440089\n",
+      "elapsedMs": 259,
+      "checkedAt": "2026-10-21T04:22:36.127Z"
+    },
+    {
+      "command": [
+        "/usr/bin/node",
+        "--max-old-space-size=256",
+        "--test",
+        "--test-timeout=20000",
+        "test/runtime.test.js"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "cancelled": false,
+      "output": "TAP version 13\n# Subtest: adapter arguments require an explicit safe provider ID and bounded nonempty prompt\nok 1 - adapter arguments require an explicit safe provider ID and bounded nonempty prompt\n  ---\n  duration_ms: 2.698362\n  type: 'test'\n  ...\n# Subtest: agy receives the entire prompt as one literal argv value and rejects writes\nok 2 - agy receives the entire prompt as one literal argv value and rejects writes\n  ---\n  duration_ms: 0.369007\n  type: 'test'\n  ...\n# Subtest: Claude keeps prompt out of flags, isolates MCP, and limits write tool scope\nok 3 - Claude keeps prompt out of flags, isolates MCP, and limits write tool scope\n  ---\n  duration_ms: 0.162766\n  type: 'test'\n  ...\n# Subtest: malformed JSON and nonobject JSON always fail without throwing\nok 4 - malformed JSON and nonobject JSON always fail without throwing\n  ---\n  duration_ms: 0.476815\n  type: 'test'\n  ...\n# Subtest: runtime error variants and missing output cannot become successful reports\nok 5 - runtime error variants and missing output cannot become successful reports\n  ---\n  duration_ms: 0.331253\n  type: 'test'\n  ...\n# Subtest: Claude success preserves machine model, usage, permission denials and cost evidence\nok 6 - Claude success preserves machine model, usage, permission denials and cost evidence\n  ---\n  duration_ms: 0.185297\n  type: 'test'\n  ...\n# Subtest: agy success keeps self-identified prose model unknown and bounds model output\nok 7 - agy success keeps self-identified prose model unknown and bounds model output\n  ---\n  duration_ms: 0.553668\n  type: 'test'\n  ...\n# Subtest: runCli sends Claude prompt verbatim on stdin, uses shell false and never claims verified\nok 8 - runCli sends Claude prompt verbatim on stdin, uses shell false and never claims verified\n  ---\n  duration_ms: 3.789637\n  type: 'test'\n  ...\n# Subtest: runCli rejects nonzero exit, malformed result, and permission denial despite positive success JSON\nok 9 - runCli rejects nonzero exit, malformed result, and permission denial despite positive success JSON\n  ---\n  duration_ms: 3.457365\n  type: 'test'\n  ...\n1..9\n# tests 9\n# suites 0\n# pass 9\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 158.895398\n",
+      "elapsedMs": 295,
+      "checkedAt": "2026-10-21T04:22:36.431Z"
+    }
+  ],
+  "changes": [
+    {
+      "file": "src/runtime.js",
+      "before": "d9e6a5c5df061103f68fcfb1bc37ae56ea19bfd6aea9bde3ac11c1458a72e9fc",
+      "after": "3a33d0d1e2f432e4f553d11a57fbc652301f756d9c987fc24e7654f57ff4f18b"
+    }
+  ],
+  "usage": {
+    "input_tokens": 8,
+    "cache_creation_input_tokens": 9700,
+    "cache_read_input_tokens": 38937,
+    "output_tokens": 1630,
+    "output_tokens_details": {
+      "thinking_tokens": 217
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 9700,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 666,
+        "cache_read_input_tokens": 12814,
+        "cache_creation_input_tokens": 475,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 475
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "costUsd": 0.1180194,
+  "report": "I changed `parseOutput` in `src/runtime.js` so that any non-empty `error` field makes the result invalid, for both Claude and agy. I haven't run the tests: I have no shell in this session, so `node --test test/runtime-denial.test.js` (and the rest of the suite) still needs an independent run.\n\n**What changed** (`src/runtime.js:36-38`, the only file modified):\n```js\n// An explicit nonempty error field overrides any success marker.\nconst hasError = obj.error != null && obj.error !== false && String(obj.error).trim().length > 0;\nconst success = !hasError && (adapter === 'agy' ? obj.status === 'SUCCESS' && text.trim().length > 0 : obj.type === 'result' && obj.subtype === 'success' && !obj.is_error && text.trim().length > 0);\n```\n\n**How it meets the acceptance criteria (by reading the code, not by running it):**\n- **Explicit error fails:** The two cases in the regression test are agy `{status:'SUCCESS',response:'Done',error:'Authentication failed'}` and Claude `{type:'result',subtype:'success',result:'Done',error:'Access denied'}`. For both, `hasError` is true, so `valid` is false. The returned `error` is the runtime's own message, because the existing `String(obj.error || …)` expression puts `obj.error` first.\n- **Real success still passes:** An output with no `error` field, or with `error` set to `null`, `false`, `''` or only whitespace, gives `hasError === false`. It then goes through the same success checks as before.\n\nOne thing to know: a non-string error such as an object (`{}`) also counts as an error, because it doesn't become an empty string. I chose that deliberately, since any error value the runtime sends explicitly should fail verification.\n\nNothing was committed and no external tools were called.",
+  "elapsedMs": 20536,
+  "error": null,
+  "exitCode": 0,
+  "finishedAt": "2026-10-21T04:13:31.222Z",
+  "rebases": [
+    {
+      "from": "556b9f69c39a1b1dd6fb9cc71d1b9ddfe5798b47",
+      "to": "556b9f69c39a1b1dd6fb9cc71d1b9ddfe5798b47",
+      "checkedAt": "2026-10-21T04:22:35.833Z",
+      "evidence": []
+    }
+  ],
+  "integrationEvidence": [
+    {
+      "command": [
+        "/usr/bin/node",
+        "--max-old-space-size=256",
+        "--test",
+        "--test-timeout=20000",
+        "test/runtime-denial.test.js"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "cancelled": false,
+      "output": "TAP version 13\n# Subtest: explicit runtime errors override a success marker and plausible prose\nok 1 - explicit runtime errors override a success marker and plausible prose\n  ---\n  duration_ms: 1.493972\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 127.247315\n",
+      "elapsedMs": 259,
+      "checkedAt": "2026-10-21T04:22:36.767Z"
+    },
+    {
+      "command": [
+        "/usr/bin/node",
+        "--max-old-space-size=256",
+        "--test",
+        "--test-timeout=20000",
+        "test/runtime.test.js"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "cancelled": false,
+      "output": "TAP version 13\n# Subtest: adapter arguments require an explicit safe provider ID and bounded nonempty prompt\nok 1 - adapter arguments require an explicit safe provider ID and bounded nonempty prompt\n  ---\n  duration_ms: 2.707623\n  type: 'test'\n  ...\n# Subtest: agy receives the entire prompt as one literal argv value and rejects writes\nok 2 - agy receives the entire prompt as one literal argv value and rejects writes\n  ---\n  duration_ms: 0.274931\n  type: 'test'\n  ...\n# Subtest: Claude keeps prompt out of flags, isolates MCP, and limits write tool scope\nok 3 - Claude keeps prompt out of flags, isolates MCP, and limits write tool scope\n  ---\n  duration_ms: 0.138404\n  type: 'test'\n  ...\n# Subtest: malformed JSON and nonobject JSON always fail without throwing\nok 4 - malformed JSON and nonobject JSON always fail without throwing\n  ---\n  duration_ms: 0.417516\n  type: 'test'\n  ...\n# Subtest: runtime error variants and missing output cannot become successful reports\nok 5 - runtime error variants and missing output cannot become successful reports\n  ---\n  duration_ms: 0.307548\n  type: 'test'\n  ...\n# Subtest: Claude success preserves machine model, usage, permission denials and cost evidence\nok 6 - Claude success preserves machine model, usage, permission denials and cost evidence\n  ---\n  duration_ms: 0.203976\n  type: 'test'\n  ...\n# Subtest: agy success keeps self-identified prose model unknown and bounds model output\nok 7 - agy success keeps self-identified prose model unknown and bounds model output\n  ---\n  duration_ms: 0.508729\n  type: 'test'\n  ...\n# Subtest: runCli sends Claude prompt verbatim on stdin, uses shell false and never claims verified\nok 8 - runCli sends Claude prompt verbatim on stdin, uses shell false and never claims verified\n  ---\n  duration_ms: 3.229551\n  type: 'test'\n  ...\n# Subtest: runCli rejects nonzero exit, malformed result, and permission denial despite positive success JSON\nok 9 - runCli rejects nonzero exit, malformed result, and permission denial despite positive success JSON\n  ---\n  duration_ms: 2.363783\n  type: 'test'\n  ...\n1..9\n# tests 9\n# suites 0\n# pass 9\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 150.640189\n",
+      "elapsedMs": 262,
+      "checkedAt": "2026-10-21T04:22:37.039Z"
+    }
+  ],
+  "integratedAt": "2026-10-21T04:22:37.059Z",
+  "task": {
+    "goal": "Fix src/runtime.js parseOutput so any explicit nonempty error field overrides success markers, for both Claude and agy. A runtime that returns success plus an error must fail verification. Make the smallest change in src/runtime.js only. Do not alter tests, do not commit or call external tools. The prewritten regression test test/runtime-denial.test.js must pass.",
+    "purpose": "execute",
+    "topology": "local",
+    "management": "managed",
+    "acceptance": [
+      "Explicit runtime error never parses as valid even with SUCCESS/success and text",
+      "Existing actual success output remains valid"
+    ],
+    "workspace": "/home/theo/workspace/agent-meeting",
+    "writePaths": [
+      "src/runtime.js"
+    ],
+    "testFiles": [
+      "test/runtime-denial.test.js",
+      "test/runtime.test.js"
+    ],
+    "sources": [
+      "src/runtime.js",
+      "test/runtime-denial.test.js"
+    ],
+    "facts": [
+      "Existing parser checks positive success but ignores error field"
+    ],
+    "unknowns": [
+      "Whether Claude auto permits file edits within sandbox"
+    ],
+    "kind": "small-coding",
+    "dependencies": [],
+    "id": "767fa0f4-f77a-4ab5-b65a-475a969f844f",
+    "requirementRevision": 1,
+    "status": "done",
+    "createdAt": "2026-10-21T04:13:10.607Z"
+  },
+  "baseline": {
+    "command": [
+      "node",
+      "--test",
+      "test/runtime-denial.test.js"
+    ],
+    "exitCode": 1,
+    "evidence": "/tmp/am-b3-baseline.log"
+  },
+  "sandbox": {
+    "boundary": "filesystem-write",
+    "implementation": "src/execution-sandbox.js",
+    "readIsolation": false,
+    "networkIsolation": false
+  }
+}

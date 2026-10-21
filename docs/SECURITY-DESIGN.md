@@ -261,3 +261,11 @@ Hỏi người dùng trước khi chạy Claude Code CLI hay cài/gỡ MCP; sao 
 
 [auto-mode-config]: https://code.claude.com/docs/en/auto-mode-config
 [permission-modes]: https://code.claude.com/docs/en/permission-modes
+
+## Lớp routing/workspace thử nghiệm, 2026-10-21
+
+Lớp mới giữ nguyên giao thức hội thoại/allowlist 3.5. Tool tra cứu riêng không nhận quyền execution. Admin/task APIs dùng host capability và chỉ local; worker dùng Bearer token được hash, ràng buộc host/workspace/base/snapshot. Config và run không ghi vào package. Kết quả CLI là reported, chỉ kiểm chứng bằng test/evidence rồi mới tích hợp một file; test source tích hợp có rollback khi thất bại và không đè thay đổi đồng thời của người dùng. Trường hợp policy đòi independent review bị chặn auto-integrate khi chưa có reviewer acceptance workflow.
+
+Bwrap root read-only + workspace/scratch được ghi; credential/settings hiện hữu giữ read-only. Biên này **không cách ly đọc/mạng**; không gọi nó là sandbox secret đầy đủ. Caller spawn detached và stdio pipe; không dùng bwrap new-session vì thoát process group làm cancel không dừng cây tiến trình. Verification và integration có controller, group TERM→KILL, output/timeout/memory cap. NODE_TEST_CONTEXT/NODE_OPTIONS/NODE_PATH không được truyền vào subprocess Node test để tránh xanh giả/preload.
+
+Remote assignment claim chỉ trả context cần thiết, không lộ toàn catalog/snapshot cấu hình. Lease 60 giây, hard deadline 180 giây; snapshot gồm file chưa commit. Worker receipt được ghi trước thực thi; không tự retry generation chưa chắc chắn. Report/artifact từ worker chưa được coi là verified. Xem hồ sơ tiến độ để biết cửa nghiệm thu còn thiếu; không nâng các khả năng đề xuất trong VISION thành tính năng đã có.

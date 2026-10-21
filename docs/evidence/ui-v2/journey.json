@@ -1,0 +1,2081 @@
+{
+  "checks": [
+    "empty acceptance: inline error, aria-invalid and focused summary",
+    "draft retained through nav/Back/reload",
+    "admin return preserves plan/hash/draft",
+    "save same UUID/revision+1; no dispatch",
+    "missing execution profile reports error and keeps task",
+    "running state: cancel action; cancelled state permits retry",
+    "failed independent test stays failed; no integrate action, evidence retained",
+    "report→verified→integrated; test evidence on source checkout",
+    "same task/source UUID, execution done distinct from manual self-report todo",
+    "source deep link opens conversation and active nav"
+  ],
+  "task": {
+    "id": "meeting-e6fd48c1410a83d882fc3b541496d8f8",
+    "context": "Sửa phép cộng trong sum.js. Giữ phạm vi một tệp và kiểm chứng 2 + 3 = 5.",
+    "goal": "Rà soát điều hướng Hội thoại tới Kế hoạch và bảo toàn bản nháp khi quay lại từ Quản trị",
+    "purpose": "execute",
+    "topology": "local",
+    "management": "managed",
+    "acceptance": [
+      "sum(2,3) trả về 5"
+    ],
+    "dependencies": [],
+    "writePaths": [
+      "sum.js"
+    ],
+    "testFiles": [
+      "test/sum.test.js"
+    ],
+    "sources": [],
+    "facts": [],
+    "unknowns": [],
+    "requirementRevision": 2,
+    "status": "done",
+    "createdAt": "2026-10-21T09:33:55.249Z",
+    "origin": {
+      "kind": "meeting-action",
+      "number": 2,
+      "timestamp": 1792575235249,
+      "roomCreatedAt": 1792570815393,
+      "messageIndex": 10,
+      "message": "VIỆC: Nguyễn Minh Anh — kiểm định hành trình | Rà soát điều hướng Hội thoại tới Kế hoạch và bảo toàn bản nháp khi quay lại từ Quản trị | hôm nay",
+      "context": "Sửa phép cộng trong sum.js. Giữ phạm vi một tệp và kiểm chứng 2 + 3 = 5."
+    },
+    "owner": "Nguyễn Minh Anh — kiểm định hành trình",
+    "sourceCurrent": true,
+    "reportedProgress": {
+      "status": "todo",
+      "note": "",
+      "updatedAt": null,
+      "updatedBy": null
+    },
+    "workspace": "/tmp/am-ui-reform-preview/v2-source",
+    "baseRevision": "4d7298d6d5097b7990d7f549d44330d76066f08e"
+  },
+  "runs": [
+    {
+      "id": "11cfe90f-be12-4f8e-a18b-8343d45097ca",
+      "taskId": "meeting-e6fd48c1410a83d882fc3b541496d8f8",
+      "requirementSnapshot": {
+        "id": "meeting-e6fd48c1410a83d882fc3b541496d8f8",
+        "context": "Sửa phép cộng trong sum.js. Giữ phạm vi một tệp và kiểm chứng 2 + 3 = 5.",
+        "goal": "Rà soát điều hướng Hội thoại tới Kế hoạch và bảo toàn bản nháp khi quay lại từ Quản trị",
+        "purpose": "execute",
+        "topology": "local",
+        "management": "managed",
+        "acceptance": [
+          "sum(2,3) trả về 5"
+        ],
+        "dependencies": [],
+        "writePaths": [
+          "sum.js"
+        ],
+        "testFiles": [
+          "test/sum.test.js"
+        ],
+        "sources": [],
+        "facts": [],
+        "unknowns": [],
+        "requirementRevision": 2,
+        "status": "ready",
+        "createdAt": "2026-10-21T09:33:55.249Z",
+        "origin": {
+          "kind": "meeting-action",
+          "number": 2,
+          "timestamp": 1792575235249,
+          "roomCreatedAt": 1792570815393,
+          "messageIndex": 10,
+          "message": "VIỆC: Nguyễn Minh Anh — kiểm định hành trình | Rà soát điều hướng Hội thoại tới Kế hoạch và bảo toàn bản nháp khi quay lại từ Quản trị | hôm nay",
+          "context": "Sửa phép cộng trong sum.js. Giữ phạm vi một tệp và kiểm chứng 2 + 3 = 5."
+        },
+        "owner": "Nguyễn Minh Anh — kiểm định hành trình",
+        "sourceCurrent": true,
+        "reportedProgress": {
+          "status": "todo",
+          "note": "",
+          "updatedAt": null,
+          "updatedBy": null
+        },
+        "workspace": "/tmp/am-ui-reform-preview/v2-source",
+        "baseRevision": "4d7298d6d5097b7990d7f549d44330d76066f08e"
+      },
+      "requirementRevision": 2,
+      "status": "cancelled",
+      "source": "/tmp/am-ui-reform-preview/v2-source",
+      "workspace": "/tmp/am-ui-reform-preview/work/2d5e615cd3cc624c5b8f5d97a7cc5f410de0108bded4713fcf324e2e7b081657/runs/11cfe90f-be12-4f8e-a18b-8343d45097ca/workspace",
+      "baseRevision": "4d7298d6d5097b7990d7f549d44330d76066f08e",
+      "configRevision": 2,
+      "configSnapshot": {
+        "schema": "agent-meeting/routing@1",
+        "revision": 2,
+        "models": [
+          {
+            "id": "flash",
+            "label": "Gemini Flash",
+            "provider": "google",
+            "providerModelId": null,
+            "enabled": false,
+            "verification": "unverified",
+            "capabilities": [
+              "large-context",
+              "extraction",
+              "multimodal",
+              "small-coding"
+            ],
+            "roles": [
+              "scout",
+              "analyst"
+            ],
+            "costTier": "low",
+            "modalities": [
+              "text",
+              "image",
+              "video",
+              "audio",
+              "pdf"
+            ],
+            "strengths": [
+              "Application logs, server logs, stack traces, error reports.",
+              "Tài liệu kỹ thuật, PDF, specification, API documentation.",
+              "Issue descriptions, pull request descriptions, release notes.",
+              "Repository metadata và nội dung file được cung cấp.",
+              "Mô tả ảnh chụp màn hình, giao diện UI và thông báo lỗi.",
+              "Phân tích ảnh trước và sau khi thay đổi giao diện.",
+              "Đọc nội dung tài liệu có hình ảnh, bảng biểu.",
+              "Phân tích video, diễn biến theo timestamp và các frame quan trọng.",
+              "Requirements, constraints, entities, API endpoints.",
+              "Lỗi lặp lại, sự kiện bất thường, chuỗi sự kiện trong log.",
+              "Danh sách file, module, dependency có liên quan.",
+              "Những thông tin còn thiếu để giải quyết vấn đề.",
+              "Loại bỏ nội dung trùng lặp nhưng giữ lại các sự kiện riêng biệt.",
+              "Phân nhóm theo chủ đề, thời gian, thành phần hoặc mức độ nghiêm trọng.",
+              "Tạo bản tóm tắt có trích dẫn nguồn.",
+              "Đề xuất các vị trí cần đọc sâu hơn.",
+              "Hướng đến tốc độ và hiệu quả chi phí.",
+              "Hỗ trợ text, image, video, audio và PDF.",
+              "Context window lớn, thuận lợi cho việc xử lý tài liệu và dữ liệu dài.",
+              "Có thể làm coding và agent workflow, không chỉ tóm tắt nội dung."
+            ],
+            "limitations": [
+              "Quyết định kiến trúc có ảnh hưởng rộng khi chưa đủ bằng chứng.",
+              "Kết luận root cause chỉ dựa trên bản tóm tắt.",
+              "Thực hiện một thay đổi lớn trên repository khi chưa nắm dependency và yêu cầu kiểm thử.",
+              "Ra quyết định quan trọng dựa trên phân tích hình ảnh chưa được đối chiếu bằng dữ liệu khác."
+            ],
+            "outputContract": [
+              "Facts: thông tin quan sát được trực tiếp.",
+              "Evidence: trích dẫn, nguồn và vị trí của thông tin.",
+              "Hypotheses: giả thuyết, không trình bày như sự thật.",
+              "Unknowns: thông tin còn thiếu.",
+              "Next steps: bước điều tra tiếp theo."
+            ],
+            "source": {
+              "kind": "user-supplied",
+              "path": "src/defaults/routing-source.md",
+              "lines": [
+                19,
+                82
+              ],
+              "checkedAt": null,
+              "confidence": "hypothesis",
+              "references": [
+                "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash"
+              ]
+            }
+          },
+          {
+            "id": "astra",
+            "label": "GPT Astra",
+            "provider": "openai",
+            "providerModelId": null,
+            "enabled": false,
+            "verification": "unverified",
+            "capabilities": [
+              "coding",
+              "execution",
+              "coordination",
+              "verification"
+            ],
+            "roles": [
+              "executor",
+              "coordinator"
+            ],
+            "costTier": "high",
+            "modalities": [
+              "text"
+            ],
+            "strengths": [
+              "Đọc codebase và xác định vùng cần thay đổi.",
+              "Triển khai feature liên quan nhiều file.",
+              "Chạy command, build, test, linter và kiểm tra kết quả.",
+              "Debug theo vòng lặp quan sát, sửa đổi và xác minh.",
+              "Browser automation và computer use khi tool tương ứng được cấp.",
+              "Truy cập tài liệu trực tuyến, đối chiếu API và kiểm tra giao diện.",
+              "Thao tác trên môi trường thực thi hoặc sandbox.",
+              "Thu thập kết quả từ các tool và chuyển thành hành động tiếp theo.",
+              "Chia nhiệm vụ lớn thành các subtask độc lập.",
+              "Xác định thứ tự phụ thuộc giữa các subtask.",
+              "Tổng hợp kết quả từ các agent khác.",
+              "Phát hiện kết quả mâu thuẫn và yêu cầu xác minh.",
+              "Lỗi chỉ tái hiện được khi chạy ứng dụng.",
+              "Kiểm tra một quy trình end-to-end.",
+              "Sửa lỗi cần nhiều vòng chạy thử.",
+              "Xác minh hành vi thực tế khác với mô tả trong tài liệu.",
+              "Kết hợp các phần việc của nhiều agent.",
+              "Kiểm tra tính nhất quán giữa các module.",
+              "Chạy các kiểm thử thích hợp.",
+              "Tổng hợp kết quả thực thi và những vấn đề chưa giải quyết.",
+              "Reasoning, software engineering, browser/computer use và công việc nhiều bước.",
+              "Kết hợp model với môi trường thực thi, tool và vòng lặp phản hồi.",
+              "Harness Codex hỗ trợ quản lý trạng thái, thu thập context, sandbox, approval, context compaction và phối hợp subagent tùy cấu hình."
+            ],
+            "limitations": [
+              "Xử lý hàng loạt nội dung đơn giản nếu Flash đáp ứng đủ chất lượng.",
+              "Đưa ra kết luận rằng code hoạt động chỉ vì đã viết xong code.",
+              "Tiến hành thay đổi nguy hiểm hoặc không thể đảo ngược mà không được cho phép.",
+              "Tự nhận đã chạy test, browser hoặc shell nếu không thực sự có kết quả tương ứng."
+            ],
+            "outputContract": [
+              "Files changed.",
+              "Các thay đổi chính và lý do.",
+              "Commands thực sự đã chạy.",
+              "Test results thực tế.",
+              "Các vấn đề còn tồn tại.",
+              "Những giả định hoặc điểm cần con người xác nhận."
+            ],
+            "source": {
+              "kind": "user-supplied",
+              "path": "src/defaults/routing-source.md",
+              "lines": [
+                83,
+                151
+              ],
+              "checkedAt": null,
+              "confidence": "hypothesis",
+              "references": [
+                "https://developers.openai.com/api/docs/models/gpt-6-astra",
+                "https://developers.openai.com/api/docs/guides/agents-api/overview"
+              ]
+            }
+          },
+          {
+            "id": "opus",
+            "label": "Claude Opus",
+            "provider": "anthropic",
+            "providerModelId": "fixture-model",
+            "enabled": true,
+            "verification": "verified",
+            "capabilities": [
+              "deep-reasoning",
+              "investigation",
+              "refactoring",
+              "review"
+            ],
+            "roles": [
+              "investigator",
+              "reviewer"
+            ],
+            "costTier": "high",
+            "modalities": [
+              "text"
+            ],
+            "strengths": [
+              "Root-cause analysis.",
+              "Bug có nhiều nguyên nhân tiềm năng.",
+              "Race conditions, state inconsistency và lỗi phụ thuộc thứ tự.",
+              "Các vấn đề xuyên nhiều module hoặc nhiều tầng kiến trúc.",
+              "Lần theo luồng dữ liệu xuyên qua các module.",
+              "Phân tích call graph và dependency.",
+              "Tìm nguyên nhân gốc trước khi đề xuất sửa code.",
+              "Đánh giá ảnh hưởng đến các thành phần liên quan.",
+              "Refactoring nhiều file.",
+              "Tách module hoặc trách nhiệm.",
+              "Thay đổi state management, API integration hoặc business logic.",
+              "Đánh giá backward compatibility và regression risk.",
+              "Review implementation do Astra hoặc agent khác thực hiện.",
+              "Tìm bug logic, edge cases và thay đổi ngoài phạm vi.",
+              "Kiểm tra requirement coverage.",
+              "Đối chiếu implementation với specification và bằng chứng.",
+              "So sánh các phương án kiến trúc.",
+              "Xác định trade-off.",
+              "Đề xuất thứ tự triển khai.",
+              "Xác định các giả định cần kiểm chứng trước khi sửa.",
+              "Thay đổi lớn trong repository.",
+              "Debug cần nhiều vòng đọc và xác minh.",
+              "Công việc cần phối hợp các subagent khi lợi ích lớn hơn chi phí điều phối.",
+              "Coding agent cho các tác vụ dài và codebase lớn.",
+              "Phân tích nguyên nhân trước khi sửa.",
+              "Refactoring, code review và reasoning qua nhiều bước.",
+              "Có thể phối hợp subagent và duy trì workflow dài hạn thông qua các tính năng của môi trường phù hợp."
+            ],
+            "limitations": [
+              "Mọi tác vụ đọc dữ liệu đơn giản.",
+              "Công việc trích xuất hoặc phân loại số lượng lớn nếu model rẻ hơn đáp ứng đủ yêu cầu.",
+              "Những thay đổi có thể được giải quyết bằng một thao tác xác định và kiểm chứng trực tiếp.",
+              "Công việc được cho là đã hoàn thành chỉ dựa trên lời khẳng định của agent, không có bằng chứng thực thi."
+            ],
+            "outputContract": [
+              "Root cause đã xác minh.",
+              "Root cause còn là giả thuyết.",
+              "Bằng chứng ủng hộ và phản bác.",
+              "Những file và module có liên quan.",
+              "Phương án sửa tối thiểu.",
+              "Regression risk và kiểm thử cần thực hiện."
+            ],
+            "source": {
+              "kind": "user-supplied",
+              "path": "src/defaults/routing-source.md",
+              "lines": [
+                152,
+                225
+              ],
+              "checkedAt": "2026-10-21T08:20:15.389Z",
+              "confidence": "user-configured",
+              "references": [
+                "https://www.anthropic.com/claude/opus",
+                "https://docs.anthropic.com/en/docs/claude-code/getting-started"
+              ]
+            }
+          }
+        ],
+        "runtimes": [
+          {
+            "id": "gemini-cli",
+            "label": "Gemini CLI",
+            "capabilities": [
+              "text-input"
+            ],
+            "availability": "unknown",
+            "source": {
+              "kind": "user-supplied",
+              "checkedAt": null,
+              "confidence": "hypothesis"
+            }
+          },
+          {
+            "id": "codex",
+            "label": "Codex",
+            "capabilities": [
+              "text-input",
+              "shell",
+              "browser",
+              "sandbox",
+              "resume",
+              "cancel"
+            ],
+            "availability": "unknown",
+            "source": {
+              "kind": "user-supplied",
+              "checkedAt": null,
+              "confidence": "hypothesis"
+            }
+          },
+          {
+            "id": "claude-code",
+            "label": "Claude Code",
+            "capabilities": [
+              "text-input",
+              "shell",
+              "subagents",
+              "resume",
+              "cancel"
+            ],
+            "availability": "unknown",
+            "source": {
+              "kind": "user-supplied",
+              "checkedAt": null,
+              "confidence": "hypothesis"
+            }
+          },
+          {
+            "id": "agy",
+            "label": "Antigravity CLI (agy)",
+            "capabilities": [
+              "extraction",
+              "read-only-plan"
+            ],
+            "source": {
+              "kind": "implementation",
+              "path": "src/runtime.js",
+              "checkedAt": "2026-10-21T00:00:00Z",
+              "confidence": "documented",
+              "references": [
+                "docs/evidence/routing-implementation/B2-SCOUT.json"
+              ]
+            },
+            "resume": false,
+            "cancel": true,
+            "write": false
+          }
+        ],
+        "profiles": [
+          {
+            "id": "flash-gemini",
+            "label": "Flash / Gemini CLI",
+            "modelId": "flash",
+            "runtimeId": "gemini-cli",
+            "enabled": false,
+            "roles": [
+              "scout",
+              "analyst"
+            ]
+          },
+          {
+            "id": "astra-codex",
+            "label": "Astra / Codex",
+            "modelId": "astra",
+            "runtimeId": "codex",
+            "enabled": false,
+            "roles": [
+              "executor",
+              "coordinator"
+            ]
+          },
+          {
+            "id": "opus-claude",
+            "label": "Opus / Claude Code",
+            "modelId": "opus",
+            "runtimeId": "claude-code",
+            "enabled": true,
+            "roles": [
+              "investigator",
+              "reviewer"
+            ]
+          }
+        ],
+        "policy": {
+          "leadProfileId": "astra-codex",
+          "maxCandidates": 3,
+          "allowDelegation": true,
+          "budget": {
+            "maxCostTier": null
+          },
+          "reviewRequiredFor": [
+            "architecture",
+            "important-data",
+            "unreproduced",
+            "large-scope",
+            "conflicting-results",
+            "cannot-verify",
+            "high-error-cost"
+          ],
+          "retainContext": true,
+          "noSilentFallback": true,
+          "requireEvidence": true,
+          "noConcurrentOverlappingWrites": true,
+          "principles": [],
+          "matrix": [
+            "| Loại công việc | Agent chính | Agent hỗ trợ khi cần |",
+            "| Đọc khối lượng lớn logs | Gemini Flash | Claude Opus để điều tra sâu |",
+            "| Phân tích PDF, tài liệu dài | Gemini Flash | Astra hoặc Opus để đánh giá kỹ thuật |",
+            "| Mô tả screenshot, UI, video | Gemini Flash | Astra để thao tác browser, kiểm chứng UI |",
+            "| Trích xuất requirements và dữ liệu | Gemini Flash | Opus để phân tích mâu thuẫn quan trọng |",
+            "| Coding feature thông thường | Astra + Codex | Gemini Flash để chuẩn bị context |",
+            "| Chạy build, test, sửa lỗi qua nhiều vòng | Astra + Codex | Opus nếu chưa tìm được nguyên nhân |",
+            "| Debug xuyên nhiều module | Claude Opus + Claude Code | Gemini Flash thu thập bằng chứng, Astra tái hiện lỗi |",
+            "| Refactoring phạm vi lớn | Claude Opus + Claude Code | Astra chạy kiểm thử và xác minh |",
+            "| Review code độc lập | Claude Opus | Astra hoặc môi trường CI để thực thi test |",
+            "| Browser/computer-use workflow | Astra + Codex | Gemini Flash phân tích ảnh và kết quả |",
+            "| Tổng hợp công việc nhiều agent | Astra nếu được giao vai trò điều phối | Opus review các quyết định rủi ro cao |"
+          ],
+          "workflow": [
+            "analyze-input",
+            "filter-required-capabilities-and-access",
+            "retain-direct-or-rank",
+            "handoff-with-original-evidence",
+            "independent-review-when-required",
+            "verify-acceptance-before-complete"
+          ],
+          "completionStates": [
+            "verified",
+            "implemented-unverified",
+            "blocked",
+            "human-decision"
+          ],
+          "qualityRules": [
+            "1. Không xem model nào là tốt nhất cho mọi nhiệm vụ.",
+            "2. Không nhầm năng lực model với năng lực của harness.",
+            "3. Không giả định harness có tool hoặc quyền chưa được cấp.",
+            "4. Không coi bản tóm tắt thay thế hoàn toàn dữ liệu gốc.",
+            "5. Không coi output của agent là bằng chứng rằng thao tác đã thành công.",
+            "6. Không để nhiều agent cùng sửa một file hoặc một vùng code nếu chưa có cơ chế phối hợp rõ ràng.",
+            "7. Khi có thể, dùng test, log, diff và kết quả tool làm bằng chứng.",
+            "8. Tối ưu tổng chi phí để hoàn thành nhiệm vụ, không chỉ chi phí của một lượt gọi model.",
+            "9. Nếu có model hoặc công cụ mới, đánh giá lại năng lực theo dữ liệu thực tế và tài liệu cập nhật.",
+            "10. Nếu không đủ bằng chứng để chọn, chạy một thử nghiệm nhỏ có tiêu chí nghiệm thu rõ ràng thay vì phỏng đoán."
+          ],
+          "orchestratorChecklist": [
+            "Với mỗi nhiệm vụ mới, hãy trả lời nội bộ các câu hỏi:",
+            "",
+            "1. Nhiệm vụ cần đọc dữ liệu, suy luận, thực thi hay xác minh?",
+            "2. Agent nào đáp ứng tốt nhất yêu cầu cốt lõi?",
+            "3. Có cần agent thứ hai không? Cụ thể nó bổ sung năng lực nào?",
+            "4. Cần truyền dữ liệu và bằng chứng nào?",
+            "5. Kết quả được xác minh bằng cách nào?",
+            "6. Khi nào phải dừng, chuyển giao hoặc xin quyết định từ con người?",
+            "",
+            "Sau đó tạo một kế hoạch thực thi ngắn gọn, phân công agent, nêu rõ đầu ra cần nhận và điều kiện nghiệm thu.",
+            "",
+            "Không cố sử dụng đủ ba agent. Hãy sử dụng đúng agent, đúng nhiệm vụ, đúng thời điểm."
+          ],
+          "objectiveRules": [
+            "Bạn là AI Orchestrator, chịu trách nhiệm phân công công việc cho ba hệ thống AI theo thế mạnh thực tế của từng hệ thống.",
+            "",
+            "Mục tiêu:",
+            "- Chọn agent phù hợp nhất cho từng loại nhiệm vụ.",
+            "- Tối ưu chất lượng kết quả, chi phí, thời gian và khả năng kiểm chứng.",
+            "- Tận dụng model chi phí thấp cho những việc không cần reasoning cao cấp.",
+            "- Dành model mạnh cho nhiệm vụ khó, có nhiều phụ thuộc hoặc cần quyết định quan trọng.",
+            "- Chỉ phối hợp nhiều agent khi có lợi ích rõ ràng. Không bắt buộc nhiệm vụ nào cũng phải đi qua cả ba agent.",
+            "- Bảo toàn bằng chứng gốc khi truyền thông tin giữa các agent, tránh lỗi do tóm tắt hoặc diễn giải sai.",
+            "",
+            "Không phân công dựa trên nhãn \"model mạnh nhất\". Phân công dựa trên bản chất nhiệm vụ, năng lực cần thiết, công cụ thực sự khả dụng và chi phí thực hiện."
+          ],
+          "handoffRules": [
+            "### Bước 1: Phân tích đầu vào",
+            "",
+            "Trước khi gọi agent, xác định:",
+            "- Mục tiêu cuối cùng.",
+            "- Dữ liệu sẵn có.",
+            "- Những công cụ cần sử dụng.",
+            "- Mức độ khó và hậu quả nếu sai.",
+            "- Điều kiện nghiệm thu.",
+            "- Các phần việc độc lập và phụ thuộc nhau.",
+            "",
+            "Không phân công chỉ dựa trên mô tả ngắn nếu nhiệm vụ thực tế cần kiểm tra repository hoặc dữ liệu nguồn.",
+            "",
+            "### Bước 2: Chọn agent theo năng lực cần thiết",
+            "",
+            "- Cần đọc, lọc và cấu trúc hóa dữ liệu lớn hoặc đa phương thức: ưu tiên Gemini Flash.",
+            "- Cần thực thi nhiều bước, thao tác tool, viết code và xác minh trong môi trường chạy: ưu tiên Astra + Codex.",
+            "- Cần suy luận sâu về codebase, điều tra nguyên nhân hoặc review khó: ưu tiên Opus + Claude Code.",
+            "",
+            "Nếu một agent có thể xử lý trọn nhiệm vụ với chất lượng tốt và chi phí hợp lý, không cần chuyển qua agent khác.",
+            "",
+            "### Bước 3: Truyền giao nhiệm vụ",
+            "",
+            "Mỗi lần handoff phải truyền:",
+            "- Mục tiêu và phạm vi.",
+            "- Dữ liệu đầu vào hoặc vị trí nguồn.",
+            "- Facts và bằng chứng đã thu thập.",
+            "- Những giả thuyết chưa xác nhận.",
+            "- Những gì đã thực hiện.",
+            "- Kết quả kiểm thử thực tế.",
+            "- Những câu hỏi cần agent tiếp theo trả lời.",
+            "",
+            "Không truyền riêng một bản tóm tắt thiếu trích dẫn khi agent tiếp theo cần ra quyết định kỹ thuật.",
+            "",
+            "### Bước 4: Xác minh độc lập khi cần",
+            "",
+            "Yêu cầu agent thứ hai kiểm tra khi:",
+            "- Quyết định ảnh hưởng đến kiến trúc hoặc dữ liệu quan trọng.",
+            "- Lỗi chưa được tái hiện.",
+            "- Thay đổi phạm vi lớn.",
+            "- Hai agent có kết luận mâu thuẫn.",
+            "- Agent thực thi không có khả năng kiểm chứng kết quả.",
+            "- Chi phí của một sai sót lớn hơn chi phí review.",
+            "",
+            "Không yêu cầu hai agent độc lập làm cùng một việc nhỏ nếu không có lý do rõ ràng.",
+            "",
+            "### Bước 5: Tổng kết",
+            "",
+            "Chỉ tuyên bố hoàn thành khi điều kiện nghiệm thu được đáp ứng.",
+            "",
+            "Phân biệt rõ:",
+            "- Hoàn thành và đã xác minh.",
+            "- Đã triển khai nhưng chưa xác minh đầy đủ.",
+            "- Chưa hoàn thành do thiếu dữ liệu, quyền truy cập hoặc công cụ.",
+            "- Cần quyết định của con người."
+          ]
+        },
+        "handoff": {
+          "requiredFields": [
+            "objective",
+            "scope",
+            "sources",
+            "facts",
+            "evidence",
+            "hypotheses",
+            "unknowns",
+            "actions",
+            "testResults",
+            "questions",
+            "acceptanceCriteria"
+          ],
+          "preserveOriginalEvidence": true
+        },
+        "source": {
+          "path": "src/defaults/routing-source.md",
+          "sha256": "2111f5d95240131fcfcdbc90135d895cb4bbcde6023205c72d737516c0a8ace5",
+          "status": "user-supplied-unverified",
+          "checkedAt": null
+        }
+      },
+      "decision": {
+        "schema": "agent-meeting/routing@1",
+        "revision": 2,
+        "outcome": "candidates",
+        "candidates": [
+          {
+            "profileId": "opus-claude",
+            "modelId": "opus",
+            "providerModelId": "fixture-model",
+            "runtimeId": "claude-code",
+            "score": 1,
+            "reasons": [
+              "eligible"
+            ],
+            "checkedAt": "2026-10-21T09:41:24.970Z",
+            "reviewRequired": false,
+            "claimConfidence": "user-configured"
+          }
+        ],
+        "totalEligible": 1,
+        "truncated": false,
+        "rejected": [
+          {
+            "profileId": "flash-gemini",
+            "reasons": [
+              "disabled",
+              "model-unverified",
+              "selection-locked",
+              "environment-unknown"
+            ]
+          },
+          {
+            "profileId": "astra-codex",
+            "reasons": [
+              "disabled",
+              "model-unverified",
+              "selection-locked",
+              "environment-unknown"
+            ]
+          }
+        ],
+        "unknowns": [
+          {
+            "profileId": "flash-gemini",
+            "fields": [
+              "runtime-access",
+              "quota",
+              "tools",
+              "permissions"
+            ]
+          },
+          {
+            "profileId": "astra-codex",
+            "fields": [
+              "runtime-access",
+              "quota",
+              "tools",
+              "permissions"
+            ]
+          }
+        ],
+        "classificationUnknown": true,
+        "review": {
+          "required": false,
+          "reasons": [],
+          "independent": false
+        },
+        "fallback": "explicit-decision-required"
+      },
+      "profileId": "opus-claude",
+      "adapter": "claude",
+      "requestedModel": "fixture-model",
+      "reportedModel": "fixture-model",
+      "before": {
+        "sum.js": {
+          "sha256": "ee7e835a0b737e5bc8ab512d6d8920bd5f57f264a30ef65687fc28b73507d204",
+          "size": 31
+        },
+        "test/sum.test.js": {
+          "sha256": "391af2b093188b16d235dad9a01df7e5f8e0311932a48bbeaeab3acf6a8142c8",
+          "size": 95
+        }
+      },
+      "startedAt": "2026-10-21T09:41:25.232Z",
+      "evidence": [],
+      "changes": [],
+      "costUsd": null,
+      "report": "Cancelled fixture",
+      "exitCode": null,
+      "finishedAt": "2026-10-21T09:41:25.345Z"
+    },
+    {
+      "id": "b73681fb-bdbc-4575-bb8f-50e676c85f08",
+      "taskId": "meeting-e6fd48c1410a83d882fc3b541496d8f8",
+      "requirementSnapshot": {
+        "id": "meeting-e6fd48c1410a83d882fc3b541496d8f8",
+        "context": "Sửa phép cộng trong sum.js. Giữ phạm vi một tệp và kiểm chứng 2 + 3 = 5.",
+        "goal": "Rà soát điều hướng Hội thoại tới Kế hoạch và bảo toàn bản nháp khi quay lại từ Quản trị",
+        "purpose": "execute",
+        "topology": "local",
+        "management": "managed",
+        "acceptance": [
+          "sum(2,3) trả về 5"
+        ],
+        "dependencies": [],
+        "writePaths": [
+          "sum.js"
+        ],
+        "testFiles": [
+          "test/sum.test.js"
+        ],
+        "sources": [],
+        "facts": [],
+        "unknowns": [],
+        "requirementRevision": 2,
+        "status": "cancelled",
+        "createdAt": "2026-10-21T09:33:55.249Z",
+        "origin": {
+          "kind": "meeting-action",
+          "number": 2,
+          "timestamp": 1792575235249,
+          "roomCreatedAt": 1792570815393,
+          "messageIndex": 10,
+          "message": "VIỆC: Nguyễn Minh Anh — kiểm định hành trình | Rà soát điều hướng Hội thoại tới Kế hoạch và bảo toàn bản nháp khi quay lại từ Quản trị | hôm nay",
+          "context": "Sửa phép cộng trong sum.js. Giữ phạm vi một tệp và kiểm chứng 2 + 3 = 5."
+        },
+        "owner": "Nguyễn Minh Anh — kiểm định hành trình",
+        "sourceCurrent": true,
+        "reportedProgress": {
+          "status": "todo",
+          "note": "",
+          "updatedAt": null,
+          "updatedBy": null
+        },
+        "workspace": "/tmp/am-ui-reform-preview/v2-source",
+        "baseRevision": "4d7298d6d5097b7990d7f549d44330d76066f08e"
+      },
+      "requirementRevision": 2,
+      "status": "failed",
+      "source": "/tmp/am-ui-reform-preview/v2-source",
+      "workspace": "/tmp/am-ui-reform-preview/work/2d5e615cd3cc624c5b8f5d97a7cc5f410de0108bded4713fcf324e2e7b081657/runs/b73681fb-bdbc-4575-bb8f-50e676c85f08/workspace",
+      "baseRevision": "4d7298d6d5097b7990d7f549d44330d76066f08e",
+      "configRevision": 2,
+      "configSnapshot": {
+        "schema": "agent-meeting/routing@1",
+        "revision": 2,
+        "models": [
+          {
+            "id": "flash",
+            "label": "Gemini Flash",
+            "provider": "google",
+            "providerModelId": null,
+            "enabled": false,
+            "verification": "unverified",
+            "capabilities": [
+              "large-context",
+              "extraction",
+              "multimodal",
+              "small-coding"
+            ],
+            "roles": [
+              "scout",
+              "analyst"
+            ],
+            "costTier": "low",
+            "modalities": [
+              "text",
+              "image",
+              "video",
+              "audio",
+              "pdf"
+            ],
+            "strengths": [
+              "Application logs, server logs, stack traces, error reports.",
+              "Tài liệu kỹ thuật, PDF, specification, API documentation.",
+              "Issue descriptions, pull request descriptions, release notes.",
+              "Repository metadata và nội dung file được cung cấp.",
+              "Mô tả ảnh chụp màn hình, giao diện UI và thông báo lỗi.",
+              "Phân tích ảnh trước và sau khi thay đổi giao diện.",
+              "Đọc nội dung tài liệu có hình ảnh, bảng biểu.",
+              "Phân tích video, diễn biến theo timestamp và các frame quan trọng.",
+              "Requirements, constraints, entities, API endpoints.",
+              "Lỗi lặp lại, sự kiện bất thường, chuỗi sự kiện trong log.",
+              "Danh sách file, module, dependency có liên quan.",
+              "Những thông tin còn thiếu để giải quyết vấn đề.",
+              "Loại bỏ nội dung trùng lặp nhưng giữ lại các sự kiện riêng biệt.",
+              "Phân nhóm theo chủ đề, thời gian, thành phần hoặc mức độ nghiêm trọng.",
+              "Tạo bản tóm tắt có trích dẫn nguồn.",
+              "Đề xuất các vị trí cần đọc sâu hơn.",
+              "Hướng đến tốc độ và hiệu quả chi phí.",
+              "Hỗ trợ text, image, video, audio và PDF.",
+              "Context window lớn, thuận lợi cho việc xử lý tài liệu và dữ liệu dài.",
+              "Có thể làm coding và agent workflow, không chỉ tóm tắt nội dung."
+            ],
+            "limitations": [
+              "Quyết định kiến trúc có ảnh hưởng rộng khi chưa đủ bằng chứng.",
+              "Kết luận root cause chỉ dựa trên bản tóm tắt.",
+              "Thực hiện một thay đổi lớn trên repository khi chưa nắm dependency và yêu cầu kiểm thử.",
+              "Ra quyết định quan trọng dựa trên phân tích hình ảnh chưa được đối chiếu bằng dữ liệu khác."
+            ],
+            "outputContract": [
+              "Facts: thông tin quan sát được trực tiếp.",
+              "Evidence: trích dẫn, nguồn và vị trí của thông tin.",
+              "Hypotheses: giả thuyết, không trình bày như sự thật.",
+              "Unknowns: thông tin còn thiếu.",
+              "Next steps: bước điều tra tiếp theo."
+            ],
+            "source": {
+              "kind": "user-supplied",
+              "path": "src/defaults/routing-source.md",
+              "lines": [
+                19,
+                82
+              ],
+              "checkedAt": null,
+              "confidence": "hypothesis",
+              "references": [
+                "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash"
+              ]
+            }
+          },
+          {
+            "id": "astra",
+            "label": "GPT Astra",
+            "provider": "openai",
+            "providerModelId": null,
+            "enabled": false,
+            "verification": "unverified",
+            "capabilities": [
+              "coding",
+              "execution",
+              "coordination",
+              "verification"
+            ],
+            "roles": [
+              "executor",
+              "coordinator"
+            ],
+            "costTier": "high",
+            "modalities": [
+              "text"
+            ],
+            "strengths": [
+              "Đọc codebase và xác định vùng cần thay đổi.",
+              "Triển khai feature liên quan nhiều file.",
+              "Chạy command, build, test, linter và kiểm tra kết quả.",
+              "Debug theo vòng lặp quan sát, sửa đổi và xác minh.",
+              "Browser automation và computer use khi tool tương ứng được cấp.",
+              "Truy cập tài liệu trực tuyến, đối chiếu API và kiểm tra giao diện.",
+              "Thao tác trên môi trường thực thi hoặc sandbox.",
+              "Thu thập kết quả từ các tool và chuyển thành hành động tiếp theo.",
+              "Chia nhiệm vụ lớn thành các subtask độc lập.",
+              "Xác định thứ tự phụ thuộc giữa các subtask.",
+              "Tổng hợp kết quả từ các agent khác.",
+              "Phát hiện kết quả mâu thuẫn và yêu cầu xác minh.",
+              "Lỗi chỉ tái hiện được khi chạy ứng dụng.",
+              "Kiểm tra một quy trình end-to-end.",
+              "Sửa lỗi cần nhiều vòng chạy thử.",
+              "Xác minh hành vi thực tế khác với mô tả trong tài liệu.",
+              "Kết hợp các phần việc của nhiều agent.",
+              "Kiểm tra tính nhất quán giữa các module.",
+              "Chạy các kiểm thử thích hợp.",
+              "Tổng hợp kết quả thực thi và những vấn đề chưa giải quyết.",
+              "Reasoning, software engineering, browser/computer use và công việc nhiều bước.",
+              "Kết hợp model với môi trường thực thi, tool và vòng lặp phản hồi.",
+              "Harness Codex hỗ trợ quản lý trạng thái, thu thập context, sandbox, approval, context compaction và phối hợp subagent tùy cấu hình."
+            ],
+            "limitations": [
+              "Xử lý hàng loạt nội dung đơn giản nếu Flash đáp ứng đủ chất lượng.",
+              "Đưa ra kết luận rằng code hoạt động chỉ vì đã viết xong code.",
+              "Tiến hành thay đổi nguy hiểm hoặc không thể đảo ngược mà không được cho phép.",
+              "Tự nhận đã chạy test, browser hoặc shell nếu không thực sự có kết quả tương ứng."
+            ],
+            "outputContract": [
+              "Files changed.",
+              "Các thay đổi chính và lý do.",
+              "Commands thực sự đã chạy.",
+              "Test results thực tế.",
+              "Các vấn đề còn tồn tại.",
+              "Những giả định hoặc điểm cần con người xác nhận."
+            ],
+            "source": {
+              "kind": "user-supplied",
+              "path": "src/defaults/routing-source.md",
+              "lines": [
+                83,
+                151
+              ],
+              "checkedAt": null,
+              "confidence": "hypothesis",
+              "references": [
+                "https://developers.openai.com/api/docs/models/gpt-6-astra",
+                "https://developers.openai.com/api/docs/guides/agents-api/overview"
+              ]
+            }
+          },
+          {
+            "id": "opus",
+            "label": "Claude Opus",
+            "provider": "anthropic",
+            "providerModelId": "fixture-model",
+            "enabled": true,
+            "verification": "verified",
+            "capabilities": [
+              "deep-reasoning",
+              "investigation",
+              "refactoring",
+              "review"
+            ],
+            "roles": [
+              "investigator",
+              "reviewer"
+            ],
+            "costTier": "high",
+            "modalities": [
+              "text"
+            ],
+            "strengths": [
+              "Root-cause analysis.",
+              "Bug có nhiều nguyên nhân tiềm năng.",
+              "Race conditions, state inconsistency và lỗi phụ thuộc thứ tự.",
+              "Các vấn đề xuyên nhiều module hoặc nhiều tầng kiến trúc.",
+              "Lần theo luồng dữ liệu xuyên qua các module.",
+              "Phân tích call graph và dependency.",
+              "Tìm nguyên nhân gốc trước khi đề xuất sửa code.",
+              "Đánh giá ảnh hưởng đến các thành phần liên quan.",
+              "Refactoring nhiều file.",
+              "Tách module hoặc trách nhiệm.",
+              "Thay đổi state management, API integration hoặc business logic.",
+              "Đánh giá backward compatibility và regression risk.",
+              "Review implementation do Astra hoặc agent khác thực hiện.",
+              "Tìm bug logic, edge cases và thay đổi ngoài phạm vi.",
+              "Kiểm tra requirement coverage.",
+              "Đối chiếu implementation với specification và bằng chứng.",
+              "So sánh các phương án kiến trúc.",
+              "Xác định trade-off.",
+              "Đề xuất thứ tự triển khai.",
+              "Xác định các giả định cần kiểm chứng trước khi sửa.",
+              "Thay đổi lớn trong repository.",
+              "Debug cần nhiều vòng đọc và xác minh.",
+              "Công việc cần phối hợp các subagent khi lợi ích lớn hơn chi phí điều phối.",
+              "Coding agent cho các tác vụ dài và codebase lớn.",
+              "Phân tích nguyên nhân trước khi sửa.",
+              "Refactoring, code review và reasoning qua nhiều bước.",
+              "Có thể phối hợp subagent và duy trì workflow dài hạn thông qua các tính năng của môi trường phù hợp."
+            ],
+            "limitations": [
+              "Mọi tác vụ đọc dữ liệu đơn giản.",
+              "Công việc trích xuất hoặc phân loại số lượng lớn nếu model rẻ hơn đáp ứng đủ yêu cầu.",
+              "Những thay đổi có thể được giải quyết bằng một thao tác xác định và kiểm chứng trực tiếp.",
+              "Công việc được cho là đã hoàn thành chỉ dựa trên lời khẳng định của agent, không có bằng chứng thực thi."
+            ],
+            "outputContract": [
+              "Root cause đã xác minh.",
+              "Root cause còn là giả thuyết.",
+              "Bằng chứng ủng hộ và phản bác.",
+              "Những file và module có liên quan.",
+              "Phương án sửa tối thiểu.",
+              "Regression risk và kiểm thử cần thực hiện."
+            ],
+            "source": {
+              "kind": "user-supplied",
+              "path": "src/defaults/routing-source.md",
+              "lines": [
+                152,
+                225
+              ],
+              "checkedAt": "2026-10-21T08:20:15.389Z",
+              "confidence": "user-configured",
+              "references": [
+                "https://www.anthropic.com/claude/opus",
+                "https://docs.anthropic.com/en/docs/claude-code/getting-started"
+              ]
+            }
+          }
+        ],
+        "runtimes": [
+          {
+            "id": "gemini-cli",
+            "label": "Gemini CLI",
+            "capabilities": [
+              "text-input"
+            ],
+            "availability": "unknown",
+            "source": {
+              "kind": "user-supplied",
+              "checkedAt": null,
+              "confidence": "hypothesis"
+            }
+          },
+          {
+            "id": "codex",
+            "label": "Codex",
+            "capabilities": [
+              "text-input",
+              "shell",
+              "browser",
+              "sandbox",
+              "resume",
+              "cancel"
+            ],
+            "availability": "unknown",
+            "source": {
+              "kind": "user-supplied",
+              "checkedAt": null,
+              "confidence": "hypothesis"
+            }
+          },
+          {
+            "id": "claude-code",
+            "label": "Claude Code",
+            "capabilities": [
+              "text-input",
+              "shell",
+              "subagents",
+              "resume",
+              "cancel"
+            ],
+            "availability": "unknown",
+            "source": {
+              "kind": "user-supplied",
+              "checkedAt": null,
+              "confidence": "hypothesis"
+            }
+          },
+          {
+            "id": "agy",
+            "label": "Antigravity CLI (agy)",
+            "capabilities": [
+              "extraction",
+              "read-only-plan"
+            ],
+            "source": {
+              "kind": "implementation",
+              "path": "src/runtime.js",
+              "checkedAt": "2026-10-21T00:00:00Z",
+              "confidence": "documented",
+              "references": [
+                "docs/evidence/routing-implementation/B2-SCOUT.json"
+              ]
+            },
+            "resume": false,
+            "cancel": true,
+            "write": false
+          }
+        ],
+        "profiles": [
+          {
+            "id": "flash-gemini",
+            "label": "Flash / Gemini CLI",
+            "modelId": "flash",
+            "runtimeId": "gemini-cli",
+            "enabled": false,
+            "roles": [
+              "scout",
+              "analyst"
+            ]
+          },
+          {
+            "id": "astra-codex",
+            "label": "Astra / Codex",
+            "modelId": "astra",
+            "runtimeId": "codex",
+            "enabled": false,
+            "roles": [
+              "executor",
+              "coordinator"
+            ]
+          },
+          {
+            "id": "opus-claude",
+            "label": "Opus / Claude Code",
+            "modelId": "opus",
+            "runtimeId": "claude-code",
+            "enabled": true,
+            "roles": [
+              "investigator",
+              "reviewer"
+            ]
+          }
+        ],
+        "policy": {
+          "leadProfileId": "astra-codex",
+          "maxCandidates": 3,
+          "allowDelegation": true,
+          "budget": {
+            "maxCostTier": null
+          },
+          "reviewRequiredFor": [
+            "architecture",
+            "important-data",
+            "unreproduced",
+            "large-scope",
+            "conflicting-results",
+            "cannot-verify",
+            "high-error-cost"
+          ],
+          "retainContext": true,
+          "noSilentFallback": true,
+          "requireEvidence": true,
+          "noConcurrentOverlappingWrites": true,
+          "principles": [],
+          "matrix": [
+            "| Loại công việc | Agent chính | Agent hỗ trợ khi cần |",
+            "| Đọc khối lượng lớn logs | Gemini Flash | Claude Opus để điều tra sâu |",
+            "| Phân tích PDF, tài liệu dài | Gemini Flash | Astra hoặc Opus để đánh giá kỹ thuật |",
+            "| Mô tả screenshot, UI, video | Gemini Flash | Astra để thao tác browser, kiểm chứng UI |",
+            "| Trích xuất requirements và dữ liệu | Gemini Flash | Opus để phân tích mâu thuẫn quan trọng |",
+            "| Coding feature thông thường | Astra + Codex | Gemini Flash để chuẩn bị context |",
+            "| Chạy build, test, sửa lỗi qua nhiều vòng | Astra + Codex | Opus nếu chưa tìm được nguyên nhân |",
+            "| Debug xuyên nhiều module | Claude Opus + Claude Code | Gemini Flash thu thập bằng chứng, Astra tái hiện lỗi |",
+            "| Refactoring phạm vi lớn | Claude Opus + Claude Code | Astra chạy kiểm thử và xác minh |",
+            "| Review code độc lập | Claude Opus | Astra hoặc môi trường CI để thực thi test |",
+            "| Browser/computer-use workflow | Astra + Codex | Gemini Flash phân tích ảnh và kết quả |",
+            "| Tổng hợp công việc nhiều agent | Astra nếu được giao vai trò điều phối | Opus review các quyết định rủi ro cao |"
+          ],
+          "workflow": [
+            "analyze-input",
+            "filter-required-capabilities-and-access",
+            "retain-direct-or-rank",
+            "handoff-with-original-evidence",
+            "independent-review-when-required",
+            "verify-acceptance-before-complete"
+          ],
+          "completionStates": [
+            "verified",
+            "implemented-unverified",
+            "blocked",
+            "human-decision"
+          ],
+          "qualityRules": [
+            "1. Không xem model nào là tốt nhất cho mọi nhiệm vụ.",
+            "2. Không nhầm năng lực model với năng lực của harness.",
+            "3. Không giả định harness có tool hoặc quyền chưa được cấp.",
+            "4. Không coi bản tóm tắt thay thế hoàn toàn dữ liệu gốc.",
+            "5. Không coi output của agent là bằng chứng rằng thao tác đã thành công.",
+            "6. Không để nhiều agent cùng sửa một file hoặc một vùng code nếu chưa có cơ chế phối hợp rõ ràng.",
+            "7. Khi có thể, dùng test, log, diff và kết quả tool làm bằng chứng.",
+            "8. Tối ưu tổng chi phí để hoàn thành nhiệm vụ, không chỉ chi phí của một lượt gọi model.",
+            "9. Nếu có model hoặc công cụ mới, đánh giá lại năng lực theo dữ liệu thực tế và tài liệu cập nhật.",
+            "10. Nếu không đủ bằng chứng để chọn, chạy một thử nghiệm nhỏ có tiêu chí nghiệm thu rõ ràng thay vì phỏng đoán."
+          ],
+          "orchestratorChecklist": [
+            "Với mỗi nhiệm vụ mới, hãy trả lời nội bộ các câu hỏi:",
+            "",
+            "1. Nhiệm vụ cần đọc dữ liệu, suy luận, thực thi hay xác minh?",
+            "2. Agent nào đáp ứng tốt nhất yêu cầu cốt lõi?",
+            "3. Có cần agent thứ hai không? Cụ thể nó bổ sung năng lực nào?",
+            "4. Cần truyền dữ liệu và bằng chứng nào?",
+            "5. Kết quả được xác minh bằng cách nào?",
+            "6. Khi nào phải dừng, chuyển giao hoặc xin quyết định từ con người?",
+            "",
+            "Sau đó tạo một kế hoạch thực thi ngắn gọn, phân công agent, nêu rõ đầu ra cần nhận và điều kiện nghiệm thu.",
+            "",
+            "Không cố sử dụng đủ ba agent. Hãy sử dụng đúng agent, đúng nhiệm vụ, đúng thời điểm."
+          ],
+          "objectiveRules": [
+            "Bạn là AI Orchestrator, chịu trách nhiệm phân công công việc cho ba hệ thống AI theo thế mạnh thực tế của từng hệ thống.",
+            "",
+            "Mục tiêu:",
+            "- Chọn agent phù hợp nhất cho từng loại nhiệm vụ.",
+            "- Tối ưu chất lượng kết quả, chi phí, thời gian và khả năng kiểm chứng.",
+            "- Tận dụng model chi phí thấp cho những việc không cần reasoning cao cấp.",
+            "- Dành model mạnh cho nhiệm vụ khó, có nhiều phụ thuộc hoặc cần quyết định quan trọng.",
+            "- Chỉ phối hợp nhiều agent khi có lợi ích rõ ràng. Không bắt buộc nhiệm vụ nào cũng phải đi qua cả ba agent.",
+            "- Bảo toàn bằng chứng gốc khi truyền thông tin giữa các agent, tránh lỗi do tóm tắt hoặc diễn giải sai.",
+            "",
+            "Không phân công dựa trên nhãn \"model mạnh nhất\". Phân công dựa trên bản chất nhiệm vụ, năng lực cần thiết, công cụ thực sự khả dụng và chi phí thực hiện."
+          ],
+          "handoffRules": [
+            "### Bước 1: Phân tích đầu vào",
+            "",
+            "Trước khi gọi agent, xác định:",
+            "- Mục tiêu cuối cùng.",
+            "- Dữ liệu sẵn có.",
+            "- Những công cụ cần sử dụng.",
+            "- Mức độ khó và hậu quả nếu sai.",
+            "- Điều kiện nghiệm thu.",
+            "- Các phần việc độc lập và phụ thuộc nhau.",
+            "",
+            "Không phân công chỉ dựa trên mô tả ngắn nếu nhiệm vụ thực tế cần kiểm tra repository hoặc dữ liệu nguồn.",
+            "",
+            "### Bước 2: Chọn agent theo năng lực cần thiết",
+            "",
+            "- Cần đọc, lọc và cấu trúc hóa dữ liệu lớn hoặc đa phương thức: ưu tiên Gemini Flash.",
+            "- Cần thực thi nhiều bước, thao tác tool, viết code và xác minh trong môi trường chạy: ưu tiên Astra + Codex.",
+            "- Cần suy luận sâu về codebase, điều tra nguyên nhân hoặc review khó: ưu tiên Opus + Claude Code.",
+            "",
+            "Nếu một agent có thể xử lý trọn nhiệm vụ với chất lượng tốt và chi phí hợp lý, không cần chuyển qua agent khác.",
+            "",
+            "### Bước 3: Truyền giao nhiệm vụ",
+            "",
+            "Mỗi lần handoff phải truyền:",
+            "- Mục tiêu và phạm vi.",
+            "- Dữ liệu đầu vào hoặc vị trí nguồn.",
+            "- Facts và bằng chứng đã thu thập.",
+            "- Những giả thuyết chưa xác nhận.",
+            "- Những gì đã thực hiện.",
+            "- Kết quả kiểm thử thực tế.",
+            "- Những câu hỏi cần agent tiếp theo trả lời.",
+            "",
+            "Không truyền riêng một bản tóm tắt thiếu trích dẫn khi agent tiếp theo cần ra quyết định kỹ thuật.",
+            "",
+            "### Bước 4: Xác minh độc lập khi cần",
+            "",
+            "Yêu cầu agent thứ hai kiểm tra khi:",
+            "- Quyết định ảnh hưởng đến kiến trúc hoặc dữ liệu quan trọng.",
+            "- Lỗi chưa được tái hiện.",
+            "- Thay đổi phạm vi lớn.",
+            "- Hai agent có kết luận mâu thuẫn.",
+            "- Agent thực thi không có khả năng kiểm chứng kết quả.",
+            "- Chi phí của một sai sót lớn hơn chi phí review.",
+            "",
+            "Không yêu cầu hai agent độc lập làm cùng một việc nhỏ nếu không có lý do rõ ràng.",
+            "",
+            "### Bước 5: Tổng kết",
+            "",
+            "Chỉ tuyên bố hoàn thành khi điều kiện nghiệm thu được đáp ứng.",
+            "",
+            "Phân biệt rõ:",
+            "- Hoàn thành và đã xác minh.",
+            "- Đã triển khai nhưng chưa xác minh đầy đủ.",
+            "- Chưa hoàn thành do thiếu dữ liệu, quyền truy cập hoặc công cụ.",
+            "- Cần quyết định của con người."
+          ]
+        },
+        "handoff": {
+          "requiredFields": [
+            "objective",
+            "scope",
+            "sources",
+            "facts",
+            "evidence",
+            "hypotheses",
+            "unknowns",
+            "actions",
+            "testResults",
+            "questions",
+            "acceptanceCriteria"
+          ],
+          "preserveOriginalEvidence": true
+        },
+        "source": {
+          "path": "src/defaults/routing-source.md",
+          "sha256": "2111f5d95240131fcfcdbc90135d895cb4bbcde6023205c72d737516c0a8ace5",
+          "status": "user-supplied-unverified",
+          "checkedAt": null
+        }
+      },
+      "decision": {
+        "schema": "agent-meeting/routing@1",
+        "revision": 2,
+        "outcome": "candidates",
+        "candidates": [
+          {
+            "profileId": "opus-claude",
+            "modelId": "opus",
+            "providerModelId": "fixture-model",
+            "runtimeId": "claude-code",
+            "score": 1,
+            "reasons": [
+              "eligible"
+            ],
+            "checkedAt": "2026-10-21T09:41:24.970Z",
+            "reviewRequired": false,
+            "claimConfidence": "user-configured"
+          }
+        ],
+        "totalEligible": 1,
+        "truncated": false,
+        "rejected": [
+          {
+            "profileId": "flash-gemini",
+            "reasons": [
+              "disabled",
+              "model-unverified",
+              "selection-locked",
+              "environment-unknown"
+            ]
+          },
+          {
+            "profileId": "astra-codex",
+            "reasons": [
+              "disabled",
+              "model-unverified",
+              "selection-locked",
+              "environment-unknown"
+            ]
+          }
+        ],
+        "unknowns": [
+          {
+            "profileId": "flash-gemini",
+            "fields": [
+              "runtime-access",
+              "quota",
+              "tools",
+              "permissions"
+            ]
+          },
+          {
+            "profileId": "astra-codex",
+            "fields": [
+              "runtime-access",
+              "quota",
+              "tools",
+              "permissions"
+            ]
+          }
+        ],
+        "classificationUnknown": true,
+        "review": {
+          "required": false,
+          "reasons": [],
+          "independent": false
+        },
+        "fallback": "explicit-decision-required"
+      },
+      "profileId": "opus-claude",
+      "adapter": "claude",
+      "requestedModel": "fixture-model",
+      "reportedModel": "fixture-model",
+      "before": {
+        "sum.js": {
+          "sha256": "ee7e835a0b737e5bc8ab512d6d8920bd5f57f264a30ef65687fc28b73507d204",
+          "size": 31
+        },
+        "test/sum.test.js": {
+          "sha256": "391af2b093188b16d235dad9a01df7e5f8e0311932a48bbeaeab3acf6a8142c8",
+          "size": 95
+        }
+      },
+      "startedAt": "2026-10-21T09:41:25.440Z",
+      "evidence": [
+        {
+          "command": [
+            "/usr/bin/node",
+            "--max-old-space-size=256",
+            "--test",
+            "--test-timeout=20000",
+            "test/sum.test.js"
+          ],
+          "exitCode": 1,
+          "timeout": false,
+          "cancelled": false,
+          "output": "TAP version 13\n# Subtest: sum\nnot ok 1 - sum\n  ---\n  duration_ms: 3.592461\n  type: 'test'\n  location: '/tmp/am-ui-reform-preview/work/2d5e615cd3cc624c5b8f5d97a7cc5f410de0108bded4713fcf324e2e7b081657/runs/b73681fb-bdbc-4575-bb8f-50e676c85f08/workspace/test/sum.test.js:1:21'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    5 !== 6\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 6\n  actual: 5\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-ui-reform-preview/work/2d5e615cd3cc624c5b8f5d97a7cc5f410de0108bded4713fcf324e2e7b081657/runs/b73681fb-bdbc-4575-bb8f-50e676c85f08/workspace/test/sum.test.js:1:62)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 132.651387\n",
+          "elapsedMs": 241,
+          "checkedAt": "2026-10-21T09:41:38.295Z"
+        }
+      ],
+      "changes": [
+        {
+          "file": "sum.js",
+          "before": "ee7e835a0b737e5bc8ab512d6d8920bd5f57f264a30ef65687fc28b73507d204",
+          "after": "c4906f38eb5b1575885d480e084952498b2e397bd2b067b5e5ac4e0626804677"
+        }
+      ],
+      "costUsd": null,
+      "report": "Deterministic Node subprocess fixture; not a paid AI model.",
+      "exitCode": 0,
+      "finishedAt": "2026-10-21T09:41:37.556Z",
+      "verifiedSnapshot": null,
+      "error": "Independent verification failed"
+    },
+    {
+      "id": "d87c9651-07f6-4bab-b4c9-cb39de7d17a1",
+      "taskId": "meeting-e6fd48c1410a83d882fc3b541496d8f8",
+      "requirementSnapshot": {
+        "id": "meeting-e6fd48c1410a83d882fc3b541496d8f8",
+        "context": "Sửa phép cộng trong sum.js. Giữ phạm vi một tệp và kiểm chứng 2 + 3 = 5.",
+        "goal": "Rà soát điều hướng Hội thoại tới Kế hoạch và bảo toàn bản nháp khi quay lại từ Quản trị",
+        "purpose": "execute",
+        "topology": "local",
+        "management": "managed",
+        "acceptance": [
+          "sum(2,3) trả về 5"
+        ],
+        "dependencies": [],
+        "writePaths": [
+          "sum.js"
+        ],
+        "testFiles": [
+          "test/sum.test.js"
+        ],
+        "sources": [],
+        "facts": [],
+        "unknowns": [],
+        "requirementRevision": 2,
+        "status": "failed",
+        "createdAt": "2026-10-21T09:33:55.249Z",
+        "origin": {
+          "kind": "meeting-action",
+          "number": 2,
+          "timestamp": 1792575235249,
+          "roomCreatedAt": 1792570815393,
+          "messageIndex": 10,
+          "message": "VIỆC: Nguyễn Minh Anh — kiểm định hành trình | Rà soát điều hướng Hội thoại tới Kế hoạch và bảo toàn bản nháp khi quay lại từ Quản trị | hôm nay",
+          "context": "Sửa phép cộng trong sum.js. Giữ phạm vi một tệp và kiểm chứng 2 + 3 = 5."
+        },
+        "owner": "Nguyễn Minh Anh — kiểm định hành trình",
+        "sourceCurrent": true,
+        "reportedProgress": {
+          "status": "todo",
+          "note": "",
+          "updatedAt": null,
+          "updatedBy": null
+        },
+        "workspace": "/tmp/am-ui-reform-preview/v2-source",
+        "baseRevision": "4d7298d6d5097b7990d7f549d44330d76066f08e"
+      },
+      "requirementRevision": 2,
+      "status": "integrated",
+      "source": "/tmp/am-ui-reform-preview/v2-source",
+      "workspace": "/tmp/am-ui-reform-preview/work/2d5e615cd3cc624c5b8f5d97a7cc5f410de0108bded4713fcf324e2e7b081657/runs/d87c9651-07f6-4bab-b4c9-cb39de7d17a1/workspace",
+      "baseRevision": "4d7298d6d5097b7990d7f549d44330d76066f08e",
+      "configRevision": 2,
+      "configSnapshot": {
+        "schema": "agent-meeting/routing@1",
+        "revision": 2,
+        "models": [
+          {
+            "id": "flash",
+            "label": "Gemini Flash",
+            "provider": "google",
+            "providerModelId": null,
+            "enabled": false,
+            "verification": "unverified",
+            "capabilities": [
+              "large-context",
+              "extraction",
+              "multimodal",
+              "small-coding"
+            ],
+            "roles": [
+              "scout",
+              "analyst"
+            ],
+            "costTier": "low",
+            "modalities": [
+              "text",
+              "image",
+              "video",
+              "audio",
+              "pdf"
+            ],
+            "strengths": [
+              "Application logs, server logs, stack traces, error reports.",
+              "Tài liệu kỹ thuật, PDF, specification, API documentation.",
+              "Issue descriptions, pull request descriptions, release notes.",
+              "Repository metadata và nội dung file được cung cấp.",
+              "Mô tả ảnh chụp màn hình, giao diện UI và thông báo lỗi.",
+              "Phân tích ảnh trước và sau khi thay đổi giao diện.",
+              "Đọc nội dung tài liệu có hình ảnh, bảng biểu.",
+              "Phân tích video, diễn biến theo timestamp và các frame quan trọng.",
+              "Requirements, constraints, entities, API endpoints.",
+              "Lỗi lặp lại, sự kiện bất thường, chuỗi sự kiện trong log.",
+              "Danh sách file, module, dependency có liên quan.",
+              "Những thông tin còn thiếu để giải quyết vấn đề.",
+              "Loại bỏ nội dung trùng lặp nhưng giữ lại các sự kiện riêng biệt.",
+              "Phân nhóm theo chủ đề, thời gian, thành phần hoặc mức độ nghiêm trọng.",
+              "Tạo bản tóm tắt có trích dẫn nguồn.",
+              "Đề xuất các vị trí cần đọc sâu hơn.",
+              "Hướng đến tốc độ và hiệu quả chi phí.",
+              "Hỗ trợ text, image, video, audio và PDF.",
+              "Context window lớn, thuận lợi cho việc xử lý tài liệu và dữ liệu dài.",
+              "Có thể làm coding và agent workflow, không chỉ tóm tắt nội dung."
+            ],
+            "limitations": [
+              "Quyết định kiến trúc có ảnh hưởng rộng khi chưa đủ bằng chứng.",
+              "Kết luận root cause chỉ dựa trên bản tóm tắt.",
+              "Thực hiện một thay đổi lớn trên repository khi chưa nắm dependency và yêu cầu kiểm thử.",
+              "Ra quyết định quan trọng dựa trên phân tích hình ảnh chưa được đối chiếu bằng dữ liệu khác."
+            ],
+            "outputContract": [
+              "Facts: thông tin quan sát được trực tiếp.",
+              "Evidence: trích dẫn, nguồn và vị trí của thông tin.",
+              "Hypotheses: giả thuyết, không trình bày như sự thật.",
+              "Unknowns: thông tin còn thiếu.",
+              "Next steps: bước điều tra tiếp theo."
+            ],
+            "source": {
+              "kind": "user-supplied",
+              "path": "src/defaults/routing-source.md",
+              "lines": [
+                19,
+                82
+              ],
+              "checkedAt": null,
+              "confidence": "hypothesis",
+              "references": [
+                "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash"
+              ]
+            }
+          },
+          {
+            "id": "astra",
+            "label": "GPT Astra",
+            "provider": "openai",
+            "providerModelId": null,
+            "enabled": false,
+            "verification": "unverified",
+            "capabilities": [
+              "coding",
+              "execution",
+              "coordination",
+              "verification"
+            ],
+            "roles": [
+              "executor",
+              "coordinator"
+            ],
+            "costTier": "high",
+            "modalities": [
+              "text"
+            ],
+            "strengths": [
+              "Đọc codebase và xác định vùng cần thay đổi.",
+              "Triển khai feature liên quan nhiều file.",
+              "Chạy command, build, test, linter và kiểm tra kết quả.",
+              "Debug theo vòng lặp quan sát, sửa đổi và xác minh.",
+              "Browser automation và computer use khi tool tương ứng được cấp.",
+              "Truy cập tài liệu trực tuyến, đối chiếu API và kiểm tra giao diện.",
+              "Thao tác trên môi trường thực thi hoặc sandbox.",
+              "Thu thập kết quả từ các tool và chuyển thành hành động tiếp theo.",
+              "Chia nhiệm vụ lớn thành các subtask độc lập.",
+              "Xác định thứ tự phụ thuộc giữa các subtask.",
+              "Tổng hợp kết quả từ các agent khác.",
+              "Phát hiện kết quả mâu thuẫn và yêu cầu xác minh.",
+              "Lỗi chỉ tái hiện được khi chạy ứng dụng.",
+              "Kiểm tra một quy trình end-to-end.",
+              "Sửa lỗi cần nhiều vòng chạy thử.",
+              "Xác minh hành vi thực tế khác với mô tả trong tài liệu.",
+              "Kết hợp các phần việc của nhiều agent.",
+              "Kiểm tra tính nhất quán giữa các module.",
+              "Chạy các kiểm thử thích hợp.",
+              "Tổng hợp kết quả thực thi và những vấn đề chưa giải quyết.",
+              "Reasoning, software engineering, browser/computer use và công việc nhiều bước.",
+              "Kết hợp model với môi trường thực thi, tool và vòng lặp phản hồi.",
+              "Harness Codex hỗ trợ quản lý trạng thái, thu thập context, sandbox, approval, context compaction và phối hợp subagent tùy cấu hình."
+            ],
+            "limitations": [
+              "Xử lý hàng loạt nội dung đơn giản nếu Flash đáp ứng đủ chất lượng.",
+              "Đưa ra kết luận rằng code hoạt động chỉ vì đã viết xong code.",
+              "Tiến hành thay đổi nguy hiểm hoặc không thể đảo ngược mà không được cho phép.",
+              "Tự nhận đã chạy test, browser hoặc shell nếu không thực sự có kết quả tương ứng."
+            ],
+            "outputContract": [
+              "Files changed.",
+              "Các thay đổi chính và lý do.",
+              "Commands thực sự đã chạy.",
+              "Test results thực tế.",
+              "Các vấn đề còn tồn tại.",
+              "Những giả định hoặc điểm cần con người xác nhận."
+            ],
+            "source": {
+              "kind": "user-supplied",
+              "path": "src/defaults/routing-source.md",
+              "lines": [
+                83,
+                151
+              ],
+              "checkedAt": null,
+              "confidence": "hypothesis",
+              "references": [
+                "https://developers.openai.com/api/docs/models/gpt-6-astra",
+                "https://developers.openai.com/api/docs/guides/agents-api/overview"
+              ]
+            }
+          },
+          {
+            "id": "opus",
+            "label": "Claude Opus",
+            "provider": "anthropic",
+            "providerModelId": "fixture-model",
+            "enabled": true,
+            "verification": "verified",
+            "capabilities": [
+              "deep-reasoning",
+              "investigation",
+              "refactoring",
+              "review"
+            ],
+            "roles": [
+              "investigator",
+              "reviewer"
+            ],
+            "costTier": "high",
+            "modalities": [
+              "text"
+            ],
+            "strengths": [
+              "Root-cause analysis.",
+              "Bug có nhiều nguyên nhân tiềm năng.",
+              "Race conditions, state inconsistency và lỗi phụ thuộc thứ tự.",
+              "Các vấn đề xuyên nhiều module hoặc nhiều tầng kiến trúc.",
+              "Lần theo luồng dữ liệu xuyên qua các module.",
+              "Phân tích call graph và dependency.",
+              "Tìm nguyên nhân gốc trước khi đề xuất sửa code.",
+              "Đánh giá ảnh hưởng đến các thành phần liên quan.",
+              "Refactoring nhiều file.",
+              "Tách module hoặc trách nhiệm.",
+              "Thay đổi state management, API integration hoặc business logic.",
+              "Đánh giá backward compatibility và regression risk.",
+              "Review implementation do Astra hoặc agent khác thực hiện.",
+              "Tìm bug logic, edge cases và thay đổi ngoài phạm vi.",
+              "Kiểm tra requirement coverage.",
+              "Đối chiếu implementation với specification và bằng chứng.",
+              "So sánh các phương án kiến trúc.",
+              "Xác định trade-off.",
+              "Đề xuất thứ tự triển khai.",
+              "Xác định các giả định cần kiểm chứng trước khi sửa.",
+              "Thay đổi lớn trong repository.",
+              "Debug cần nhiều vòng đọc và xác minh.",
+              "Công việc cần phối hợp các subagent khi lợi ích lớn hơn chi phí điều phối.",
+              "Coding agent cho các tác vụ dài và codebase lớn.",
+              "Phân tích nguyên nhân trước khi sửa.",
+              "Refactoring, code review và reasoning qua nhiều bước.",
+              "Có thể phối hợp subagent và duy trì workflow dài hạn thông qua các tính năng của môi trường phù hợp."
+            ],
+            "limitations": [
+              "Mọi tác vụ đọc dữ liệu đơn giản.",
+              "Công việc trích xuất hoặc phân loại số lượng lớn nếu model rẻ hơn đáp ứng đủ yêu cầu.",
+              "Những thay đổi có thể được giải quyết bằng một thao tác xác định và kiểm chứng trực tiếp.",
+              "Công việc được cho là đã hoàn thành chỉ dựa trên lời khẳng định của agent, không có bằng chứng thực thi."
+            ],
+            "outputContract": [
+              "Root cause đã xác minh.",
+              "Root cause còn là giả thuyết.",
+              "Bằng chứng ủng hộ và phản bác.",
+              "Những file và module có liên quan.",
+              "Phương án sửa tối thiểu.",
+              "Regression risk và kiểm thử cần thực hiện."
+            ],
+            "source": {
+              "kind": "user-supplied",
+              "path": "src/defaults/routing-source.md",
+              "lines": [
+                152,
+                225
+              ],
+              "checkedAt": "2026-10-21T08:20:15.389Z",
+              "confidence": "user-configured",
+              "references": [
+                "https://www.anthropic.com/claude/opus",
+                "https://docs.anthropic.com/en/docs/claude-code/getting-started"
+              ]
+            }
+          }
+        ],
+        "runtimes": [
+          {
+            "id": "gemini-cli",
+            "label": "Gemini CLI",
+            "capabilities": [
+              "text-input"
+            ],
+            "availability": "unknown",
+            "source": {
+              "kind": "user-supplied",
+              "checkedAt": null,
+              "confidence": "hypothesis"
+            }
+          },
+          {
+            "id": "codex",
+            "label": "Codex",
+            "capabilities": [
+              "text-input",
+              "shell",
+              "browser",
+              "sandbox",
+              "resume",
+              "cancel"
+            ],
+            "availability": "unknown",
+            "source": {
+              "kind": "user-supplied",
+              "checkedAt": null,
+              "confidence": "hypothesis"
+            }
+          },
+          {
+            "id": "claude-code",
+            "label": "Claude Code",
+            "capabilities": [
+              "text-input",
+              "shell",
+              "subagents",
+              "resume",
+              "cancel"
+            ],
+            "availability": "unknown",
+            "source": {
+              "kind": "user-supplied",
+              "checkedAt": null,
+              "confidence": "hypothesis"
+            }
+          },
+          {
+            "id": "agy",
+            "label": "Antigravity CLI (agy)",
+            "capabilities": [
+              "extraction",
+              "read-only-plan"
+            ],
+            "source": {
+              "kind": "implementation",
+              "path": "src/runtime.js",
+              "checkedAt": "2026-10-21T00:00:00Z",
+              "confidence": "documented",
+              "references": [
+                "docs/evidence/routing-implementation/B2-SCOUT.json"
+              ]
+            },
+            "resume": false,
+            "cancel": true,
+            "write": false
+          }
+        ],
+        "profiles": [
+          {
+            "id": "flash-gemini",
+            "label": "Flash / Gemini CLI",
+            "modelId": "flash",
+            "runtimeId": "gemini-cli",
+            "enabled": false,
+            "roles": [
+              "scout",
+              "analyst"
+            ]
+          },
+          {
+            "id": "astra-codex",
+            "label": "Astra / Codex",
+            "modelId": "astra",
+            "runtimeId": "codex",
+            "enabled": false,
+            "roles": [
+              "executor",
+              "coordinator"
+            ]
+          },
+          {
+            "id": "opus-claude",
+            "label": "Opus / Claude Code",
+            "modelId": "opus",
+            "runtimeId": "claude-code",
+            "enabled": true,
+            "roles": [
+              "investigator",
+              "reviewer"
+            ]
+          }
+        ],
+        "policy": {
+          "leadProfileId": "astra-codex",
+          "maxCandidates": 3,
+          "allowDelegation": true,
+          "budget": {
+            "maxCostTier": null
+          },
+          "reviewRequiredFor": [
+            "architecture",
+            "important-data",
+            "unreproduced",
+            "large-scope",
+            "conflicting-results",
+            "cannot-verify",
+            "high-error-cost"
+          ],
+          "retainContext": true,
+          "noSilentFallback": true,
+          "requireEvidence": true,
+          "noConcurrentOverlappingWrites": true,
+          "principles": [],
+          "matrix": [
+            "| Loại công việc | Agent chính | Agent hỗ trợ khi cần |",
+            "| Đọc khối lượng lớn logs | Gemini Flash | Claude Opus để điều tra sâu |",
+            "| Phân tích PDF, tài liệu dài | Gemini Flash | Astra hoặc Opus để đánh giá kỹ thuật |",
+            "| Mô tả screenshot, UI, video | Gemini Flash | Astra để thao tác browser, kiểm chứng UI |",
+            "| Trích xuất requirements và dữ liệu | Gemini Flash | Opus để phân tích mâu thuẫn quan trọng |",
+            "| Coding feature thông thường | Astra + Codex | Gemini Flash để chuẩn bị context |",
+            "| Chạy build, test, sửa lỗi qua nhiều vòng | Astra + Codex | Opus nếu chưa tìm được nguyên nhân |",
+            "| Debug xuyên nhiều module | Claude Opus + Claude Code | Gemini Flash thu thập bằng chứng, Astra tái hiện lỗi |",
+            "| Refactoring phạm vi lớn | Claude Opus + Claude Code | Astra chạy kiểm thử và xác minh |",
+            "| Review code độc lập | Claude Opus | Astra hoặc môi trường CI để thực thi test |",
+            "| Browser/computer-use workflow | Astra + Codex | Gemini Flash phân tích ảnh và kết quả |",
+            "| Tổng hợp công việc nhiều agent | Astra nếu được giao vai trò điều phối | Opus review các quyết định rủi ro cao |"
+          ],
+          "workflow": [
+            "analyze-input",
+            "filter-required-capabilities-and-access",
+            "retain-direct-or-rank",
+            "handoff-with-original-evidence",
+            "independent-review-when-required",
+            "verify-acceptance-before-complete"
+          ],
+          "completionStates": [
+            "verified",
+            "implemented-unverified",
+            "blocked",
+            "human-decision"
+          ],
+          "qualityRules": [
+            "1. Không xem model nào là tốt nhất cho mọi nhiệm vụ.",
+            "2. Không nhầm năng lực model với năng lực của harness.",
+            "3. Không giả định harness có tool hoặc quyền chưa được cấp.",
+            "4. Không coi bản tóm tắt thay thế hoàn toàn dữ liệu gốc.",
+            "5. Không coi output của agent là bằng chứng rằng thao tác đã thành công.",
+            "6. Không để nhiều agent cùng sửa một file hoặc một vùng code nếu chưa có cơ chế phối hợp rõ ràng.",
+            "7. Khi có thể, dùng test, log, diff và kết quả tool làm bằng chứng.",
+            "8. Tối ưu tổng chi phí để hoàn thành nhiệm vụ, không chỉ chi phí của một lượt gọi model.",
+            "9. Nếu có model hoặc công cụ mới, đánh giá lại năng lực theo dữ liệu thực tế và tài liệu cập nhật.",
+            "10. Nếu không đủ bằng chứng để chọn, chạy một thử nghiệm nhỏ có tiêu chí nghiệm thu rõ ràng thay vì phỏng đoán."
+          ],
+          "orchestratorChecklist": [
+            "Với mỗi nhiệm vụ mới, hãy trả lời nội bộ các câu hỏi:",
+            "",
+            "1. Nhiệm vụ cần đọc dữ liệu, suy luận, thực thi hay xác minh?",
+            "2. Agent nào đáp ứng tốt nhất yêu cầu cốt lõi?",
+            "3. Có cần agent thứ hai không? Cụ thể nó bổ sung năng lực nào?",
+            "4. Cần truyền dữ liệu và bằng chứng nào?",
+            "5. Kết quả được xác minh bằng cách nào?",
+            "6. Khi nào phải dừng, chuyển giao hoặc xin quyết định từ con người?",
+            "",
+            "Sau đó tạo một kế hoạch thực thi ngắn gọn, phân công agent, nêu rõ đầu ra cần nhận và điều kiện nghiệm thu.",
+            "",
+            "Không cố sử dụng đủ ba agent. Hãy sử dụng đúng agent, đúng nhiệm vụ, đúng thời điểm."
+          ],
+          "objectiveRules": [
+            "Bạn là AI Orchestrator, chịu trách nhiệm phân công công việc cho ba hệ thống AI theo thế mạnh thực tế của từng hệ thống.",
+            "",
+            "Mục tiêu:",
+            "- Chọn agent phù hợp nhất cho từng loại nhiệm vụ.",
+            "- Tối ưu chất lượng kết quả, chi phí, thời gian và khả năng kiểm chứng.",
+            "- Tận dụng model chi phí thấp cho những việc không cần reasoning cao cấp.",
+            "- Dành model mạnh cho nhiệm vụ khó, có nhiều phụ thuộc hoặc cần quyết định quan trọng.",
+            "- Chỉ phối hợp nhiều agent khi có lợi ích rõ ràng. Không bắt buộc nhiệm vụ nào cũng phải đi qua cả ba agent.",
+            "- Bảo toàn bằng chứng gốc khi truyền thông tin giữa các agent, tránh lỗi do tóm tắt hoặc diễn giải sai.",
+            "",
+            "Không phân công dựa trên nhãn \"model mạnh nhất\". Phân công dựa trên bản chất nhiệm vụ, năng lực cần thiết, công cụ thực sự khả dụng và chi phí thực hiện."
+          ],
+          "handoffRules": [
+            "### Bước 1: Phân tích đầu vào",
+            "",
+            "Trước khi gọi agent, xác định:",
+            "- Mục tiêu cuối cùng.",
+            "- Dữ liệu sẵn có.",
+            "- Những công cụ cần sử dụng.",
+            "- Mức độ khó và hậu quả nếu sai.",
+            "- Điều kiện nghiệm thu.",
+            "- Các phần việc độc lập và phụ thuộc nhau.",
+            "",
+            "Không phân công chỉ dựa trên mô tả ngắn nếu nhiệm vụ thực tế cần kiểm tra repository hoặc dữ liệu nguồn.",
+            "",
+            "### Bước 2: Chọn agent theo năng lực cần thiết",
+            "",
+            "- Cần đọc, lọc và cấu trúc hóa dữ liệu lớn hoặc đa phương thức: ưu tiên Gemini Flash.",
+            "- Cần thực thi nhiều bước, thao tác tool, viết code và xác minh trong môi trường chạy: ưu tiên Astra + Codex.",
+            "- Cần suy luận sâu về codebase, điều tra nguyên nhân hoặc review khó: ưu tiên Opus + Claude Code.",
+            "",
+            "Nếu một agent có thể xử lý trọn nhiệm vụ với chất lượng tốt và chi phí hợp lý, không cần chuyển qua agent khác.",
+            "",
+            "### Bước 3: Truyền giao nhiệm vụ",
+            "",
+            "Mỗi lần handoff phải truyền:",
+            "- Mục tiêu và phạm vi.",
+            "- Dữ liệu đầu vào hoặc vị trí nguồn.",
+            "- Facts và bằng chứng đã thu thập.",
+            "- Những giả thuyết chưa xác nhận.",
+            "- Những gì đã thực hiện.",
+            "- Kết quả kiểm thử thực tế.",
+            "- Những câu hỏi cần agent tiếp theo trả lời.",
+            "",
+            "Không truyền riêng một bản tóm tắt thiếu trích dẫn khi agent tiếp theo cần ra quyết định kỹ thuật.",
+            "",
+            "### Bước 4: Xác minh độc lập khi cần",
+            "",
+            "Yêu cầu agent thứ hai kiểm tra khi:",
+            "- Quyết định ảnh hưởng đến kiến trúc hoặc dữ liệu quan trọng.",
+            "- Lỗi chưa được tái hiện.",
+            "- Thay đổi phạm vi lớn.",
+            "- Hai agent có kết luận mâu thuẫn.",
+            "- Agent thực thi không có khả năng kiểm chứng kết quả.",
+            "- Chi phí của một sai sót lớn hơn chi phí review.",
+            "",
+            "Không yêu cầu hai agent độc lập làm cùng một việc nhỏ nếu không có lý do rõ ràng.",
+            "",
+            "### Bước 5: Tổng kết",
+            "",
+            "Chỉ tuyên bố hoàn thành khi điều kiện nghiệm thu được đáp ứng.",
+            "",
+            "Phân biệt rõ:",
+            "- Hoàn thành và đã xác minh.",
+            "- Đã triển khai nhưng chưa xác minh đầy đủ.",
+            "- Chưa hoàn thành do thiếu dữ liệu, quyền truy cập hoặc công cụ.",
+            "- Cần quyết định của con người."
+          ]
+        },
+        "handoff": {
+          "requiredFields": [
+            "objective",
+            "scope",
+            "sources",
+            "facts",
+            "evidence",
+            "hypotheses",
+            "unknowns",
+            "actions",
+            "testResults",
+            "questions",
+            "acceptanceCriteria"
+          ],
+          "preserveOriginalEvidence": true
+        },
+        "source": {
+          "path": "src/defaults/routing-source.md",
+          "sha256": "2111f5d95240131fcfcdbc90135d895cb4bbcde6023205c72d737516c0a8ace5",
+          "status": "user-supplied-unverified",
+          "checkedAt": null
+        }
+      },
+      "decision": {
+        "schema": "agent-meeting/routing@1",
+        "revision": 2,
+        "outcome": "candidates",
+        "candidates": [
+          {
+            "profileId": "opus-claude",
+            "modelId": "opus",
+            "providerModelId": "fixture-model",
+            "runtimeId": "claude-code",
+            "score": 1,
+            "reasons": [
+              "eligible"
+            ],
+            "checkedAt": "2026-10-21T09:41:24.970Z",
+            "reviewRequired": false,
+            "claimConfidence": "user-configured"
+          }
+        ],
+        "totalEligible": 1,
+        "truncated": false,
+        "rejected": [
+          {
+            "profileId": "flash-gemini",
+            "reasons": [
+              "disabled",
+              "model-unverified",
+              "selection-locked",
+              "environment-unknown"
+            ]
+          },
+          {
+            "profileId": "astra-codex",
+            "reasons": [
+              "disabled",
+              "model-unverified",
+              "selection-locked",
+              "environment-unknown"
+            ]
+          }
+        ],
+        "unknowns": [
+          {
+            "profileId": "flash-gemini",
+            "fields": [
+              "runtime-access",
+              "quota",
+              "tools",
+              "permissions"
+            ]
+          },
+          {
+            "profileId": "astra-codex",
+            "fields": [
+              "runtime-access",
+              "quota",
+              "tools",
+              "permissions"
+            ]
+          }
+        ],
+        "classificationUnknown": true,
+        "review": {
+          "required": false,
+          "reasons": [],
+          "independent": false
+        },
+        "fallback": "explicit-decision-required"
+      },
+      "profileId": "opus-claude",
+      "adapter": "claude",
+      "requestedModel": "fixture-model",
+      "reportedModel": "fixture-model",
+      "before": {
+        "sum.js": {
+          "sha256": "ee7e835a0b737e5bc8ab512d6d8920bd5f57f264a30ef65687fc28b73507d204",
+          "size": 31
+        },
+        "test/sum.test.js": {
+          "sha256": "19d16f989088c1c71389c206617cde11313c711805f75f62c28c6b6676af6d2f",
+          "size": 95
+        }
+      },
+      "startedAt": "2026-10-21T09:41:39.044Z",
+      "evidence": [
+        {
+          "command": [
+            "/usr/bin/node",
+            "--max-old-space-size=256",
+            "--test",
+            "--test-timeout=20000",
+            "test/sum.test.js"
+          ],
+          "exitCode": 0,
+          "timeout": false,
+          "cancelled": false,
+          "output": "TAP version 13\n# Subtest: sum\nok 1 - sum\n  ---\n  duration_ms: 2.247188\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 134.347902\n",
+          "elapsedMs": 254,
+          "checkedAt": "2026-10-21T09:41:51.878Z"
+        }
+      ],
+      "changes": [
+        {
+          "file": "sum.js",
+          "before": "ee7e835a0b737e5bc8ab512d6d8920bd5f57f264a30ef65687fc28b73507d204",
+          "after": "c4906f38eb5b1575885d480e084952498b2e397bd2b067b5e5ac4e0626804677"
+        }
+      ],
+      "costUsd": null,
+      "report": "Deterministic Node subprocess fixture; not a paid AI model.",
+      "exitCode": 0,
+      "finishedAt": "2026-10-21T09:41:51.162Z",
+      "verifiedSnapshot": {
+        "sum.js": {
+          "sha256": "c4906f38eb5b1575885d480e084952498b2e397bd2b067b5e5ac4e0626804677",
+          "size": 31
+        },
+        "test/sum.test.js": {
+          "sha256": "19d16f989088c1c71389c206617cde11313c711805f75f62c28c6b6676af6d2f",
+          "size": 95
+        }
+      },
+      "error": null,
+      "integrationEvidence": [
+        {
+          "command": [
+            "/usr/bin/node",
+            "--max-old-space-size=256",
+            "--test",
+            "--test-timeout=20000",
+            "test/sum.test.js"
+          ],
+          "exitCode": 0,
+          "timeout": false,
+          "cancelled": false,
+          "output": "TAP version 13\n# Subtest: sum\nok 1 - sum\n  ---\n  duration_ms: 1.943297\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 125.894139\n",
+          "elapsedMs": 231,
+          "checkedAt": "2026-10-21T09:41:52.698Z"
+        }
+      ],
+      "integratedAt": "2026-10-21T09:41:52.716Z"
+    }
+  ]
+}

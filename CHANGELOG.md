@@ -1,5 +1,29 @@
 # Changelog
 
+## Chưa phát hành — cải cách UI v2
+
+- Hợp nhất shell desktop gọn, nav phẳng; utility/Gợi ý vào menu, Chi tiết thành sheet có quản lý focus trên mobile.
+- Dùng chung token typography/spacing/control cho năm view, task theo hàng và hành động theo trạng thái; báo cáo đầy đủ hiện trực tiếp.
+- Kiểm hành trình/lỗi/khôi phục, theme/locale/reflow/zoom200%; vẫn chờ người dùng đánh giá UX. Bằng chứng tại docs/evidence/ui-v2.
+
+- Một thanh điều hướng phiên; gom form yêu cầu, hồ sơ chạy và hành động theo nhiệm vụ.
+- Kế hoạch/kết quả lên trước bối cảnh, UUID và số liệu; đọc báo cáo/tệp/test trực tiếp, mở rộng để xem snapshot đầy đủ.
+- Phân biệt tab, trạng thái và điều khiển sáng/tối; giữ nguồn hội thoại, task ID, draft và ranh giới bảo mật.
+- Bản chạy để người dùng đánh giá; chưa tuyên bố UX đã được chấp nhận.
+
+## Chưa phát hành — thống nhất phiên làm việc
+
+- Hội thoại, kế hoạch, thực hiện và kết quả trong cùng trang phòng; link workspace cũ chuyển về kế hoạch.
+- VIỆC dùng chung task ID với execution, giữ nguồn hội thoại và bản nháp; thêm điều kiện chạy ngay trên task có sẵn.
+- Phân biệt tiến độ tự báo với kết quả kiểm chứng/tích hợp; chặn kết quả lỗi thời khi nguồn/yêu cầu đổi và giữ kế hoạch qua Họp tiếp.
+
+
+## Unreleased — routing/workspace thử nghiệm
+
+- Catalog/policy/handoff có nguồn và lookup CLI/MCP riêng; admin lưu thật với revision/backup/conflict và không gian công việc tách khỏi phòng họp.
+- Adapter Claude/agy, workspace copy/bwrap, test độc lập, tích hợp một file/rollback/handoff; worker có token/lease/snapshot/artifact và metrics giữ unknown rõ.
+- Có bằng chứng CLI thật; chưa release và chưa hoàn thiện đội tự xây app. Giới hạn/cửa nghiệm thu còn lại: [tiến độ](docs/IMPLEMENTATION-STATUS.vi.md), [workflow](docs/ROUTING-WORKFLOW.vi.md).
+
 ## 3.5.0
 
 Bảo mật và đường vào họp hợp lệ cho Claude Code ở **auto mode**. Sự cố (người dùng báo 2026-10-19): bộ kiểm duyệt của auto mode

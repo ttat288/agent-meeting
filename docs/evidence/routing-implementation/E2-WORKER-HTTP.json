@@ -1,0 +1,110 @@
+{
+  "trial": "Authenticated worker HTTP protocol with separate worker process on same physical machine",
+  "baseRevision": "556b9f69c39a1b1dd6fb9cc71d1b9ddfe5798b47",
+  "taskId": "123b5569-9965-4950-88ce-32134c2cbaf6",
+  "run": {
+    "taskId": "123b5569-9965-4950-88ce-32134c2cbaf6",
+    "runId": "89e80fbf-70e5-4d24-9301-836fa4d98431",
+    "hostId": "7cceeb9c-7808-4111-acff-520c9691d95c",
+    "workspaceId": "agent-meeting-test",
+    "baseRevision": "556b9f69c39a1b1dd6fb9cc71d1b9ddfe5798b47",
+    "modelId": "claude-opus-5-5",
+    "adapter": "claude",
+    "configRevision": 2,
+    "routingDecision": {
+      "selection": "operator-explicit",
+      "profileId": "opus-claude",
+      "unknowns": [
+        "model-access",
+        "quota"
+      ],
+      "reviewRequired": true
+    },
+    "requirementRevision": 1,
+    "writePaths": [],
+    "snapshotHash": "79ab69ed8d5e227d9f4256417ef68bc776dc81b68341ba1f97d008c94c3dc24c",
+    "snapshotStatus": "declared",
+    "generation": 1,
+    "status": "reported",
+    "leaseId": "d2rrgx4D5dM2aSxl6EAtQToCsr_HiaOI",
+    "leaseUntil": 1792557130875,
+    "createdAt": 1792557040650,
+    "claimedAt": 1792557040844,
+    "finishedAt": 1792557080874,
+    "result": {
+      "costUsd": 0.15085099999999999,
+      "elapsedMs": 39914,
+      "usage": {
+        "input_tokens": 2,
+        "cache_creation_input_tokens": 10362,
+        "cache_read_input_tokens": 535,
+        "output_tokens": 3392,
+        "output_tokens_details": {
+          "thinking_tokens": 1702
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 10362,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 3392,
+            "cache_read_input_tokens": 535,
+            "cache_creation_input_tokens": 10362,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 10362
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "snapshotHash": "79ab69ed8d5e227d9f4256417ef68bc776dc81b68341ba1f97d008c94c3dc24c",
+      "reportedSnapshotHash": "79ab69ed8d5e227d9f4256417ef68bc776dc81b68341ba1f97d008c94c3dc24c",
+      "snapshotStatus": "declared",
+      "status": "reported",
+      "reportedModel": "claude-opus-5-5",
+      "report": "I'm giving this review as text only. You asked for no file changes and no tool use, so I haven't written a plan file or called any tools. Everything below comes from the supplied lines, `src/remote.js:129–168`.\n\n## Confirmed (from supplied lines)\n\n1. **Expired leases are rejected for heartbeat and completion.** `src/remote.js:147` fails when `run.leaseUntil <= this.now()`. Both `heartbeat` (`:153`) and `complete` (`:161`) go through `_lease`, so an expired lease cannot be revived by a heartbeat or completed late.\n2. **A host cannot act on another host's run.** `src/remote.js:146` rejects when `run.hostId !== host.id`, where `host` comes from `_auth` (`:144`).\n3. **A replayed completion with an old `leaseId` is rejected after a re-claim.** `src/remote.js:139` creates a new 192-bit random `leaseId` on every claim, and `:147` requires an exact match.\n4. **`claim` never changes `generation`.** `src/remote.js:139` sets `status`, `leaseId`, `leaseUntil` and `claimedAt` only. The generation check at `:147` therefore only adds protection if some other code path increments `generation`. Against replay, the `leaseId` is what actually protects.\n5. **There is no upper limit on how long a lease can last.** `src/remote.js:154` adds `LEASE_MS` on every valid heartbeat, so a host can hold a run indefinitely.\n6. **`claim` uses two different host identifiers.** `src/remote.js:135–136` filter by the caller-supplied `hostId`, while `_lease` (`:146`) uses the authenticated `host.id`.\n7. **`claim` returns the full run object.** `src/remote.js:140` returns the raw `run`, whereas `:129` returns `summarizeRun(run)`. Any internal fields on the run are exposed to the host.\n\n## Hypotheses (depend on code not supplied)\n\n- **H1: claiming another host's runs.** If `_auth` resolves the host by token without checking `host.id === hostId`, the inconsistency in finding 6 lets host A pass `hostId=B` with A's token and claim B's queued run (`:135–136`).\n- **H2: vacuous generation check.** If `generation` is never set when a run is created, `undefined === undefined` passes at `:147`. Combined with finding 4, the generation field would provide no protection.\n- **H3: a stuck host.** A run whose lease expired but whose status is still `'leased'` blocks every new claim for that host (`:135`), unless a reaper moves it to `lost` or `queued`.\n- **H4: a stale run blocks the queue.** A stale first queued run makes every claim fail with 409 at `:138`, because `:136` always selects that same run. Separately, whether the `lastSeen` change at `:134` survives the `fail` throw depends on how `_update` rolls back.\n- **H5: double completion under concurrency.** Replay of an identical, still-valid lease after a successful completion is only blocked if `complete` (beyond `:168`) changes `status` away from `'leased'`. It also requires `_update` to be atomic, including across processes if state is file-backed. Otherwise two concurrent completions could both pass `:147`.\n- **H6: clock adjustments.** If `this.now()` is wall-clock time (`Date.now`), clock changes can lengthen or shorten leases.\n- **Minor: non-constant-time comparison.** `leaseId` is compared with `!==` (`:147`). This is low risk given 192 bits of entropy.\n\n## Recommended tests\n\n1. Claim, let the lease expire, then send a heartbeat or completion: expect 409.\n2. Claim, complete, then send the same completion again: expect 409, with the stored result unchanged.\n3. Claim, let the lease be lost and the run requeued, re-claim, then complete using the old `leaseId` or generation: expect 409. Also assert that `generation` was incremented.\n4. Call `claim(hostId=B, tokenOfA)`: expect an auth failure (covers H1). Do the same for heartbeat and complete.\n5. Run two `complete` calls concurrently with the same lease: exactly one should succeed (covers H5).\n6. Create a run without `generation`, then call heartbeat with `generation` omitted: expect rejection (covers H2).\n7. Leave a run expired with status `'leased'` and no reaper, then claim: document the expected behaviour (covers H3).\n8. Put a stale queued run ahead of a valid one: check that the valid run can still be claimed (covers H4).\n9. Assert that the `claim` response contains only allowlisted fields (covers finding 7).\n\n## Unknowns\n\n- The implementations of `_auth`, `_update`, the reaper or requeue logic, run creation (where `generation` is initialised), `complete` after `:168`, `this.now()` and `LEASE_MS`.\n- Real remote or multi-host behaviour is untested; no separate physical hardware was available for this trial.",
+      "artifacts": [
+        {
+          "name": "changes.json",
+          "sha256": "a6478d590472ea4fb08f821aea97a20dc3b2c6827cbf28e66d4f7a62b45ab195",
+          "taskId": "123b5569-9965-4950-88ce-32134c2cbaf6",
+          "runId": "89e80fbf-70e5-4d24-9301-836fa4d98431",
+          "baseRevision": "556b9f69c39a1b1dd6fb9cc71d1b9ddfe5798b47",
+          "requirementRevision": 1,
+          "generation": 1,
+          "snapshotHash": "79ab69ed8d5e227d9f4256417ef68bc776dc81b68341ba1f97d008c94c3dc24c",
+          "reportedSnapshotHash": "79ab69ed8d5e227d9f4256417ef68bc776dc81b68341ba1f97d008c94c3dc24c",
+          "snapshotStatus": "declared",
+          "size": 375
+        }
+      ],
+      "verified": false
+    }
+  },
+  "processEvidence": {
+    "command": [
+      "node",
+      "bin/worker.js",
+      "--config",
+      "<private temporary configuration>",
+      "--once"
+    ],
+    "exitCode": 0,
+    "stdout": "{\"status\":\"reported\",\"runId\":\"89e80fbf-70e5-4d24-9301-836fa4d98431\",\"generation\":1}\n",
+    "stderr": "",
+    "elapsedMs": 40236
+  },
+  "physicalRemoteVerified": false,
+  "checkedAt": "2026-10-21T04:31:20.888Z"
+}

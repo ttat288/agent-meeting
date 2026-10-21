@@ -1,0 +1,32 @@
+[
+  {
+    "file": "server.test.log",
+    "tests": 17,
+    "pass": 17,
+    "fail": 0
+  },
+  {
+    "file": "consistency.test.log",
+    "tests": 5,
+    "pass": 5,
+    "fail": 0
+  },
+  {
+    "file": "i18n-test.log",
+    "tests": 4,
+    "pass": 4,
+    "fail": 0
+  },
+  {
+    "file": "remote-server.test.log",
+    "tests": 1,
+    "pass": 1,
+    "fail": 0
+  },
+  {
+    "file": "work-server.test.log",
+    "tests": 8,
+    "pass": 8,
+    "fail": 0
+  }
+]

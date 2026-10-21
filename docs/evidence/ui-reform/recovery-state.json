@@ -1,0 +1,116 @@
+{
+  "task": {
+    "id": "meeting-18965fb09662660dbeb5c24ee98e44f1",
+    "context": "Fixture kiểm thử lỗi và phục hồi, không gọi model.",
+    "goal": "Kiểm thử lỗi và phục hồi",
+    "purpose": "execute",
+    "topology": "local",
+    "management": "managed",
+    "acceptance": [
+      "Test độc lập phải đạt"
+    ],
+    "dependencies": [],
+    "writePaths": [
+      "sum.js"
+    ],
+    "testFiles": [
+      "test/sum.test.js"
+    ],
+    "sources": [],
+    "facts": [],
+    "unknowns": [],
+    "requirementRevision": 2,
+    "status": "done",
+    "createdAt": "2026-10-21T08:31:21.182Z",
+    "origin": {
+      "kind": "meeting-action",
+      "number": 1,
+      "timestamp": 1792571481182,
+      "roomCreatedAt": 1792571479808,
+      "messageIndex": 1,
+      "message": "VIỆC: Dev | Kiểm thử lỗi và phục hồi | hôm nay",
+      "context": "Fixture kiểm thử lỗi và phục hồi, không gọi model."
+    },
+    "owner": "Dev",
+    "sourceCurrent": true,
+    "reportedProgress": {
+      "status": "todo",
+      "note": "",
+      "updatedAt": null,
+      "updatedBy": null
+    },
+    "workspace": "/tmp/am-ui-reform-preview/failing-source"
+  },
+  "runs": [
+    {
+      "id": "c3cbda7b-cac7-4c51-8253-f8c2547292d4",
+      "taskId": "meeting-18965fb09662660dbeb5c24ee98e44f1",
+      "status": "cancelled",
+      "requirementRevision": 2,
+      "evidence": []
+    },
+    {
+      "id": "66ddcf64-aecf-4ca5-9a80-693b3ddf625d",
+      "taskId": "meeting-18965fb09662660dbeb5c24ee98e44f1",
+      "status": "failed",
+      "requirementRevision": 2,
+      "evidence": [
+        {
+          "command": [
+            "/usr/bin/node",
+            "--max-old-space-size=256",
+            "--test",
+            "--test-timeout=20000",
+            "test/sum.test.js"
+          ],
+          "exitCode": 1,
+          "timeout": false,
+          "cancelled": false,
+          "output": "TAP version 13\n# Subtest: sum\nnot ok 1 - sum\n  ---\n  duration_ms: 3.163745\n  type: 'test'\n  location: '/tmp/am-ui-reform-preview/work/15ecde39424b2f7e3aadda4c7c449f4a3cd2fbd93eef824bebc1f78d403f9f24/runs/66ddcf64-aecf-4ca5-9a80-693b3ddf625d/workspace/test/sum.test.js:1:21'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    5 !== 6\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 6\n  actual: 5\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-ui-reform-preview/work/15ecde39424b2f7e3aadda4c7c449f4a3cd2fbd93eef824bebc1f78d403f9f24/runs/66ddcf64-aecf-4ca5-9a80-693b3ddf625d/workspace/test/sum.test.js:1:62)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 144.635171\n",
+          "elapsedMs": 256,
+          "checkedAt": "2026-10-21T08:37:23.313Z"
+        }
+      ]
+    },
+    {
+      "id": "44f2cc2a-4a47-4265-89c6-d65fade78a97",
+      "taskId": "meeting-18965fb09662660dbeb5c24ee98e44f1",
+      "status": "integrated",
+      "requirementRevision": 2,
+      "evidence": [
+        {
+          "command": [
+            "/usr/bin/node",
+            "--max-old-space-size=256",
+            "--test",
+            "--test-timeout=20000",
+            "test/sum.test.js"
+          ],
+          "exitCode": 0,
+          "timeout": false,
+          "cancelled": false,
+          "output": "TAP version 13\n# Subtest: sum\nok 1 - sum\n  ---\n  duration_ms: 1.950147\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 115.297423\n",
+          "elapsedMs": 215,
+          "checkedAt": "2026-10-21T08:55:29.064Z"
+        }
+      ],
+      "integrationEvidence": [
+        {
+          "command": [
+            "/usr/bin/node",
+            "--max-old-space-size=256",
+            "--test",
+            "--test-timeout=20000",
+            "test/sum.test.js"
+          ],
+          "exitCode": 0,
+          "timeout": false,
+          "cancelled": false,
+          "output": "TAP version 13\n# Subtest: sum\nok 1 - sum\n  ---\n  duration_ms: 2.262122\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 125.555041\n",
+          "elapsedMs": 240,
+          "checkedAt": "2026-10-21T08:55:30.102Z"
+        }
+      ]
+    }
+  ]
+}

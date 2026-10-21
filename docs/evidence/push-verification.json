@@ -1,0 +1,99 @@
+{
+  "date": "2026-10-21",
+  "command": "systemd-run --user --scope -q -p MemoryMax=1200M -p MemorySwapMax=0 timeout 150 node --test --test-timeout=30000 <file>",
+  "execution": "sequential",
+  "passed": 231,
+  "failed": 0,
+  "skipped": 0,
+  "files": [
+    {
+      "file": "test/brief.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/config-store.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/connect.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/consistency.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/evaluation.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/execution-sandbox.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/files.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/i18n.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/meeting.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/minutes.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/remote-server.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/remote.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/routing-tools.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/routing.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/runtime-denial.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/runtime.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/security.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/server.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/work-cancel.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/work-server.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/work.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/worker.test.js",
+      "exit": 0
+    }
+  ],
+  "limits": "Node test regression only; does not establish UX acceptance or real remote/model validation."
+}

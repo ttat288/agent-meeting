@@ -1,0 +1,47 @@
+[
+  {
+    "id": "meeting-868771bfc8c5856ff4c9b3c875eba2ce",
+    "goal": "Xác minh trên CVAT thực các thao tác keyframe, khóa mốc, trạng thái che khuất và lưu nguồn; mô tả flow 1→10→15",
+    "requirementRevision": 1,
+    "status": "planned",
+    "origin": {
+      "kind": "meeting-action",
+      "number": 1,
+      "timestamp": 1792588600568,
+      "roomCreatedAt": 1792588427969,
+      "messageIndex": 15,
+      "message": "KẾT LUẬN: Thử flow người duyệt mốc 1→10, rà đủ 2–9 và kiểm lại 10, lưu riêng nội suy/prelabel/điểm người sửa cùng ID/visibility; sai tại 5 thì người sửa thành keyframe và kiểm lại hai đoạn, che khuất/đổi hướng/lệch ID chặn tăng bước. Sau khi đoạn đã được người duyệt mới thử mốc 15 và rà tiếp 11–14; confidence 0,98 và sai khác nhỏ chỉ gợi ý ít rủi ro. Sau pilot mới cân nhắc giảm frame phải xem bằng kiểm rủi ro cộng mẫu ngẫu nhiên độc lập, người kiểm nhìn ảnh trước khi thấy gợi ý. Đo sai số tới điểm người xác nhận theo pixel và chia đường chéo box khi box đáng tin; báo riêng ID/visibility. Chưa có ngưỡng hay tỷ lệ mẫu đã kiểm nghiệm; chưa triển khai hoặc hoàn thành việc nào.\nVIỆC: Nhóm workflow annotator | Xác minh trên CVAT thực các thao tác keyframe, khóa mốc, trạng thái che khuất và lưu nguồn; mô tả flow 1→10→15 | Trước pilot, chưa định ngày\nVIỆC: Nhóm dữ liệu và chất lượng | Chuẩn bị clip chuyển động đều/đổi hướng/che khuất/lệch ID, gán điểm tham chiếu độc lập và quy ước box/sai số | Trước pilot, chưa định ngày\nVIỆC: Nhóm đánh giá | So sánh rà toàn bộ với kiểm rủi ro cộng mẫu ngẫu nhiên, đo lỗi bỏ sót và thời gian để hiệu chỉnh ngưỡng/tỷ lệ mẫu/bước tăng | Sau khi có bộ clip, chưa định ngày",
+      "context": "Họp tìm logic cho công cụ hỗ trợ annotator tracking keypoint trong CVAT, chưa xây tool. Ví dụ: người gán nhãn xác nhận frame 1 và 10; CVAT nội suy các frame ở giữa. So sánh prelabel độc lập với nội suy và kiểm bằng mắt frame 5, 9; nếu ổn mới thử mở tới 15, khi sai nhiều thì thêm keyframe và chia nhỏ đoạn. Cần tranh luận: confidence cao ở frame 10 có đủ tin cả đoạn không; chọn frame kiểm nào; định nghĩa sai số và tăng/giảm bước; xử lý che khuất, đổi hướng, lệch ID. Mỗi lượt 2–4 câu, phản biện trực tiếp ví dụ của nhau. Chốt một thuật toán thử nghiệm và 3 việc kiểm chứng, phân biệt giả thuyết với số liệu chưa có. Hai bên là Codex nội bộ, không giả danh model khác."
+    }
+  },
+  {
+    "id": "meeting-0d74f02d2ff7613d62c16a92dfdcdef0",
+    "goal": "Chuẩn bị clip chuyển động đều/đổi hướng/che khuất/lệch ID, gán điểm tham chiếu độc lập và quy ước box/sai số",
+    "requirementRevision": 1,
+    "status": "planned",
+    "origin": {
+      "kind": "meeting-action",
+      "number": 2,
+      "timestamp": 1792588600568,
+      "roomCreatedAt": 1792588427969,
+      "messageIndex": 15,
+      "message": "KẾT LUẬN: Thử flow người duyệt mốc 1→10, rà đủ 2–9 và kiểm lại 10, lưu riêng nội suy/prelabel/điểm người sửa cùng ID/visibility; sai tại 5 thì người sửa thành keyframe và kiểm lại hai đoạn, che khuất/đổi hướng/lệch ID chặn tăng bước. Sau khi đoạn đã được người duyệt mới thử mốc 15 và rà tiếp 11–14; confidence 0,98 và sai khác nhỏ chỉ gợi ý ít rủi ro. Sau pilot mới cân nhắc giảm frame phải xem bằng kiểm rủi ro cộng mẫu ngẫu nhiên độc lập, người kiểm nhìn ảnh trước khi thấy gợi ý. Đo sai số tới điểm người xác nhận theo pixel và chia đường chéo box khi box đáng tin; báo riêng ID/visibility. Chưa có ngưỡng hay tỷ lệ mẫu đã kiểm nghiệm; chưa triển khai hoặc hoàn thành việc nào.\nVIỆC: Nhóm workflow annotator | Xác minh trên CVAT thực các thao tác keyframe, khóa mốc, trạng thái che khuất và lưu nguồn; mô tả flow 1→10→15 | Trước pilot, chưa định ngày\nVIỆC: Nhóm dữ liệu và chất lượng | Chuẩn bị clip chuyển động đều/đổi hướng/che khuất/lệch ID, gán điểm tham chiếu độc lập và quy ước box/sai số | Trước pilot, chưa định ngày\nVIỆC: Nhóm đánh giá | So sánh rà toàn bộ với kiểm rủi ro cộng mẫu ngẫu nhiên, đo lỗi bỏ sót và thời gian để hiệu chỉnh ngưỡng/tỷ lệ mẫu/bước tăng | Sau khi có bộ clip, chưa định ngày",
+      "context": "Họp tìm logic cho công cụ hỗ trợ annotator tracking keypoint trong CVAT, chưa xây tool. Ví dụ: người gán nhãn xác nhận frame 1 và 10; CVAT nội suy các frame ở giữa. So sánh prelabel độc lập với nội suy và kiểm bằng mắt frame 5, 9; nếu ổn mới thử mở tới 15, khi sai nhiều thì thêm keyframe và chia nhỏ đoạn. Cần tranh luận: confidence cao ở frame 10 có đủ tin cả đoạn không; chọn frame kiểm nào; định nghĩa sai số và tăng/giảm bước; xử lý che khuất, đổi hướng, lệch ID. Mỗi lượt 2–4 câu, phản biện trực tiếp ví dụ của nhau. Chốt một thuật toán thử nghiệm và 3 việc kiểm chứng, phân biệt giả thuyết với số liệu chưa có. Hai bên là Codex nội bộ, không giả danh model khác."
+    }
+  },
+  {
+    "id": "meeting-e4858506e161c1aeaa8e3263585de544",
+    "goal": "So sánh rà toàn bộ với kiểm rủi ro cộng mẫu ngẫu nhiên, đo lỗi bỏ sót và thời gian để hiệu chỉnh ngưỡng/tỷ lệ mẫu/bước tăng",
+    "requirementRevision": 1,
+    "status": "planned",
+    "origin": {
+      "kind": "meeting-action",
+      "number": 3,
+      "timestamp": 1792588600568,
+      "roomCreatedAt": 1792588427969,
+      "messageIndex": 15,
+      "message": "KẾT LUẬN: Thử flow người duyệt mốc 1→10, rà đủ 2–9 và kiểm lại 10, lưu riêng nội suy/prelabel/điểm người sửa cùng ID/visibility; sai tại 5 thì người sửa thành keyframe và kiểm lại hai đoạn, che khuất/đổi hướng/lệch ID chặn tăng bước. Sau khi đoạn đã được người duyệt mới thử mốc 15 và rà tiếp 11–14; confidence 0,98 và sai khác nhỏ chỉ gợi ý ít rủi ro. Sau pilot mới cân nhắc giảm frame phải xem bằng kiểm rủi ro cộng mẫu ngẫu nhiên độc lập, người kiểm nhìn ảnh trước khi thấy gợi ý. Đo sai số tới điểm người xác nhận theo pixel và chia đường chéo box khi box đáng tin; báo riêng ID/visibility. Chưa có ngưỡng hay tỷ lệ mẫu đã kiểm nghiệm; chưa triển khai hoặc hoàn thành việc nào.\nVIỆC: Nhóm workflow annotator | Xác minh trên CVAT thực các thao tác keyframe, khóa mốc, trạng thái che khuất và lưu nguồn; mô tả flow 1→10→15 | Trước pilot, chưa định ngày\nVIỆC: Nhóm dữ liệu và chất lượng | Chuẩn bị clip chuyển động đều/đổi hướng/che khuất/lệch ID, gán điểm tham chiếu độc lập và quy ước box/sai số | Trước pilot, chưa định ngày\nVIỆC: Nhóm đánh giá | So sánh rà toàn bộ với kiểm rủi ro cộng mẫu ngẫu nhiên, đo lỗi bỏ sót và thời gian để hiệu chỉnh ngưỡng/tỷ lệ mẫu/bước tăng | Sau khi có bộ clip, chưa định ngày",
+      "context": "Họp tìm logic cho công cụ hỗ trợ annotator tracking keypoint trong CVAT, chưa xây tool. Ví dụ: người gán nhãn xác nhận frame 1 và 10; CVAT nội suy các frame ở giữa. So sánh prelabel độc lập với nội suy và kiểm bằng mắt frame 5, 9; nếu ổn mới thử mở tới 15, khi sai nhiều thì thêm keyframe và chia nhỏ đoạn. Cần tranh luận: confidence cao ở frame 10 có đủ tin cả đoạn không; chọn frame kiểm nào; định nghĩa sai số và tăng/giảm bước; xử lý che khuất, đổi hướng, lệch ID. Mỗi lượt 2–4 câu, phản biện trực tiếp ví dụ của nhau. Chốt một thuật toán thử nghiệm và 3 việc kiểm chứng, phân biệt giả thuyết với số liệu chưa có. Hai bên là Codex nội bộ, không giả danh model khác."
+    }
+  }
+]

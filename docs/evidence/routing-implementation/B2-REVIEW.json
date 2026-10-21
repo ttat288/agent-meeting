@@ -1,0 +1,51 @@
+{
+  "adapter": "claude",
+  "requestedModel": "claude-opus-5-5",
+  "valid": true,
+  "reportedModel": "claude-opus-5-5",
+  "text": "Per your \"no tools, no file changes\" instruction, I did not read the repo, write a plan file, or call ExitPlanMode. Everything below comes only from the facts you stated. **Facts** are what you gave me. **Hypotheses** are my inferences. **Unknowns** need runtime or code access to settle.\n\n---\n\n## Risk 1: `get_file` sits outside the bounded catalog and is a path-read primitive\n\n**Facts**\n- `src/connect.js:20`: `ALLOWED = [...TOOLS.map(t => t.name), get_file]`.\n- The proposal says the stdio MCP server is read-only with a bounded catalog, and runs use a private workspace copy.\n\n**Hypotheses**\n- `get_file` is appended outside `TOOLS`, so its schema and validation may not go through the same path as the catalogued tools.\n- \"Read-only\" still allows exfiltration. If path resolution is lexical (`path.join`/`normalize`) rather than `realpath`-based, then `../`, absolute paths, or symlinks inside the workspace copy can read host files such as `~/.ssh`, `.env`, or the host key store.\n- Copying the workspace may preserve symlinks that point outside it.\n- The identifier `get_file` is used bare, not as a string. It may resolve to a function or variable, so `ALLOWED` might not contain the string you expect. That could make the allowlist wrong in either direction.\n\n**Unknowns**\n- What `get_file` resolves to.\n- Whether the copy dereferences symlinks or rejects them.\n- Whether there is a size or byte cap.\n- Whether `tools/list` and the `tools/call` dispatcher both check `ALLOWED`.\n\n**Tests**\n1. Assert `tools/list` equals `ALLOWED` exactly. Calling any other name, including case variants and names with trailing spaces, returns an error.\n2. Call `get_file` with `../../etc/passwd`, `/etc/passwd`, `%2e%2e/`, a path containing a NUL byte, and a path through a symlink created inside the workspace that points outside. All must be rejected after `realpath` plus a prefix check against the workspace root.\n3. Read a 1 GB file or `/dev/zero`. The call must be truncated or rejected within the byte cap.\n4. Assert `typeof` of each `ALLOWED` entry is `'string'`.\n\n---\n\n## Risk 2: Host/agent separation may not survive tunnels, and capability URLs leak\n\n**Facts**\n- Host endpoints are `/api/host/:key` and invited-agent endpoints are `/mcp/:id`.\n- The server validates `Host` and `Origin`.\n- Host controls are disabled over the tunnel.\n\n**Hypotheses**\n- Many tunnels (cloudflared, ngrok, ssh `-R`) forward with `Host: localhost` or present a loopback source. \"Tunnel request\" could then be indistinguishable from \"local request\", which would bypass the host-control disablement and the Host check.\n- Requests without an `Origin` header are typical for non-browser clients. If those pass, Origin validation does not stop scripted attacks.\n- Path-embedded secrets (`:key`, `:id`) leak through access logs, `Referer`, tunnel dashboards, and shell history.\n- If `:id` is not high-entropy, or the key comparison is not constant-time, both can be guessed.\n\n**Unknowns**\n- How the server detects a tunnel: separate listener/port, a header, or the source IP.\n- Whether `X-Forwarded-*` headers are trusted.\n- Key and id entropy, and whether they expire.\n- Whether `/mcp/:id` handlers can call host-side functions internally.\n\n**Tests**\n1. Through a real tunnel, request `/api/host/<valid key>` with `Host: localhost:<port>` and with `X-Forwarded-Host` spoofed. Expect 403.\n2. Locally, test the same endpoint with no `Origin`, `Origin: null`, and `Origin: http://localhost.evil.com`. Also run a DNS-rebinding case (`Host: attacker.tld` resolving to 127.0.0.1). Expect rejection.\n3. A valid `/mcp/:id` session tries host operations: path variants `/mcp/:id/../api/host/...`, double slashes, encoded slashes. Expect 403 or 404.\n4. Grep the logs after a run for the key and id values. Expect zero hits.\n5. Time-compare correct-prefix and wrong keys, or code-review for `crypto.timingSafeEqual`.\n\n---\n\n## Risk 3: The CLI adapter gets argv flag injection, env leakage, and self-reported \"done\"\n\n**Facts**\n- The proposal uses `spawn` with an argv array, `shell: false`, and an explicit model.\n- A run configuration snapshot is persisted.\n- Verification is meant to be separate from the agent's reported \"done\".\n\n**Hypotheses**\n- `shell: false` prevents shell metacharacter injection but not option injection. A prompt or model value beginning with `-`, such as `--dangerously-skip-permissions`, `--config=...`, or `--add-dir /`, could be parsed as a CLI flag unless the adapter inserts a `--` separator or passes the prompt via stdin.\n- The model value probably needs an allowlist, not passthrough.\n- By default, the child inherits `process.env`, including API keys and host tokens.\n- If the snapshot or the verification inputs live inside the writable workspace copy, the agent can change them between snapshot and verify (TOCTOU). That would let the agent forge \"verified done\".\n\n**Unknowns**\n- Exactly how the argv is built.\n- The `env` and `cwd` options passed to `spawn`.\n- Where the snapshot is stored, and whether it is hashed or signed.\n- Whether verification re-runs checks or just parses agent output.\n\n**Tests**\n1. Use the prompt `--help` or `--dangerously-skip-permissions do X`, and the model `x --add-dir /`. Assert the spawned argv, captured via a stub binary, contains these as a single positional argument after `--`. Assert a non-allowlisted model is rejected before spawn.\n2. Set a sentinel `SECRET_TEST=1` in the parent environment. The stub child must not see it, so the env must be explicit and minimal. Also assert `cwd` is the workspace copy.\n3. Have the agent modify the snapshot file and any test or verification scripts inside the workspace, then report done. Verification must use the out-of-workspace snapshot and its hash, detect the drift, and report \"unverified\" while still showing \"agent reported done\".\n\n---\n\n**Next step if you get more time or access:** resolve Risk 1's \"what is `get_file`\" and Risk 2's \"how is a tunnel detected\" first. Both can be read directly from `src/connect.js` and `src/server.js` at base `556b9f6`, and each could turn a hypothesis into a confirmed finding.",
+  "usage": {
+    "input_tokens": 2,
+    "cache_creation_input_tokens": 3884,
+    "cache_read_input_tokens": 535,
+    "output_tokens": 3243,
+    "output_tokens_details": {
+      "thinking_tokens": 917
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 3884,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 3243,
+        "cache_read_input_tokens": 535,
+        "cache_creation_input_tokens": 3884,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 3884
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard",
+    "fallback_credit": null
+  },
+  "costUsd": 0.096047,
+  "permissionDenials": 0,
+  "error": null,
+  "exitCode": 0,
+  "status": "reported",
+  "elapsedMs": 38165,
+  "workspace": "/tmp/am-cli-review-pimqDD",
+  "checkedAt": "2026-10-21T04:02:57.375Z",
+  "taskId": "B2-REVIEW",
+  "retry": 1
+}

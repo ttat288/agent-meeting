@@ -1,0 +1,884 @@
+[
+  {
+    "screen": "Hội thoại",
+    "heading": "Hội thoại",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Hội thoại",
+    "theme": "system",
+    "width": 1280
+  },
+  {
+    "screen": "Kế hoạch",
+    "heading": "Kế hoạch",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Kế hoạch",
+    "theme": "system",
+    "width": 1280
+  },
+  {
+    "screen": "Thực hiện",
+    "heading": "Thực hiện",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Thực hiện",
+    "theme": "system",
+    "width": 1280
+  },
+  {
+    "screen": "Kết quả",
+    "heading": "Kết quả",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Kết quả",
+    "theme": "system",
+    "width": 1280
+  },
+  {
+    "screen": "Quản trị",
+    "heading": "Model & năng lực",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "theme": "system",
+    "width": 1280
+  },
+  {
+    "screen": "Hội thoại",
+    "heading": "Hội thoại",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Hội thoại",
+    "theme": "light",
+    "width": 1280
+  },
+  {
+    "screen": "Kế hoạch",
+    "heading": "Kế hoạch",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Kế hoạch",
+    "theme": "light",
+    "width": 1280
+  },
+  {
+    "screen": "Thực hiện",
+    "heading": "Thực hiện",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Thực hiện",
+    "theme": "light",
+    "width": 1280
+  },
+  {
+    "screen": "Kết quả",
+    "heading": "Kết quả",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Kết quả",
+    "theme": "light",
+    "width": 1280
+  },
+  {
+    "screen": "Quản trị",
+    "heading": "Model & năng lực",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "theme": "light",
+    "width": 1280
+  },
+  {
+    "screen": "Hội thoại",
+    "heading": "Hội thoại",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Hội thoại",
+    "theme": "dark",
+    "width": 1280
+  },
+  {
+    "screen": "Kế hoạch",
+    "heading": "Kế hoạch",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Kế hoạch",
+    "theme": "dark",
+    "width": 1280
+  },
+  {
+    "screen": "Thực hiện",
+    "heading": "Thực hiện",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Thực hiện",
+    "theme": "dark",
+    "width": 1280
+  },
+  {
+    "screen": "Kết quả",
+    "heading": "Kết quả",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Kết quả",
+    "theme": "dark",
+    "width": 1280
+  },
+  {
+    "screen": "Quản trị",
+    "heading": "Model & năng lực",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "theme": "dark",
+    "width": 1280
+  },
+  {
+    "screen": "Conversation",
+    "heading": "Conversation",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Conversation",
+    "theme": "dark",
+    "width": 1280
+  },
+  {
+    "screen": "Plan",
+    "heading": "Plan",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Plan",
+    "theme": "dark",
+    "width": 1280
+  },
+  {
+    "screen": "Execute",
+    "heading": "Execute",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Execute",
+    "theme": "dark",
+    "width": 1280
+  },
+  {
+    "screen": "Results",
+    "heading": "Results",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Results",
+    "theme": "dark",
+    "width": 1280
+  },
+  {
+    "screen": "Administration",
+    "heading": "Models & capabilities",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "theme": "dark",
+    "width": 1280
+  },
+  {
+    "screen": "Conversation",
+    "heading": "Conversation",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Conversation",
+    "theme": "light",
+    "width": 1280
+  },
+  {
+    "screen": "Plan",
+    "heading": "Plan",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Plan",
+    "theme": "light",
+    "width": 1280
+  },
+  {
+    "screen": "Execute",
+    "heading": "Execute",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Execute",
+    "theme": "light",
+    "width": 1280
+  },
+  {
+    "screen": "Results",
+    "heading": "Results",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Results",
+    "theme": "light",
+    "width": 1280
+  },
+  {
+    "screen": "Administration",
+    "heading": "Models & capabilities",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "theme": "light",
+    "width": 1280
+  },
+  {
+    "screen": "Conversation",
+    "heading": "Conversation",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Conversation",
+    "theme": "system",
+    "width": 1280
+  },
+  {
+    "screen": "Plan",
+    "heading": "Plan",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Plan",
+    "theme": "system",
+    "width": 1280
+  },
+  {
+    "screen": "Execute",
+    "heading": "Execute",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Execute",
+    "theme": "system",
+    "width": 1280
+  },
+  {
+    "screen": "Results",
+    "heading": "Results",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Results",
+    "theme": "system",
+    "width": 1280
+  },
+  {
+    "screen": "Administration",
+    "heading": "Models & capabilities",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "theme": "system",
+    "width": 1280
+  },
+  {
+    "screen": "Conversation",
+    "heading": "Conversation",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Conversation",
+    "theme": "system",
+    "width": 768
+  },
+  {
+    "screen": "Plan",
+    "heading": "Plan",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Plan",
+    "theme": "system",
+    "width": 768
+  },
+  {
+    "screen": "Execute",
+    "heading": "Execute",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Execute",
+    "theme": "system",
+    "width": 768
+  },
+  {
+    "screen": "Results",
+    "heading": "Results",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Results",
+    "theme": "system",
+    "width": 768
+  },
+  {
+    "screen": "Administration",
+    "heading": "Models & capabilities",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "theme": "system",
+    "width": 768
+  },
+  {
+    "screen": "Conversation",
+    "heading": "Conversation",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Conversation",
+    "theme": "light",
+    "width": 768
+  },
+  {
+    "screen": "Plan",
+    "heading": "Plan",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Plan",
+    "theme": "light",
+    "width": 768
+  },
+  {
+    "screen": "Execute",
+    "heading": "Execute",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Execute",
+    "theme": "light",
+    "width": 768
+  },
+  {
+    "screen": "Results",
+    "heading": "Results",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Results",
+    "theme": "light",
+    "width": 768
+  },
+  {
+    "screen": "Administration",
+    "heading": "Models & capabilities",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "theme": "light",
+    "width": 768
+  },
+  {
+    "screen": "Conversation",
+    "heading": "Conversation",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Conversation",
+    "theme": "dark",
+    "width": 768
+  },
+  {
+    "screen": "Plan",
+    "heading": "Plan",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Plan",
+    "theme": "dark",
+    "width": 768
+  },
+  {
+    "screen": "Execute",
+    "heading": "Execute",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Execute",
+    "theme": "dark",
+    "width": 768
+  },
+  {
+    "screen": "Results",
+    "heading": "Results",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Results",
+    "theme": "dark",
+    "width": 768
+  },
+  {
+    "screen": "Administration",
+    "heading": "Models & capabilities",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "theme": "dark",
+    "width": 768
+  },
+  {
+    "screen": "Hội thoại",
+    "heading": "Hội thoại",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Hội thoại",
+    "theme": "dark",
+    "width": 768
+  },
+  {
+    "screen": "Kế hoạch",
+    "heading": "Kế hoạch",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Kế hoạch",
+    "theme": "dark",
+    "width": 768
+  },
+  {
+    "screen": "Thực hiện",
+    "heading": "Thực hiện",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Thực hiện",
+    "theme": "dark",
+    "width": 768
+  },
+  {
+    "screen": "Kết quả",
+    "heading": "Kết quả",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Kết quả",
+    "theme": "dark",
+    "width": 768
+  },
+  {
+    "screen": "Quản trị",
+    "heading": "Model & năng lực",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "theme": "dark",
+    "width": 768
+  },
+  {
+    "screen": "Hội thoại",
+    "heading": "Hội thoại",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Hội thoại",
+    "theme": "light",
+    "width": 768
+  },
+  {
+    "screen": "Kế hoạch",
+    "heading": "Kế hoạch",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Kế hoạch",
+    "theme": "light",
+    "width": 768
+  },
+  {
+    "screen": "Thực hiện",
+    "heading": "Thực hiện",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Thực hiện",
+    "theme": "light",
+    "width": 768
+  },
+  {
+    "screen": "Kết quả",
+    "heading": "Kết quả",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Kết quả",
+    "theme": "light",
+    "width": 768
+  },
+  {
+    "screen": "Quản trị",
+    "heading": "Model & năng lực",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "theme": "light",
+    "width": 768
+  },
+  {
+    "screen": "Hội thoại",
+    "heading": "Hội thoại",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Hội thoại",
+    "theme": "system",
+    "width": 768
+  },
+  {
+    "screen": "Kế hoạch",
+    "heading": "Kế hoạch",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Kế hoạch",
+    "theme": "system",
+    "width": 768
+  },
+  {
+    "screen": "Thực hiện",
+    "heading": "Thực hiện",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Thực hiện",
+    "theme": "system",
+    "width": 768
+  },
+  {
+    "screen": "Kết quả",
+    "heading": "Kết quả",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Kết quả",
+    "theme": "system",
+    "width": 768
+  },
+  {
+    "screen": "Quản trị",
+    "heading": "Model & năng lực",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "theme": "system",
+    "width": 768
+  },
+  {
+    "screen": "Hội thoại",
+    "heading": "Hội thoại",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Hội thoại",
+    "theme": "system",
+    "width": 375
+  },
+  {
+    "screen": "Kế hoạch",
+    "heading": "Kế hoạch",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Kế hoạch",
+    "theme": "system",
+    "width": 375
+  },
+  {
+    "screen": "Thực hiện",
+    "heading": "Thực hiện",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Thực hiện",
+    "theme": "system",
+    "width": 375
+  },
+  {
+    "screen": "Kết quả",
+    "heading": "Kết quả",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Kết quả",
+    "theme": "system",
+    "width": 375
+  },
+  {
+    "screen": "Quản trị",
+    "heading": "Model & năng lực",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "theme": "system",
+    "width": 375
+  },
+  {
+    "screen": "Hội thoại",
+    "heading": "Hội thoại",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Hội thoại",
+    "theme": "light",
+    "width": 375
+  },
+  {
+    "screen": "Kế hoạch",
+    "heading": "Kế hoạch",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Kế hoạch",
+    "theme": "light",
+    "width": 375
+  },
+  {
+    "screen": "Thực hiện",
+    "heading": "Thực hiện",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Thực hiện",
+    "theme": "light",
+    "width": 375
+  },
+  {
+    "screen": "Kết quả",
+    "heading": "Kết quả",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Kết quả",
+    "theme": "light",
+    "width": 375
+  },
+  {
+    "screen": "Quản trị",
+    "heading": "Model & năng lực",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "theme": "light",
+    "width": 375
+  },
+  {
+    "screen": "Hội thoại",
+    "heading": "Hội thoại",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Hội thoại",
+    "theme": "dark",
+    "width": 375
+  },
+  {
+    "screen": "Kế hoạch",
+    "heading": "Kế hoạch",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Kế hoạch",
+    "theme": "dark",
+    "width": 375
+  },
+  {
+    "screen": "Thực hiện",
+    "heading": "Thực hiện",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Thực hiện",
+    "theme": "dark",
+    "width": 375
+  },
+  {
+    "screen": "Kết quả",
+    "heading": "Kết quả",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "selected": "Kết quả",
+    "theme": "dark",
+    "width": 375
+  },
+  {
+    "screen": "Quản trị",
+    "heading": "Model & năng lực",
+    "lang": "vi",
+    "overflow": false,
+    "panels": [],
+    "theme": "dark",
+    "width": 375
+  },
+  {
+    "screen": "Conversation",
+    "heading": "Conversation",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Conversation",
+    "theme": "dark",
+    "width": 375
+  },
+  {
+    "screen": "Plan",
+    "heading": "Plan",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Plan",
+    "theme": "dark",
+    "width": 375
+  },
+  {
+    "screen": "Execute",
+    "heading": "Execute",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Execute",
+    "theme": "dark",
+    "width": 375
+  },
+  {
+    "screen": "Results",
+    "heading": "Results",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Results",
+    "theme": "dark",
+    "width": 375
+  },
+  {
+    "screen": "Administration",
+    "heading": "Models & capabilities",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "theme": "dark",
+    "width": 375
+  },
+  {
+    "screen": "Conversation",
+    "heading": "Conversation",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Conversation",
+    "theme": "light",
+    "width": 375
+  },
+  {
+    "screen": "Plan",
+    "heading": "Plan",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Plan",
+    "theme": "light",
+    "width": 375
+  },
+  {
+    "screen": "Execute",
+    "heading": "Execute",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Execute",
+    "theme": "light",
+    "width": 375
+  },
+  {
+    "screen": "Results",
+    "heading": "Results",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Results",
+    "theme": "light",
+    "width": 375
+  },
+  {
+    "screen": "Administration",
+    "heading": "Models & capabilities",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "theme": "light",
+    "width": 375
+  },
+  {
+    "screen": "Conversation",
+    "heading": "Conversation",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Conversation",
+    "theme": "system",
+    "width": 375
+  },
+  {
+    "screen": "Plan",
+    "heading": "Plan",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Plan",
+    "theme": "system",
+    "width": 375
+  },
+  {
+    "screen": "Execute",
+    "heading": "Execute",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Execute",
+    "theme": "system",
+    "width": 375
+  },
+  {
+    "screen": "Results",
+    "heading": "Results",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "selected": "Results",
+    "theme": "system",
+    "width": 375
+  },
+  {
+    "screen": "Administration",
+    "heading": "Models & capabilities",
+    "lang": "en",
+    "overflow": false,
+    "panels": [],
+    "theme": "system",
+    "width": 375
+  }
+]

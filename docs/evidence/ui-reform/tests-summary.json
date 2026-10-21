@@ -1,0 +1,118 @@
+{
+  "files": 22,
+  "tests": 231,
+  "fail": 0,
+  "execution": "Sequential files; systemd MemoryMax=1200M MemorySwapMax=0; timeout 150s; node test timeout 30s",
+  "results": [
+    {
+      "file": "brief.test.js",
+      "tests": 18,
+      "fail": 0
+    },
+    {
+      "file": "config-store.test.js",
+      "tests": 11,
+      "fail": 0
+    },
+    {
+      "file": "connect.test.js",
+      "tests": 4,
+      "fail": 0
+    },
+    {
+      "file": "consistency.test.js",
+      "tests": 5,
+      "fail": 0
+    },
+    {
+      "file": "evaluation.test.js",
+      "tests": 11,
+      "fail": 0
+    },
+    {
+      "file": "execution-sandbox.test.js",
+      "tests": 4,
+      "fail": 0
+    },
+    {
+      "file": "files.test.js",
+      "tests": 8,
+      "fail": 0
+    },
+    {
+      "file": "i18n.test.js",
+      "tests": 4,
+      "fail": 0
+    },
+    {
+      "file": "meeting.test.js",
+      "tests": 51,
+      "fail": 0
+    },
+    {
+      "file": "minutes.test.js",
+      "tests": 8,
+      "fail": 0
+    },
+    {
+      "file": "remote-server.test.js",
+      "tests": 1,
+      "fail": 0
+    },
+    {
+      "file": "remote.test.js",
+      "tests": 11,
+      "fail": 0
+    },
+    {
+      "file": "routing-tools.test.js",
+      "tests": 8,
+      "fail": 0
+    },
+    {
+      "file": "routing.test.js",
+      "tests": 8,
+      "fail": 0
+    },
+    {
+      "file": "runtime-denial.test.js",
+      "tests": 1,
+      "fail": 0
+    },
+    {
+      "file": "runtime.test.js",
+      "tests": 9,
+      "fail": 0
+    },
+    {
+      "file": "security.test.js",
+      "tests": 14,
+      "fail": 0
+    },
+    {
+      "file": "server.test.js",
+      "tests": 17,
+      "fail": 0
+    },
+    {
+      "file": "work-cancel.test.js",
+      "tests": 9,
+      "fail": 0
+    },
+    {
+      "file": "work-server.test.js",
+      "tests": 8,
+      "fail": 0
+    },
+    {
+      "file": "work.test.js",
+      "tests": 9,
+      "fail": 0
+    },
+    {
+      "file": "worker.test.js",
+      "tests": 12,
+      "fail": 0
+    }
+  ]
+}

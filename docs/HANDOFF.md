@@ -2,6 +2,14 @@
 
 > Đọc file này trước khi sửa code. Cập nhật lại mục "Trạng thái" và "Việc tiếp theo" trước khi kết thúc phiên làm việc.
 
+> **UI v2 đã triển khai — 2026-10-21, chờ đánh giá UX:** một shell52px desktop/hai hàng89px mobile, timeline495px ở viewport609px; token và task/tool rows chung cho năm view. Hai reviewer Codex nội bộ review thiết kế + triển khai, phát hiện đã sửa/kiểm lại; browser journey lỗi/phục hồi/zoom200% thật và hồi quy có giới hạn. Xem [evidence/ui-v2/ACCEPTANCE.vi.md](evidence/ui-v2/ACCEPTANCE.vi.md). Preview3119 giữ bằng transient service `agent-meeting-ui-v2-preview.service`; không đụng3000. Việc tiếp theo: người dùng đánh giá bản chạy trước backlog mới, không coi test/ảnh là nghiệm thu.
+
+> **Ưu tiên mới nhất — cải cách UI, 2026-10-21:** người dùng chưa chấp nhận UI hiện tại: chưa rõ ràng, nhiều chữ thừa, bố cục chưa gọn, chưa gom nội dung hợp lý và thiếu phân biệt nền/khối/điều khiển. Phiên sau phải đọc [HANDOFF-ui-reform.vi.md](HANDOFF-ui-reform.vi.md) và cải cách UI trước backlog model/remote hoặc tính năng mới. Kết quả test luồng trước đây không đồng nghĩa thiết kế đã được nghiệm thu.
+
+> **Cập nhật triển khai thống nhất — 2026-10-21:** đã triển khai view chung tại `/m/<key>#conversation|plan|execute|results`, redirect `/workspace`, adapter VIỆC → task UUID, cấu hình trên task sẵn có, revision/source guards và carry dùng chung kho. Đọc [CONSISTENCY-JOURNEYS.vi.md](CONSISTENCY-JOURNEYS.vi.md) và [bằng chứng nghiệm thu](evidence/consistency/ACCEPTANCE.vi.md). Browser đi hết luồng bằng fixture Node subprocess thật; chưa nghiệm thu hành trình mới bằng model thật/remote máy thứ hai. Không coi đây là đội tự xây sản phẩm hoàn chỉnh.
+
+> **Bàn giao để push — 2026-10-21:** người dùng đã yêu cầu commit/push nhánh `v3.5-security`, gồm lớp routing/task/workspace, UI v2, test và tài liệu/bằng chứng liên quan. Bản cài app local đã cập nhật; người dùng nhận xét UX “tạm ổn” sau cuộc họp thử annotator. Giới hạn còn mở: ENDED với ba task dài làm tổng kết chiếm timeline (feed khoảng24px ở viewport608px), xem [observations](evidence/annotator-discussion/OBSERVATIONS.vi.md). Ba bộ design skill mới chỉ được nghiên cứu, chưa cài. Skill local, cấu hình và dữ liệu chạy trong home/tmp không đưa vào Git. Không tạo release/tag hoặc merge main trong lần push này.
+
 ## Sản phẩm là gì
 
 Agent Meeting: phòng họp cho nhiều AI agent (Claude Code, Codex, Gemini CLI, hoặc bất kỳ agent nào chạy được `curl`) trên các máy khác nhau tự trao đổi; người dùng là **chủ trì** qua trang web. Một lệnh `npx github:ttat288/agent-meeting` chạy server Node (không thư viện ngoài) + tunnel Cloudflare miễn phí.
@@ -177,6 +185,20 @@ npm run demo -- http://localhost:3100/a/<id>   # 3 bot giả lập
 - Commit kết thúc bằng dòng `Co-Authored-By` theo hướng dẫn của phiên; cập nhật CHANGELOG + README/GUIDE cho thay đổi người dùng thấy được; `bash scripts/install-linux.sh` để cập nhật bản trong menu.
 
 ## Trạng thái
+
+- **UI v2 hiện tại:** đã triển khai, xem evidence/ui-v2; phản hồi bác bỏ và dòng “v2 chưa triển khai” bên dưới là lịch sử trước lượt này. Bản mới vẫn chờ người dùng đánh giá.
+
+- **Phản hồi UI mới nhất 2026-10-21:** người dùng bác bỏ bản cải cách vừa chạy vì quá lớn/không nhất quán/ba header. Đã planning lại và review bởi hai subagent nội bộ; xem [UI-REFORM-v2-plan.vi.md](UI-REFORM-v2-plan.vi.md). V2 chưa triển khai; ưu tiên một shell gọn và Hội thoại trước. Các số test của v1 không phải nghiệm thu thiết kế.
+
+- **2026-10-21 — bản cải cách UI chạy được, chưa người dùng nghiệm thu:** đã đọc/apply ui-ux-pro-max, kiểm năm view có dữ liệu, viết screen pool/flow trước code tại [UI-REFORM.vi.md](UI-REFORM.vi.md). Một nav phiên, task/kết quả đứng trước metadata, form chia nhóm, bằng chứng và số liệu mở rộng, Quản trị có heading theo nhóm. Giữ CSP/API/task ID. Preview cô lập 3119, không đụng cổng 3000/settings/model trả phí. Bằng chứng và giới hạn: [evidence/ui-reform/ACCEPTANCE.vi.md](evidence/ui-reform/ACCEPTANCE.vi.md). Không commit/push.
+
+- **2026-10-21 — Bàn giao sửa tính nhất quán:** phòng cũ và workspace mới vẫn là hai luồng/task model rời nhau; chưa sửa trong phiên bàn giao. [HANDOFF-consistency.vi.md](HANDOFF-consistency.vi.md) ghi vấn đề, screen pool/use case khởi đầu, thứ tự sửa dữ liệu/API/UI, test hành trình và thay đổi cách làm. Test kỹ thuật trước đây không chứng minh UX thống nhất.
+
+- **2026-10-21 — Triển khai routing/workspace (chưa commit/push/release):** catalog/policy/handoff có nguồn và lookup CLI/MCP riêng; admin + workspace mới, config atomic/CAS/backup; adapter Claude/agy, local task/test/single-file integration có bằng chứng CLI thật; worker token/lease/snapshot/artifact và metrics. Chi tiết, test, artifact và giới hạn tại [IMPLEMENTATION-STATUS.vi.md](IMPLEMENTATION-STATUS.vi.md), cách dùng tại [ROUTING-WORKFLOW.vi.md](ROUTING-WORKFLOW.vi.md). Không coi đây là đội tự xây app full-stack hoàn chỉnh: còn leader planning tự động, multi-file/review/resume, reconcile/revoke và thử máy vật lý thứ hai. bwrap chỉ cách ly ghi filesystem, không đọc/mạng. Execution không vào allowlist hội thoại.
+
+- **2026-10-21 — Bổ sung định hướng đội AI phát triển phần mềm tự vận hành:** xem [VISION.vi.md](VISION.vi.md). Ưu tiên đội nhỏ làm trọn web full-stack, nghiệm thu bằng sản phẩm chạy thật, review độc lập, ngân sách và phục hồi. Đã liên kết từ README EN/VI; đây là thay đổi tài liệu, chưa triển khai runtime/adapter hay nâng phiên bản.
+- **2026-10-21 — Code graph riêng:** bổ sung mục "Code intelligence tự phát triển" trong VISION: học kiến trúc dự án đi trước, tự xây pipeline/resolver/retrieval, bắt đầu JS/TS (gồm CommonJS), CLI rồi MCP, có bằng chứng quan hệ, kiểm tra stale và benchmark. Chưa cài engine bên ngoài hoặc viết engine mới.
+- **2026-10-21 — Source tham khảo local theo yêu cầu người dùng:** đã clone đầy đủ `colbymchenry/codegraph` vào `.local-tools/codegraph/`, ghim commit `226ac930de078e7ece9c16aa91ceafc1d92f0935`. Thư mục `/.local-tools/` được gitignore, không phải submodule và không phát hành cùng dự án; giữ nguyên LICENSE MIT và lịch sử upstream. Chưa cài dependency, chạy index hay thay đổi cấu hình agent. Nguồn này phục vụ nghiên cứu/thử nghiệm, chưa thay thế định hướng tự phát triển engine.
 
 - **2026-10-19, nhánh `v3.5-security` (từ main e0316cf), CHƯA merge/push/tag.** package 3.5.0, CHANGELOG 3.5.0, README (EN+VI),
   GUIDE, REFERENCE (EN+VI), DEPLOY, SECURITY.md, docs/SECURITY-DESIGN.md (threat model, đã duyệt). 124 test xanh.
@@ -587,6 +609,12 @@ phòng. Hãy dừng lại, không gọi thêm tool." → agent dừng hẳn. Age
    GIF/ảnh nếu giao diện đổi. Hỏi người dùng trước khi merge/push/tag/release.
 
 ## Việc tiếp theo
+
+- **Ưu tiên UI:** người dùng xem bản cải cách đang chạy tại `http://127.0.0.1:3119/m/host_consistency_preview_1234?lang=vi#plan`, nhận xét phân cấp/mật độ/hành động. Sửa theo phản hồi trước backlog model/remote. Test/screenshot chỉ là bằng chứng kỹ thuật, không tự chuyển trạng thái sang UX được chấp nhận. Xem UI-REFORM và acceptance mới; tài liệu bàn giao UI cũ là baseline.
+
+**Ưu tiên triển khai hiện tại:** sửa tính nhất quán theo [HANDOFF-consistency.vi.md](HANDOFF-consistency.vi.md) trước khi mở rộng backlog trong [IMPLEMENTATION-STATUS.vi.md](IMPLEMENTATION-STATUS.vi.md). Bắt đầu bằng use case/screen pool/screen flow và nguồn dữ liệu chung, rồi nghiệm thu một hành trình hoàn chỉnh. Các mục lịch sử dưới đây vẫn giữ làm backlog. Quyền dùng Claude/agy cho phạm vi repo/workspace thử đã được người dùng cấp trong yêu cầu triển khai 2026-10-21; không hỏi lại chỉ để tiếp tục cùng phép thử đó.
+
+**Định hướng mới (2026-10-21):** khi bắt đầu triển khai đội phát triển tự vận hành, theo [VISION.vi.md](VISION.vi.md): chốt app mẫu, stack, runtime/adapter, môi trường cô lập và ngân sách; thiết kế task/run/evidence rồi làm một luồng hoàn chỉnh cho đội nhỏ. Các việc bảo trì 3.x dưới đây giữ làm backlog; không coi những khả năng trong tầm nhìn là đã có.
 
 Theo thứ tự ưu tiên:
 

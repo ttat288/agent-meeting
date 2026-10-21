@@ -1,0 +1,755 @@
+{
+  "schema": "agent-meeting/verification@1",
+  "checkedAt": "2026-10-21T04:42:31.440826+00:00",
+  "baseRevision": "556b9f69c39a1b1dd6fb9cc71d1b9ddfe5798b47",
+  "nodeVersion": "22.22.1",
+  "memoryLimitMiB": 1200,
+  "swap": 0,
+  "serialFiles": true,
+  "summary": {
+    "tests": 226,
+    "passed": 226,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "fileCount": 21,
+  "files": [
+    {
+      "file": "test/brief.test.js",
+      "tests": 18,
+      "passed": 18,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 188.143487,
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "-q",
+        "-p",
+        "MemoryMax=1200M",
+        "-p",
+        "MemorySwapMax=0",
+        "timeout",
+        "150",
+        "node",
+        "--test",
+        "--test-timeout=30000",
+        "test/brief.test.js"
+      ]
+    },
+    {
+      "file": "test/config-store.test.js",
+      "tests": 11,
+      "passed": 11,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 221.78815,
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "-q",
+        "-p",
+        "MemoryMax=1200M",
+        "-p",
+        "MemorySwapMax=0",
+        "timeout",
+        "150",
+        "node",
+        "--test",
+        "--test-timeout=30000",
+        "test/config-store.test.js"
+      ]
+    },
+    {
+      "file": "test/connect.test.js",
+      "tests": 4,
+      "passed": 4,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 1139.701969,
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "-q",
+        "-p",
+        "MemoryMax=1200M",
+        "-p",
+        "MemorySwapMax=0",
+        "timeout",
+        "150",
+        "node",
+        "--test",
+        "--test-timeout=30000",
+        "test/connect.test.js"
+      ]
+    },
+    {
+      "file": "test/evaluation.test.js",
+      "tests": 11,
+      "passed": 11,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 274.70759,
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "-q",
+        "-p",
+        "MemoryMax=1200M",
+        "-p",
+        "MemorySwapMax=0",
+        "timeout",
+        "150",
+        "node",
+        "--test",
+        "--test-timeout=30000",
+        "test/evaluation.test.js"
+      ]
+    },
+    {
+      "file": "test/execution-sandbox.test.js",
+      "tests": 4,
+      "passed": 4,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 333.326205,
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "-q",
+        "-p",
+        "MemoryMax=1200M",
+        "-p",
+        "MemorySwapMax=0",
+        "timeout",
+        "150",
+        "node",
+        "--test",
+        "--test-timeout=30000",
+        "test/execution-sandbox.test.js"
+      ]
+    },
+    {
+      "file": "test/files.test.js",
+      "tests": 8,
+      "passed": 8,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 1699.052626,
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "-q",
+        "-p",
+        "MemoryMax=1200M",
+        "-p",
+        "MemorySwapMax=0",
+        "timeout",
+        "150",
+        "node",
+        "--test",
+        "--test-timeout=30000",
+        "test/files.test.js"
+      ]
+    },
+    {
+      "file": "test/i18n.test.js",
+      "tests": 4,
+      "passed": 4,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 126.876345,
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "-q",
+        "-p",
+        "MemoryMax=1200M",
+        "-p",
+        "MemorySwapMax=0",
+        "timeout",
+        "150",
+        "node",
+        "--test",
+        "--test-timeout=30000",
+        "test/i18n.test.js"
+      ]
+    },
+    {
+      "file": "test/meeting.test.js",
+      "tests": 51,
+      "passed": 51,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 5700.57108,
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "-q",
+        "-p",
+        "MemoryMax=1200M",
+        "-p",
+        "MemorySwapMax=0",
+        "timeout",
+        "150",
+        "node",
+        "--test",
+        "--test-timeout=30000",
+        "test/meeting.test.js"
+      ]
+    },
+    {
+      "file": "test/minutes.test.js",
+      "tests": 8,
+      "passed": 8,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 266.796144,
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "-q",
+        "-p",
+        "MemoryMax=1200M",
+        "-p",
+        "MemorySwapMax=0",
+        "timeout",
+        "150",
+        "node",
+        "--test",
+        "--test-timeout=30000",
+        "test/minutes.test.js"
+      ]
+    },
+    {
+      "file": "test/remote-server.test.js",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 325.508921,
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "-q",
+        "-p",
+        "MemoryMax=1200M",
+        "-p",
+        "MemorySwapMax=0",
+        "timeout",
+        "150",
+        "node",
+        "--test",
+        "--test-timeout=30000",
+        "test/remote-server.test.js"
+      ]
+    },
+    {
+      "file": "test/remote.test.js",
+      "tests": 11,
+      "passed": 11,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 229.55342,
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "-q",
+        "-p",
+        "MemoryMax=1200M",
+        "-p",
+        "MemorySwapMax=0",
+        "timeout",
+        "150",
+        "node",
+        "--test",
+        "--test-timeout=30000",
+        "test/remote.test.js"
+      ]
+    },
+    {
+      "file": "test/routing-tools.test.js",
+      "tests": 8,
+      "passed": 8,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 779.241758,
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "-q",
+        "-p",
+        "MemoryMax=1200M",
+        "-p",
+        "MemorySwapMax=0",
+        "timeout",
+        "150",
+        "node",
+        "--test",
+        "--test-timeout=30000",
+        "test/routing-tools.test.js"
+      ]
+    },
+    {
+      "file": "test/routing.test.js",
+      "tests": 8,
+      "passed": 8,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 139.704576,
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "-q",
+        "-p",
+        "MemoryMax=1200M",
+        "-p",
+        "MemorySwapMax=0",
+        "timeout",
+        "150",
+        "node",
+        "--test",
+        "--test-timeout=30000",
+        "test/routing.test.js"
+      ]
+    },
+    {
+      "file": "test/runtime-denial.test.js",
+      "tests": 1,
+      "passed": 1,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 111.755336,
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "-q",
+        "-p",
+        "MemoryMax=1200M",
+        "-p",
+        "MemorySwapMax=0",
+        "timeout",
+        "150",
+        "node",
+        "--test",
+        "--test-timeout=30000",
+        "test/runtime-denial.test.js"
+      ]
+    },
+    {
+      "file": "test/runtime.test.js",
+      "tests": 9,
+      "passed": 9,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 123.746248,
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "-q",
+        "-p",
+        "MemoryMax=1200M",
+        "-p",
+        "MemorySwapMax=0",
+        "timeout",
+        "150",
+        "node",
+        "--test",
+        "--test-timeout=30000",
+        "test/runtime.test.js"
+      ]
+    },
+    {
+      "file": "test/security.test.js",
+      "tests": 14,
+      "passed": 14,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 764.346149,
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "-q",
+        "-p",
+        "MemoryMax=1200M",
+        "-p",
+        "MemorySwapMax=0",
+        "timeout",
+        "150",
+        "node",
+        "--test",
+        "--test-timeout=30000",
+        "test/security.test.js"
+      ]
+    },
+    {
+      "file": "test/server.test.js",
+      "tests": 17,
+      "passed": 17,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 732.644966,
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "-q",
+        "-p",
+        "MemoryMax=1200M",
+        "-p",
+        "MemorySwapMax=0",
+        "timeout",
+        "150",
+        "node",
+        "--test",
+        "--test-timeout=30000",
+        "test/server.test.js"
+      ]
+    },
+    {
+      "file": "test/work-cancel.test.js",
+      "tests": 9,
+      "passed": 9,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 10419.539161,
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "-q",
+        "-p",
+        "MemoryMax=1200M",
+        "-p",
+        "MemorySwapMax=0",
+        "timeout",
+        "150",
+        "node",
+        "--test",
+        "--test-timeout=30000",
+        "test/work-cancel.test.js"
+      ]
+    },
+    {
+      "file": "test/work-server.test.js",
+      "tests": 8,
+      "passed": 8,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 357.439372,
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "-q",
+        "-p",
+        "MemoryMax=1200M",
+        "-p",
+        "MemorySwapMax=0",
+        "timeout",
+        "150",
+        "node",
+        "--test",
+        "--test-timeout=30000",
+        "test/work-server.test.js"
+      ]
+    },
+    {
+      "file": "test/work.test.js",
+      "tests": 9,
+      "passed": 9,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 1958.752951,
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "-q",
+        "-p",
+        "MemoryMax=1200M",
+        "-p",
+        "MemorySwapMax=0",
+        "timeout",
+        "150",
+        "node",
+        "--test",
+        "--test-timeout=30000",
+        "test/work.test.js"
+      ]
+    },
+    {
+      "file": "test/worker.test.js",
+      "tests": 12,
+      "passed": 12,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 733.854034,
+      "command": [
+        "systemd-run",
+        "--user",
+        "--scope",
+        "-q",
+        "-p",
+        "MemoryMax=1200M",
+        "-p",
+        "MemorySwapMax=0",
+        "timeout",
+        "150",
+        "node",
+        "--test",
+        "--test-timeout=30000",
+        "test/worker.test.js"
+      ]
+    }
+  ],
+  "codeFiles": [
+    {
+      "path": "src/bridge.js",
+      "sha256": "1ba5864412c0e3cde3e32b88e928f4fb036825559f98437161cd691fbe2f4a67"
+    },
+    {
+      "path": "src/brief.js",
+      "sha256": "dff4edc4b6be35fc4bd2790278201bc5f219b83edcc3937f4be3c48ed1b83502"
+    },
+    {
+      "path": "src/config-store.js",
+      "sha256": "7c4a04fa320dc1b0a4ddd9dd5a4f3702b2a881a56d023fe68052aec6f8eb4f5c"
+    },
+    {
+      "path": "src/connect.js",
+      "sha256": "ee3f31b3138472260f0e56e60602ff99dcbed2a5d60b295383973469712ece64"
+    },
+    {
+      "path": "src/defaults/routing-source.md",
+      "sha256": "2111f5d95240131fcfcdbc90135d895cb4bbcde6023205c72d737516c0a8ace5"
+    },
+    {
+      "path": "src/defaults/routing.json",
+      "sha256": "7d3e6a2ad26075affa330c91d310d0ef9853af69e643a911fef8ccb29a41132b"
+    },
+    {
+      "path": "src/evaluation.js",
+      "sha256": "66baf34fe8b152b892a692848fdceabdd59cc5b58414f353a243362f41d6886c"
+    },
+    {
+      "path": "src/execution-sandbox.js",
+      "sha256": "64257d7b0c9525f690e38e55b16f4bdc304d9932103152a74bc5163f9d5ca75a"
+    },
+    {
+      "path": "src/meeting.js",
+      "sha256": "d72196997b050bacc21236dcbc16fa7f5d6318d5109af796af620d8128e8821f"
+    },
+    {
+      "path": "src/minutes.js",
+      "sha256": "6579190bc98be4142934e10c12870af54a0a02b425564684872ef512db4dd5db"
+    },
+    {
+      "path": "src/remote.js",
+      "sha256": "6c53052fd7131429b86d2c200eecad8099557b9359aa2201abe0837385e5111a"
+    },
+    {
+      "path": "src/retention.js",
+      "sha256": "9acbf13f931fec3e97112287a44bf25f72576db556464f8b39d4e668b6ca672c"
+    },
+    {
+      "path": "src/routing-tools.js",
+      "sha256": "60286e319d9970f3b8eb31b2c4b6454837fd6bc13f6dedade43a69b55a5f3493"
+    },
+    {
+      "path": "src/routing.js",
+      "sha256": "a44f5056b2572ae4991d3af6d90cfce6b424467f71b7403e9e9406c061c2d62b"
+    },
+    {
+      "path": "src/runtime.js",
+      "sha256": "3a33d0d1e2f432e4f553d11a57fbc652301f756d9c987fc24e7654f57ff4f18b"
+    },
+    {
+      "path": "src/server.js",
+      "sha256": "3e94a3de1905a9a56c0f0e68d072dfe2f34cd962e07751358e8e00946ef5902a"
+    },
+    {
+      "path": "src/tunnel.js",
+      "sha256": "60c10dd0dc832292bb7a3687602809748e4fcbb1b665b387ff089998dfec5ebf"
+    },
+    {
+      "path": "src/ui/app.css",
+      "sha256": "5343e5d7f0c6d27002f2ffc38a8027070767e49ceb21d5265294774fe83471b7"
+    },
+    {
+      "path": "src/ui/app.js",
+      "sha256": "a9723f068ebca1a53fa2bf7cf822982f6a516277518bf8585b04272b15d0df50"
+    },
+    {
+      "path": "src/ui/favicon.svg",
+      "sha256": "5a8b8f8b41c224d89fcf1f9b7235315f4cea68cc977931598f2afcabc39026d0"
+    },
+    {
+      "path": "src/ui/i18n.js",
+      "sha256": "87c35fbc1724ca336895032dead6c1e3c02bbc1e1c59a8ebe9b63dd0dc957f27"
+    },
+    {
+      "path": "src/ui/index.html",
+      "sha256": "66310cfc781d50819cb9abc083c9ae98e2634c25a11caadcab57f9cbab904b65"
+    },
+    {
+      "path": "src/ui/workspace.css",
+      "sha256": "c59040f6de1e0c966f3d9492f2e89e91cfbca37a097444b84dcbf9186d41971f"
+    },
+    {
+      "path": "src/ui/workspace.html",
+      "sha256": "6a1b29c517b844e9467d0c750a1c99b7eb720ffb136cbd3a260ed171bc76ab57"
+    },
+    {
+      "path": "src/ui/workspace.js",
+      "sha256": "0b8b3706c42f27caf6240176c58231bb9073909e918e8530afbbb95c82ecf848"
+    },
+    {
+      "path": "src/work.js",
+      "sha256": "41be81055655d5a2ed5db3b8156d2fc6fb40787a9d705dfe04311991606ef0e9"
+    },
+    {
+      "path": "src/worker.js",
+      "sha256": "856cfff84dafb3dba6830901f63dd8c990b3971cfa7ec0f78bc4654e2c445080"
+    },
+    {
+      "path": "bin/cli.js",
+      "sha256": "b7d6222a4f02a36eb25702d74ae5a69f0a778fa32a51881babc0f370a1752378"
+    },
+    {
+      "path": "bin/routing.js",
+      "sha256": "365c4d94d79c8bba3ea2a15580f3b80b9cbe7ab5d49d4692bc90ba11dcebf49e"
+    },
+    {
+      "path": "bin/worker.js",
+      "sha256": "9d7095dc00f2c2ca82bc1be11d0f81086a50dc3f33d8fe0f1b9701ef38442637"
+    },
+    {
+      "path": "test/auth-shim.js",
+      "sha256": "d21331eb4738057b0dff10afb1bc41c79175e2502ada2e21cba033548a09c6c2"
+    },
+    {
+      "path": "test/brief.test.js",
+      "sha256": "a9cc4f181522e686df7b76be812ba38a5ef0a255ab5a9042c4e9b0368b7a5cc6"
+    },
+    {
+      "path": "test/config-store.test.js",
+      "sha256": "014b4ac9f3a0c88c2d893986f8da4273d27e417da74d03f407f0a8fb7d33d62b"
+    },
+    {
+      "path": "test/connect.test.js",
+      "sha256": "5cd61d531ff2b6448c1fc9cc3f382d99b46b49e903d4942f7c555f0e15e0fdef"
+    },
+    {
+      "path": "test/evaluation.test.js",
+      "sha256": "ba3ad0627b1f1e6092616b8433f4d44f126d1659df75ab6bd1011d2f2b3f51c7"
+    },
+    {
+      "path": "test/execution-sandbox.test.js",
+      "sha256": "8e9697b8e3520c75ba5b5794838b51394f6fe8ac6f57a9039316a39ca26f8add"
+    },
+    {
+      "path": "test/files.test.js",
+      "sha256": "8cac9fbbe6ba46d260c806cea607bd21532354def6dfcc2748e9b7b1337d9ae2"
+    },
+    {
+      "path": "test/i18n.test.js",
+      "sha256": "d7cd2693c9b5a8877816cb10c4cbfe8f9b99662c3bf339f040eab73e793d6256"
+    },
+    {
+      "path": "test/meeting.test.js",
+      "sha256": "1cd6507e947721bfdfd8a537f3beca30ce53965da00118c51a4684c9ca3d4448"
+    },
+    {
+      "path": "test/minutes.test.js",
+      "sha256": "92f3c7b76149e110352e193dd79c495065bac926396985f0fe018d5a0e456297"
+    },
+    {
+      "path": "test/remote-server.test.js",
+      "sha256": "28b389ce90550707f48f2684299d995ea9e7e1c5290d9d8b1ce38cd41c231981"
+    },
+    {
+      "path": "test/remote.test.js",
+      "sha256": "294fc6092095687c115d7734f0168c8a2b3d88806dffd4e5b15a27d0bd8babc7"
+    },
+    {
+      "path": "test/routing-tools.test.js",
+      "sha256": "406508d658ed99d4fb196bd013327e351cdc30c0c5c045526f9894bbbf0a43a0"
+    },
+    {
+      "path": "test/routing.test.js",
+      "sha256": "df741ef48388e47d6870869ce1088002e2408358d85916af6ece3d86285c5009"
+    },
+    {
+      "path": "test/runtime-denial.test.js",
+      "sha256": "e69cf932ca9c8a5edfedcdb4f411328e8776236152a41a37843eaeac601724b9"
+    },
+    {
+      "path": "test/runtime.test.js",
+      "sha256": "7a0eaaac6f713a40707b1294152a90634dfe3ded36af9b4e6d0a3e9b9194dc2c"
+    },
+    {
+      "path": "test/security.test.js",
+      "sha256": "90b587b8ee203649279d4cae404852a1fb1ee5c776ef8246dfa4637e45520723"
+    },
+    {
+      "path": "test/server.test.js",
+      "sha256": "5aa04c00c18c5779ef7151427df037529d96fbdd817d330425d20099c10c3653"
+    },
+    {
+      "path": "test/work-cancel.test.js",
+      "sha256": "0bd25c02d19b48f55d33e4f3bf7887e3bb0d1abb62d8fddc2e34c0339d39a852"
+    },
+    {
+      "path": "test/work-server.test.js",
+      "sha256": "6f84a15a720d215af623f71f59198bf7077e514b7cd5209fa3345f33c720a665"
+    },
+    {
+      "path": "test/work.test.js",
+      "sha256": "04c31c81207b3e5625c35bd04844f907eec7ad9706cfc48dec6183171dd6dfc4"
+    },
+    {
+      "path": "test/worker.test.js",
+      "sha256": "e548312c8bf48d1eb41c68b98c8443f06d1b310fb6b5a09f355b244d1a8860fd"
+    }
+  ],
+  "codeSnapshotSha256": "a812971755b58fec2fad2921909a9ae183b8b0d8d308d8a92b910e872c5f9665"
+}

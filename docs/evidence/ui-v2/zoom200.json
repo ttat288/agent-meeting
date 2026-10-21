@@ -1,0 +1,280 @@
+[
+  {
+    "lang": "vi",
+    "view": "conversation",
+    "actualZoom": 2,
+    "width": 640,
+    "height": 400,
+    "dpr": 2,
+    "scale": 1,
+    "overflow": false,
+    "nav": [
+      {
+        "label": "Hội thoại",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Kế hoạch",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Thực hiện",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Kết quả",
+        "width": 148,
+        "scrollWidth": 148
+      }
+    ]
+  },
+  {
+    "lang": "vi",
+    "view": "plan",
+    "actualZoom": 2,
+    "width": 640,
+    "height": 400,
+    "dpr": 2,
+    "scale": 1,
+    "overflow": false,
+    "nav": [
+      {
+        "label": "Hội thoại",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Kế hoạch",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Thực hiện",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Kết quả",
+        "width": 148,
+        "scrollWidth": 148
+      }
+    ]
+  },
+  {
+    "lang": "vi",
+    "view": "execute",
+    "actualZoom": 2,
+    "width": 640,
+    "height": 400,
+    "dpr": 2,
+    "scale": 1,
+    "overflow": false,
+    "nav": [
+      {
+        "label": "Hội thoại",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Kế hoạch",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Thực hiện",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Kết quả",
+        "width": 148,
+        "scrollWidth": 148
+      }
+    ]
+  },
+  {
+    "lang": "vi",
+    "view": "results",
+    "actualZoom": 2,
+    "width": 640,
+    "height": 400,
+    "dpr": 2,
+    "scale": 1,
+    "overflow": false,
+    "nav": [
+      {
+        "label": "Hội thoại",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Kế hoạch",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Thực hiện",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Kết quả",
+        "width": 148,
+        "scrollWidth": 148
+      }
+    ]
+  },
+  {
+    "lang": "vi",
+    "view": "admin",
+    "actualZoom": 2,
+    "width": 640,
+    "height": 400,
+    "dpr": 2,
+    "scale": 1,
+    "overflow": false,
+    "nav": []
+  },
+  {
+    "lang": "en",
+    "view": "conversation",
+    "actualZoom": 2,
+    "width": 640,
+    "height": 400,
+    "dpr": 2,
+    "scale": 1,
+    "overflow": false,
+    "nav": [
+      {
+        "label": "Conversation",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Plan",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Execute",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Results",
+        "width": 148,
+        "scrollWidth": 148
+      }
+    ]
+  },
+  {
+    "lang": "en",
+    "view": "plan",
+    "actualZoom": 2,
+    "width": 640,
+    "height": 400,
+    "dpr": 2,
+    "scale": 1,
+    "overflow": false,
+    "nav": [
+      {
+        "label": "Conversation",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Plan",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Execute",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Results",
+        "width": 148,
+        "scrollWidth": 148
+      }
+    ]
+  },
+  {
+    "lang": "en",
+    "view": "execute",
+    "actualZoom": 2,
+    "width": 640,
+    "height": 400,
+    "dpr": 2,
+    "scale": 1,
+    "overflow": false,
+    "nav": [
+      {
+        "label": "Conversation",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Plan",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Execute",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Results",
+        "width": 148,
+        "scrollWidth": 148
+      }
+    ]
+  },
+  {
+    "lang": "en",
+    "view": "results",
+    "actualZoom": 2,
+    "width": 640,
+    "height": 400,
+    "dpr": 2,
+    "scale": 1,
+    "overflow": false,
+    "nav": [
+      {
+        "label": "Conversation",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Plan",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Execute",
+        "width": 148,
+        "scrollWidth": 148
+      },
+      {
+        "label": "Results",
+        "width": 148,
+        "scrollWidth": 148
+      }
+    ]
+  },
+  {
+    "lang": "en",
+    "view": "admin",
+    "actualZoom": 2,
+    "width": 640,
+    "height": 400,
+    "dpr": 2,
+    "scale": 1,
+    "overflow": false,
+    "nav": []
+  }
+]

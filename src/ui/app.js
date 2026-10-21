@@ -76,18 +76,54 @@
     const t = el('div', { class: 'toast' + (bad ? ' bad' : '') }, msg);
     $('toasts').append(t); setTimeout(() => t.remove(), 2600);
   }
+  // Disclosures keep native button/link semantics; modal surfaces isolate the background.
+  let overlayReturn = null, inerted = [];
+  const focusables = root => [...root.querySelectorAll('a[href],button,input,select,textarea,summary,[tabindex="0"]')].filter(e => {
+    if (e.disabled || e.tabIndex < 0 || !e.getClientRects().length || e.closest('[hidden],[inert]')) return false;
+    if (e.checkVisibility && !e.checkVisibility()) return false;
+    for (let parent = e.parentElement; parent && parent !== root; parent = parent.parentElement) {
+      if (parent.matches('details:not([open])') && !parent.querySelector(':scope > summary')?.contains(e)) return false;
+    }
+    return true;
+  });
+  function restoreBackground() { inerted.forEach(([e, value]) => { e.inert = value; }); inerted = []; }
+  function isolate(root) {
+    restoreBackground();
+    for (let current = root; current && current !== document.body; current = current.parentElement) {
+      for (const sibling of current.parentElement.children) if (sibling !== current && !['SCRIPT','LINK'].includes(sibling.tagName)) { inerted.push([sibling, sibling.inert]); sibling.inert = true; }
+    }
+  }
+  function returnFocus() { restoreBackground(); if ($('side').classList.contains('open') && matchMedia('(max-width:1000px)').matches) isolate($('side')); const target = overlayReturn?.getClientRects().length ? overlayReturn : $('btnOptions'); target?.focus(); }
+  function closeMenus(focus = false) {
+    for (const [trigger, panel] of [['btnOptions','optionsPanel'],['btnQuick','quick']]) {
+      if (!$(panel).hidden) { $(panel).hidden = true; $(trigger).setAttribute('aria-expanded','false'); if (focus) $(trigger).focus(); }
+    }
+  }
+  for (const [trigger, panel] of [['btnOptions','optionsPanel'],['btnQuick','quick']]) {
+    $(trigger).onclick = () => { const open = $(panel).hidden; closeMenus(); $(panel).hidden = !open; $(trigger).setAttribute('aria-expanded',String(open)); if (open) focusables($(panel))[0]?.focus(); };
+    $(panel).addEventListener('click', e => { if (e.target.closest('button,a')) { closeMenus(false); $(trigger).focus(); } }, true);
+  }
+  document.addEventListener('pointerdown', e => { if (!e.target.closest('.utility')) closeMenus(); });
+  document.addEventListener('focusin', e => { if (!e.target.closest('.utility')) closeMenus(); });
+  window.addEventListener('hashchange', () => { closeMenus(); if ($('side').classList.contains('open')) setPanel(false); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && (!$('optionsPanel').hidden || !$('quick').hidden)) { e.preventDefault(); closeMenus(true); return; }
+    const root = !$('modal').hidden ? $('modal') : !$('drawer').hidden ? $('drawer') : $('side').classList.contains('open') && matchMedia('(max-width:1000px)').matches ? $('side') : null;
+    if (root && e.key === 'Tab') { const items = focusables(root), first = items[0], last = items.at(-1); if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); } }
+  });
   let modalResolve = null, modalAsk = false;
   function confirmBox(title, text, yes = tr('Đồng ý'), ask) {
     $('modalTitle').textContent = title; $('modalText').textContent = text; $('modalYes').textContent = yes;
     modalAsk = ask !== undefined;
     $('modalInput').hidden = !modalAsk; $('modalInput').value = ask ?? '';
     $('modalYes').className = 'btn ' + (modalAsk ? 'primary' : 'danger');
+    overlayReturn = document.activeElement; isolate($('modal'));
     $('modal').hidden = false; (modalAsk ? $('modalInput') : $('modalYes')).focus();
     return new Promise(r => { modalResolve = r; });
   }
   const promptBox = (title, text, value, yes = tr('Lưu')) => confirmBox(title, text, yes, value);
   const closeModal = (v) => {
-    $('modal').hidden = true;
+    $('modal').hidden = true; returnFocus();
     if (modalResolve) { modalResolve(modalAsk ? (v ? $('modalInput').value.trim() : null) : v); modalResolve = null; }
   };
   $('modalInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); closeModal(true); } });
@@ -110,6 +146,7 @@
   }
 
   // ---------- trạng thái ----------
+  let sharedTasks = [];
   let snap = null, log = [], version = -1, rendered = 0, clockOffset = 0, unread = 0;
   let formInit = false, endedBuilt = '', lastView = '';
   const serverNow = () => Date.now() + clockOffset;
@@ -426,7 +463,8 @@
     $('setup').scrollTop = 0;
     if (focus) $(n === 2 ? 'inviteTitle' : 'briefTitle').focus({ preventScroll: true });
   }
-  window.addEventListener('popstate', () => { const n = location.hash === '#moi-agent' ? 2 : 1; if (n !== step) { step = n; if (snap) render(); } });
+  window.addEventListener('popstate', () => { step = location.hash === '#moi-agent' ? 2 : 1; if (snap) render(); });
+  window.addEventListener('hashchange', () => { step = location.hash === '#moi-agent' ? 2 : 1; if (snap) render(); });
   $('btnNextStep').onclick = async () => { if (await briefReady(tr('Vẫn tiếp tục'))) goStep(2, true); };
   $('btnBack').onclick = $('btnEditBrief').onclick = () => goStep(1, true);
   for (const b of $('steps').querySelectorAll('button[data-go]')) b.onclick = async () => {
@@ -542,7 +580,7 @@
     [tr('Quay lại chủ đề'), tr('Hãy quay lại đúng chủ đề ban đầu và bỏ qua các ý lan man.')],
     [tr('Ngắn gọn hơn'), tr('Từ giờ mỗi tin hãy ngắn gọn, tối đa 3-4 câu.')],
   ];
-  QUICK.forEach(([label, text]) => $('quick').append(el('button', { class: 'chip', type: 'button', title: text, onclick: () => hostSay(text, label) }, label)));
+  QUICK.forEach(([label, text]) => $('quick').append(el('button', { class: 'btn ghost', type: 'button', title: text, onclick: () => { $('btnQuick').focus(); hostSay(text, label); } }, label)));
   async function hostSay(text, label) {
     const to = $('sendTo').value;
     try { await post('say', { text, to }); toast(label ? tr`Đã gửi: ${label}${to ? tr(' (riêng ') + to + ')' : ''}` : to ? tr`Đã gửi riêng cho ${to}` : tr('Đã gửi tới các agent')); return true; }
@@ -617,7 +655,8 @@
     const f = $('feed'), inner = $('feedIn'), stick = fresh || nearBottom();
     let added = 0, real = 0;
     for (; rendered < log.length; rendered++, added++) {
-      inner.append(entry(log[rendered], log[rendered - 1]));
+      const message = entry(log[rendered], log[rendered - 1]);
+      message.id = 'message-' + log[rendered].i; inner.append(message);
       if (log[rendered].type !== 'sys') real++;
     }
     if (!added) return;
@@ -712,7 +751,7 @@
     catch (e) { toast(tr('Không cập nhật được: ') + e.message, true); }
   }
   function statusSelect(x) {
-    const sel = el('select', { class: 'tstat s-' + x.status, title: x.updatedBy ? tr`Cập nhật bởi ${x.updatedBy}${x.updatedAt ? tr(' lúc ') + fmtTime(x.updatedAt) : ''}` : tr('Đổi trạng thái'), 'aria-label': tr`Trạng thái việc #${x.n}` },
+    const sel = el('select', { class: 'tstat s-' + x.status, title: x.updatedBy ? tr`Cập nhật bởi ${x.updatedBy}${x.updatedAt ? tr(' lúc ') + fmtTime(x.updatedAt) : ''}` : tr('Đổi trạng thái'), 'aria-label': tr`Tiến độ tự báo việc #${x.n}` },
       ...Object.entries(TASK_STATUS).map(([k, v]) => el('option', { value: k, selected: k === x.status }, v)));
     sel.onchange = () => setTask(x, sel.value);
     return sel;
@@ -733,21 +772,31 @@
       toast(r.ok ? (into ? tr`Đã gộp việc #${x.n} vào #${into}` : tr`Đã xoá việc #${x.n}`) : tr`Không có việc #${into} để gộp vào`, !r.ok);
     } catch (e) { toast(tr('Không cập nhật được: ') + e.message, true); }
   } }, '×');
-  const verifyNote = () => el('p', { class: 'note verify' }, 'ⓘ', tr('Trạng thái "xong" do agent tự báo kèm bằng chứng (hoặc bạn tự đặt). Server KHÔNG tự kiểm chứng: hãy xem bằng chứng trước khi tin.'));
-  const taskItem = (x) => el('li', { class: 'task s-' + x.status },
-    el('div', {}, el('b', { class: 'tn' }, '#' + x.n), ' ', el('span', { html: inline(x.task) })),
-    el('div', { class: 'tmeta' }, statusSelect(x), el('span', { class: 'who' }, [x.owner, x.due && tr('hạn ') + x.due].filter(Boolean).join(' · ')), noteBtn(x), snap.state !== 'ENDED' ? dropBtn(x) : null),
-    x.note ? el('div', { class: 'tnote', html: linkify(inline(x.note)) }) : null);
+  const verifyNote = () => el('p', { class: 'note verify' }, 'ⓘ', tr('Tiến độ ở đây do agent hoặc chủ trì khai báo. Kết quả chạy đã kiểm chứng và tích hợp được hiển thị riêng.'));
+  const taskItem = (x) => {
+    const shared = sharedTasks.find(t => t.origin?.number === x.n && t.origin?.timestamp === x.t && t.sourceCurrent !== false);
+    const execution = shared && ({ planned: tr('Đã lên kế hoạch'), ready: tr('Chờ kiểm tra điều kiện'), running: tr('Đang chạy'), verifying: tr('Chờ kiểm chứng'), integrating: tr('Chờ tích hợp'), done: tr('Đã tích hợp'), stale: tr('Yêu cầu đã thay đổi'), failed: tr('Thất bại'), cancelled: tr('Đã hủy'), interrupted: tr('Bị gián đoạn') }[shared.status] || shared.status);
+    return el('li', { class: 'task s-' + x.status },
+      el('div', {}, el('a', { class: 'tn', href: '#plan', title: shared?.id || tr('Kế hoạch') }, '#' + x.n), ' ', el('span', { html: inline(x.task) })),
+      el('div', { class: 'tnote' }, x.owner),
+      el('details', { class: 'task-progress' }, el('summary', {}, TASK_STATUS[x.status]),
+        el('div', { class: 'tmeta' }, statusSelect(x), noteBtn(x), snap.state !== 'ENDED' ? dropBtn(x) : null),
+        x.due ? el('div', { class: 'tnote' }, tr('hạn ') + x.due) : null),
+      shared ? el('div', { class: 'tnote' }, el('a', { href: '#execute', title: shared.id }, tr('Thực hiện') + ': ' + execution)) : null,
+      x.note ? el('div', { class: 'tnote', html: linkify(inline(x.note)) }) : null);
+  };
+  window.addEventListener('am-work-state', event => { sharedTasks = event.detail.tasks || []; if (snap) renderResults(snap); });
+
 
   function renderResults(s) {
     const ds = decisions();
-    if (!changed('results', [ds, s.actions, s.agenda.length, s.state === 'ENDED'])) return;
+    if (!changed('results', [ds, s.actions, sharedTasks, s.agenda.length, s.state === 'ENDED'])) return;
     if (!ds.length && !s.actions.length) { $('results').replaceChildren(el('div', { class: 'empty' }, tr('Chưa có quyết định hay việc cần làm. Tin "KẾT LUẬN:" và dòng "VIỆC:" sẽ hiện ở đây.'))); return; }
     $('results').replaceChildren(...[
       ds.length ? el('div', {}, el('h4', {}, tr`Quyết định (${ds.length})`), el('ul', {}, ...ds.map(d => el('li', {},
         d.item != null && s.agenda.length ? el('b', {}, tr`Mục ${d.item + 1}: `) : null,
         el('span', { html: inline(d.text.split('\n').find(l => l.trim()).slice(0, 160)) }), ' ', el('span', { class: 'who' }, '· ' + d.name))))) : null,
-      s.actions.length ? el('div', {}, el('h4', {}, tr`Việc cần làm (${s.actions.filter(x => x.status === 'done').length}/${s.actions.length} xong)`),
+      s.actions.length ? el('div', {}, el('h4', {}, tr`Tiến độ tự báo (${s.actions.filter(x => x.status === 'done').length}/${s.actions.length} xong)`),
         el('ul', { class: 'tasks' }, ...s.actions.map(taskItem)), verifyNote()) : null].filter(Boolean));
   }
   // tệp agent gửi nhau: chủ trì xem ai gửi ai, cỡ, sha256, ai đã tải, và tải về (luôn là tệp đính kèm, không mở trong trang)
@@ -773,18 +822,20 @@
     sel.value = names.includes(cur) ? cur : '';
   }
 
-  // ---------- màn hẹp: bảng chi tiết ----------
-  const setPanel = (open) => { $('side').classList.toggle('open', open); $('btnPanel').setAttribute('aria-expanded', open); renderPanelBtn(); };
-  function renderPanelBtn() {
-    const b = $('btnPanel'); if (!snap) return;
-    if ($('side').classList.contains('open')) { b.textContent = tr('✕ Đóng chi tiết'); b.classList.remove('has'); return; }
-    const n = decisions().length + snap.actions.length;
-    const parts = [snap.agenda.length ? tr`Mục ${Math.min(snap.agendaIndex + 1, snap.agenda.length)}/${snap.agenda.length}` : '', n ? tr`Kết quả ${n}` : '', snap.files.length ? tr`Tệp ${snap.files.length}` : ''].filter(Boolean);
-    b.textContent = '☰ ' + (parts.join(' · ') || tr('Chi tiết'));
-    b.classList.toggle('has', n > 0);
-  }
-  $('btnPanel').onclick = () => setPanel(!$('side').classList.contains('open'));
-  matchMedia('(max-width: 860px)').addEventListener('change', (e) => { if (!e.matches) setPanel(false); });
+  // Desktop details collapse in place; narrow screens use an isolated sheet.
+  const setPanel = (open, focus = true) => {
+    const mobile = matchMedia('(max-width:1000px)').matches;
+    $('side').classList.toggle('open', mobile && open);
+    $('room').classList.toggle('details-hidden', !open);
+    $('btnPanel').setAttribute('aria-expanded', String(open));
+    if (mobile && open) { overlayReturn = $('btnPanel'); $('side').setAttribute('role','dialog'); $('side').setAttribute('aria-modal','true'); isolate($('side')); $('sideClose').focus(); }
+    else { $('side').removeAttribute('role'); $('side').removeAttribute('aria-modal'); overlayReturn = $('btnPanel'); if (focus) returnFocus(); else restoreBackground(); }
+  };
+  function renderPanelBtn() { $('btnPanel').textContent = tr('Chi tiết'); }
+  $('btnPanel').onclick = () => setPanel($('btnPanel').getAttribute('aria-expanded') !== 'true');
+  $('sideClose').onclick = () => setPanel(false);
+  matchMedia('(max-width:1000px)').addEventListener('change', e => { const wasOpen = $('side').classList.contains('open'); setPanel(!e.matches, wasOpen); closeMenus(); });
+  $('btnPanel').setAttribute('aria-expanded', String(!matchMedia('(max-width:1000px)').matches));
 
   function renderRoom(s, fresh) {
     renderAgenda(s); renderResults(s); renderFiles(s); renderSendTo(s); renderPanelBtn();
@@ -815,8 +866,8 @@
   $('btnMinutes').onclick = downloadMinutes;
 
   // ---------- ngăn kéo mời agent (khi đang họp) ----------
-  const openDrawer = () => { $('drawerBody').append($('invite')); $('drawer').hidden = $('scrim').hidden = false; };
-  const closeDrawer = () => { $('drawer').hidden = $('scrim').hidden = true; $('inviteHome').append($('invite')); };
+  const openDrawer = () => { overlayReturn = $('btnOptions'); $('drawerBody').append($('invite')); $('drawer').hidden = $('scrim').hidden = false; $('drawer').setAttribute('role','dialog'); $('drawer').setAttribute('aria-modal','true'); isolate($('drawer')); $('drawerClose').focus(); };
+  const closeDrawer = () => { $('drawer').hidden = $('scrim').hidden = true; $('inviteHome').append($('invite')); returnFocus(); };
   $('btnInvite').onclick = openDrawer; $('drawerClose').onclick = closeDrawer; $('scrim').onclick = closeDrawer;
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (!$('modal').hidden) closeModal(false); else if (!$('drawer').hidden) closeDrawer(); else if ($('side').classList.contains('open')) setPanel(false); } });
 
@@ -844,7 +895,10 @@
     st.textContent = { LOBBY: tr('Chuẩn bị'), LIVE: tr('Đang họp'), WORK: tr('Đang thực hiện'), ENDED: tr('Đã kết thúc') }[s.state];
     const view = s.state === 'LOBBY' ? 'setup' : 'room', fresh = view !== lastView;
     if (fresh && view === 'setup') step = location.hash === '#moi-agent' ? 2 : 1;
-    $('setup').hidden = view !== 'setup'; $('room').hidden = view !== 'room';
+    const workView = ['#plan', '#execute', '#results'].includes(location.hash);
+    document.body.dataset.sessionView = workView ? location.hash.slice(1) : 'conversation';
+    $('setup').hidden = workView || view !== 'setup'; $('room').hidden = workView || view !== 'room';
+    $('btnPanel').hidden = workView || view !== 'room';
     $('btnInvite').hidden = s.state !== 'LIVE';
     $('btnMinutes').hidden = s.state === 'LOBBY';
     $('btnStop').hidden = s.state !== 'LIVE' && s.state !== 'WORK';
@@ -853,6 +907,8 @@
     if (view === 'setup') renderSetup(s); else renderRoom(s, fresh);
     renderSteps();
     lastView = view;
+    window.dispatchEvent(new CustomEvent('am-meeting-state', { detail: s }));
+    if (location.hash.startsWith('#message-')) document.getElementById(location.hash.slice(1))?.scrollIntoView({ block: 'center' });
   }
 
   (async function loop() {

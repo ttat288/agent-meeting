@@ -1,0 +1,98 @@
+{
+  "schema": "agent-meeting/handoff@1",
+  "task": {
+    "id": "meeting-8b771d64d1a59f2e8c063309f9d6fa5a",
+    "goal": "Sửa phép cộng trong sum.js",
+    "purpose": "execute",
+    "topology": "local",
+    "management": "managed",
+    "acceptance": [
+      "sum(2,3) trả về 5"
+    ],
+    "dependencies": [],
+    "writePaths": [
+      "sum.js"
+    ],
+    "testFiles": [
+      "test/sum.test.js"
+    ],
+    "sources": [],
+    "facts": [],
+    "unknowns": [],
+    "requirementRevision": 2,
+    "status": "done",
+    "createdAt": "2026-10-21T06:45:55.788Z",
+    "origin": {
+      "kind": "meeting-action",
+      "number": 1,
+      "timestamp": 1792565155788,
+      "roomCreatedAt": 1792565097882,
+      "messageIndex": 1,
+      "message": "KẾT LUẬN: Dùng phép cộng và kiểm chứng bằng Node test.\nVIỆC: Dev | Sửa phép cộng trong sum.js | hôm nay",
+      "context": "Sửa phép cộng trong sum.js và chứng minh 2 + 3 = 5."
+    },
+    "owner": "Dev",
+    "sourceCurrent": true,
+    "reportedProgress": {
+      "status": "todo",
+      "note": "",
+      "updatedAt": null,
+      "updatedBy": null
+    },
+    "workspace": "/tmp/am-consistency-preview/source",
+    "baseRevision": "",
+    "context": "Sửa phép cộng trong sum.js và chứng minh 2 + 3 = 5."
+  },
+  "runId": "4fedd28b-5f7f-45b5-8891-c0c7579969dd",
+  "status": "integrated",
+  "configRevision": 2,
+  "baseRevision": "e3e3c76ad11358771d961d4856d4a59665bce2a2",
+  "actualModel": "fixture-model",
+  "runtime": "claude",
+  "changes": [
+    {
+      "file": "sum.js",
+      "before": "ee7e835a0b737e5bc8ab512d6d8920bd5f57f264a30ef65687fc28b73507d204",
+      "after": "c4906f38eb5b1575885d480e084952498b2e397bd2b067b5e5ac4e0626804677"
+    }
+  ],
+  "verification": [
+    {
+      "command": [
+        "/usr/bin/node",
+        "--max-old-space-size=256",
+        "--test",
+        "--test-timeout=20000",
+        "test/sum.test.js"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "cancelled": false,
+      "output": "TAP version 13\n# Subtest: sum\nok 1 - sum\n  ---\n  duration_ms: 2.188678\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 153.087343\n",
+      "elapsedMs": 307,
+      "checkedAt": "2026-10-21T06:48:16.362Z"
+    }
+  ],
+  "integrationVerification": [
+    {
+      "command": [
+        "/usr/bin/node",
+        "--max-old-space-size=256",
+        "--test",
+        "--test-timeout=20000",
+        "test/sum.test.js"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "cancelled": false,
+      "output": "TAP version 13\n# Subtest: sum\nok 1 - sum\n  ---\n  duration_ms: 2.303208\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 147.73912\n",
+      "elapsedMs": 356,
+      "checkedAt": "2026-10-21T06:48:17.176Z"
+    }
+  ],
+  "costUsd": null,
+  "limitations": [
+    "Single-file automatic integration",
+    "Filesystem write isolation only"
+  ]
+}

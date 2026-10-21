@@ -1,0 +1,94 @@
+{
+  "task": {
+    "id": "meeting-9aa059ea45cd030c4f4e6f641e085ba0",
+    "context": "Sửa phép cộng trong sum.js. Giữ phạm vi một tệp và kiểm chứng 2 + 3 = 5.",
+    "goal": "Sửa phép cộng trong sum.js",
+    "purpose": "execute",
+    "topology": "local",
+    "management": "managed",
+    "acceptance": [
+      "sum(2,3) trả về 5"
+    ],
+    "dependencies": [],
+    "writePaths": [
+      "sum.js"
+    ],
+    "testFiles": [
+      "test/sum.test.js"
+    ],
+    "sources": [],
+    "facts": [],
+    "unknowns": [],
+    "requirementRevision": 3,
+    "status": "done",
+    "createdAt": "2026-10-21T08:20:25.854Z",
+    "origin": {
+      "kind": "meeting-action",
+      "number": 1,
+      "timestamp": 1792570825854,
+      "roomCreatedAt": 1792570815393,
+      "messageIndex": 1,
+      "message": "KẾT LUẬN: Giữ API hiện tại, sửa phép tính và kiểm chứng bằng test độc lập.\nVIỆC: Dev | Sửa phép cộng trong sum.js | hôm nay",
+      "context": "Sửa phép cộng trong sum.js. Giữ phạm vi một tệp và kiểm chứng 2 + 3 = 5."
+    },
+    "owner": "Dev",
+    "sourceCurrent": true,
+    "reportedProgress": {
+      "status": "todo",
+      "note": "",
+      "updatedAt": null,
+      "updatedBy": null
+    },
+    "workspace": "/tmp/am-ui-reform-preview/source",
+    "baseRevision": ""
+  },
+  "runs": [
+    {
+      "id": "51c274fb-d359-4f77-beeb-e6467cea1150",
+      "taskId": "meeting-9aa059ea45cd030c4f4e6f641e085ba0",
+      "status": "reported",
+      "requirementRevision": 2,
+      "evidence": []
+    },
+    {
+      "id": "42aec145-0e09-4a54-b6d6-7f95ba69bb6f",
+      "taskId": "meeting-9aa059ea45cd030c4f4e6f641e085ba0",
+      "status": "integrated",
+      "requirementRevision": 3,
+      "evidence": [
+        {
+          "command": [
+            "/usr/bin/node",
+            "--max-old-space-size=256",
+            "--test",
+            "--test-timeout=20000",
+            "test/sum.test.js"
+          ],
+          "exitCode": 0,
+          "timeout": false,
+          "cancelled": false,
+          "output": "TAP version 13\n# Subtest: sum\nok 1 - sum\n  ---\n  duration_ms: 1.988923\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 113.575758\n",
+          "elapsedMs": 215,
+          "checkedAt": "2026-10-21T08:29:23.903Z"
+        }
+      ],
+      "integrationEvidence": [
+        {
+          "command": [
+            "/usr/bin/node",
+            "--max-old-space-size=256",
+            "--test",
+            "--test-timeout=20000",
+            "test/sum.test.js"
+          ],
+          "exitCode": 0,
+          "timeout": false,
+          "cancelled": false,
+          "output": "TAP version 13\n# Subtest: sum\nok 1 - sum\n  ---\n  duration_ms: 1.868023\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 114.067854\n",
+          "elapsedMs": 215,
+          "checkedAt": "2026-10-21T08:29:24.911Z"
+        }
+      ]
+    }
+  ]
+}

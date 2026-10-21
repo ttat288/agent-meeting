@@ -1,0 +1,23 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('fs'),os=require('os'),path=require('path'),crypto=require('crypto');
+const{execFileSync}=require('child_process');const{createApp}=require('../src/server');const{runWorkerOnce}=require('../src/worker');
+test('authenticated worker pulls a remote task, sends bound artifact, and cannot replay or gain host rights',async t=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'am-remote-http-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
+ const source=path.join(dir,'source');fs.mkdirSync(source);fs.writeFileSync(path.join(source,'note.txt'),'before');execFileSync('git',['init','-q',source]);execFileSync('git',['-C',source,'add','.']);execFileSync('git',['-C',source,'-c','user.name=Test','-c','user.email=test@example.invalid','commit','-qm','fixture']);const baseRevision=execFileSync('git',['-C',source,'rev-parse','HEAD'],{encoding:'utf8'}).trim();
+ const app=createApp({configDir:path.join(dir,'config'),workDir:path.join(dir,'work')});const room=app.create({hostKey:'owner_key_123456789',id:'invite_key_123456789'});await new Promise(r=>app.server.listen(0,'127.0.0.1',r));t.after(()=>app.close());const url='http://127.0.0.1:'+app.server.address().port,host=url+'/api/host/'+room.hostKey;
+ const post=async(p,b,headers={})=>{const response=await fetch(p,{method:'POST',headers:{'content-type':'application/json',...headers},body:JSON.stringify(b)});return{status:response.status,body:await response.json()};};
+ const enrolled=await post(host+'/remote/enroll',{label:'test worker',workspaceId:'repo-test',baseRevision,capabilities:['claude']});assert.equal(enrolled.status,201);const{host:worker,token}=enrolled.body;
+ const config=(await(await fetch(host+'/config')).json());const model=config.models.find(m=>m.id==='opus');Object.assign(model,{enabled:true,verification:'verified',providerModelId:'claude-opus-5-5',source:{...model.source,confidence:'user-configured',checkedAt:new Date().toISOString()}});config.profiles.find(p=>p.id==='opus-claude').enabled=true;assert.equal((await post(host+'/config',{config,expectedRevision:config.revision})).status,200);
+ const task=await post(host+'/work/tasks',{goal:'Update note',acceptance:['note is after'],purpose:'execute',topology:'remote',management:'managed',workspace:source,baseRevision,writePaths:['note.txt']});assert.equal(task.status,201);
+ const cfg={serverUrl:url,hostId:worker.id,token,workspace:source,workspaceId:'repo-test',workDir:path.join(dir,'worker-data'),allowedModels:['claude-opus-5-5'],adapters:['claude']};
+ assert.equal((await runWorkerOnce(cfg)).status,'idle');
+ const assignment=await post(host+'/remote/queue',{taskId:task.body.id,hostId:worker.id,profileId:'opus-claude'});assert.equal(assignment.status,202);
+ assert.equal((await post(url+'/api/worker/'+worker.id+'/claim',{}, {authorization:'Bearer wrong'})).status,401);
+ const result=await runWorkerOnce({serverUrl:url,hostId:worker.id,token,workspace:source,workspaceId:'repo-test',workDir:path.join(dir,'worker-data'),allowedModels:['claude-opus-5-5'],adapters:['claude']},{runner:async args=>{fs.writeFileSync(path.join(args.workspace,'note.txt'),'after');return{status:'reported',reportedModel:'claude-opus-5-5',text:'Updated note'};}});
+ assert.equal(result.status,'reported');assert.equal(fs.readFileSync(path.join(source,'note.txt'),'utf8'),'before');
+ const remote=await(await fetch(host+'/remote')).json();const run=remote.runs[0];assert.equal(run.status,'reported');assert.equal(run.result.verified,false);assert.equal(run.result.artifacts[0].taskId,task.body.id);assert.match(run.result.snapshotHash,/^[a-f0-9]{64}$/);assert.equal(run.result.artifacts[0].content,undefined);assert.equal(JSON.stringify(remote).includes(token),false);
+ assert.equal((await post(url+'/api/worker/'+worker.id+'/complete',{runId:run.runId,leaseId:run.leaseId,generation:run.generation,baseRevision,requirementRevision:1,status:'reported',reportedModel:'claude-opus-5-5',report:'replay',artifacts:[]},{authorization:'Bearer '+token})).status,409);
+ assert.equal((await fetch(url+'/api/host/'+worker.id+'/config',{headers:{authorization:'Bearer '+token}})).status,404);
+ const download=await fetch(host+'/remote/artifact?runId='+encodeURIComponent(run.runId)+'&name=changes.json');assert.equal(download.status,200);assert.equal(download.headers.get('content-type'),'application/octet-stream');assert.equal(download.headers.get('content-security-policy'),'sandbox');assert.equal(JSON.parse(await download.text()).changes[0].path,'note.txt');
+ const metrics=await(await fetch(host+'/metrics')).json();assert.equal(metrics.summary.costUsd,null);
+});

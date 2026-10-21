@@ -67,6 +67,8 @@ Lưu và chia sẻ kết quả
   --webhook <url>          Gửi tóm tắt (quyết định, việc cần làm) khi kết thúc (với --follow-up: khi chốt,
                            khi từng việc xong/vướng, khi đóng phòng); dùng nhiều lần được.
                            Hỗ trợ Slack, Discord, Google Chat; URL khác nhận JSON đầy đủ
+  --config-dir <thư mục>   Cấu hình admin/routing (mặc định ~/.agent-meeting/config)
+  --work-dir <thư mục>     Task/run/workspace riêng (mặc định ~/.agent-meeting/work)
   --data-dir <thư mục>     Lưu trạng thái phòng (cần --host-key): tắt/khởi động lại server giữa cuộc họp
                            thì nạp lại và họp tiếp. File chứa mã bí mật, chỉ chủ máy đọc được (quyền 600).
                            Tệp agent gửi nhau cũng được ghi ở đây (<mã chủ trì>.files/)
@@ -120,6 +122,8 @@ const cfg = {
   followUp: flag('--follow-up') || /^(1|true|yes)$/i.test(env.AGENT_MEETING_FOLLOW_UP || ''),
   minutesDir: opt('--minutes-dir') || env.AGENT_MEETING_MINUTES_DIR || '',
   dataDir,
+  configDir: opt('--config-dir') || env.AGENT_MEETING_CONFIG_DIR,
+  workDir: opt('--work-dir') || env.AGENT_MEETING_WORK_DIR,
   maxFileMb: num('--max-file-mb', Number(env.AGENT_MEETING_MAX_FILE_MB) || 20),
   maxRoomMb: num('--max-room-mb', Number(env.AGENT_MEETING_MAX_ROOM_MB) || 200),
   webhooks, admit, lan, remoteHost: flag('--remote-host'),

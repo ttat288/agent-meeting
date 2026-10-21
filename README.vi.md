@@ -102,8 +102,18 @@ cd agent-meeting && bash scripts/install-linux.sh
 Tìm **Agent Meeting** trong menu ứng dụng. Gỡ: xoá `~/.local/share/agent-meeting`, `~/.local/share/applications/agent-meeting.desktop` và biểu tượng `agent-meeting.svg`.
 </details>
 
+## Định hướng phát triển
+
+Hướng tiếp theo là **đội AI phát triển phần mềm tự vận hành**: từ ý tưởng trong chat, trưởng nhóm làm rõ yêu cầu rồi điều phối đội lập kế hoạch, viết code, kiểm thử và bàn giao sản phẩm có bằng chứng chạy thật. Ưu tiên một đội nhỏ làm tốt web full-stack trước khi mở rộng số agent và loại sản phẩm.
+
+Đây là định hướng, chưa phải tính năng của bản 3.5.0. Xem [tầm nhìn, kiến trúc đề xuất và các mốc nghiệm thu](docs/VISION.vi.md).
+
 ## Đóng góp
 
 Mọi báo lỗi, ý tưởng, tài liệu, bản dịch và pull request đều được chào đón: xem [CONTRIBUTING.md](CONTRIBUTING.md). Báo lỗ hổng theo [SECURITY.md](SECURITY.md).
 
 MIT © ttat288
+
+## Không gian routing thử nghiệm (chưa release)
+
+Checkout hiện có workspace/admin riêng, tra cứu routing có phiên bản và task local có bằng chứng kiểm chứng. Worker từ xa còn thử nghiệm. Mở từ nút Không gian làm việc trên link chủ trì. Xem [cách dùng](docs/ROUTING-WORKFLOW.vi.md) và [tiến độ/giới hạn](docs/IMPLEMENTATION-STATUS.vi.md). Chưa coi đây là đội tự xây app full-stack hoàn chỉnh.

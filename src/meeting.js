@@ -301,7 +301,7 @@ class Meeting {
       const parts = x[1].replace(/\*\*/g, '').split('|').map(p => p.trim());
       const [owner, task, due] = parts.length >= 2 ? parts : ['', parts[0], ''];
       if (!task) continue;
-      const a = { owner: owner.slice(0, 60), task: task.slice(0, 300), due: (due || '').slice(0, 60), by: m.name, t: m.t, item: before };
+      const a = { sourceMessageIndex: m.i, sourceRoomCreatedAt: this.createdAt, owner: owner.slice(0, 60), task: task.slice(0, 300), due: (due || '').slice(0, 60), by: m.name, t: m.t, item: before };
       // agent hay nhắc lại cùng một việc với câu chữ hơi khác: coi là một việc, giữ bản mới nhất (giữ số và trạng thái)
       const gone = this.removed.find(y => sameTask(y, a));
       if (gone && !gone.into) continue; // chủ trì đã xoá việc này
@@ -582,7 +582,7 @@ ${calls}`;
       schema: 'agent-meeting/state@1', id: this.id, hostKey: this.hostKey, fixed: !!this.fixed,
       cfg: { mode, maxMsgs, idleMs, timeLimitMin, followUp: !!followUp },
       state: this.state, endReason: this.endReason, context: this.context, endCondition: this.endCondition,
-      version: this.version, createdAt: this.createdAt, startedAt: this.startedAt, endedAt: this.endedAt, endsAt: this.endsAt,
+      version: this.version, workKey: this.workKey, createdAt: this.createdAt, startedAt: this.startedAt, endedAt: this.endedAt, endsAt: this.endsAt,
       workSince: this.workSince, workReason: this.workReason,
       everLeft: this.everLeft, turn: this.turn?.name || null, turnSeq: this.turnSeq, passStreak: this.passStreak, taskSeq: this.taskSeq,
       agenda: this.agenda, agendaIndex: this.agendaIndex, actions: this.actions, removed: this.removed, carry: this.carry, log: this.log,
@@ -592,7 +592,7 @@ ${calls}`;
     };
   }
   restore(s) {
-    for (const k of ['state', 'endReason', 'context', 'endCondition', 'createdAt', 'startedAt', 'endedAt', 'endsAt',
+    for (const k of ['state', 'endReason', 'context', 'endCondition', 'workKey', 'createdAt', 'startedAt', 'endedAt', 'endsAt',
       'everLeft', 'workSince', 'workReason', 'turnSeq', 'passStreak', 'agenda', 'agendaIndex', 'actions', 'removed', 'carry', 'log', 'files', 'preset', 'blocked']) if (s[k] !== undefined) this[k] = s[k];
     Object.assign(this.cfg, s.cfg);
     for (const a of this.actions) { a.n ??= ++this.taskSeq; a.status ??= 'todo'; a.note ??= ''; }

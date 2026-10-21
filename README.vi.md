@@ -102,7 +102,7 @@ Dữ liệu họp ở bộ nhớ trừ khi bật lưu phòng/biên bản. Mở K
 <details>
 <summary>Cài launcher desktop · Linux / macOS / Windows</summary>
 
-Tạo launcher desktop với Node.js18+. Linux đã kiểm tại máy phát triển; kiểm native macOS/Windows được theo dõi riêng.
+Tạo launcher desktop với Node.js18+. [Smoke test native](https://github.com/ttat288/agent-meeting/actions/runs/39632577516) đạt trên Linux, macOS và Windows; mở GUI và hiển thị icon vẫn cần kiểm thủ công.
 
 ```bash
 npx github:ttat288/agent-meeting#main install --dry-run

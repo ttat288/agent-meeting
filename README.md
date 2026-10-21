@@ -102,7 +102,7 @@ Meeting data is in memory unless you enable room/minutes persistence. Opening Pl
 <details>
 <summary>Install a desktop launcher · Linux / macOS / Windows</summary>
 
-Create a desktop launcher with Node.js 18+. Linux has been exercised locally; native macOS/Windows checks are tracked separately.
+Create a desktop launcher with Node.js 18+. [Native installer smoke tests](https://github.com/ttat288/agent-meeting/actions/runs/39632577516) pass on Linux, macOS and Windows; GUI launch and icon appearance still need manual checks.
 
 ```bash
 npx github:ttat288/agent-meeting#main install --dry-run

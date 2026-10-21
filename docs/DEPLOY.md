@@ -235,4 +235,4 @@ docker run --rm -v /srv/agent-meeting:/data -e TZ=Asia/Ho_Chi_Minh \
 
 ## Launcher app đa nền tảng
 
-Source trên main có `node bin/cli.js install --dry-run` và `install` cho Linux/macOS/Windows; đây là launcher per-user cho app Node/trình duyệt, cần Node18+ có sẵn. Linux đã thử bằng thư mục tạm; chưa kiểm native macOS/Windows. Hướng dẫn đầy đủ và giới hạn: [INSTALL.md](INSTALL.md). Cài trực tiếp từ GitHub: `npx github:ttat288/agent-meeting#main install`.
+Source trên main có `node bin/cli.js install --dry-run` và `install` cho Linux/macOS/Windows; đây là launcher per-user cho app Node/trình duyệt, cần Node18+ có sẵn. [Smoke test native](https://github.com/ttat288/agent-meeting/actions/runs/39632577516) đạt trên cả ba OS; mở GUI và icon vẫn cần kiểm thủ công. Hướng dẫn đầy đủ và giới hạn: [INSTALL.md](INSTALL.md). Cài trực tiếp từ GitHub: `npx github:ttat288/agent-meeting#main install`.

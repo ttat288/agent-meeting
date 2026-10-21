@@ -24,3 +24,7 @@ Hai reviewer là subagent Codex nội bộ `/root/showcase_structure` (A: cấu 
 - Không thay CSP của app, port3000/3120, settings global, PATH, MCP hoặc bản cài thật. Preview3122 chỉ phục vụ whitelist file, bind127.0.0.1.
 
 Cập nhật sau review: người dùng đã duyệt logo Convergence v1 ngày 2026-10-21 (“logo 1 ok đó convergence”); wordmark dùng system font, chưa outline. Không có kiểm tra pháp lý độc quyền thương hiệu. Desktop launcher vẫn cần Node18+ ổn định và mở console + web UI hiện có; không phải binary độc lập. Managed execution vẫn theo giới hạn Linux/bubblewrap. Lệnh GitHub main được cập nhật khi xuất bản; native launch GUI vẫn cần nghiệm thu riêng.
+
+## Xuất bản lên main
+
+Commit `6f329f8` đã push lên main theo yêu cầu người dùng. [Native CI](https://github.com/ttat288/agent-meeting/actions/runs/39632577516) đạt trên Ubuntu/macOS/Windows, gồm plist/iconutil và Windows COM shortcut. Root đã chạy thành công `npx --yes github:ttat288/agent-meeting#main install --dry-run --json` từ GitHub, không ghi bản cài hoặc mở server. GUI launch/icon thật vẫn chưa kiểm thủ công.

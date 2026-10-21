@@ -1,6 +1,6 @@
 # Desktop installation · Linux, macOS and Windows
 
-**Status:** implemented in this checkout. Linux installation, upgrade, rollback and uninstall have been exercised with temporary user directories. macOS/Windows plans and generated launcher sources have been checked here; native OS execution is still pending. The native smoke workflow is included for those systems. Use the GitHub main branch command below for the current implementation; no npm registry release is required.
+**Status:** implemented in this checkout. Linux installation, upgrade, rollback and uninstall have been exercised with temporary user directories. Native installer smoke tests passed on Ubuntu, macOS and Windows for `6f329f8` ([CI run](https://github.com/ttat288/agent-meeting/actions/runs/39632577516)). Finder/Start Menu GUI launch and real icon appearance still need manual checks. Use the GitHub main branch command below for the current implementation; no npm registry release is required.
 
 ## One command from this checkout
 
@@ -67,7 +67,7 @@ Foreign-platform previews use sample user/runtime paths. Actual installation is 
 
 `test/desktop-install.test.js` uses temporary user paths, leaving the actual desktop, app data and port 3000 untouched. It covers runnable payloads, native launcher metadata, Unicode/spaces/reserved filename characters, upgrade backups, injected write failures, foreign files, edited launchers, symlinks, lock contention, source/hash guards and data-preserving uninstall.
 
-On Linux, the test additionally validates the desktop entry and exercises its quoting with GLib `gio launch` when those tools are present; the launched command is `--version`, never a meeting server. On macOS it checks the plist and decodes ICNS with `iconutil`; on Windows it reads the actual shortcut target/arguments/icon through the native COM API. Those native branches have not been executed on this Linux development machine.
+On Linux, the test additionally validates the desktop entry and exercises its quoting with GLib `gio launch` when those tools are present; the launched command is `--version`, never a meeting server. On macOS it checks the plist and decodes ICNS with `iconutil`; on Windows it reads the actual shortcut target/arguments/icon through the native COM API. Those branches passed on their native GitHub-hosted runners; they were not emulated on this Linux development machine.
 
 The `.github/workflows/desktop-install.yml` workflow is configured for sequential Ubuntu/macOS/Windows native smoke tests. Consult its run for the commit you are installing; local Linux results alone do not establish native macOS/Windows support. GUI launch in Finder/Start Menu and real high-DPI icon appearance remain native manual acceptance items.
 

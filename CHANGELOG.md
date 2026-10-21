@@ -4,7 +4,7 @@
 
 - Logo Convergence v1 theo hướng nhiều góc nhìn hội tụ thành quyết định; SVG, biến thể đơn sắc/đảo màu, PNG, ICO và ICNS. Người dùng đã duyệt logo Convergence ngày 2026-10-21.
 - Lệnh `install`/`uninstall` cho launcher theo người dùng trên Linux/macOS/Windows; xem trước không ghi, staging/backup/rollback, giữ dữ liệu và file sửa tay. Không đổi PATH, client AI hoặc cấu hình global.
-- Linux đã kiểm cài/nâng cấp/gỡ trong thư mục tạm; native macOS/Windows còn chờ. Workflow smoke đa nền tảng mới chưa chạy trên thay đổi chưa push.
+- Smoke test installer native đạt trên Linux/macOS/Windows trong [CI](https://github.com/ttat288/agent-meeting/actions/runs/39632577516); kiểm mở GUI qua Finder/Start Menu và icon high-DPI vẫn còn mở.
 
 ## Chưa phát hành — showcase sản phẩm
 

@@ -53,7 +53,7 @@ Không phân công dựa trên nhãn "model mạnh nhất". Phân công dựa tr
 - Context window lớn, thuận lợi cho việc xử lý tài liệu và dữ liệu dài.
 - Có thể làm coding và agent workflow, không chỉ tóm tắt nội dung.
 
-Tài liệu tham khảo:\
+Tài liệu tham khảo:  
 https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash
 
 **Không mặc định giao cho Gemini Flash:**
@@ -122,10 +122,10 @@ Không được xóa mất bằng chứng gốc chỉ để tạo một bản t�
 
 Tài liệu tham khảo:
 
-Model:\
+Model:  
 https://developers.openai.com/api/docs/models/gpt-6-astra
 
-Harness:\
+Harness:  
 https://developers.openai.com/api/docs/guides/agents-api/overview
 
 **Không mặc định giao cho Astra:**
@@ -196,10 +196,10 @@ Mỗi nhiệm vụ thực thi cần báo cáo:
 
 Tài liệu tham khảo:
 
-Model:\
+Model:  
 https://www.anthropic.com/claude/opus
 
-Harness:\
+Harness:  
 https://docs.anthropic.com/en/docs/claude-code/getting-started
 
 **Không mặc định giao cho Claude Opus:**

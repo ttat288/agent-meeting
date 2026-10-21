@@ -1,93 +1,120 @@
-// Quay khung hình GIF demo: node tools/record-demo.js <thư mục khung> [--vi]  (mặc định tiếng Anh; --vi cho docs/demo.vi.gif)
-// Cần: server dev ở :3100 với --host-key devhost0123456789abcdef --agent-key devagent0123456789abcdef (đã chạy bản UI mới nhất),
-// firefox --headless --no-remote -profile ~/snap/firefox/common/am-shot --remote-debugging-port 9223 (cổng khác: BIDI_PORT=…).
-// Ghép: python3 tools/make-gif.py <thư mục khung> docs/demo.gif
-const fs = require('fs'), path = require('path'), { spawn } = require('child_process');
-const out = process.argv[2]; fs.mkdirSync(out, { recursive: true });
-const VI = process.argv.includes('--vi'), LANG = VI ? 'vi' : 'en';
-const ORIGIN = 'http://localhost:3100', HK = 'devhost0123456789abcdef', AK = 'devagent0123456789abcdef';
-const H = `${ORIGIN}/api/host/${HK}`;
-const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-const ws = new WebSocket(`ws://127.0.0.1:${process.env.BIDI_PORT || 9223}/session`);
-let id = 0; const pend = {};
-const cmd = (method, params) => new Promise((res, rej) => { const i = ++id; pend[i] = { res, rej }; ws.send(JSON.stringify({ id: i, method, params })); });
-ws.onmessage = (e) => { const m = JSON.parse(e.data); if (m.id && pend[m.id]) { m.type === 'error' ? pend[m.id].rej(new Error(m.error + ': ' + m.message)) : pend[m.id].res(m.result); } };
-const state = async () => (await fetch(`${H}/state?v=-1`)).json();
-let ctx, n = 0;
-const js = (expression) => cmd('script.evaluate', { target: { context: ctx }, expression, awaitPromise: true });
-const shot = async (tag) => {
-  const { data } = await cmd('browsingContext.captureScreenshot', { context: ctx });
-  const f = path.join(out, `${String(n++).padStart(3, '0')}_${tag}.png`);
-  fs.writeFileSync(f, Buffer.from(data, 'base64'));
-  console.log('frame', f);
-};
-ws.onopen = async () => {
-  try {
-    await fetch(`${H}/new`, { method: 'POST', body: '{}' });
-    await cmd('session.new', { capabilities: {} });
-    ctx = (await cmd('browsingContext.create', { type: 'tab' })).context;
-    await cmd('browsingContext.setViewport', { context: ctx, viewport: { width: 1280, height: 680 }, devicePixelRatio: 1 });
-    await cmd('browsingContext.navigate', { context: ctx, url: `${ORIGIN}/m/${HK}?lang=${LANG}`, wait: 'complete' });
-    await js(`localStorage.clear(); localStorage.setItem('agent-meeting:lang', '${LANG}'); history.replaceState(null, '', location.pathname)`);
-    await cmd('browsingContext.reload', { context: ctx, wait: 'complete' });
-    await sleep(1500);
-    await shot('empty');
-    // v3.3: nhờ AI viết bối cảnh → dán JSON vào tab JSON → áp vào form → Tiếp → mời agent → Bắt đầu
-    const brief = (VI ? 'Đây là bản brief cho cuộc họp:' : 'Here is the brief for your meeting:') + '\n\n```json\n' + JSON.stringify({
-      schema: 'agent-meeting/brief@1',
-      context: VI
-        ? 'Chọn kiểu API cho app di động mới: REST hay GraphQL. Nhóm 4 người, một client di động.\nThống nhất một cách và chia việc (mỗi dòng VIỆC ghi đúng tên agent phụ trách); sau khi chốt, mỗi bạn tự làm việc của mình rồi báo tiến độ kèm bằng chứng.'
-        : 'Pick the API style for our new mobile app: REST or GraphQL. Team of 4, one mobile client.\nAgree on one approach and split the work (each VIỆC line names the agent responsible); after the conclusion, each of you does your own task and reports progress with evidence.',
-      endCondition: '',
-      settings: { agenda: VI ? ['Kiểu API', 'Xác thực'] : ['API style', 'Authentication'], followUp: true, mode: 'free', maxMsgs: 60, timeLimitMin: 0, idleSec: 40 },
-      roles: ['', VI ? 'phản biện' : "devil's advocate"],
-    }, null, 2) + '\n```';
-    await shot('ai');
-    await js(`document.getElementById('btnToJson').click()`);
-    await sleep(300); await shot('json-empty');
-    for (const cut of [Math.round(brief.length / 2), brief.length]) {
-      await js(`(() => { const t = document.getElementById('jsonText'); t.value = ${JSON.stringify(brief)}.slice(0, ${cut}); t.dispatchEvent(new Event('input')); })()`);
-      await sleep(600); await shot('json');
-    }
-    await shot('json');
-    await js(`document.getElementById('jsonApply').click()`);
-    await sleep(500);
-    await js(`document.getElementById('setup').scrollTop = 0`);
-    await sleep(200); await shot('form'); await shot('form');
-    await js(`document.getElementById('setup').scrollTop = 600`);
-    await sleep(300); await shot('form'); await shot('form');
-    await js(`document.getElementById('btnNextStep').click()`);
-    await sleep(800); await shot('invite');
-    const bots = spawn('node', ['scripts/demo-bots.js', `${ORIGIN}/a/${AK}`, ...(VI ? [] : ['--en'])], { cwd: path.join(__dirname, '..') });
-    let debated = false;
-    bots.stdout.on('data', d => { process.stdout.write('[bots] ' + d); if (/tranh luận xong/.test(d)) debated = true; });
-    for (let i = 0; i < 30 && (await state()).agents.length < 3; i++) { await sleep(900); await shot('lobby'); }
-    await sleep(1200);
-    await shot('ready'); await shot('ready');
-    await js(`document.getElementById('btnStart').click()`);
-    await sleep(1500);
-    let asked = false, endedAt = 0, scrolled = false;
-    for (let k = 0; k < 200; k++) {
-      const s = await state();
-      if (debated && !asked) {
-        asked = true;
-        await shot('before-ask');
-        await js(`[...document.querySelectorAll('#quick .chip')].find(b => b.textContent === ${JSON.stringify(VI ? 'Yêu cầu chốt' : 'Ask to conclude')}).click()`);
-        await sleep(600);
-      }
-      if (s.files.length && !scrolled) { // đưa mục Tệp vào khung nhìn
-        scrolled = true;
-        await js(`(() => { const sd = document.getElementById('side'); sd.scrollTop = document.getElementById('filesSec').offsetTop - 330; })()`);
-        await sleep(300);
-      }
-      await shot(s.state.toLowerCase());
-      if (s.state === 'ENDED') { if (!endedAt) endedAt = Date.now(); else if (Date.now() - endedAt > 2500) break; }
-      await sleep(1700);
-    }
-    bots.kill();
-    await cmd('browsingContext.close', { context: ctx });
-    await cmd('session.end', {});
-  } catch (e) { console.error(e); }
-  ws.close(); process.exit(0);
-};
-ws.onerror = (e) => { console.error('ws error', e.message || e); process.exit(1); };
+#!/usr/bin/env node
+'use strict';
+// Reproducible showcase on a disposable local server; no AI/model calls.
+// PLAYWRIGHT_MODULE=/absolute/path/to/playwright node tools/record-demo.js /tmp/am-demo [--vi]
+// Optional BROWSER_BIN selects an already-installed Chromium browser. Nothing is installed.
+const fs = require('node:fs'), path = require('node:path'), os = require('node:os');
+const assert = require('node:assert/strict');
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const { createApp } = require('../src/server');
+const out = path.resolve(process.argv[2] || '/tmp/agent-meeting-demo');
+const vi = process.argv.includes('--vi'), lang = vi ? 'vi' : 'en';
+const text = (en, vn) => vi ? vn : en;
+fs.mkdirSync(out, { recursive: true });
+const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-meeting-showcase-'));
+const app = createApp({ admit: 'none', configDir: path.join(temp, 'config'), workDir: path.join(temp, 'work') });
+const room = app.create({ hostKey: 'showcase_host_disposable', id: 'showcase_invite_disposable', followUp: true });
+const names = ['Minh · Workflow', 'Lan · Quality', 'Sam · Tooling'];
+const keys = new Map(), frames = [], errors = [];
+let browser;
+(async () => {
+  await new Promise(r => app.server.listen(0, '127.0.0.1', r));
+  const base = 'http://127.0.0.1:' + app.server.address().port;
+  const post = async (url, data, token) => {
+    const response = await fetch(base + url, { method: 'POST', headers: { ...(token ? { authorization: 'Bearer ' + token } : {}) }, body: new URLSearchParams(data) });
+    assert.ok(response.ok, 'HTTP ' + response.status + ' ' + url); return response.text();
+  };
+  const agent = (i, tool, data = {}) => post('/a/' + room.id + '/' + tool, { name: names[i], ...data }, keys.get(i));
+  browser = await chromium.launch({ headless: true, executablePath: process.env.BROWSER_BIN || '/opt/brave.com/brave/brave' });
+  const page = await browser.newPage({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1, colorScheme: 'light', reducedMotion: 'reduce' });
+  page.on('pageerror', e => errors.push(e.message));
+  page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+  await page.goto(base + '/m/' + room.hostKey + '?lang=' + lang);
+  await page.locator('#ctx').waitFor();
+  async function shot(tag, title, duration = 3000) {
+    await page.locator('#toasts > *').waitFor({ state: 'hidden' });
+    await page.mouse.move(1270, 790);
+    await page.evaluate(() => document.fonts.ready);
+    await page.screenshot({ path: path.join(out, String(frames.length).padStart(3, '0') + '_' + tag + '.png') });
+    frames.push({ tag, title, duration });
+  }
+  await page.locator('#ctx').fill(text(
+    'How can we help annotators review keypoint tracking faster without trusting interpolation blindly?\n\nStart with confirmed frames 1 and 10. Compare interpolation, independent prelabels and human corrections. Debate when to inspect frame 5, when to extend to 15, and what should stop that extension.\n\nAgree on a pilot workflow and three validation tasks. Treat confidence as a clue, not proof. This is a scripted product demo, not a validated CVAT algorithm.',
+    'Giúp annotator kiểm tracking keypoint nhanh hơn mà không tin nội suy một cách máy móc?\n\nBắt đầu với mốc 1 và 10 đã được người xác nhận. So sánh nội suy, prelabel độc lập và điểm người sửa. Bàn khi nào kiểm frame 5, khi nào mở đến 15, và điều gì phải chặn bước tăng.\n\nChốt flow pilot và ba việc kiểm chứng. Confidence chỉ là gợi ý. Đây là demo kịch bản, chưa phải thuật toán CVAT đã kiểm nghiệm.'));
+  await page.locator('#followUp').evaluate(e => e.closest('details').open = true);
+  await page.locator('#followUp').check();
+  await page.locator('#followUp').evaluate(e => e.closest('details').open = false);
+  await shot('brief', text('01 · Give the team a decision to make', '01 · Giao một quyết định cần chốt'), 3000);
+  await page.locator('#btnNextStep').click();
+  for (let i = 0; i < names.length; i++) {
+    const reply = await agent(i, 'join', { model: text('Scripted demo', 'Demo kịch bản') });
+    const match = reply.match(/Bearer ([\w-]+)/); assert.ok(match, 'Join must return an agent key'); keys.set(i, match[1]);
+  }
+  await page.waitForFunction(() => !document.querySelector('#btnStart').disabled);
+  await shot('invite', text('02 · Three perspectives, one room', '02 · Ba góc nhìn, một phòng họp'), 2500);
+  await page.locator('#btnStart').click();
+  await page.locator('#room:not([hidden])').waitFor();
+  const lines = [
+    [0, text('I would start with **frames 1 → 10**. Confirm both anchors, then review frames 2–9. Only extend to 15 once this first segment passes human review.', 'Bắt đầu từ **frame 1 → 10**. Xác nhận hai mốc rồi rà frame 2–9. Chỉ mở tới 15 sau khi đoạn đầu đã được người kiểm.')],
+    [1, text('A confidence of **0.98 at frame 10** says little about frame 5. A turn or occlusion can hide in the middle. Compare three separate tracks: interpolation, prelabel and the human-confirmed point.', '**Confidence 0,98 ở frame 10** chưa nói lên chất lượng frame 5. Đổi hướng hay che khuất có thể nằm giữa đoạn. Phải lưu riêng nội suy, prelabel và điểm người xác nhận.')],
+    [2, text('Then show a review queue with the image first, suggestions second. Flag disagreement near **frame 5** and preserve the point source and track ID. Do not silently replace a human correction.', 'Vậy hàng chờ review hiện ảnh trước, gợi ý sau. Đánh dấu sai khác gần **frame 5**, giữ nguồn điểm và track ID. Không âm thầm ghi đè điểm người sửa.')],
+    [0, text('If frame 5 is wrong, the annotator adds an anchor there and rechecks **1 → 5** and **5 → 10**. If 1 → 10 passes, try 10 → 15 and inspect 11–14. An identity switch stops the extension.', 'Nếu frame 5 sai, người kiểm thêm mốc tại đó và rà lại **1 → 5**, **5 → 10**. Nếu đoạn đầu đạt, thử 10 → 15 và rà 11–14. Lệch ID phải chặn tăng bước.')],
+    [2, text('Keep review actions reversible: accept a suggestion, correct a point, or flag the segment. Record the prelabel version and interpolation source so we can reproduce each comparison.', 'Giữ thao tác review có thể hoàn tác: nhận gợi ý, sửa điểm hoặc đánh dấu đoạn cần kiểm. Lưu phiên bản prelabel và nguồn nội suy để dựng lại từng phép so sánh.')],
+    [1, text('We should verify these interactions in CVAT before building the tool. Disagreement can help prioritize a frame; agreement by itself does not establish that the label is correct.', 'Cần xác minh thao tác này trên CVAT trước khi xây tool. Sai khác có thể giúp ưu tiên frame; hai cách đồng ý với nhau chưa chứng minh nhãn đúng.')],
+    [1, text('Agreed for the pilot. Before reviewing fewer frames, measure missed errors and review time against a full-review baseline. Keep a blind random sample; we have **no validated threshold yet**.', 'Đồng ý cho pilot. Trước khi giảm số frame cần xem, đo lỗi bỏ sót và thời gian so với rà toàn bộ. Giữ mẫu ngẫu nhiên độc lập; hiện **chưa có ngưỡng đã kiểm nghiệm**.')],
+  ];
+  for (let n = 0; n < lines.length; n++) {
+    const [i, line] = lines[n]; await agent(i, 'say', { text: line });
+    await page.waitForFunction(line => document.querySelector('#feedIn').textContent.includes(line.replace(/\*\*/g, '')), line);
+    await page.waitForFunction(count => document.querySelectorAll('.msg').length >= count, n + 1);
+    await page.waitForTimeout(250);
+    if (n === 1 || n === lines.length - 1) await shot(n === 1 ? 'challenge' : 'debate', text(n === 1 ? '03 · Challenge the assumption' : '04 · Refine the approach together', n === 1 ? '03 · Phản biện giả định' : '04 · Cùng hoàn thiện phương án'), 4000);
+  }
+  await page.locator('#hostMsg').fill(text('Please conclude with the pilot decision, its limits, and three tasks. No work has been implemented or verified.', 'Chốt quyết định pilot, giới hạn và ba việc tiếp theo. Chưa triển khai hoặc kiểm chứng công việc nào.'));
+  await page.locator('#btnSend').click();
+  const conclusion = text(
+    'KẾT LUẬN: Pilot with confirmed anchors 1 and 10; review every intermediate frame. Correct frame 5 and split the segment when needed. Extend to 15 only after human review. Keep interpolation, prelabels and corrections separate. No threshold is validated yet.\nVIỆC: Minh · Workflow | Map the annotator review flow and anchor corrections for frames 1 → 10 → 15 | Before pilot\nVIỆC: Lan · Quality | Prepare reference clips for turns, occlusion and identity switches; define independent review | Before pilot\nVIỆC: Sam · Tooling | Prototype a comparison queue that preserves point source, track ID and human edits | After flow review',
+    'KẾT LUẬN: Pilot với mốc 1 và 10 đã xác nhận; rà đủ frame ở giữa. Sửa tại 5 và chia nhỏ đoạn khi cần. Chỉ mở tới 15 sau khi người kiểm duyệt. Giữ riêng nội suy, prelabel và điểm người sửa. Chưa có ngưỡng được kiểm nghiệm.\nVIỆC: Minh · Workflow | Mô tả luồng annotator review và sửa mốc cho frame 1 → 10 → 15 | Trước pilot\nVIỆC: Lan · Quality | Chuẩn bị clip tham chiếu đổi hướng, che khuất, lệch ID và quy tắc review độc lập | Trước pilot\nVIỆC: Sam · Tooling | Phác thảo hàng chờ so sánh giữ nguồn điểm, track ID và chỉnh sửa của người kiểm | Sau review flow');
+  await agent(0, 'say', { text: conclusion });
+  await page.waitForFunction(() => document.querySelectorAll('#feedIn .msg').length >= 9);
+  await shot('decision', text('05 · A decision with owners and next steps', '05 · Quyết định có người phụ trách và việc tiếp theo'), 4000);
+  await page.locator('#sessionNav a[href="#plan"]').click();
+  await page.waitForFunction(() => document.querySelectorAll('.ws-task').length === 3);
+  await shot('plan', text('06 · The conversation becomes a plan', '06 · Hội thoại trở thành kế hoạch'), 4000);
+  const firstTask = await page.locator('.ws-task').first().getAttribute('data-task-id');
+  await page.locator('.ws-task-source > a').first().click();
+  await page.locator('#room:not([hidden])').waitFor();
+  assert.ok(page.url().includes('#message-'));
+  await shot('source', text('07 · Every task leads back to its source', '07 · Mỗi việc dẫn về đúng nguồn hội thoại'), 3000);
+  await page.locator('#btnOptions').click(); await page.locator('#btnStop').click(); await page.locator('#modalYes').click();
+  await page.waitForFunction(() => !document.querySelector('#ended').hidden);
+  assert.equal(room.state, 'WORK');
+  await shot('followup', text('08 · Follow-up stays in the same room', '08 · Theo dõi tiếp trong cùng phòng'), 3000);
+  await agent(1, 'progress', { task: '2', status: 'blocked', note: text('Demo only: waiting for independently labeled reference clips. No validation result is claimed.', 'Minh họa: đang chờ clip tham chiếu gán nhãn độc lập. Chưa có kết quả kiểm chứng.') });
+  await page.locator('#sessionNav a[href="#plan"]').click(); await page.locator('.ws-task').first().waitFor();
+  const card = page.locator('[data-task-id="' + firstTask + '"]');
+  await card.locator('.ws-task-source details summary').click();
+  await shot('provenance', text('09 · Keep context and progress honest', '09 · Giữ bối cảnh và trạng thái minh bạch'), 3500);
+  // End explicitly without pretending the three research tasks have been completed.
+  await page.locator('#sessionNav a[href="#conversation"]').click();
+  await page.locator('#btnOptions').click(); await page.locator('#btnStop').click(); await page.locator('#modalYes').click();
+  await page.waitForFunction(() => document.querySelector('#status').classList.contains('ended'));
+  assert.equal(room.state, 'ENDED');
+  await shot('ended', text('10 · Keep the record; carry unfinished work forward', '10 · Giữ biên bản, mang việc dở sang cuộc sau'), 3000);
+  const checks = [];
+  for (const locale of ['en', 'vi']) for (const theme of ['light', 'dark']) for (const width of [375, 768, 1280]) {
+    await page.emulateMedia({ colorScheme: theme }); await page.setViewportSize({ width, height: 608 });
+    await page.goto(base + '/m/' + room.hostKey + '?lang=' + locale + '#conversation');
+    await page.reload();
+    await page.waitForFunction(() => document.querySelector('#status').classList.contains('ended'));
+    const measure = await page.evaluate(() => ({ feed: document.querySelector('#feed').getBoundingClientRect().height, footer: document.querySelector('#ended').getBoundingClientRect().height, overflow: document.documentElement.scrollWidth > innerWidth }));
+    assert.ok(measure.feed > 250, JSON.stringify(measure)); assert.equal(measure.overflow, false);
+    await page.locator('#ended summary').click();
+    await page.locator('#ended a[download]').waitFor();
+    const expanded = await page.locator('#feed').evaluate(e => e.getBoundingClientRect().height); assert.ok(expanded > 200);
+    checks.push({ locale, theme, width, height: 608, ...measure, expandedFeed: expanded });
+  }
+  assert.deepEqual(errors, []);
+  fs.writeFileSync(path.join(out, 'manifest.json'), JSON.stringify({ language: lang, viewport: '1280×800', disclosure: 'Scripted agents over real HTTP APIs; no AI calls, completed tasks, managed runs or verified results fabricated.', frames, checks, consoleErrors: errors }, null, 2) + '\n');
+  console.log(out, frames.length + ' frames', checks.length + ' responsive checks');
+})().catch(e => { console.error(e); process.exitCode = 1; }).finally(async () => { await browser?.close(); app.close(); fs.rmSync(temp, { recursive: true, force: true }); });

@@ -212,8 +212,11 @@ textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
 .send textarea { flex:1; min-width:0; min-height:var(--control-height); height:var(--control-height); max-height:180px; line-height:var(--line-ui); }
 .send select { width: auto; max-width: 150px; flex: none; }
 .send textarea::placeholder { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.endcard { border-top: 1px solid var(--line); background: var(--surface); padding: 18px 24px; }
-.endcard-in { max-width: 920px; margin: 0 auto; display: grid; gap: 12px; }
+.endcard { flex:none; max-height:40%; overflow:auto; border-top:1px solid var(--line); background:var(--surface); padding:var(--space-3) var(--gutter); }
+.endcard-in { max-width:920px; margin:0 auto; display:grid; gap:var(--space-2); }
+.end-overview { display:flex; align-items:center; justify-content:space-between; gap:var(--space-3); }
+.end-details > summary { cursor:pointer; color:var(--ink-2); min-height:var(--control-height); display:list-item; align-content:center; }
+.end-details[open] { display:grid; gap:var(--space-3); }
 .endcard h3 { margin: 0; font-size:var(--text-section); }
 .stats { display: flex; gap: 22px; flex-wrap: wrap; font-size:var(--text-ui); color: var(--mute); }
 .stats b { color: var(--ink); font-variant-numeric: tabular-nums; }

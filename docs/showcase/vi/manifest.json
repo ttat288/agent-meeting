@@ -1,0 +1,180 @@
+{
+  "language": "vi",
+  "viewport": "1280×800",
+  "disclosure": "Scripted agents over real HTTP APIs; no AI calls, completed tasks, managed runs or verified results fabricated.",
+  "frames": [
+    {
+      "tag": "brief",
+      "title": "01 · Giao một quyết định cần chốt",
+      "duration": 3000
+    },
+    {
+      "tag": "invite",
+      "title": "02 · Ba góc nhìn, một phòng họp",
+      "duration": 2500
+    },
+    {
+      "tag": "challenge",
+      "title": "03 · Phản biện giả định",
+      "duration": 4000
+    },
+    {
+      "tag": "debate",
+      "title": "04 · Cùng hoàn thiện phương án",
+      "duration": 4000
+    },
+    {
+      "tag": "decision",
+      "title": "05 · Quyết định có người phụ trách và việc tiếp theo",
+      "duration": 4000
+    },
+    {
+      "tag": "plan",
+      "title": "06 · Hội thoại trở thành kế hoạch",
+      "duration": 4000
+    },
+    {
+      "tag": "source",
+      "title": "07 · Mỗi việc dẫn về đúng nguồn hội thoại",
+      "duration": 3000
+    },
+    {
+      "tag": "followup",
+      "title": "08 · Theo dõi tiếp trong cùng phòng",
+      "duration": 3000
+    },
+    {
+      "tag": "provenance",
+      "title": "09 · Giữ bối cảnh và trạng thái minh bạch",
+      "duration": 3500
+    },
+    {
+      "tag": "ended",
+      "title": "10 · Giữ biên bản, mang việc dở sang cuộc sau",
+      "duration": 3000
+    }
+  ],
+  "checks": [
+    {
+      "locale": "en",
+      "theme": "light",
+      "width": 375,
+      "height": 608,
+      "feed": 370,
+      "footer": 149,
+      "overflow": false,
+      "expandedFeed": 311.40625
+    },
+    {
+      "locale": "en",
+      "theme": "light",
+      "width": 768,
+      "height": 608,
+      "feed": 386,
+      "footer": 133,
+      "overflow": false,
+      "expandedFeed": 311.40625
+    },
+    {
+      "locale": "en",
+      "theme": "light",
+      "width": 1280,
+      "height": 608,
+      "feed": 423,
+      "footer": 133,
+      "overflow": false,
+      "expandedFeed": 355
+    },
+    {
+      "locale": "en",
+      "theme": "dark",
+      "width": 375,
+      "height": 608,
+      "feed": 370,
+      "footer": 149,
+      "overflow": false,
+      "expandedFeed": 311.40625
+    },
+    {
+      "locale": "en",
+      "theme": "dark",
+      "width": 768,
+      "height": 608,
+      "feed": 386,
+      "footer": 133,
+      "overflow": false,
+      "expandedFeed": 311.40625
+    },
+    {
+      "locale": "en",
+      "theme": "dark",
+      "width": 1280,
+      "height": 608,
+      "feed": 423,
+      "footer": 133,
+      "overflow": false,
+      "expandedFeed": 355
+    },
+    {
+      "locale": "vi",
+      "theme": "light",
+      "width": 375,
+      "height": 608,
+      "feed": 370,
+      "footer": 149,
+      "overflow": false,
+      "expandedFeed": 311.40625
+    },
+    {
+      "locale": "vi",
+      "theme": "light",
+      "width": 768,
+      "height": 608,
+      "feed": 386,
+      "footer": 133,
+      "overflow": false,
+      "expandedFeed": 318
+    },
+    {
+      "locale": "vi",
+      "theme": "light",
+      "width": 1280,
+      "height": 608,
+      "feed": 423,
+      "footer": 133,
+      "overflow": false,
+      "expandedFeed": 355
+    },
+    {
+      "locale": "vi",
+      "theme": "dark",
+      "width": 375,
+      "height": 608,
+      "feed": 370,
+      "footer": 149,
+      "overflow": false,
+      "expandedFeed": 311.40625
+    },
+    {
+      "locale": "vi",
+      "theme": "dark",
+      "width": 768,
+      "height": 608,
+      "feed": 386,
+      "footer": 133,
+      "overflow": false,
+      "expandedFeed": 318
+    },
+    {
+      "locale": "vi",
+      "theme": "dark",
+      "width": 1280,
+      "height": 608,
+      "feed": 423,
+      "footer": 133,
+      "overflow": false,
+      "expandedFeed": 355
+    }
+  ],
+  "consoleErrors": []
+}

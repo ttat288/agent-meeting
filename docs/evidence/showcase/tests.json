@@ -1,0 +1,115 @@
+{
+  "date": "2026-10-21",
+  "execution": "sequential",
+  "memoryMax": "1200M",
+  "swapMax": 0,
+  "perFileTimeoutSeconds": 150,
+  "perTestTimeoutMs": 30000,
+  "initial": [
+    {
+      "file": "test/brief.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/config-store.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/connect.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/consistency.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/evaluation.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/execution-sandbox.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/files.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/i18n.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/meeting.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/minutes.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/remote-server.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/remote.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/routing-tools.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/routing.test.js",
+      "exit": 1
+    },
+    {
+      "file": "test/runtime-denial.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/runtime.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/security.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/server.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/work-cancel.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/work-server.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/work.test.js",
+      "exit": 0
+    },
+    {
+      "file": "test/worker.test.js",
+      "exit": 0
+    }
+  ],
+  "resolvedFailure": {
+    "file": "test/routing.test.js",
+    "cause": "Previous push normalized whitespace and added a final newline to the verbatim source, changing its hash after tests.",
+    "resolution": "Restored original bytes and scoped Git whitespace handling to this immutable Markdown file; the hash assertion is unchanged.",
+    "rerunExit": 0,
+    "rerunPassed": 8
+  },
+  "finalPassed": 231,
+  "finalFailed": 0,
+  "finalSkipped": 0,
+  "finalRerun": {
+    "command": "systemd-run --user --scope -q -p MemoryMax=1200M -p MemorySwapMax=0 timeout 900 npm test",
+    "passed": 231,
+    "failed": 0,
+    "files": 22,
+    "exit": 0
+  }
+}

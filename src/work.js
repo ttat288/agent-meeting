@@ -344,7 +344,9 @@ function atomicReplace(target, bytes, mode = 0o600) {
   finally { try { fs.unlinkSync(tmp); } catch (e) { if (e.code !== 'ENOENT') throw e; } }
 }
 function runTest(workspace, file, signal, isolate = false) {
-  const args = ['--max-old-space-size=256', '--test', '--test-timeout=20000', file];
+  // Node 18/older 20 lack this CLI option. The process-tree deadline below
+  // still enforces a hard wall-clock limit on every supported Node version.
+  const args = ['--max-old-space-size=256', '--test', ...(Number(process.versions.node.split('.')[0]) >= 22 ? ['--test-timeout=20000'] : []), file];
   const command = [process.execPath, ...args];
   if (signal?.aborted) return Promise.resolve({ command, exitCode: null, timeout: false, cancelled: true, output: '', elapsedMs: 0, checkedAt: new Date().toISOString() });
   return new Promise(resolve => {

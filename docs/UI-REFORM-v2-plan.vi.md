@@ -155,3 +155,8 @@ Checkpoint shell trước khi mở rộng: source preview 3119 xác minh process
 ## 11. Bàn giao triển khai v2
 
 Root đã triển khai shell/Hội thoại theo checkpoint rồi áp chung token/component sang Plan/Execute/Results/Admin. Reviewer A+B review cả thiết kế và source/browser, phát hiện focus nested modal/summary trap/resize, count Results và density; đã sửa và retest độc lập. Bằng chứng/giới hạn chi tiết ở [ACCEPTANCE](evidence/ui-v2/ACCEPTANCE.vi.md), [REVIEW](evidence/ui-v2/REVIEW.vi.md). Preview transient service3119 chạy đúng source hiện tại,5 task dài và transcript dài. Chưa commit/push; chưa có người dùng nghiệm thu.
+
+
+## Lát cắt showcase/ENDED — 2026-10-21
+
+Hiện trạng: ENDED/WORK lặp bảng task và kết luận dưới timeline; ba task dài làm feed còn24px. Đích: timeline giữ nguyên nội dung, footer chỉ có trạng thái + số việc tự báo và link Plan; metadata/tải biên bản nằm trong disclosure, carry/new còn truy cập được. Sidebar giữ status/note/evidence controls, Plan giữ task/source/revision; không bỏ chức năng. Luồng kiểm: LIVE→WORK→ENDED→Plan→source→Back/reload, có/không task, VI/EN, light/dark,375/768/1280 và viewport608px, zoom200%. Showcase quay trên source tích hợp bằng bot kịch bản ghi rõ, không gọi model hay giả tạo kết quả verified.

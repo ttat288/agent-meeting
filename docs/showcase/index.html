@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agent Meeting · Product walkthrough</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="player.css">
+</head>
+<body>
+<header><a class="brand" href="https://github.com/ttat288/agent-meeting">Agent Meeting</a><span id="eyebrow">Product walkthrough</span><label><span id="languageLabel">Language</span> <select id="language"><option value="en">English</option><option value="vi">Tiếng Việt</option></select></label></header>
+<main>
+<div class="intro"><h1 id="headline">From a question to a plan.</h1><p id="disclosure">Real interface. Scripted participants. No AI calls or verified execution claims.</p></div>
+<figure><img id="scene" src="en/000_brief.png" width="1280" height="800" alt="Write a meeting brief"><figcaption><span id="caption">01 · Give the team a decision to make</span><span id="counter">1 / 10</span></figcaption></figure>
+<div class="controls" aria-label="Playback controls"><button id="previous" aria-label="Previous scene">←</button><button id="play" aria-pressed="false">Play walkthrough</button><button id="next" aria-label="Next scene">→</button><label class="seek"><span id="seekLabel">Scene</span><input id="seek" type="range" min="0" max="9" value="0" aria-label="Choose a scene"></label><a id="gif" href="../demo.gif">GIF ↗</a></div>
+<p class="note" id="note">Pause on any scene to read. The three research tasks remain planned; progress reports do not establish verification.</p>
+<p id="error" role="alert" hidden></p>
+</main><script src="player.js"></script>
+</body></html>

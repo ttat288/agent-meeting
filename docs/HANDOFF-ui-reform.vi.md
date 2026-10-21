@@ -57,3 +57,8 @@ Người dùng bác bỏ bản vừa triển khai: text/box quá to, thiếu nh�
 ## Thử họp thực sau UI v2: phát hiện ENDED chưa đạt
 
 2026-10-21: người dùng yêu cầu thử nhẹ một cuộc thảo luận logic annotator tracking. Đã thực hiện trên bản cài local qua phòng3120 với hai subagent Codex thật,9 tin/2:06,3 việc nghiên cứu, không code/CLI trả phí. **Phát hiện chưa sửa:** ENDED với3 task dài làm endcard642px và feed chỉ24px ở viewport608px; source link đúng nhưng hội thoại không đọc được. Ưu tiên cải cách cấu trúc ENDED/WORK, bỏ nội dung task/conclusion lặp chiếm vùng chat. Bằng chứng và giới hạn: [evidence/annotator-discussion/OBSERVATIONS.vi.md](evidence/annotator-discussion/OBSERVATIONS.vi.md). Lượt này chỉ test để người dùng nhận xét; không tự sửa source UI. Preview3120 giữ bằng transient user service `agent-meeting-annotator-discussion.service`.
+
+
+## Cập nhật showcase và sửa WORK/ENDED — 2026-10-21
+
+Đã xử lý lỗi ENDED mô tả ở trên: bỏ bảng task/kết luận lặp ở footer, giữ trạng thái + số việc tự báo + link Plan; metadata, tải/copy biên bản và carry/new trong disclosure giới hạn vùng cuộn. Sidebar vẫn giữ note/status/evidence. Với fixture ba task dài, feed370–423px tại viewport608px cao, thay vì24px trong ca lỗi cũ; hai fixture khác nhau nên không coi là benchmark matched. Independent browser36 ca + Back/reload/source/carry/download/keyboard, zoom200% thật đạt; xem [SHOWCASE.md](SHOWCASE.md). Đây là sửa có kiểm chứng hành vi, chưa thay người dùng nghiệm thu thiết kế.

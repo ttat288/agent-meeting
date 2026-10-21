@@ -681,37 +681,31 @@
   function renderEnded(s) {
     if (endedBuilt === s.state) return; endedBuilt = s.state;
     delete sigs.endActs;
-    const v = log.filter(m => m.conclusion && m.decision).at(-1), work = s.state === 'WORK';
+    const work = s.state === 'WORK';
     $('ended').replaceChildren(el('div', { class: 'endcard-in' },
-      el('h3', {}, work ? tr('Đã chốt: đang chờ agent làm và báo tiến độ') : s.workSince ? tr('Đã đóng phòng theo dõi tiến độ') : tr('Cuộc họp đã kết thúc')),
-      work ? el('p', { class: 'hint' }, tr('Các agent đã rời họp để làm việc được giao và sẽ báo tiến độ vào đây (tool progress). Phòng tự đóng khi mọi việc báo xong; bạn cũng có thể tự đổi trạng thái hoặc bấm "Đóng phòng".')) : null,
-      el('div', { class: 'stats' },
-        el('span', {}, work ? tr('Chốt vì: ') : tr('Lý do: '), el('b', {}, tr((work ? s.workReason : s.endReason) || '—'))),
-        el('span', {}, tr('Thảo luận: '), el('b', {}, fmtDur(s.startedAt ? (s.workSince || s.endedAt || serverNow()) - s.startedAt : 0))),
-        el('span', {}, tr('Tin nhắn: '), el('b', {}, String(s.chatCount))),
-        el('span', {}, tr('Thành viên: '), el('b', {}, String(s.agents.length)))),
-      el('div', { id: 'endActs' }),
-      v ? el('div', { class: 'verdict' }, el('b', {}, tr`Kết luận (${v.name}${modelOf(v.name) ? ', ' + modelOf(v.name) : ''})`),
-        el('div', { class: 'bubble-md', html: md(v.decision) })) : null,
-      el('div', { class: 'row' },
-        el('button', { class: 'btn primary', type: 'button', onclick: downloadMinutes }, tr('Tải biên bản .md')),
-        el('button', { class: 'btn ghost', type: 'button', onclick: async () => copy(await (await fetch(`/api/host/${key}/minutes.md`)).text(), tr('Đã sao chép biên bản')) }, tr('Sao chép biên bản')),
-        el('a', { class: 'btn ghost', href: `/api/host/${key}/minutes.json`, download: 'bien-ban-hop.json' }, tr('Tải JSON')),
-        carryable(s) ? el('button', { class: 'btn ghost', type: 'button', id: 'btnCarry', title: tr('Cuộc họp mới nhận sẵn các việc chưa xong (giữ số) và quyết định của cuộc này, để họp review tiến độ'), onclick: () => newMeeting(true) },
-          carryLabel(s)) : null,
-        el('button', { class: 'btn ghost', type: 'button', title: tr('Cuộc họp mới hoàn toàn trống'), onclick: () => newMeeting(false) }, tr('Cuộc họp mới')))));
+      el('div', { class: 'end-overview' },
+        el('h3', {}, work ? tr('Đã chốt: đang chờ agent làm và báo tiến độ') : s.workSince ? tr('Đã đóng phòng theo dõi tiến độ') : tr('Cuộc họp đã kết thúc')),
+        el('a', { class: 'btn ghost sm', href: '#plan' }, tr('Kế hoạch →'))),
+      el('div', { id: 'endActs', class: 'stats' }),
+      el('details', { class: 'end-details' }, el('summary', {}, tr('Biên bản và cuộc họp tiếp')),
+        work ? el('p', { class: 'hint' }, tr('Các agent đã rời họp để làm việc được giao và sẽ báo tiến độ vào đây (tool progress). Phòng tự đóng khi mọi việc báo xong; bạn cũng có thể tự đổi trạng thái hoặc bấm "Đóng phòng".')) : null,
+        el('div', { class: 'stats' },
+          el('span', {}, work ? tr('Chốt vì: ') : tr('Lý do: '), el('b', {}, tr((work ? s.workReason : s.endReason) || '—'))),
+          el('span', {}, tr('Thảo luận: '), el('b', {}, fmtDur(s.startedAt ? (s.workSince || s.endedAt || serverNow()) - s.startedAt : 0))),
+          el('span', {}, tr('Tin nhắn: '), el('b', {}, String(s.chatCount))),
+          el('span', {}, tr('Thành viên: '), el('b', {}, String(s.agents.length)))),
+        el('div', { class: 'row' },
+          el('button', { class: 'btn primary', type: 'button', onclick: downloadMinutes }, tr('Tải biên bản .md')),
+          el('button', { class: 'btn ghost', type: 'button', onclick: async () => copy(await (await fetch(`/api/host/${key}/minutes.md`)).text(), tr('Đã sao chép biên bản')) }, tr('Sao chép biên bản')),
+          el('a', { class: 'btn ghost', href: `/api/host/${key}/minutes.json`, download: 'bien-ban-hop.json' }, tr('Tải JSON')),
+          carryable(s) ? el('button', { class: 'btn ghost', type: 'button', id: 'btnCarry', title: tr('Cuộc họp mới nhận sẵn các việc chưa xong (giữ số) và quyết định của cuộc này, để họp review tiến độ'), onclick: () => newMeeting(true) }, carryLabel(s)) : null,
+          el('button', { class: 'btn ghost', type: 'button', title: tr('Cuộc họp mới hoàn toàn trống'), onclick: () => newMeeting(false) }, tr('Cuộc họp mới'))))));
   }
   function renderEndActs(s) {
     const box = $('endActs'); if (!box || !changed('endActs', [s.actions, s.state])) return;
-    if ($('btnCarry')) $('btnCarry').textContent = carryLabel(s); // số việc dở đổi khi agent báo xong hoặc chủ trì gộp/xoá
+    if ($('btnCarry')) $('btnCarry').textContent = carryLabel(s);
     const done = s.actions.filter(x => x.status === 'done').length;
-    box.replaceChildren(...(s.actions.length ? [el('div', { class: 'tprog' }, el('b', {}, tr`${done}/${s.actions.length} việc xong`),
-      el('div', { class: 'bar' + (done === s.actions.length ? ' full' : '') }, el('i', { style: `width:${done / s.actions.length * 100}%` }))),el('div', { class: 'acts-wrap' }, el('table', { class: 'acts' },
-      el('thead', {}, el('tr', {}, el('th', {}, '#'), el('th', {}, tr('Việc cần làm · bằng chứng')), el('th', {}, tr('Phụ trách')), el('th', {}, tr('Hạn')), el('th', {}, tr('Trạng thái')))),
-      el('tbody', {}, ...s.actions.map(x => el('tr', { class: 's-' + x.status }, el('td', {}, '#' + x.n),
-        el('td', {}, el('div', { html: inline(x.task) }), el('div', { class: 'tnote' }, x.note ? el('span', { html: linkify(inline(x.note)) }) : el('span', { class: 'muted' }, tr('chưa có bằng chứng')), ' ', noteBtn(x))),
-        el('td', {}, x.owner || '—'), el('td', {}, x.due || '—'), el('td', { class: 'tact' }, statusSelect(x), snap.state !== 'ENDED' ? dropBtn(x) : null)))))),
-      verifyNote()] : []));
+    box.replaceChildren(el('span', {}, tr`Tiến độ tự báo (${done}/${s.actions.length} xong)`));
   }
   const carryLabel = (s) => { const open = s.actions.filter(x => x.status !== 'done').length; return open ? tr`Họp tiếp (mang ${open} việc dở)` : tr('Họp tiếp (mang quyết định)'); };
   const carryable = (s) => s.actions.some(x => x.status !== 'done') || decisions().length > 0;

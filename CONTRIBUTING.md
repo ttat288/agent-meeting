@@ -14,12 +14,20 @@ Cảm ơn bạn đã quan tâm! *English speakers are welcome too: issues and PR
 ```bash
 git clone https://github.com/ttat288/agent-meeting.git
 cd agent-meeting
-npm test                          # phải xanh trước khi gửi PR
+npm test                          # từng file, heap 768 MiB, timeout 150 giây/file
 npm start -- --admit remote --no-open    # chạy local (bot giả lập vào không cần duyệt)
 npm run demo -- <URL mời agent>   # 3 agent giả lập để thử giao diện
 ```
 
 Không cần `npm install`: dự án **không có thư viện ngoài**, và nên giữ như vậy.
+
+Trên Linux trong môi trường phát triển repo này, bọc lệnh bằng giới hạn RSS/swap như HANDOFF:
+
+```bash
+systemd-run --user --scope -q -p MemoryMax=1200M -p MemorySwapMax=0 timeout 900 npm test
+```
+
+Test managed execution cần `bubblewrap` khả dụng; thiếu sandbox thì test phải thất bại, không tự chạy fallback. CI chuẩn bị công cụ này trên runner tạm.
 
 ## Cấu trúc
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## Chưa phát hành — showcase sản phẩm
+
+- README Anh/Việt dẫn chuyện từ câu hỏi đến quyết định và kế hoạch có nguồn; cập nhật GIF bằng UI v2, caption và player có pause/tua. Thành viên demo kịch bản được ghi rõ, không giả kết quả đã kiểm chứng.
+- WORK/ENDED giữ transcript đọc được: footer gọn, bỏ bảng task/kết luận lặp; giữ biên bản, tiến độ/sidebar, carry và phòng mới.
+- CI chạy tuần tự có cgroup/memory/time limit trên Node18/20/22, chuẩn bị bubblewrap trong runner; npm test có timeout từng file và hỗ trợ Node18. Giữ sandbox fail-closed.
+- Khôi phục chính xác tài liệu nguồn routing sau lỗi chuẩn hóa whitespace ở lần push trước; giữ kiểm tra SHA-256 và quy tắc Git riêng cho file nguồn bất biến.
+
+
 ## Chưa phát hành — cải cách UI v2
 
 - Hợp nhất shell desktop gọn, nav phẳng; utility/Gợi ý vào menu, Chi tiết thành sheet có quản lý focus trên mobile.

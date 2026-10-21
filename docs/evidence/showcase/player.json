@@ -1,0 +1,23 @@
+{
+  "checks": [
+    {
+      "width": 375,
+      "overflow": false
+    },
+    {
+      "width": 768,
+      "overflow": false
+    },
+    {
+      "width": 1280,
+      "overflow": false
+    }
+  ],
+  "playPause": true,
+  "scrub": true,
+  "keyboardRange": true,
+  "language": true,
+  "autoPlay": false,
+  "reducedMotion": true,
+  "errors": []
+}

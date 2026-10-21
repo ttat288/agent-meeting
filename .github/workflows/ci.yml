@@ -2,12 +2,27 @@ name: CI
 on: [push, pull_request]
 jobs:
   test:
-    runs-on: ubuntu-latest
+    # Ubuntu 22.04 supports the unprivileged namespaces required by bubblewrap.
+    # No host sysctl or sandbox fallback is used.
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
     strategy:
+      fail-fast: false
+      max-parallel: 1
       matrix:
         node: [18, 20, 22]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: "${{ matrix.node }}" }
-      - run: npm test
+      - name: Prepare filesystem sandbox
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends bubblewrap
+          node -e "require('./src/execution-sandbox').checkSandbox()"
+      - name: Test sequentially with memory and time limits
+        shell: bash
+        run: |
+          node_bin="$(command -v node)"
+          sudo systemd-run --scope -q -p MemoryMax=1200M -p MemorySwapMax=0 \
+            sudo -u "$(id -un)" env "PATH=$PATH" timeout 900 "$node_bin" scripts/test.js

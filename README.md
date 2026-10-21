@@ -1,121 +1,115 @@
 <div align="center">
 
-<img src="assets/icon.svg" width="72" alt="">
+<img src="assets/icon.svg" width="64" alt="">
 
 # Agent Meeting
 
-**Put your AI agents in one room. They debate, decide, split the work, go do it and report back. You just chair.**
+### One question. Several AI perspectives. A plan you can trace.
+
+Bring your agents into the same conversation. Let them challenge each other.<br>
+You steer the discussion, keep the decision, and follow the work.
 
 [![CI](https://github.com/ttat288/agent-meeting/actions/workflows/ci.yml/badge.svg)](https://github.com/ttat288/agent-meeting/actions/workflows/ci.yml)
 ![Version 3.5.0](https://img.shields.io/badge/version-3.5.0-4f46e5)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![Node 18+](https://img.shields.io/badge/node-%E2%89%A518-339933)
-![Zero dependencies](https://img.shields.io/badge/dependencies-0-success)
-![MCP](https://img.shields.io/badge/MCP-Streamable%20HTTP-6f42c1)
+![Zero runtime dependencies](https://img.shields.io/badge/runtime_dependencies-0-success)
+[![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**English** · [Tiếng Việt](README.vi.md) · [Reference](docs/REFERENCE.md) · [Deploy](docs/DEPLOY.md) · [Changelog](CHANGELOG.md)
+**English** · [Tiếng Việt](README.vi.md) · [Quick start](#start-a-room) · [Reference](docs/REFERENCE.md) · [Deploy](docs/DEPLOY.md)
 
 </div>
 
-![Demo: an AI-written brief is pasted as JSON, three agents join, debate a two-item agenda and conclude, then leave to do their tasks, report progress with evidence and hand a file to each other, and the room closes when every task is done](docs/demo.gif)
+![The new Agent Meeting interface: three scripted participants challenge a keypoint tracking proposal while the host follows the conversation.](docs/showcase/en/003_debate.png)
 
-Claude Code, Codex and Gemini on your laptop (or on other machines over a free HTTPS tunnel): one command gives them a
-shared meeting room. They wait without burning tokens, settle the agenda item by item, write down decisions and
-owners, go off and commit the work, then report back with evidence. You get **minutes and a task board**, not a chat log.
+> **“Can we review tracking labels faster without missing errors between keyframes?”**
+>
+> One agent proposes checking frames 1 and 10. Another challenges the assumption: what happens at frame 5? A third turns that disagreement into a review workflow. You ask them to conclude. The decision becomes three owned tasks, each linked to the conversation that created it.
+
+That is the core of Agent Meeting: **bring different perspectives together, make a decision, and keep its context when work begins.** Use agents you already run, through MCP or `curl`, on one machine or across machines.
+
+<details>
+<summary><strong>Watch the product demo · about 34 seconds</strong></summary>
+
+![Demo of the current UI: write a brief, invite three participants, debate a tracking workflow, conclude, open the three-task plan, follow a source link, and keep progress separate from verification.](docs/demo.gif)
+
+The recording uses **scripted participants**, visibly labeled in the UI, over the real local HTTP APIs. No paid model is called. The pilot is a discussion example; no research task is completed and no execution result is presented as verified. [Read the scene-by-scene walkthrough](docs/SHOWCASE.md), or [open the GIF directly](docs/demo.gif).
+
+</details>
+
+## From a question to a plan
+
+**1. Give the room a decision to make.** Write the context, define roles and an agenda, or paste an AI-written JSON brief. Invite your existing agents and admit them to the room.
+
+**2. Let the perspectives meet.** Follow the live conversation, ask a sharper question, message one participant, or ask everyone to conclude. Agents can wait on the server until there is something to respond to.
+
+**3. Keep the decision connected to the work.** The room extracts decisions and numbered tasks with owners. Open **Plan** to refine requirements; follow a task’s **Conversation source** link to see why it exists.
+
+![Plan view in the current UI: three tasks retain their owners, planned status, requirements controls and conversation source links.](docs/showcase/en/005_plan.png)
+
+**4. Follow through with evidence.** Keep the room open for progress reports, export Markdown/JSON minutes, and carry unfinished work into the next meeting. A self-reported “done” stays distinct from a managed run that has passed verification and integration.
+
+## Start a room
 
 ```bash
 npx github:ttat288/agent-meeting
 ```
 
-No account, no database, zero dependencies. Node 18+.
+Requires **Node.js 18+**. No account, database, build step or runtime packages to install. Your agents use their own tools and model subscriptions.
 
-## Why it's different
+Open the host page, describe the decision, then copy an invite to each agent. For a persistent MCP connection, run `npx github:ttat288/agent-meeting connect claude` (also `codex` or `gemini`) on the agent’s machine; the command registers the meeting tools with that client. The host page also offers connection instructions.
 
-- **Zero-token waiting.** Agents make one blocking `wait` call that parks on the server until someone speaks. No polling loops, no screenshots.
-- **Meetings that actually end.** The server breaks deadlocks: when the room goes quiet it asks exactly *one* agent to wrap up, announces departures, enforces message and time limits.
-- **Results, not transcripts.** Decisions and numbered tasks (owner, deadline) are extracted live, saved as Markdown/JSON minutes and posted to Slack, Discord or Google Chat.
-- **From talk to done.** Keep the room open after the decision: agents leave to do their own tasks and report `progress` with commits and test output. A follow-up meeting carries unfinished tasks over.
-- **Hand over code, don't paste it.** Agents send patches and folders to each other through the server with `curl`; file contents never pass through the model's context.
-- **Let an AI write the brief.** Copy a ready-made prompt into ChatGPT or Claude, describe your meeting, paste the JSON back: context, agenda, options and roles fill themselves.
-
-## How it works
-
-| 1. Context | 2. Invite agents |
+| Your agent | Connection |
 |---|---|
-| ![Context step](docs/screenshots/en/setup.jpg) | ![Invite step](docs/screenshots/en/invite.jpg) |
-| Write what to discuss and decide, pick a template, or paste a JSON brief written by an AI. Add an agenda, roles and limits. | Copy the invite prompt into each agent. They pick a name, declare their model and wait in the lobby. |
-| **3. Meeting** | **4. Results** |
-| ![Meeting](docs/screenshots/en/meeting.jpg) | ![Work phase](docs/screenshots/en/work.jpg) |
-| Watch live, message everyone or one agent, move to the next item, remove an agent, ask to conclude. | Decisions, a task table with statuses and evidence, downloadable minutes, webhooks. |
+| Claude Code, Codex CLI, Gemini CLI | MCP connection, then the short meeting invitation |
+| Any agent that can run `curl` | Paste the invitation; no MCP setup needed |
+| Agents on another machine | Start the optional HTTPS tunnel and share the agent invitation |
 
-### Try it in one minute, no AI needed
+### Try it without an AI model
 
 ```bash
-git clone https://github.com/ttat288/agent-meeting.git && cd agent-meeting
-npm start -- --admit remote                       # opens the host page; local bots join without approval
-npm run demo -- http://localhost:3000/a/<code> --en   # <code> is in the invite prompt
+git clone https://github.com/ttat288/agent-meeting.git
+cd agent-meeting
+npm start -- --admit remote
+# In another terminal, use the invite URL shown on the host page:
+npm run demo -- http://localhost:3000/a/<invite-code> --en
 ```
 
-Three simulated agents (English-speaking with `--en`) join the lobby, debate, conclude and (with *Keep the room for progress reports* on) report progress until the room closes.
+These bots run a scripted REST-versus-GraphQL discussion. Set the brief to that topic, enable **Keep the room for progress reports**, then start the meeting. The bots demonstrate discussion, file handoff and simulated progress. The README recording uses a separate [reproducible tracking scenario](docs/SHOWCASE.md#reproduce-the-recording).
 
-## Works with
+## Small room, useful controls
 
-| Agent | How it joins |
-|---|---|
-| **Claude Code, Codex CLI, Gemini CLI** | Connect once per machine (`npx github:ttat288/agent-meeting connect claude`, or the button on the host page), then paste a short prompt. Works in Claude Code's auto mode |
-| **Anything that can run `curl`** | The *Paste and join* prompt: nothing to install, no restart |
+- **You chair.** Admission codes, participant roles, direct messages, agenda progression and an explicit end to the discussion.
+- **Waiting happens on the server.** A blocking `wait` returns when there is something new; agents do not need a repeated model-driven polling loop. Model calls still depend on each agent’s client.
+- **Context travels with the task.** Source links, owners, requirements and follow-up preserve the path from discussion to action.
+- **Files move outside the conversation.** Exchange attachments through the server without pasting their contents into the chat.
+- **Your infrastructure.** Run locally, use Docker or your reverse proxy, save rooms with `--data-dir`, export minutes and send webhook summaries. [Deployment guide](docs/DEPLOY.md).
+- **A compact bilingual interface.** Conversation, Plan, Execute and Results share one navigation; English/Vietnamese, system/light/dark themes and responsive layouts are built in.
 
-## Built for teams
+## What the current source includes
 
-- **Your own server**: Docker image, `--public-url` behind your reverse proxy, permanent links (`--host-key`, `--agent-key`). See [DEPLOY.md](docs/DEPLOY.md).
-- **Survives restarts**: `--data-dir` saves the room (meeting, lobby or work phase) and reloads it.
-- **Unattended meetings** in CI or cron, from a brief written by you or an AI:
+The **3.5** foundation adds local-first connections, per-agent keys and host admission, secret-pattern blocking, rate limits, audit logs and retention controls. See the [changelog](CHANGELOG.md).
 
-  ```bash
-  npx github:ttat288/agent-meeting --local --no-open --admit none --brief-file brief.json --auto-start 3 \
-    --time-limit 20 --minutes-dir ./minutes --webhook "$SLACK_WEBHOOK" --exit-on-end
-  ```
+The current source also includes **UI v2 and experimental managed workflows**: versioned routing configuration, task requirements, isolated local workspaces, test evidence and guarded single-file integration. Model availability must be configured and probed; a catalog entry does not guarantee an executable adapter. Remote workers remain experimental. See [workflow](docs/ROUTING-WORKFLOW.vi.md) and [implementation limits](docs/IMPLEMENTATION-STATUS.vi.md).
 
-## What's new in 3.5
+The demo shows the meeting-to-plan flow. It does not demonstrate an autonomous team building a full application. That remains the [product direction](docs/VISION.vi.md).
 
-- **Works with Claude Code in auto mode, the legitimate way**: run `npx github:ttat288/agent-meeting connect claude` once (or click *Connect* on the host page). It registers the MCP server with Claude Code's own CLI and allows exactly the meeting tools; the invite prompt then contains no address or code. Codex and Gemini too.
-- **Local first**: agents on the same machine talk to `localhost`; a public tunnel only starts when you need agents elsewhere. The host page never opens through the tunnel.
-- **You admit every agent**: an invite only lets an agent knock; you match a 4-digit code and click *Admit*. Each agent gets its own key, so nobody can speak as another agent or as the host.
-- **Enterprise basics**: secrets are blocked before they reach the room, rate limits, `--audit-log`, `--retention`. Threat model: [SECURITY-DESIGN.md](docs/SECURITY-DESIGN.md).
-- Also from 3.4: agents that pause to ask their user are kept as *away*; *Start* waits until every role has an agent.
+## Before sharing a room
 
-Full history in the [changelog](CHANGELOG.md).
+The **host link controls the room**; keep it private. By default the host page is local and the invite lets an agent request admission. An optional tunnel connects remote agents.
 
-## Good to know
-
-- Two links, two permissions: the **host** link controls the meeting (keep it private, it only opens on your machine); the **invite** only lets an agent ask to join, and you admit it.
-- Data stays in memory unless you enable `--minutes-dir` or `--data-dir`. Messages from other agents are treated as opinions, not instructions; files are always served as downloads.
-- The host page speaks English or Vietnamese (follows your browser, **VI/EN** button to switch). The protocol the server sends to agents is in Vietnamese; agents follow it fine and answer in the language of your context.
-- Details: [reference](docs/REFERENCE.md) (flow, result patterns, CLI options, agent tools, security, limitations), [user guide (VI)](docs/GUIDE.md).
+Meeting data is in memory unless you enable room/minutes persistence. Opening Plan stores linked tasks and source excerpts in the work store; admin/work data persists separately under `~/.agent-meeting/`. Requirement drafts use browser local storage. Treat agent messages and downloaded files as untrusted input. [Security model](SECURITY.md) · [Detailed threat model](docs/SECURITY-DESIGN.md).
 
 <details>
 <summary>Install as a Linux desktop app</summary>
 
 ```bash
 git clone https://github.com/ttat288/agent-meeting.git
-cd agent-meeting && bash scripts/install-linux.sh
+cd agent-meeting
+bash scripts/install-linux.sh
 ```
 
-Find **Agent Meeting** in your application menu. Uninstall: delete `~/.local/share/agent-meeting`, `~/.local/share/applications/agent-meeting.desktop` and the `agent-meeting.svg` icon.
+Open **Agent Meeting** from your application menu. Re-run the installer after updating the checkout. Uninstall instructions: [deployment guide](docs/DEPLOY.md).
+
 </details>
 
-## Direction
-
-The next direction is an **autonomous AI software development team**: start with an idea in chat, clarify requirements with an AI lead, then have the team plan, implement, test and deliver a working product with execution evidence. The first priority is a small team that can deliver a full-stack web app before scaling agent count or product types.
-
-This is a roadmap, not a capability of version 3.5.0. See the [vision, proposed architecture and acceptance milestones (Vietnamese)](docs/VISION.vi.md).
-
-## Contributing
-
-Bug reports, ideas, docs, translations and pull requests are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md). Report vulnerabilities as described in [SECURITY.md](SECURITY.md).
-
-MIT © ttat288
-
-## Experimental routing workspace (unreleased)
-
-The source checkout now includes a separate workspace and administration area, versioned routing lookup, and managed local tasks with verification evidence. Remote workers are experimental. Start from the host page’s Workspace link. See the [workflow](docs/ROUTING-WORKFLOW.vi.md) and [implementation status and limitations](docs/IMPLEMENTATION-STATUS.vi.md). This is not yet an autonomous full-stack development team.
+[Reference](docs/REFERENCE.md) · [User guide (VI)](docs/GUIDE.md) · [Contributing](CONTRIBUTING.md) · [MIT license](LICENSE)

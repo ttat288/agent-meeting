@@ -13,6 +13,7 @@
 
   const EN = new Map([
     ['Tùy chọn', 'Options'], ['Phiên', 'Session'], ['Ứng dụng', 'Application'], ['Hiển thị', 'Display'], ['Đóng chi tiết', 'Close details'], ['Chi tiết phiên', 'Session details'], ['Tin nhắn chủ trì', 'Host message'], ['Gợi ý', 'Prompts'],
+    ['Biên bản và cuộc họp tiếp', 'Minutes and next meeting'],
     ['Kế hoạch →', 'Plan →'], ['Điều hướng phiên', 'Session navigation'],
     ['Tiến độ tự báo ({0}/{1} xong)', 'Self-reported progress ({0}/{1} done)'], ['Tiến độ tự báo việc #{0}', 'Self-reported progress for task #{0}'],
     ['Tiến độ ở đây do agent hoặc chủ trì khai báo. Kết quả chạy đã kiểm chứng và tích hợp được hiển thị riêng.', 'Progress here is declared by an agent or host. Verified and integrated execution results are shown separately.'],

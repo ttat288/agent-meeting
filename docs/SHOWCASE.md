@@ -13,8 +13,8 @@ The interface is captured from the source checkout. Participants are **scripted*
 To open the player from a checkout:
 
 ```bash
-python3 -m http.server 3121 --bind 127.0.0.1 --directory docs/showcase
-# Open http://127.0.0.1:3121 (or add ?lang=vi).
+python3 -m http.server 3121 --bind 127.0.0.1 --directory docs
+# Open http://127.0.0.1:3121/showcase/ (or add ?lang=vi).
 ```
 
 The player is a documentation artifact. It does not change the application server or its CSP. GitHub's README shows a static overview first; the animation is inside an expandable section so readers choose when to view it.
@@ -46,8 +46,8 @@ node tools/record-demo.js /tmp/am-demo-vi --vi
 
 # Copy the generated PNG frames and manifest.json into docs/showcase/en and vi.
 # Serve the player as above, then capture the separately captioned presentation:
-node tools/render-showcase.js http://127.0.0.1:3121 /tmp/am-captioned-en
-node tools/render-showcase.js http://127.0.0.1:3121 /tmp/am-captioned-vi --vi
+node tools/render-showcase.js http://127.0.0.1:3121/showcase /tmp/am-captioned-en
+node tools/render-showcase.js http://127.0.0.1:3121/showcase /tmp/am-captioned-vi --vi
 python3 tools/make-gif.py /tmp/am-captioned-en docs/demo.gif
 python3 tools/make-gif.py /tmp/am-captioned-vi docs/demo.vi.gif
 

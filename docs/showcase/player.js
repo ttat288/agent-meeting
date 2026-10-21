@@ -30,11 +30,11 @@ async function load() {
     $('seek').setAttribute('aria-label', t('Choose a scene', 'Chọn cảnh')); $('seekLabel').textContent = t('Scene', 'Cảnh');
     $('gif').href = $('language').value === 'vi' ? '../demo.vi.gif' : '../demo.gif';
     $('error').hidden = true; pause(); render();
-  } catch (e) { $('error').hidden = false; $('error').textContent = t('Unable to load scenes. Serve this folder over local HTTP and retry: ', 'Không tải được cảnh. Hãy mở thư mục qua HTTP local rồi thử lại: ') + e.message; }
+  } catch (e) { $('error').hidden = false; $('error').textContent = t('Unable to load scenes. Serve the docs directory over local HTTP, open /showcase/ and retry: ', 'Không tải được cảnh. Hãy phục vụ thư mục docs qua HTTP local, mở /showcase/ rồi thử lại: ') + e.message; }
 }
 $('play').onclick = () => { if (!manifest) return; if (playing) pause(); else { playing = true; if (index === manifest.frames.length - 1) index = 0; $('play').textContent = t('Pause', 'Tạm dừng'); $('play').setAttribute('aria-pressed', 'true'); render(); } };
-$('previous').onclick = () => { pause(); index = Math.max(0, index - 1); render(); };
-$('next').onclick = () => { pause(); index = Math.min(manifest.frames.length - 1, index + 1); render(); };
+$('previous').onclick = () => { if (!manifest) return; pause(); index = Math.max(0, index - 1); render(); };
+$('next').onclick = () => { if (!manifest) return; pause(); index = Math.min(manifest.frames.length - 1, index + 1); render(); };
 $('seek').oninput = () => { if (!manifest) return; pause(); index = Number($('seek').value); render(); };
 $('language').onchange = load;
 document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });

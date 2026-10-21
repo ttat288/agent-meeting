@@ -19,5 +19,7 @@
   "language": true,
   "autoPlay": false,
   "reducedMotion": true,
+  "gifLinksHttp200": true,
+  "manifestFailureControls": true,
   "errors": []
 }

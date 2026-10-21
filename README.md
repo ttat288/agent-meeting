@@ -89,7 +89,7 @@ These bots run a scripted REST-versus-GraphQL discussion. Set the brief to that 
 
 The **3.5** foundation adds local-first connections, per-agent keys and host admission, secret-pattern blocking, rate limits, audit logs and retention controls. See the [changelog](CHANGELOG.md).
 
-The current source also includes **UI v2 and experimental managed workflows**: versioned routing configuration, task requirements, isolated local workspaces, test evidence and guarded single-file integration. Model availability must be configured and probed; a catalog entry does not guarantee an executable adapter. Remote workers remain experimental. See [workflow](docs/ROUTING-WORKFLOW.vi.md) and [implementation limits](docs/IMPLEMENTATION-STATUS.vi.md).
+The current source also includes **UI v2 and experimental managed workflows**: versioned routing configuration, task requirements, isolated local workspaces, test evidence and guarded single-file integration. Model availability must be configured and probed; a catalog entry does not guarantee an executable adapter. Managed execution requires Linux with working bubblewrap. Remote workers remain experimental. See [workflow](docs/ROUTING-WORKFLOW.vi.md) and [implementation limits](docs/IMPLEMENTATION-STATUS.vi.md).
 
 The demo shows the meeting-to-plan flow. It does not demonstrate an autonomous team building a full application. That remains the [product direction](docs/VISION.vi.md).
 

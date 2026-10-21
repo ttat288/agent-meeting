@@ -121,5 +121,15 @@
       "passed": 4
     },
     "fixtureFollowup": "The bridge passed after IPv4 normalization. The fixture direct-upload fetch also used localhost against its IPv4 listener; it now uses 127.0.0.1 while bridge registration still tests localhost normalization."
+  },
+  "ciVerifiedCode": {
+    "run": "https://github.com/ttat288/agent-meeting/actions/runs/39618725924",
+    "head": "e1da42eb3e65db5a873a23e1946532f6fd1ea73f",
+    "conclusion": "success",
+    "matrix": [
+      18,
+      20,
+      22
+    ]
   }
 }

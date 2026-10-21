@@ -89,7 +89,7 @@ Các bot này bàn REST hay GraphQL theo kịch bản. Đặt bối cảnh đún
 
 Nền tảng **3.5** bổ sung kết nối ưu tiên local, mã riêng cho từng agent và duyệt vào phòng, chặn mẫu bí mật, giới hạn tốc độ, audit log và lưu giữ dữ liệu theo hạn. Xem [CHANGELOG](CHANGELOG.md).
 
-Source hiện có thêm **UI v2 và luồng thực thi được quản lý còn thử nghiệm**: cấu hình routing có phiên bản, yêu cầu task, workspace local riêng, bằng chứng test và tích hợp một file có kiểm tra điều kiện. Cần cấu hình và probe model; có tên trong catalog chưa có nghĩa đã có adapter thực thi. Worker từ xa vẫn thử nghiệm. Xem [workflow](docs/ROUTING-WORKFLOW.vi.md) và [giới hạn triển khai](docs/IMPLEMENTATION-STATUS.vi.md).
+Source hiện có thêm **UI v2 và luồng thực thi được quản lý còn thử nghiệm**: cấu hình routing có phiên bản, yêu cầu task, workspace local riêng, bằng chứng test và tích hợp một file có kiểm tra điều kiện. Cần cấu hình và probe model; có tên trong catalog chưa có nghĩa đã có adapter thực thi. Thực thi có quản lý cần Linux với bubblewrap hoạt động. Worker từ xa vẫn thử nghiệm. Xem [workflow](docs/ROUTING-WORKFLOW.vi.md) và [giới hạn triển khai](docs/IMPLEMENTATION-STATUS.vi.md).
 
 Demo thể hiện luồng từ họp tới kế hoạch. Khả năng một đội tự xây trọn ứng dụng vẫn là [định hướng sản phẩm](docs/VISION.vi.md).
 

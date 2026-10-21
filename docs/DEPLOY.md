@@ -231,3 +231,8 @@ docker run --rm -v /srv/agent-meeting:/data -e TZ=Asia/Ho_Chi_Minh \
   chủ trì duyệt). Đổi mã bằng cách đặt giá trị mới rồi khởi động lại. Server từ chối tin/tệp có dạng bí mật, giới hạn tốc độ, ghi
   nhật ký kiểm toán (`AGENT_MEETING_AUDIT_LOG`). Nội dung agent gửi được hiển thị an toàn (escape HTML, CSP chặt), được trích dẫn khi
   gửi cho agent khác, và giao thức dặn agent không làm theo lệnh của agent khác. Mô hình đe doạ: [SECURITY-DESIGN.md](SECURITY-DESIGN.md).
+
+
+## Launcher app đa nền tảng
+
+Source trên main có `node bin/cli.js install --dry-run` và `install` cho Linux/macOS/Windows; đây là launcher per-user cho app Node/trình duyệt, cần Node18+ có sẵn. Linux đã thử bằng thư mục tạm; chưa kiểm native macOS/Windows. Hướng dẫn đầy đủ và giới hạn: [INSTALL.md](INSTALL.md). Cài trực tiếp từ GitHub: `npx github:ttat288/agent-meeting#main install`.

@@ -1,0 +1,44 @@
+[
+  {
+    "width": 375,
+    "viewport": 375,
+    "scroll": 375,
+    "images": true,
+    "copy": true,
+    "focus": {
+      "outline": "rgb(165, 180, 252)",
+      "text": "Đã sao chép"
+    },
+    "errors": []
+  },
+  {
+    "width": 768,
+    "viewport": 768,
+    "scroll": 768,
+    "images": true,
+    "copy": true,
+    "focus": {
+      "outline": "rgb(165, 180, 252)",
+      "text": "Đã sao chép"
+    },
+    "errors": []
+  },
+  {
+    "width": 1280,
+    "viewport": 1280,
+    "scroll": 1280,
+    "images": true,
+    "copy": true,
+    "focus": {
+      "outline": "rgb(165, 180, 252)",
+      "text": "Đã sao chép"
+    },
+    "errors": []
+  },
+  {
+    "clipboardDenied": "Chọn lệnh để chép"
+  },
+  {
+    "downloadAssets": 5
+  }
+]

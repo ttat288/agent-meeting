@@ -100,15 +100,16 @@ The **host link controls the room**; keep it private. By default the host page i
 Meeting data is in memory unless you enable room/minutes persistence. Opening Plan stores linked tasks and source excerpts in the work store; admin/work data persists separately under `~/.agent-meeting/`. Requirement drafts use browser local storage. Treat agent messages and downloaded files as untrusted input. [Security model](SECURITY.md) · [Detailed threat model](docs/SECURITY-DESIGN.md).
 
 <details>
-<summary>Install as a Linux desktop app</summary>
+<summary>Install a desktop launcher · Linux / macOS / Windows</summary>
+
+Create a desktop launcher with Node.js 18+. Linux has been exercised locally; native macOS/Windows checks are tracked separately.
 
 ```bash
-git clone https://github.com/ttat288/agent-meeting.git
-cd agent-meeting
-bash scripts/install-linux.sh
+npx github:ttat288/agent-meeting#main install --dry-run
+npx github:ttat288/agent-meeting#main install
 ```
 
-Open **Agent Meeting** from your application menu. Re-run the installer after updating the checkout. Uninstall instructions: [deployment guide](docs/DEPLOY.md).
+Creates a per-user launcher for the local Node/browser app. Requires Node.js 18+; preserves AI-client settings and app data, with no PATH or login-service changes. See [installation, upgrade, uninstall and platform verification](docs/INSTALL.md).
 
 </details>
 

@@ -1,0 +1,35 @@
+name: Desktop installer
+on:
+  workflow_dispatch:
+  push:
+    paths: ['src/desktop-install.js', 'bin/cli.js', 'assets/**', 'scripts/install-linux.sh', 'test/desktop-install.test.js', '.github/workflows/desktop-install.yml']
+  pull_request:
+    paths: ['src/desktop-install.js', 'bin/cli.js', 'assets/**', 'scripts/install-linux.sh', 'test/desktop-install.test.js', '.github/workflows/desktop-install.yml']
+jobs:
+  native-smoke:
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        os: [ubuntu-22.04, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Prepare Linux desktop validation tools
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends desktop-file-utils libglib2.0-bin
+      - name: Linux native installer smoke (bounded)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          node_bin="$(command -v node)"
+          sudo systemd-run --scope -q -p MemoryMax=1200M -p MemorySwapMax=0 \
+            sudo -u "$(id -un)" env "PATH=$PATH" timeout 150 "$node_bin" --max-old-space-size=768 --test --test-timeout=30000 test/desktop-install.test.js
+      - name: macOS and Windows native installer smoke (temporary user paths only)
+        if: runner.os != 'Linux'
+        run: node --max-old-space-size=768 --test --test-timeout=30000 test/desktop-install.test.js

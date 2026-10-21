@@ -100,15 +100,16 @@ Demo thể hiện luồng từ họp tới kế hoạch. Khả năng một độ
 Dữ liệu họp ở bộ nhớ trừ khi bật lưu phòng/biên bản. Mở Kế hoạch sẽ lưu task liên kết và trích đoạn nguồn vào kho work; dữ liệu admin/work lưu riêng dưới `~/.agent-meeting/`. Bản nháp yêu cầu dùng local storage trình duyệt. Coi tin agent và tệp tải về là đầu vào chưa đáng tin. [Bảo mật](SECURITY.md) · [Mô hình đe dọa](docs/SECURITY-DESIGN.md).
 
 <details>
-<summary>Cài thành app trong menu Linux</summary>
+<summary>Cài launcher desktop · Linux / macOS / Windows</summary>
+
+Tạo launcher desktop với Node.js18+. Linux đã kiểm tại máy phát triển; kiểm native macOS/Windows được theo dõi riêng.
 
 ```bash
-git clone https://github.com/ttat288/agent-meeting.git
-cd agent-meeting
-bash scripts/install-linux.sh
+npx github:ttat288/agent-meeting#main install --dry-run
+npx github:ttat288/agent-meeting#main install
 ```
 
-Mở **Agent Meeting** trong menu ứng dụng. Chạy lại installer sau khi cập nhật checkout. Hướng dẫn gỡ: [triển khai](docs/DEPLOY.md).
+Tạo launcher trong tài khoản người dùng cho app Node/trình duyệt local. Cần Node.js18+; giữ cấu hình client AI và dữ liệu app, không sửa PATH hoặc tự chạy khi đăng nhập. Xem [cài, nâng cấp, gỡ và kiểm chứng nền tảng](docs/INSTALL.md).
 
 </details>
 

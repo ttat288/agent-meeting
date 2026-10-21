@@ -38,7 +38,13 @@ function backup(file, out) {
 function readRooms() { try { const c = JSON.parse(fs.readFileSync(roomsPath(), 'utf8')); return c && typeof c === 'object' && c.rooms ? c : { rooms: {} }; } catch { return { rooms: {} }; } }
 function saveRooms(c) { fs.mkdirSync(home(), { recursive: true, mode: 0o700 }); writeAtomic(roomsPath(), JSON.stringify(c, null, 2) + '\n'); }
 // server trên máy này gọi khi khởi động: cầu nối của mọi agent trên máy sẽ vào phòng này
-function setLocalRoom(url, room) { const c = readRooms(); c.rooms.local = { url, room }; c.current = 'local'; saveRooms(c); }
+function setLocalRoom(url, room) {
+  // The local server binds IPv4. Node 18 fetch may resolve localhost to ::1
+  // without trying IPv4, so persist its actual loopback address for the bridge.
+  const endpoint = new URL(url);
+  if (endpoint.protocol === 'http:' && endpoint.hostname === 'localhost') endpoint.hostname = '127.0.0.1';
+  const c = readRooms(); c.rooms.local = { url: endpoint.origin, room }; c.current = 'local'; saveRooms(c);
+}
 // URL mời của phòng ở máy khác: .../a/<mã>[/join] hoặc .../mcp/<mã>
 function parseRoom(u) {
   let x; try { x = new URL(u); } catch { return null; }

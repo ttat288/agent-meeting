@@ -111,5 +111,14 @@
     "failed": 0,
     "files": 22,
     "exit": 0
+  },
+  "ciFollowup": {
+    "run": "https://github.com/ttat288/agent-meeting/actions/runs/39617920118",
+    "result": "Node20/22 pass; Node18 bridge test failed because localhost resolved to IPv6 while the server bound IPv4.",
+    "fix": "setLocalRoom persists IPv4 for local HTTP localhost; existing bridge test retains localhost input and asserts IPv4 storage.",
+    "boundedLocalConnectRerun": {
+      "exit": 0,
+      "passed": 4
+    }
   }
 }

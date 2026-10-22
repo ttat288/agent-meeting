@@ -2,6 +2,10 @@
 
 > Đọc file này trước khi sửa code. Cập nhật lại mục "Trạng thái" và "Việc tiếp theo" trước khi kết thúc phiên làm việc.
 
+> **Cập nhật nhận diện — 2026-10-22:** người dùng chọn icon cặp công sở và cung cấp SVG, yêu cầu thay trong app và push README. Bộ Briefcase thay Convergence tại assets/icon.svg, favicon/header, mark/wordmark và PNG/ICO/ICNS. Nền trong suốt thật, giữ hình học SVG người dùng; app/README có indigo sáng cho nền tối. Xem [BRAND](BRAND.vi.md) và [bằng chứng](evidence/briefcase/REVIEW.vi.md). Không đổi process cổng3000 hoặc cài vào app thật. Các đoạn Convergence bên dưới là lịch sử.
+>
+> **Việc tiếp theo:** dùng logo Briefcase hiện hành; kiểm icon qua launcher trên máy người dùng và cập nhật demo theo bản quay mới khi cần. Không coi ảnh/GIF lịch sử là nhận diện hiện tại.
+
 > **Trạng thái hiện tại — branding/installer lên main, 2026-10-21:** sau main `102c893`, triển khai logo Convergence v1 theo lựa chọn “nhiều góc nhìn hội tụ thành quyết định” và desktop installer Node stdlib. Người dùng đã yêu cầu push toàn bộ và cập nhật main; xuất bản logo/installer cùng tài liệu và bằng chứng, không tạo tag/release. Lệnh GitHub dùng ref main rõ ràng. Preview `http://127.0.0.1:3122` qua service `agent-meeting-brand-preview.service`, chỉ whitelist asset thương hiệu. Xem [brand](BRAND.vi.md), [installer](INSTALL.md), [kiểm chứng/review](evidence/brand-install/REVIEW.vi.md). 245 test/23 file đạt bằng runner tuần tự cgroup1200M/swap0, browser375/768/1280 không tràn ngang. Hai reviewer Codex nội bộ đã kiểm lại các phát hiện đã sửa. Người dùng đã duyệt logo Convergence (“logo 1 ok đó convergence”) ngày 2026-10-21; [smoke test native cả ba OS đạt trên `6f329f8`](https://github.com/ttat288/agent-meeting/actions/runs/39632577516); GUI/icon còn chờ kiểm thủ công. Không cài vào app thật, không đổi process cổng3000 hoặc dữ liệu người dùng.
 >
 > **Việc tiếp theo:** dùng logo Convergence đã duyệt cho nhận diện; kiểm GUI launch và icon trên máy người dùng, giữ phân biệt smoke test native với nghiệm thu trải nghiệm. Giữ các mục showcase/UI trước đây làm lịch sử, cập nhật demo theo nhận diện đã duyệt trong lần cập nhật showcase tiếp theo.

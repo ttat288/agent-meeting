@@ -1,0 +1,94 @@
+TAP version 13
+# Subtest: plans use native per-user locations and stable absolute runtime paths on all three platforms
+ok 1 - plans use native per-user locations and stable absolute runtime paths on all three platforms
+  ---
+  duration_ms: 2.679393
+  type: 'test'
+  ...
+# Subtest: rejects unsupported platform, relative paths and newline injection before writing
+ok 2 - rejects unsupported platform, relative paths and newline injection before writing
+  ---
+  duration_ms: 0.504339
+  type: 'test'
+  ...
+# Subtest: native install copies a complete runnable payload and creates its actual platform launcher
+ok 3 - native install copies a complete runnable payload and creates its actual platform launcher
+  ---
+  duration_ms: 232.224372
+  type: 'test'
+  ...
+# Subtest: upgrade keeps the prior app, including local payload edits, in an explicit backup
+ok 4 - upgrade keeps the prior app, including local payload edits, in an explicit backup
+  ---
+  duration_ms: 29.977199
+  type: 'test'
+  ...
+# Subtest: a write failure restores the prior payload and launcher bytes
+ok 5 - a write failure restores the prior payload and launcher bytes
+  ---
+  duration_ms: 27.795031
+  type: 'test'
+  ...
+# Subtest: fresh failure leaves no partial app or launcher
+ok 6 - fresh failure leaves no partial app or launcher
+  ---
+  duration_ms: 11.768703
+  type: 'test'
+  ...
+# Subtest: unrelated destinations and locally edited launchers are preserved
+ok 7 - unrelated destinations and locally edited launchers are preserved
+  ---
+  duration_ms: 14.843048
+  type: 'test'
+  ...
+# Subtest: uninstall removes only managed files and preserves meeting/config/work data
+ok 8 - uninstall removes only managed files and preserves meeting/config/work data
+  ---
+  duration_ms: 16.521461
+  type: 'test'
+  ...
+# Subtest: uninstall preserves app edits and refuses tampered external paths
+ok 9 - uninstall preserves app edits and refuses tampered external paths
+  ---
+  duration_ms: 30.576139
+  type: 'test'
+  ...
+# Subtest: the installer refuses symlink destinations on platforms with ordinary symlink permissions
+ok 10 - the installer refuses symlink destinations on platforms with ordinary symlink permissions
+  ---
+  duration_ms: 1.30615
+  type: 'test'
+  ...
+# Subtest: CLI dry-run and foreign-platform preview never launch a server or install files
+ok 11 - CLI dry-run and foreign-platform preview never launch a server or install files
+  ---
+  duration_ms: 616.362105
+  type: 'test'
+  ...
+# Subtest: an existing install lock blocks both writers without changing the app
+ok 12 - an existing install lock blocks both writers without changing the app
+  ---
+  duration_ms: 15.939498
+  type: 'test'
+  ...
+# Subtest: Linux desktop execution preserves reserved filename characters instead of evaluating them
+ok 13 - Linux desktop execution preserves reserved filename characters instead of evaluating them
+  ---
+  duration_ms: 127.953389
+  type: 'test'
+  ...
+# Subtest: dangling symlink launchers and roots cannot redirect installation writes
+ok 14 - dangling symlink launchers and roots cannot redirect installation writes
+  ---
+  duration_ms: 1.101279
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1267.749397

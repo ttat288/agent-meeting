@@ -9,6 +9,7 @@ const root=path.join(__dirname,'..','assets','brand');
  const browser=await chromium.launch({headless:true,executablePath:process.env.BROWSER_BIN || '/opt/brave.com/brave/brave'});
  try {
   const page=await browser.newPage(),svg=fs.readFileSync(path.join(root,'app.svg'),'utf8'),images=new Map();
+  await page.emulateMedia({colorScheme:'light'});
   for(const size of [16,24,32,48,64,128,256,512,1024]){
    const data=await page.evaluate(async({svg,size})=>{const im=new Image();im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);await im.decode();const c=document.createElement('canvas');c.width=c.height=size;c.getContext('2d').drawImage(im,0,0,size,size);return c.toDataURL('image/png').split(',')[1]},{svg,size});
    const png=Buffer.from(data,'base64');images.set(size,png);fs.writeFileSync(path.join(root,'app-'+size+'.png'),png);

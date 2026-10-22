@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/icon.svg" width="64" alt="">
+<img src="assets/icon.svg" width="80" height="80" alt="Agent Meeting briefcase logo">
 
 # Agent Meeting
 

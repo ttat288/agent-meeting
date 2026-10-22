@@ -1,0 +1,293 @@
+{
+  "rows": [
+    {
+      "osTheme": "light",
+      "theme": "system",
+      "colorScheme": "light"
+    },
+    {
+      "osTheme": "light",
+      "theme": "light",
+      "colorScheme": "light"
+    },
+    {
+      "osTheme": "light",
+      "theme": "dark",
+      "colorScheme": "dark"
+    },
+    {
+      "osTheme": "dark",
+      "theme": "system",
+      "colorScheme": "dark"
+    },
+    {
+      "osTheme": "dark",
+      "theme": "light",
+      "colorScheme": "light"
+    },
+    {
+      "osTheme": "dark",
+      "theme": "dark",
+      "colorScheme": "dark"
+    },
+    {
+      "previewWidth": 375,
+      "overflow": false
+    },
+    {
+      "previewWidth": 768,
+      "overflow": false
+    },
+    {
+      "previewWidth": 1280,
+      "overflow": false
+    }
+  ],
+  "alpha": [
+    {
+      "size": 16,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "handle": [
+        80,
+        68,
+        231,
+        64
+      ],
+      "seam": [
+        79,
+        70,
+        228,
+        132
+      ],
+      "body": [
+        79,
+        70,
+        229,
+        255
+      ]
+    },
+    {
+      "size": 24,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "handle": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "seam": [
+        79,
+        70,
+        229,
+        146
+      ],
+      "body": [
+        79,
+        70,
+        229,
+        255
+      ]
+    },
+    {
+      "size": 32,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "handle": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "seam": [
+        79,
+        68,
+        230,
+        71
+      ],
+      "body": [
+        79,
+        70,
+        229,
+        255
+      ]
+    },
+    {
+      "size": 48,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "handle": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "seam": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "body": [
+        79,
+        70,
+        229,
+        255
+      ]
+    },
+    {
+      "size": 64,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "handle": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "seam": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "body": [
+        79,
+        70,
+        229,
+        255
+      ]
+    },
+    {
+      "size": 128,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "handle": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "seam": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "body": [
+        79,
+        70,
+        229,
+        255
+      ]
+    },
+    {
+      "size": 256,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "handle": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "seam": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "body": [
+        79,
+        70,
+        229,
+        255
+      ]
+    },
+    {
+      "size": 512,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "handle": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "seam": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "body": [
+        79,
+        70,
+        229,
+        255
+      ]
+    },
+    {
+      "size": 1024,
+      "corner": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "handle": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "seam": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "body": [
+        79,
+        70,
+        229,
+        255
+      ]
+    }
+  ],
+  "errors": [],
+  "faviconSourceMatch": true
+}

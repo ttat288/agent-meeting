@@ -1,5 +1,10 @@
 # Changelog
 
+## Chưa phát hành — logo Briefcase
+
+- Thay Convergence bằng icon cặp công sở từ SVG người dùng chọn; đồng bộ README Anh/Việt, favicon/header, bộ SVG/PNG/ICO/ICNS.
+- Nền trong suốt thật, giữ lỗ quai/khe nắp; biến thể indigo sáng cho ngữ cảnh tối. Không đổi layout, chức năng hoặc CSP.
+
 ## Chưa phát hành — nhận diện và desktop installer
 
 - Logo Convergence v1 theo hướng nhiều góc nhìn hội tụ thành quyết định; SVG, biến thể đơn sắc/đảo màu, PNG, ICO và ICNS. Người dùng đã duyệt logo Convergence ngày 2026-10-21.

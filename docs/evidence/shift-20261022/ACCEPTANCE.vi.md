@@ -267,3 +267,11 @@ CI source2409aca:CI39847742122 và Desktop39847742044 overall completed/success;
 [Actual-function unit red](navigation-error-unit-before.txt):2fail/2pass ở9cc650c; oldPlan failure gắn alert sau newResults success hoặc sau trở về conversation. Catch mới dùng cùng request/hash guard với success, currentfailure vẫn alert. [4green](navigation-error-unit-after.txt), [full411/36](integrated-navigation-tests.txt),0fail/skip/cancel, [seal](verification-navigation-tests.json).
 
 [Browser baseline](navigation-error-before.json) **inconclusive**:2attempts với proxy held503 không bắt alert; request cụ thể chưa correlate độc lập, không suy chắc polling đã xóa hoặc race không tồn tại. [Normal routes](navigation-error-browser.json) VI375 Plan/Execute3task/Results1run không alert sau guard, chỉ chứng minh normal navigation; không thay thế negative baseline hoặc actual-function unitrace. Không model/newrun trong các ca này.
+
+## Fresh integrated journey on477c6b7
+
+[Input/source hashes](integrated-journey-input.json), [red](integrated-journey-red.txt) và [green](integrated-journey-green.txt):checkout mới7fff096, sum(a,b)=a-b, độc lập test2+3=5. [Browser](integrated-journey-browser.json) tạo meetingtask từ tinVIỆC source#45; requirementv2, Run bị từ chối access đã hết hạn trước dispatch, đi Options→Admin→Runtime đọc versions/savedproof rồi explicit **fixture**probe→returnExecute.
+
+Run265ce1c9… reported, source/test vẫn hash đầu vào; Verifycandidate1/1, Integrate source+test thêm1/1. Chỉsum.js đổi thành a+b, testhash không đổi; developer chạy lại Node test trên source exit0. Reload giữ taskmeeting-4b2b32…/run/source, [handoff](integrated-journey-handoff.json) cùngID và [artifact](integrated-journey-artifact.js) SHA c4906f38… khớp source. [Ảnh](integrated-journey-results-vi.jpg) ghi rõ deterministic fixture/not paid model.
+
+Đây là UI+real Node subprocess, **không native AI**; previewrunCli override được hash, không đánh đồng button label production “CLI thật” với model trong fixture. Runtime versions thật chỉ --version. Nativeattempts toànca vẫn3, actualmodel/efficacy/billing/8h chưa được chứng minh; costUsdnull.2/2 là2lần test cùng acceptance, không2testcasesđộc lập hoặc humanacceptance. Source commit477c6b7/criticalhashes giới hạn coverage; không tự gán cho các source về sau.

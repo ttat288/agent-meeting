@@ -1,0 +1,42 @@
+{
+  "createdAt": "2026-10-22T21:00:51.268841+00:00",
+  "root": "/tmp/am-shift-final-journey-83i05eq3",
+  "baseRevision": "7fff096f79b05c4a49e18d3272bc658117fadf65",
+  "inputHashes": {
+    "sum.js": "ee7e835a0b737e5bc8ab512d6d8920bd5f57f264a30ef65687fc28b73507d204",
+    "test/sum.test.js": "e26fc886706118de37cef6134ac72f4c1a526b3415ee4fb5f321b0ac5d7c3e28"
+  },
+  "acceptance": [
+    "sum(2,3) returns5 through independent test",
+    "only sum.js may change",
+    "same task/run/source evidence survives reload",
+    "no native model calls; deterministic Node subprocess fixture"
+  ],
+  "baselineCommand": [
+    "node",
+    "--test",
+    "test/sum.test.js"
+  ],
+  "verifiedAfterAt": "2026-10-22T21:03:47.218052+00:00",
+  "outputHashes": {
+    "sum.js": "c4906f38eb5b1575885d480e084952498b2e397bd2b067b5e5ac4e0626804677",
+    "test/sum.test.js": "e26fc886706118de37cef6134ac72f4c1a526b3415ee4fb5f321b0ac5d7c3e28"
+  },
+  "changedPaths": [
+    "sum.js"
+  ],
+  "testExitCode": 0,
+  "appSourceCommit": "477c6b723088cb841a7a4ae7f15dbac3d231a5ef",
+  "productionHashes": {
+    "src/server.js": "fb021ebf152ab76bced7420f30c1bdaa4b90b014a77c222421d0631662a77652",
+    "src/work.js": "8a6f324a48c87916e98315ea472154d1655fa11fdb86551c8469f904108eda5e",
+    "src/runtime.js": "93c9c1d2eed7918764edba115b458dd237bf138f051f3230b2dffe406846f5de",
+    "src/execution-sandbox.js": "64257d7b0c9525f690e38e55b16f4bdc304d9932103152a74bc5163f9d5ca75a",
+    "src/routing-tools.js": "b9bb77bc9023dac5c21a131aed8fb592d60c5e2dd27060f7648950ace480c3bc",
+    "src/ui/workspace.js": "148f822408bac1180ae78b0e7f748a29198f019c19adc65fd075c8e9b79f8c2d",
+    "src/ui/app.js": "fd371dbb08e176cb303dee32733c23d227a464986cd78f8505ada17ad7a2426d",
+    "src/ui/workspace.css": "ce244e910a65391b049efd7a41f3f45e5ad996cbf566c6472b87fd011e477893",
+    "tools/consistency-preview.js": "c249c833562d54c259a358502dfdd006cb6c4b3a237ce29f71cdc81e9f6badfe"
+  },
+  "handoffSha256": "843b50ac4722cb93dc2a900641a0739fe2a61aa1d5837c119da8536d510909ba"
+}

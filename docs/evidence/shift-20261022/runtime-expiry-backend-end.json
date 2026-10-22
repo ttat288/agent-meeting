@@ -1,0 +1,21 @@
+{
+  "at": "2026-10-22T19:34:45.989875+00:00",
+  "httpStatus": 200,
+  "observations": [],
+  "fixtureMetrics": {
+    "calls": 14,
+    "active": 0,
+    "modelCalls": 0,
+    "fixture": "deterministic 3-second probe runner",
+    "pid": 153624,
+    "bootedAt": "2026-10-22T19:01:54.968Z",
+    "sourceHashes": {
+      "src/work.js": "8a6f324a48c87916e98315ea472154d1655fa11fdb86551c8469f904108eda5e",
+      "src/server.js": "fb021ebf152ab76bced7420f30c1bdaa4b90b014a77c222421d0631662a77652",
+      "src/ui/workspace.js": "9f902e769bec46f83e468badd49bfd96100fcaee4f87177abc9b5ca3ce2235ac",
+      "src/ui/workspace.css": "c7c142354e5f145dd932ad46412510be27515fa64c6757fd5c7461ce5ca1e746"
+    }
+  },
+  "runnerCallDelta": 0,
+  "scope": "Backend filters the expired access observation; tab3 DOM still shows verified. Browser was kept since19:09:58, observation dates19:02:56; not a thirty-minute browser/model run."
+}

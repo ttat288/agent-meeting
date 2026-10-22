@@ -1,0 +1,51 @@
+{
+  "checks": [
+    {
+      "case": "aged_fixture_before_expiry",
+      "text": "Model matched\n\nReported model: fixture-model \u00b7 2026-10-22T19:11:43.501Z"
+    },
+    {
+      "case": "after_fixture_expiry_keeps_draft",
+      "diagnosticsHasFixture": true,
+      "diagnosticsOpen": true,
+      "focus": "model-opus-claude",
+      "label": "Observation stale; check again\n\nReported model: fixture-model \u00b7 2026-10-22T19:11:43.501Z",
+      "mappingOpen": true,
+      "model": "astra",
+      "status": "stale"
+    },
+    {
+      "case": "instrumented_before_expiry",
+      "text": "Model matched\n\nReported model: fixture-model \u00b7 2026-10-22T19:14:00.851Z"
+    },
+    {
+      "case": "instrumented_after_expiry",
+      "diagnosticsOpen": true,
+      "focusParent": "runtimeDiagnostics",
+      "focusTag": "SUMMARY",
+      "label": "Observation stale; check again\n\nReported model: fixture-model \u00b7 2026-10-22T19:14:00.851Z",
+      "status": "stale"
+    },
+    {
+      "case": "navigation_before_expiry",
+      "text": "Model matched\n\nReported model: fixture-model \u00b7 2026-10-22T19:17:58.387Z"
+    },
+    {
+      "case": "back_after_expiry",
+      "label": "Observations not loaded",
+      "status": "",
+      "url": "http://127.0.0.1:3154/m/host_probe_recovery_1234/admin?lang=en&section=runtime"
+    }
+  ],
+  "limits": [
+    "Fix cases use explicit synthetic backdated observations; not thirty-minute or eight-hour model/browser runtime proof",
+    "An earlier fifteen-second window was missed before a green observation was captured; not counted as pass",
+    "One pair of counter snapshots was taken after expiry; a separate fresh-boot zero-counter navigation case checks totals across the boundary",
+    "Input/focus and diagnostic open state checked; no real screenreader or text-selection user test",
+    "Back result is recorded as observed, not a guarantee of every browser back-forward cache policy"
+  ],
+  "sourceSha256": {
+    "src/ui/workspace.js": "fb819c74b05b86f5389497699d8adcd122bde00b9065febaf20ef7996f8dc4bb",
+    "src/ui/workspace.css": "ce244e910a65391b049efd7a41f3f45e5ad996cbf566c6472b87fd011e477893"
+  }
+}

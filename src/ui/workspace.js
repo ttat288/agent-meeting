@@ -20,6 +20,13 @@
   let workReadVersion = 0, activeWorkReads = 0, pollController, pendingWork = null, syncState = 'live';
   const profileSelections = new Map();
   const probingProfiles = new Set();
+  const runtimeObservationLifetime = 30 * 60000;
+  let runtimeExpiryTimer;
+  if (admin) {
+    document.addEventListener('visibilitychange', () => { clearTimeout(runtimeExpiryTimer); if (!document.hidden) renderProfileObservations(); });
+    window.addEventListener('pagehide', () => clearTimeout(runtimeExpiryTimer));
+    window.addEventListener('pageshow', () => renderProfileObservations());
+  }
   const node = (tag, attrs = {}, ...children) => {
     const e = document.createElement(tag);
     for (const [k, v] of Object.entries(attrs)) {
@@ -362,6 +369,7 @@
     renderAdmin();
   }
   function renderAdmin() {
+    clearTimeout(runtimeExpiryTimer);
     const url = new URL(location.href); url.searchParams.set('section', adminTab); history.replaceState(null, '', url);
     $('shell').classList.add('admin'); $('sidebar').hidden = false;
     const selectSection = id => { adminTab = id; renderAdmin(); $('main').focus(); };
@@ -493,20 +501,33 @@
       node('p', { class: 'ws-subtle' }, t('Có executable chưa chứng minh truy cập model. Xem quan sát trên từng hồ sơ.', 'An executable does not establish model access. See each profile’s observation.')));
     // Keep the disclosure and its summary mounted across late probe responses.
     panel.querySelector('pre').textContent = JSON.stringify(runtime, null, 2);
+    renderProfileObservations(true);
+  }
+  function renderProfileObservations(refreshRows = false) {
+    clearTimeout(runtimeExpiryTimer);
+    if (adminTab !== 'runtime' || !config) return;
+    const now = Date.now(); let nextExpiry = Infinity;
     for (const profile of config.profiles) {
       const target = $('access-' + profile.id); if (!target) continue;
       const model = config.models.find(m => m.id === profile.modelId), observed = runtime.find(o => o.profileId === profile.id);
-      const age = Date.now() - Date.parse(observed?.checkedAt);
-      const current = observed && observed.configRevision === config.revision && observed.runtimeId === profile.runtimeId && observed.providerModelId === model?.providerModelId && age >= 0 && age < 30 * 60000;
+      const age = now - Date.parse(observed?.checkedAt);
+      const current = observed && observed.configRevision === config.revision && observed.runtimeId === profile.runtimeId && observed.providerModelId === model?.providerModelId && age >= 0 && age < runtimeObservationLifetime;
+      if (current) nextExpiry = Math.min(nextExpiry, Date.parse(observed.checkedAt) + runtimeObservationLifetime);
       let label = runtimeLoaded ? t('Truy cập chưa kiểm tra', 'Access untested') : t('Chưa tải quan sát', 'Observations not loaded'), status = '';
       if (observed && !current) { label = t('Quan sát đã cũ; kiểm tra lại', 'Observation stale; check again'); status = 'stale'; }
       else if (current && observed.available !== true) { label = t('Probe thất bại', 'Probe failed'); status = 'failed'; }
       else if (current && observed.modelVerified === true && observed.reportedModel === model?.providerModelId) { label = t('Đã đối chiếu model', 'Model matched'); status = 'verified'; }
       else if (current) { label = t('Model chưa xác nhận', 'Model unconfirmed'); status = 'stale'; }
-      target.replaceChildren(node('span', { class: 'ws-pill', 'data-status': status }, label));
-      if (observed) target.append(node('p', { class: 'ws-meta' }, t('Model báo lại: ', 'Reported model: ') + (observed.reportedModel || 'unknown') + ' · ' + observed.checkedAt));
-      if (observed?.error) target.append(node('p', { class: 'ws-subtle' }, friendlyError(observed.error)));
+      let badge = target.firstElementChild;
+      if (refreshRows || !badge) {
+        badge = node('span', { class: 'ws-pill' }); target.replaceChildren(badge);
+        if (observed) target.append(node('p', { class: 'ws-meta' }, t('Model báo lại: ', 'Reported model: ') + (observed.reportedModel || 'unknown') + ' · ' + observed.checkedAt));
+        if (observed?.error) target.append(node('p', { class: 'ws-subtle' }, friendlyError(observed.error)));
+      }
+      if (badge.textContent !== label) badge.textContent = label;
+      badge.dataset.status = status;
     }
+    if (!document.hidden && nextExpiry < Infinity) runtimeExpiryTimer = setTimeout(renderProfileObservations, Math.max(1, nextExpiry - Date.now()));
   }
   async function loadAuxiliary() {
     const results = await Promise.allSettled([api('/remote'), api('/metrics')]);

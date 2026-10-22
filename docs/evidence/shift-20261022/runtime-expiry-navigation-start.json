@@ -1,0 +1,43 @@
+{
+  "at": "2026-10-22T19:46:58.549Z",
+  "metrics": {
+    "calls": 14,
+    "active": 0,
+    "runtimeReads": 0,
+    "probeRequests": 0,
+    "modelCalls": 0,
+    "fixture": "deterministic 3-second probe runner",
+    "pid": 167331,
+    "bootedAt": "2026-10-22T19:46:58.414Z",
+    "sourceHashes": {
+      "src/work.js": "8a6f324a48c87916e98315ea472154d1655fa11fdb86551c8469f904108eda5e",
+      "src/server.js": "fb021ebf152ab76bced7420f30c1bdaa4b90b014a77c222421d0631662a77652",
+      "src/ui/workspace.js": "fb819c74b05b86f5389497699d8adcd122bde00b9065febaf20ef7996f8dc4bb",
+      "src/ui/workspace.css": "ce244e910a65391b049efd7a41f3f45e5ad996cbf566c6472b87fd011e477893"
+    }
+  },
+  "seed": {
+    "seededAt": "2026-10-22T19:46:58.389Z",
+    "observation": {
+      "profileId": "opus-claude",
+      "runtimeId": "claude-code",
+      "adapter": "claude",
+      "configRevision": 6,
+      "providerModelId": "fixture-model",
+      "requestedModel": "fixture-model",
+      "reportedModel": "fixture-model",
+      "available": true,
+      "modelVerified": true,
+      "quotaAvailable": true,
+      "checkedAt": "2026-10-22T19:17:58.387Z",
+      "tools": [],
+      "permissions": [],
+      "error": null,
+      "fixture": "Backdated saved observation for UI expiry test; no native model"
+    },
+    "expiresAt": "2026-10-22T19:47:58.387Z",
+    "expiresInMs": 60000,
+    "modelCalls": 0
+  },
+  "scope": "Fresh own fixture boot; captured zero counters before browser Check runtimes. Synthetic backdate, not a model-runtime test."
+}

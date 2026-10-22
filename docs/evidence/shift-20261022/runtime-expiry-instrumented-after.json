@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-22T19:44:43.293448+00:00",
+  "metrics": {
+    "calls": 14,
+    "active": 0,
+    "runtimeReads": 1,
+    "probeRequests": 0,
+    "modelCalls": 0,
+    "fixture": "deterministic 3-second probe runner",
+    "pid": 166090,
+    "bootedAt": "2026-10-22T19:43:00.868Z",
+    "sourceHashes": {
+      "src/work.js": "8a6f324a48c87916e98315ea472154d1655fa11fdb86551c8469f904108eda5e",
+      "src/server.js": "fb021ebf152ab76bced7420f30c1bdaa4b90b014a77c222421d0631662a77652",
+      "src/ui/workspace.js": "fb819c74b05b86f5389497699d8adcd122bde00b9065febaf20ef7996f8dc4bb",
+      "src/ui/workspace.css": "ce244e910a65391b049efd7a41f3f45e5ad996cbf566c6472b87fd011e477893"
+    }
+  },
+  "sourceSha256": {
+    "src/ui/workspace.js": "fb819c74b05b86f5389497699d8adcd122bde00b9065febaf20ef7996f8dc4bb",
+    "src/ui/workspace.css": "ce244e910a65391b049efd7a41f3f45e5ad996cbf566c6472b87fd011e477893"
+  },
+  "scope": "Both counter snapshots are after the expiry deadline. Total runtimeReads=1 for this boot matches one explicit Check runtimes; probeRequests=0. Do not treat the delta alone as a pre/post-boundary measurement.",
+  "deltaBetweenPostExpirySnapshots": {
+    "runtimeReads": 0,
+    "probeRequests": 0,
+    "calls": 0
+  }
+}

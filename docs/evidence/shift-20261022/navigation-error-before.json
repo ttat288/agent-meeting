@@ -1,0 +1,11 @@
+{
+  "source": "9cc650c",
+  "at": "2026-10-22T20:57:37.920Z",
+  "cards": 1,
+  "error": null,
+  "focusRole": null,
+  "hash": "#results",
+  "title": "K\u1ebft qu\u1ea3 (1)",
+  "scope": "Inconclusive browser attempt: held response status503, Results heading visible before release, no alert observed at later DOM check. The specific request was not independently correlated; no claim that this reproduced the race. Actual-function unit tests separately reproduce2stale-error cases.",
+  "secondAttempt": "Immediate alert wait1000ms also found no alert; not counted as baseline browser reproduction."
+}

@@ -261,3 +261,9 @@ CI source2409aca:CI39847742122 và Desktop39847742044 overall completed/success;
 [Before](hidden-action-error-before.json):4544951 delayed /work503 về sau khi quay Hội thoại, lỗi chỉ nằm trong workView hidden/noticehidden=true. Focus/chat không mất nhưng user không thấy kết quả thao tác cũ. Một guard visibility ở actioncatch dùng notice hiện có cho origin hidden/detached; visible origin vẫn inline alert/focus. Không tự retry mutation hoặc đổi view.
 
 [Browser](hidden-action-error-browser.json)/[ảnh](hidden-action-error-after.jpg):notice hiện, chat/focus giữ; visibleerror vẫn alert, retry xóa alert và giữ1result. Controlled503 chỉ proxy/private store,0model/newrun. [Full407/35](integrated-hidden-action-tests.txt),0fail/skip/cancel, [seal](verification-hidden-action-tests.json).25actual-source UI unit gồm3 visible/hidden/detached +finally state. Notice6s/role status dùng cơ chế hiện có; screenreader thực và user đã đọc notice chưa đo.
+
+## Superseded navigation read errors
+
+[Actual-function unit red](navigation-error-unit-before.txt):2fail/2pass ở9cc650c; oldPlan failure gắn alert sau newResults success hoặc sau trở về conversation. Catch mới dùng cùng request/hash guard với success, currentfailure vẫn alert. [4green](navigation-error-unit-after.txt), [full411/36](integrated-navigation-tests.txt),0fail/skip/cancel, [seal](verification-navigation-tests.json).
+
+[Browser baseline](navigation-error-before.json) **inconclusive**:2attempts với proxy held503 không bắt alert; request cụ thể chưa correlate độc lập, không suy chắc polling đã xóa hoặc race không tồn tại. [Normal routes](navigation-error-browser.json) VI375 Plan/Execute3task/Results1run không alert sau guard, chỉ chứng minh normal navigation; không thay thế negative baseline hoặc actual-function unitrace. Không model/newrun trong các ca này.

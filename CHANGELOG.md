@@ -6,6 +6,7 @@
 - Human chair stays the default, with optional PM controls/history in Options. PM connection errors clear on recovery without erasing action errors; terminal invitation words use POSIX quoting.
 - CLI SIGINT/SIGTERM and exit-on-end drain managed work and cancellation/rollback before exiting. Closed managers reject new dispatch instead of starting work during shutdown.
 - Slow verification/integration can be cancelled from Results; late completions preserve drafts opened in another view. PM updates preserve supervision focus and unsent drafts; director stop controls take priority over pending ordinary requests.
+- Late task saves preserve newer edits, their viewed revision and chat focus; explicit updates retain the previous draft for read-only recovery.
 - Task forms expose saved differences from the latest older draft for read-only recovery after a requirement change; no automatic replay or merge. Malformed or unavailable browser storage falls back to current server requirements.
 - Routing and execution use the freshest valid access observation across rooms sharing a catalog; a newer failed probe cannot be masked by an older room-local success. Duplicate local/shared copies appear once.
 - Small-screen administration uses one native section chooser; desktop keeps its sidebar. Both share the same section URLs and keyboard focus behavior.

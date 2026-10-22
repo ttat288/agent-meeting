@@ -59,3 +59,33 @@ test('stale host response cannot replace a newer snapshot or clear its error',as
 test('a host response from a detached view cannot modify the new view',async()=>{
  const f=hostRefreshFixture({mounted:false});await f.context.refreshHosts();assert.equal(f.context.remote.revision,2);assert.equal(f.draws(),0);assert.equal(f.removed(),0);assert.equal(f.notices.length,0);
 });
+
+function taskSaveFixture(){
+ const calls=[],resolvers=[],rejectors=[],removed=[],notices=[];let renders=0,focuses=0;
+ const context=vm.createContext({workEditVersion:0,api:(endpoint,data)=>{calls.push({endpoint,data});return new Promise((resolve,reject)=>{resolvers.push(resolve);rejectors.push(reject);});},localStorage:{removeItem:key=>removed.push(key)},taskDraftKey:task=>'draft:'+task.id+':'+task.requirementRevision,acceptWork:next=>{context.work=next;},renderTaskList:()=>{renders++;},$:()=>({focus:()=>{focuses++;}}),notify:text=>notices.push(text),t:(vi,en)=>en});
+ const start=source.indexOf('  async function saveTaskRequirements('),end=source.indexOf('  const disclosure =',start);assert(start>=0&&end>start);vm.runInContext(source.slice(start,end),context);
+ return{context,calls,resolvers,rejectors,removed,notices,renders:()=>renders,focuses:()=>focuses,task:{id:'task-a',requirementRevision:2},form:{isConnected:true,closest:()=>null}};
+}
+test('normal task save adopts server work and clears only its old draft key',async()=>{
+ const f=taskSaveFixture(),pending=f.context.saveTaskRequirements(f.task,f.form,()=>({acceptance:['submitted']}));
+ assert.equal(f.calls[0].data.expectedRevision,2);assert.deepEqual(Array.from(f.calls[0].data.acceptance),['submitted']);f.resolvers[0]({requirementRevision:3});await new Promise(resolve=>setImmediate(resolve));assert.equal(f.calls[1].endpoint,'/work');f.resolvers[1]({tasks:[{requirementRevision:3}]});assert.equal(await pending,true);assert.deepEqual(f.removed,['draft:task-a:2']);assert.equal(f.context.work.tasks[0].requirementRevision,3);assert.equal(f.renders(),1);assert.equal(f.focuses(),1);
+});
+test('typing during task configure preserves old revision and newer draft without another read',async()=>{
+ const f=taskSaveFixture(),pending=f.context.saveTaskRequirements(f.task,f.form,()=>({acceptance:['submitted']}));f.context.workEditVersion++;f.resolvers[0]({requirementRevision:3});assert.equal(await pending,false);assert.equal(f.calls.length,1);assert.equal(f.renders(),0);assert.equal(f.focuses(),0);assert.deepEqual(f.removed,[]);assert.equal(f.task.requirementRevision,2);assert.match(f.notices[0],/retained/);
+});
+test('typing during post-save work read still prevents late replacement',async()=>{
+ const f=taskSaveFixture(),pending=f.context.saveTaskRequirements(f.task,f.form,()=>({acceptance:['submitted']}));f.resolvers[0]({});await new Promise(resolve=>setImmediate(resolve));f.context.workEditVersion++;f.resolvers[1]({tasks:[{requirementRevision:3}]});assert.equal(await pending,false);assert.equal(f.renders(),0);assert.equal(f.context.work,undefined);assert.deepEqual(f.removed,[]);
+});
+test('task save from a replaced form never clears storage or redraws the current view',async()=>{
+ const f=taskSaveFixture(),pending=f.context.saveTaskRequirements(f.task,f.form,()=>({acceptance:['submitted']}));f.form.isConnected=false;f.resolvers[0]({});assert.equal(await pending,false);assert.equal(f.calls.length,1);assert.equal(f.renders(),0);assert.deepEqual(f.removed,[]);
+});
+test('task save conflict preserves the draft and propagates the error for recovery',async()=>{
+ const f=taskSaveFixture(),pending=f.context.saveTaskRequirements(f.task,f.form,()=>({acceptance:['submitted']}));f.rejectors[0](new Error('Task changed; reload before saving this draft'));await assert.rejects(pending,/Task changed/);assert.equal(f.renders(),0);assert.deepEqual(f.removed,[]);assert.equal(f.calls.length,1);
+});
+test('normal task save tolerates unavailable browser storage',async()=>{
+ const f=taskSaveFixture();f.context.localStorage={removeItem:()=>{throw Error('Storage blocked');}};const pending=f.context.saveTaskRequirements(f.task,f.form,()=>({acceptance:['submitted']}));f.resolvers[0]({});await new Promise(resolve=>setImmediate(resolve));f.resolvers[1]({tasks:[]});assert.equal(await pending,true);assert.equal(f.renders(),1);
+});
+
+test('a task save hidden by the conversation cannot steal chat focus',async()=>{
+ const f=taskSaveFixture(),pending=f.context.saveTaskRequirements(f.task,f.form,()=>({acceptance:['submitted']}));f.form.closest=()=>({hidden:true});f.resolvers[0]({});assert.equal(await pending,false);assert.equal(f.calls.length,1);assert.equal(f.renders(),0);assert.equal(f.focuses(),0);assert.deepEqual(f.removed,[]);
+});

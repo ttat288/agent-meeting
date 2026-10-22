@@ -1,0 +1,58 @@
+{
+  "at": "2026-10-22T20:44:11.641Z",
+  "source": "working tree after fc4701d; helper hashes sealed with full test",
+  "checks": [
+    {
+      "case": "same view edits during configure response",
+      "at": "2026-10-22T20:42:38.181Z",
+      "state": {
+        "acceptance": "Newer draft retained after task save",
+        "focus": "edit-091a4474-e580-4925-b73c-81e3e8bef9b8-acceptance",
+        "notice": "Đã lưu bản đã gửi. Phần nhập mới được giữ; xem cập nhật để đối chiếu bản nháp trước khi lưu tiếp.",
+        "open": true,
+        "width": 375
+      }
+    },
+    {
+      "case": "stale revision save rejected without clearing draft",
+      "state": {
+        "acceptance": "Newer draft retained after task save",
+        "error": "Chưa thể hoàn thành thao tácTask đã thay đổi. Bản nháp được giữ theo revision cũ; làm mới để xem yêu cầu hiện tại."
+      }
+    },
+    {
+      "case": "explicit update exposes previous revision draft read-only",
+      "state": {
+        "current": "Submitted fix case; never dispatch",
+        "old": [
+          "Newer draft retained after task save"
+        ]
+      }
+    },
+    {
+      "case": "manual previous-draft recovery normal save",
+      "state": {
+        "acceptance": "Newer draft retained after task save",
+        "focus": "workTitle",
+        "notice": "Đã lưu; task ID được giữ nguyên. Chưa khởi chạy agent."
+      }
+    },
+    {
+      "case": "new input during delayed post-save work read",
+      "state": {
+        "acceptance": "Draft typed while post-save work read waits",
+        "focus": "edit-091a4474-e580-4925-b73c-81e3e8bef9b8-acceptance",
+        "open": true
+      }
+    },
+    {
+      "case": "hidden work view does not steal chat focus",
+      "state": {
+        "focused": true,
+        "hash": "#conversation",
+        "value": "Chat draft must keep focus after task ACK"
+      }
+    }
+  ],
+  "scope": "Private loopback fixture. Work GET gate held two reads (including a poll without ETag); no assumption of exactly one read. No native model or new run."
+}

@@ -241,3 +241,11 @@ Guard mới đếm input/change của trang admin và kiểm origin form còn mo
 [Browser](hosts-refresh-browser.json):same-view draft/focus, chuyển Models khi chờ,503 giữ draft và retry hồi phục đều đạt trên375 VI; [ảnh](hosts-refresh-recovery-vi.jpg). Không enroll máy, tạo token, dispatch hoặc native model. Stale revision chỉ kiểm unit, không nhận đã thử worker vật lý. [Full391/35](integrated-host-refresh-tests.txt),0fail/skip/cancel, [source seal](verification-host-refresh-tests.json);9 UI unit gồm fresh/stale/detached callbacks chạy actual source. Lần viết seal đầu lỗi Python dùng keyword pass, chưa tạo receipt; đã sửa và đối chiếu tổng raw trước ghi seal.
 
 CI source2409aca:CI39847742122 và Desktop39847742044 overall completed/success; duplicate CI39847732330 cancelled. Không gán các run này cho source Hosts mới.
+
+## Task Save ACK và bước đọc sau lưu
+
+[Red](task-save-before.json):sourcefc4701d Save đã commit nhưng ACK bị giữ; acceptance gõ sau submit bị mất, form đóng và focusworkTitle. Callback còn xóa draft key. Guard mới giữ viewed revision/draft nếu có input/change mới, form bị thay hoặc workView bị ẩn; kiểm trước và sau /work read, không tự merge/dispatch. Normal save mới clear đúng old key.
+
+[Browser](task-save-browser.json):configure-delay giữ draft/focus;409 giữ draft; Show updates hiện previousv2 readonly, chép nội dung và Save mới thành công. Work-read delay giữ draft; gate này giữ2 reads (có poll chưa ETag), không nhận chỉ1 request. Save từ workView hidden không kéo focus khỏi chat. [Ảnh375VI](task-save-retained-vi.jpg). Các input/model fixture không thành kết quả human/model;0run mới/native call. Storage blocked kiểm unit, chưa browser policy.
+
+[Full398/35](integrated-task-save-tests.txt),0fail/skip/cancel, [source seal](verification-task-save-tests.json).16 UI unit actual-source gồm7task recovery cases. Ba unit đầu fail vì fixture đợi1microtask nhưng VM promise khác realm chưa tới bước read; đã dùng setImmediate để đợi turn, không sửa production nhằm ép test xanh. New task creation không có form riêng trong work UI, dùng nguồn hội thoại hiện có, không thêm màn.

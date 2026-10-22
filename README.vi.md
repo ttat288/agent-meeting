@@ -95,7 +95,7 @@ Source hiện có thêm **UI v2 và luồng thực thi được quản lý còn 
 
 **Theo dõi việc mà không liên tục Làm mới.** Kế hoạch, Thực hiện và Kết quả kiểm cập nhật khi đang mở. Bản đang sửa và bằng chứng đang đọc giữ nguyên; **Xem cập nhật** áp dụng trạng thái mới khi cần. Mất kết nối giữ kết quả cuối và tự thử lại. “Đã tích hợp và test” là kiểm tra tự động, còn nghiệm thu của người dùng được tách riêng.
 
-Nếu yêu cầu đổi khi đang sửa, **Xem bản nháp trước** trong form task cho đọc phần khác đã lưu và tự chép nội dung cần giữ vào revision hiện tại trước khi lưu.
+Nếu tiếp tục nhập trong lúc chờ lưu task, bản đã gửi được lưu và phần nhập mới được giữ nguyên. Nếu yêu cầu đổi khi đang sửa, **Xem bản nháp trước** trong form task cho đọc phần khác đã lưu và tự chép nội dung cần giữ vào revision hiện tại trước khi lưu.
 
 Nút chạy trên web kiểm yêu cầu và cấu hình bạn đã xem. Khi revision đổi, cần xem lại và chọn profile hiện tại trước khi khởi chạy.
 

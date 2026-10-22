@@ -95,7 +95,7 @@ The current source also includes **UI v2 and experimental managed workflows**: v
 
 **Follow work without repeated refreshes.** Plan, Execute and Results check for updates while visible. Edits and open evidence stay in place; when needed, **Show updates** applies the new state. Connection failures keep the last result and retry. “Integrated and tested” describes automated checks, with user acceptance still separate.
 
-If requirements change while you edit, **View previous draft** in the task form lets you read saved differences and copy what you need into the current revision before saving.
+If you keep editing while a task save is pending, the submitted version saves and newer input stays in place. If requirements change while you edit, **View previous draft** in the task form lets you read saved differences and copy what you need into the current revision before saving.
 
 The web Run button checks the requirements and configuration you viewed. Changed revisions require a fresh review and profile selection before dispatch.
 

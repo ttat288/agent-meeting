@@ -21,7 +21,8 @@
   const profileSelections = new Map();
   const probingProfiles = new Set();
   const runtimeObservationLifetime = 30 * 60000;
-  let runtimeExpiryTimer, noticeTimer, pendingConfig = null, adminEditVersion = 0;
+  let runtimeExpiryTimer, noticeTimer, pendingConfig = null, adminEditVersion = 0, workEditVersion = 0;
+  if (!admin) for (const event of ['input', 'change']) $('page').addEventListener(event, () => { workEditVersion++; });
   if (admin) {
     for (const event of ['input', 'change']) $('page').addEventListener(event, () => { adminEditVersion++; });
     document.addEventListener('visibilitychange', () => { clearTimeout(runtimeExpiryTimer); if (!document.hidden) renderProfileObservations(); });
@@ -210,11 +211,26 @@
     const save = node('button', { class: 'btn primary', type: 'submit' }, t('Lưu yêu cầu của task', 'Save task requirements'));
     form.append(save);
     form.onsubmit = event => { event.preventDefault(); if (!split(val(id('acceptance'))).length) { errorBox(form, new Error(t('Cần ít nhất một tiêu chí nghiệm thu.', 'At least one acceptance criterion is required.')), id('acceptance')); return; } action(save, form, async () => {
-      await api('/work/tasks/' + encodeURIComponent(task.id) + '/configure', { ...readDraft(), expectedRevision: task.requirementRevision });
-      try { localStorage.removeItem(taskDraftKey(task)); } catch {}
-      acceptWork(await api('/work')); renderTaskList(); $('workTitle')?.focus(); notify(t('Đã lưu; task ID được giữ nguyên. Chưa khởi chạy agent.', 'Saved with the same task ID. No agent has been launched.'));
+      await saveTaskRequirements(task, form, readDraft);
     }); };
     return node('details', { class: 'ws-configure' }, node('summary', {}, t('Chuẩn bị thực hiện / sửa yêu cầu', 'Prepare execution / edit requirements')), form);
+  }
+
+  async function saveTaskRequirements(task, form, readDraft) {
+    const version = workEditVersion, submitted = readDraft();
+    await api('/work/tasks/' + encodeURIComponent(task.id) + '/configure', { ...submitted, expectedRevision: task.requirementRevision });
+    const preserved = () => {
+      if (form.isConnected && !form.closest('[hidden]') && version === workEditVersion) return false;
+      notify(t('Đã lưu bản đã gửi. Giữ nguyên view và phần nhập mới; xem cập nhật để đối chiếu bản nháp trước khi lưu tiếp.', 'Submitted requirements saved. The current view and newer input are retained; show updates to compare the previous draft before saving again.'));
+      return true;
+    };
+    if (preserved()) return false;
+    const next = await api('/work');
+    if (preserved()) return false;
+    try { localStorage.removeItem(taskDraftKey(task)); } catch {}
+    acceptWork(next); renderTaskList(); $('workTitle')?.focus();
+    notify(t('Đã lưu; task ID được giữ nguyên. Chưa khởi chạy agent.', 'Saved with the same task ID. No agent has been launched.'));
+    return true;
   }
 
   const disclosure = (label, ...content) => node('details', { class: 'ws-disclosure' }, node('summary', {}, label), ...content);

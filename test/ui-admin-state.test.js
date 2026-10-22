@@ -107,3 +107,16 @@ for(const reason of ['edited','hidden','detached','newer-read'])test('manual ref
 test('manual refresh failure preserves both viewed snapshots and reports the error',async()=>{
  const f=workRefreshFixture(),pending=f.context.refreshWork(f.refresh);f.fail(new Error('Controlled read failure'));await assert.rejects(pending,/Controlled read failure/);assert.equal(f.context.config.revision,7);assert.equal(f.context.work.revision,2);assert.equal(f.renders(),0);
 });
+
+function actionFixture({hidden=false,mounted=true}={}){
+ const errors=[],notices=[],attributes=new Map();let syncs=0;
+ const context=vm.createContext({errorBox:(container,error)=>errors.push(error.message),notify:text=>notices.push(text),friendlyError:text=>text,t:(vi,en)=>en,renderSyncStatus:()=>{syncs++;}});
+ const start=source.indexOf('  async function action('),end=source.indexOf('  function checkedAction(',start);assert(start>=0&&end>start);vm.runInContext(source.slice(start,end),context);
+ return{context,errors,notices,syncs:()=>syncs,attributes,button:{disabled:false,isConnected:mounted,closest:()=>hidden?{hidden:true}:null},container:{isConnected:mounted,setAttribute:(key,value)=>attributes.set(key,value),removeAttribute:key=>attributes.delete(key)}};
+}
+for(const state of ['visible','hidden','detached'])test('action error from '+state+' origin uses the visible recovery channel and clears busy state',async()=>{
+ const f=actionFixture({hidden:state==='hidden',mounted:state!=='detached'});
+ await f.context.action(f.button,f.container,async()=>{assert.equal(f.button.disabled,true);assert.equal(f.attributes.get('aria-busy'),'true');throw Error('Controlled failure');});
+ assert.equal(f.button.disabled,false);assert.equal(f.attributes.has('aria-busy'),false);assert.equal(f.syncs(),2);
+ if(state==='visible'){assert.deepEqual(f.errors,['Controlled failure']);assert.equal(f.notices.length,0);}else{assert.equal(f.errors.length,0);assert.equal(f.notices.length,1);assert.match(f.notices[0],/Previous action result unavailable: Controlled failure/);}
+});

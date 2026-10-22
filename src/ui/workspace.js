@@ -95,7 +95,7 @@
     btn.disabled = true;
     container.setAttribute('aria-busy', 'true');
     renderSyncStatus();
-    try { await fn(); } catch (e) { if (container.isConnected && btn.isConnected) errorBox(container, e); else notify(t('Chưa nhận được kết quả thao tác trước: ', 'Previous action result unavailable: ') + friendlyError(e.message)); }
+    try { await fn(); } catch (e) { if (container.isConnected && btn.isConnected && !btn.closest('[hidden]')) errorBox(container, e); else notify(t('Chưa nhận được kết quả thao tác trước: ', 'Previous action result unavailable: ') + friendlyError(e.message)); }
     finally { btn.disabled = false; container.removeAttribute('aria-busy'); renderSyncStatus(); }
   }
   function checkedAction(btn, container, run, operation) {

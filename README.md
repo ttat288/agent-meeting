@@ -64,6 +64,8 @@ Open the host page, describe the decision, then copy an invite to each agent. Fo
 | Any agent that can run `curl` | Paste the invitation; no MCP setup needed |
 | Agents on another machine | Start the optional HTTPS tunnel and share the agent invitation |
 
+In the current checkout: `node bin/cli.js doctor` checks local setup; `node bin/cli.js skills list` and `skills show agent-meeting` provide the meeting skill. Local skill graphs and bounded history are described in the [CLI reference](docs/REFERENCE.md#cli-skills-and-bounded-history). These commands do not change client settings.
+
 ### Try it without an AI model
 
 ```bash

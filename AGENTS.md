@@ -6,6 +6,16 @@
 - Hướng dẫn này bổ sung cho tài liệu hiện có, không thay thế chúng. Không sửa hoặc hoàn tác thay đổi không liên quan của người dùng. Không commit/push nếu chưa được yêu cầu.
 - Stack hiện tại: Node.js >=18, không dependency runtime ngoài; giao diện `src/ui/` dùng HTML/CSS/JavaScript thuần, không build.
 
+## Pain point trước, làm đủ và biết dừng
+
+- Trước một lát cắt phát triển, nêu ngắn: ai đang gặp khó, ở bước nào, hậu quả cụ thể, cách đang làm và kết quả nào chứng minh đã giải quyết. Phân biệt vấn đề đã quan sát với giả thuyết. Nếu thiếu bằng chứng ảnh hưởng quyết định, kiểm tra nhỏ nhất đủ làm rõ; không tự biến phỏng đoán thành tính năng.
+- So với cách đơn giản đang có, kể cả dùng trực tiếp một coding CLI: thay đổi phải giảm công điều hành, lỗi, thời gian hoặc chi phí ở chất lượng tương đương, hoặc tạo ra kết quả cần thiết mà cách cũ chưa đạt. Không mặc định thêm PM, agent, graph, màn hình hay lớp kiến trúc sẽ tốt hơn.
+- Chọn thay đổi nhỏ nhất giải quyết trọn hành trình mục tiêu. Tận dụng chức năng và nguồn dữ liệu hiện có; ưu tiên sửa điểm nghẽn trước thêm khả năng. Chỉ làm phần nền cần ngay cho hành trình đó, không xây trước hệ thống tổng quát cho nhu cầu tương lai chưa kiểm chứng.
+- Đặt tiêu chí đủ và điểm dừng trước khi mở rộng. Tự sửa lỗi và vấn đề tích hợp trong phạm vi đến khi hành trình đạt tiêu chí, kiểm chứng phù hợp và không còn lỗi quan trọng đã biết trong phần bị ảnh hưởng. Không dừng ở mã chạy/test xanh nếu pain point vẫn còn; cũng không tiếp tục tối ưu vô hạn khi đã đạt. Nêu rõ giới hạn chưa kiểm thay vì hứa tối ưu tuyệt đối hoặc tự nghiệm thu thay người dùng.
+- Đánh giá tổng chi phí của giải pháp: thao tác và thời gian người dùng, độ trễ, token của mọi agent, tool schema/output, retry, bảo trì và phục hồi. Dùng baseline cùng nhiệm vụ/đầu vào/tiêu chí khi so sánh; số token fixture hoặc ít tool call hơn không tự chứng minh giảm billing hay tăng chất lượng. Nếu thêm lớp điều phối có overhead mà chưa có lợi ích bù lại, đơn giản hóa hoặc bỏ phần đó.
+- Trước mỗi mở rộng, chỉ ra pain point hoặc điều kiện nghiệm thu hiện tại buộc phải có nó. Ý tưởng hay, tài liệu plan và backlog không tự trở thành yêu cầu phải build. Việc ngoài phạm vi ghi ngắn khi hữu ích, không tự triển khai; chỉ hỏi người dùng khi quyết định thực sự thay mục tiêu, chi phí, quyền hoặc phạm vi, không xin duyệt lại thao tác thường nhật đã được giao.
+- Áp dụng nhẹ theo độ lớn công việc: việc nhỏ chỉ cần vài câu và phép kiểm phù hợp; cập nhật tài liệu hành trình hiện có khi cần, không sinh thêm plan, báo cáo, cuộc họp hoặc gọi agent chỉ để tuân thủ quy trình. Khi kết thúc, báo pain point nào đã xử lý, bằng chứng, giới hạn và việc gì còn cần người dùng quyết định.
+
 ## Quy tắc UI/UX
 
 - Khi thiết kế, xây dựng, chỉnh sửa hoặc review UI/UX, **phải đọc** SKILL.md của `ui-ux-pro-max` và áp dụng phần phù hợp với yêu cầu và ràng buộc dự án.
@@ -33,6 +43,10 @@ Kiểm kê ngày 2026-10-21 bao gồm thư mục ẩn, nội dung bị Git ignor
 - `.local-tools/` đã được ignore trước lần cấu hình này; giữ nguyên quy tắc đó và nội dung công cụ. Không sao chép skill CodeGraph sang `.agents/skills` hoặc tự động áp dụng chúng toàn repo.
 - Các skill global/bundled như `skill-installer` và `openai-docs` được dùng để cấu hình và xác minh discovery trong phiên cài; chúng không được cài vào repo và không thuộc danh mục skill dự án. Không sao chép danh sách skill global của máy vào đây.
 - **Bảo trì:** mỗi lần cài hoặc gỡ skill ở phạm vi dự án, cập nhật danh mục này, đường dẫn thực, mục đích, điều kiện sử dụng, nguồn/cách cài và quy tắc ignore tương ứng. Phân biệt skill dự án với skill vendor/công cụ nhúng; không tự nâng hướng dẫn vendor thành quy tắc toàn repo.
+
+### Skill đóng gói cho người dùng CLI
+
+`src/skills/agent-meeting/SKILL.md` và `references/cli.md` là tài nguyên **sản phẩm** do repo duy trì, phát hành qua `src/` và đọc bằng `skills list/show/inspect`; không phải skill phát triển đã cài vào `.agents/skills`, không tự discovery/cài vào settings global. Catalog local mặc định chỉ `.agents/skills` của cwd hoặc `--dir` chỉ định; không tự quét skill vendor/global. Không thêm quy tắc ignore cho tài nguyên sản phẩm này.
 
 ## Cài local, Git và máy mới
 

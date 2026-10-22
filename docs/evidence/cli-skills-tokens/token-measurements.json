@@ -1,0 +1,147 @@
+{
+  "schema": "agent-meeting/context-measurements@1",
+  "tiktoken": "0.14.0",
+  "scope": "Exact counts for named encodings of synthetic tool-output payloads. Payload parts are not measured model turns. Excludes model output, hidden prompts, request envelopes, cache and billing; schema is measured separately. No paid model called.",
+  "cases": [
+    {
+      "id": "history-last-five",
+      "scope": "Reader needs last five messages; output payload only",
+      "beforeParts": 1,
+      "afterParts": 1,
+      "before": {
+        "utf8Bytes": 64783,
+        "unicodeCharacters": 49421,
+        "sha256": "0bbced634bf818d9dc9dc621675180d3da1a90f53675bdcb8a9fef1df951feda",
+        "tokens": {
+          "cl100k_base": 23506,
+          "o200k_base": 12474
+        }
+      },
+      "after": {
+        "utf8Bytes": 3345,
+        "unicodeCharacters": 2580,
+        "sha256": "7701879716d7b1469d7c16f5df634189a275dfc28736c8a5a297f92aca96de08",
+        "tokens": {
+          "cl100k_base": 1203,
+          "o200k_base": 653
+        }
+      },
+      "tokenReductionPercent": {
+        "cl100k_base": 94.88,
+        "o200k_base": 94.77
+      }
+    },
+    {
+      "id": "history-all-pages",
+      "scope": "Reader needs all history: pagination adds overhead",
+      "beforeParts": 1,
+      "afterParts": 7,
+      "before": {
+        "utf8Bytes": 64783,
+        "unicodeCharacters": 49421,
+        "sha256": "0bbced634bf818d9dc9dc621675180d3da1a90f53675bdcb8a9fef1df951feda",
+        "tokens": {
+          "cl100k_base": 23506,
+          "o200k_base": 12474
+        }
+      },
+      "after": {
+        "utf8Bytes": 65684,
+        "unicodeCharacters": 50322,
+        "sha256": "d5357c2eb1d022b958d748a7035e469998c4d2ac4bd5c8baf973dcb063694041",
+        "tokens": {
+          "cl100k_base": 23741,
+          "o200k_base": 12710
+        }
+      },
+      "tokenReductionPercent": {
+        "cl100k_base": -1.0,
+        "o200k_base": -1.89
+      }
+    },
+    {
+      "id": "room-tool-schema",
+      "scope": "Per-session room tool definitions: baseline e292fd3 versus compact descriptions plus pagination schema",
+      "beforeParts": 1,
+      "afterParts": 1,
+      "before": {
+        "utf8Bytes": 4069,
+        "unicodeCharacters": 3601,
+        "sha256": "026edc3eff2fb0d825e4ac2961370ed5e7b46de3560aa0d6ecbdf39c1feb842a",
+        "tokens": {
+          "cl100k_base": 1174,
+          "o200k_base": 956
+        }
+      },
+      "after": {
+        "utf8Bytes": 3663,
+        "unicodeCharacters": 3338,
+        "sha256": "b995e930746cc611f9da9f2f754a9bef1c0e550326e2ba526fcba065cfde34d2",
+        "tokens": {
+          "cl100k_base": 1002,
+          "o200k_base": 861
+        }
+      },
+      "tokenReductionPercent": {
+        "cl100k_base": 14.65,
+        "o200k_base": 9.94
+      }
+    },
+    {
+      "id": "skill-select-one-reference",
+      "scope": "Find component 7 API guidance among 12 skills × 3 references; count list + graph + manifest + selected resource",
+      "beforeParts": 48,
+      "afterParts": 4,
+      "before": {
+        "utf8Bytes": 214714,
+        "unicodeCharacters": 214714,
+        "sha256": "3bb186087c63250a817b251ec788e96f574b9a82a0eae76cde513897aa1ff213",
+        "tokens": {
+          "cl100k_base": 35352,
+          "o200k_base": 35352
+        }
+      },
+      "after": {
+        "utf8Bytes": 6818,
+        "unicodeCharacters": 6818,
+        "sha256": "a5b29f515edc1166599f2b548137ef2080e17c0d6b54b237e3c2b91b3b184c25",
+        "tokens": {
+          "cl100k_base": 1224,
+          "o200k_base": 1228
+        }
+      },
+      "tokenReductionPercent": {
+        "cl100k_base": 96.54,
+        "o200k_base": 96.53
+      }
+    },
+    {
+      "id": "skill-known-short-entry",
+      "scope": "Already know a short skill: adding graph discovery is overhead",
+      "beforeParts": 1,
+      "afterParts": 3,
+      "before": {
+        "utf8Bytes": 192,
+        "unicodeCharacters": 192,
+        "sha256": "debfeb7ed10a7dae8b604df1b8beb18ad11bd3b62b2082651b01298b3ba66d13",
+        "tokens": {
+          "cl100k_base": 45,
+          "o200k_base": 45
+        }
+      },
+      "after": {
+        "utf8Bytes": 979,
+        "unicodeCharacters": 979,
+        "sha256": "81d4801fc8f69132e72e224d823868470f83b57c6222a2a26f2c021d47201ba8",
+        "tokens": {
+          "cl100k_base": 249,
+          "o200k_base": 252
+        }
+      },
+      "tokenReductionPercent": {
+        "cl100k_base": -453.33,
+        "o200k_base": -460.0
+      }
+    }
+  ]
+}

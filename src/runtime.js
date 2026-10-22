@@ -18,13 +18,13 @@ function checkRuntime(adapter) {
   return { adapter, executable: r.status === 0, version: r.status === 0 ? r.stdout.trim().slice(0, 200) : null,
     access: 'unknown', checkedAt, resume: false, cancel: true, processTools: adapter === 'claude' };
 }
-function buildArgs(adapter, { modelId, prompt, write = false }) {
+function buildArgs(adapter, { modelId, prompt, write = false, readOnlyTools = false }) {
   if (!ADAPTERS.includes(adapter)) throw new Error('Unsupported adapter');
   if (typeof modelId !== 'string' || !/^[a-zA-Z0-9][\w.:-]{0,120}$/.test(modelId)) throw new Error('Explicit model ID required');
   if (typeof prompt !== 'string' || !prompt.trim() || Buffer.byteLength(prompt) > 128 * 1024) throw new Error('Invalid prompt');
   if (adapter === 'claude') return ['--print', '--model', modelId, '--output-format', 'json', '--no-session-persistence',
     '--permission-mode', write ? 'auto' : 'plan', '--permission-prompts', 'none', '--strict-mcp-config', '--mcp-config', '{"mcpServers":{}}',
-    '--tools', write ? 'Read,Edit,Write,Glob,Grep' : ''];
+    '--tools', write ? 'Read,Edit,Write,Glob,Grep' : readOnlyTools ? 'Read,Glob,Grep' : ''];
   if (write) throw new Error('agy write mode is not verified; use read-only plan tasks');
   return ['--print', prompt, '--model', modelId, '--output-format', 'json', '--mode', 'plan', '--sandbox', '--disable-slash-commands'];
 }
@@ -52,18 +52,18 @@ function runCli(options) {
   if (!Number.isInteger(timeoutMs) || timeoutMs < 100 || timeoutMs > 600000) throw new Error('Invalid timeout');
   if (!workspace || !fs.statSync(workspace).isDirectory()) throw new Error('Workspace required');
   const cwd = fs.realpathSync(workspace), started = Date.now();
-  const wrapped = options.write ? require('./execution-sandbox').wrapExecution(bin, args, { workspace: cwd, write: true }) : null;
+  const wrapped = options.write || options.isolate ? require('./execution-sandbox').wrapExecution(bin, args, { workspace: cwd, write: options.write === true }) : null;
   if (wrapped) bin = wrapped.bin;
   return new Promise(resolve => {
     let stdout = '', stderr = '', reason = null, finished = false;
-    const child = spawn(bin, wrapped ? wrapped.args : args, { cwd, shell: false, detached: process.platform !== 'win32', stdio: ['pipe', 'pipe', 'pipe'] });
+    const child = spawn(bin, wrapped ? wrapped.args : args, { cwd, shell: false, detached: options.detached !== false && process.platform !== 'win32', stdio: ['pipe', 'pipe', 'pipe'] });
     child.stdin.on('error', () => {});
     child.stdin.end(adapter === 'claude' ? options.prompt : '');
     const stop = why => {
       if (finished || reason) return;
       reason = why;
-      try { process.platform === 'win32' ? child.kill('SIGTERM') : process.kill(-child.pid, 'SIGTERM'); } catch {}
-      killTimer = setTimeout(() => { try { process.platform === 'win32' ? child.kill('SIGKILL') : process.kill(-child.pid, 'SIGKILL'); } catch {} }, 2000);
+      try { process.platform === 'win32' || options.detached === false ? child.kill('SIGTERM') : process.kill(-child.pid, 'SIGTERM'); } catch {}
+      killTimer = setTimeout(() => { try { process.platform === 'win32' || options.detached === false ? child.kill('SIGKILL') : process.kill(-child.pid, 'SIGKILL'); } catch {} }, 2000);
       killTimer.unref();
     };
     let killTimer;

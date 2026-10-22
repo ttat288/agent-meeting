@@ -64,6 +64,8 @@ Mở trang chủ trì, mô tả điều cần chốt rồi sao chép lời mời
 | Bất kỳ agent nào chạy được `curl` | Dán lời mời, không cần cấu hình MCP |
 | Agent trên máy khác | Bật tunnel HTTPS tùy chọn và gửi lời mời agent |
 
+Trong checkout hiện tại: `node bin/cli.js doctor` kiểm cấu hình local; `node bin/cli.js skills list` và `skills show agent-meeting` lấy skill họp. Xem [CLI, graph skill và lịch sử có giới hạn](docs/REFERENCE.vi.md#cli-skill-và-lịch-sử-có-giới-hạn). Các lệnh này không sửa settings client.
+
 ### Thử mà không cần model AI
 
 ```bash

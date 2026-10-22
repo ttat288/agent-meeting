@@ -499,3 +499,31 @@ textarea.mono { font: 12.5px/1.6 var(--mono); min-height: 360px; tab-size: 2; wh
 .code4 { font-variant-numeric: tabular-nums; letter-spacing: .08em; color: var(--ink); font-size:var(--text-meta); }
 .person.empty.blocked { border-color: var(--bad, #dc2626); color: var(--bad, #dc2626); justify-content: flex-start; text-align: left; }
 .connlog { font-size:var(--text-code); max-height: 180px; overflow: auto; background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; white-space: pre-wrap; word-break: break-word; margin: 0; }
+
+/* PM supervision shares the session shell and its task/results views. */
+.pm-control { flex:none; padding:8px var(--gutter); background:var(--surface); border-bottom:1px solid var(--line-2); max-height:58dvh; overflow:auto; }
+.pm-summary { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.pm-summary .btn { min-height:36px; }
+.pm-details { margin-top:8px; }
+.pm-details > summary { cursor:pointer; font-weight:600; padding:8px 0; }
+.pm-content { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; padding-top:8px; }
+.pm-content > * { min-width:0; }
+.pm-content form { padding:12px; background:var(--surface-2); border:1px solid var(--line-2); border-radius:var(--r); }
+.pm-content textarea, .pm-content input:not([type=checkbox]) { width:100%; }
+.pm-content input[type=checkbox] { width:22px; height:22px; }
+.pm-content > details { border:1px solid var(--line-2); border-radius:var(--r); padding:12px; }
+.pm-content summary { cursor:pointer; font-weight:600; }
+.pm-instructions, .pm-pending, .pm-progress { grid-column:1/-1; }
+.pm-instructions textarea { font:var(--text-code)/var(--line-code) var(--mono); }
+.pm-messages { max-height:220px; overflow:auto; overflow-wrap:anywhere; padding:12px; background:var(--accent-soft); border-radius:var(--r); }
+.pm-progress { overflow-wrap:anywhere; }
+.pm-progress p { margin:4px 0; }
+.pm-mode #setup { display:none !important; }
+@media(max-width:640px) {
+  .pm-content { grid-template-columns:minmax(0,1fr); }
+  .pm-control { max-height:65dvh; }
+  .pm-summary .btn { min-height:44px; }
+}
+
+.pm-summary { position:sticky; top:-8px; z-index:2; padding:8px 0; background:var(--surface); }
+.pm-mode.pm-lobby[data-session-view=conversation] .pm-control { flex:1; max-height:none; }

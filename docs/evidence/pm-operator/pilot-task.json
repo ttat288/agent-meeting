@@ -1,0 +1,42 @@
+{
+  "id": "runtime-evidence",
+  "goal": "Repair runtime cost and model evidence parsing without changing successful-result behavior or public contracts.",
+  "observed": "Local repro: total_cost_usd=-2 survives as costUsd=-2; modelUsage with two entries plus model=expected returns expected. No production incident established.",
+  "acceptance": [
+    "Finite nonnegative numeric costs, including zero, survive; negative, missing and nonnumeric costs stay unknown (null).",
+    "Multiple modelUsage entries must remain ambiguous (unknown), even when model is set. One usage entry is authoritative; absent usage may use explicit model.",
+    "Existing runtime tests pass, test sources and unrelated files unchanged; report limitations and evidence."
+  ],
+  "writePaths": [
+    "src/runtime.js"
+  ],
+  "testFiles": [
+    "test/runtime.test.js",
+    "test/pm-pilot-acceptance.test.js"
+  ],
+  "baseRevision": "e292fd3833d65152ebfa6133fc27a67285b6cab9",
+  "sources": [
+    "AGENTS.md",
+    "docs/HANDOFF.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "docs/SECURITY-DESIGN.md",
+    "src/runtime.js",
+    "test/runtime.test.js",
+    "test/pm-pilot-acceptance.test.js"
+  ],
+  "rules": [
+    "Only change src/runtime.js. No commit/push/install/deploy/global settings/port3000/secrets.",
+    "Use native coding context and tools within the same scope; no paid subagents or extra models.",
+    "Run supplied tests and inspect the diff; give one concise result/evidence/limitations report. No mandatory questions per tool.",
+    "No hidden answer, solution patch or output from the other arm is available. Do not read the other arm."
+  ],
+  "limits": {
+    "writerAttempts": 1,
+    "technicalRetries": 0,
+    "fixLoops": 0,
+    "writerTimeoutMs": 120000,
+    "testTimeoutMs": 30000,
+    "concurrency": 1
+  }
+}

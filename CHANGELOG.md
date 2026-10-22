@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased — PM operator
+
+- Checkpoints accept an optional structured continuation delta for failed attempts and blockers. Omitted records remain unknown; the local canonical carry experiment checks revisions/source/WIP and measures transport overhead without enabling a controller or making model-cost claims.
+
+- Workspace chưa release: PM chờ sự kiện bằng client code; lead capability riêng, plan/readiness approval và same-slot managed swap có checkpoint/ACK/process lifecycle. Một task/slot A, Linux/bwrap, tích hợp một file; fixture có evidence, chưa nghiệm thu model thật/UI team hoặc chi phí. Giữ mọi thay đổi chưa commit.
+
+- Choose human or agent chair; dedicated local PM invitation/confirmation and private director channel.
+- Scoped goal/grant and canonical task/run lifecycle through independent verification, single-file integration and evidence report; pause/revoke/takeover and stale goal/lease guards.
+- No automatic model launch or spend; real-model UX, usage and billing comparison remain unverified.
+- Optional PM state/wait cursor avoids repeated snapshots and waits for changes already received; no billing savings claim.
+
+## Chưa phát hành — CLI, skill graph và context
+
+- `doctor` chỉ đọc, ẩn địa chỉ/mã phòng; phân biệt có executable/bridge với kết nối và quyền model thực tế.
+- `skills list/show/inspect`: skill Agent Meeting đóng gói và catalog local có giới hạn; graph liên kết thật tới references/scripts/assets, hash nguồn, đọc từng tài liệu theo nhu cầu. Không tự cài skill, chạy script hoặc sửa settings.
+- `history(offset, limit, maxChars)` phân trang theo tin được phép xem, giữ tin nguyên vẹn và cursor wait; lời gọi cũ vẫn trả toàn bộ. Sửa diễn đạt chi phí long-poll; có benchmark tokenizer local và cả ca overhead.
+
 ## Chưa phát hành — logo Briefcase
 
 - Thay Convergence bằng icon cặp công sở từ SVG người dùng chọn; đồng bộ README Anh/Việt, favicon/header, bộ SVG/PNG/ICO/ICNS.

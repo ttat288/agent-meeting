@@ -1,0 +1,20 @@
+{
+  "directory": "/tmp/am-pm-pilot-bh1LIJ",
+  "baseRevision": "e292fd3833d65152ebfa6133fc27a67285b6cab9",
+  "sourceDigest": "c3d6bced453a2c6a6247028b523878250de1c609af0cb52d1909ea3a0ad43e0e",
+  "taskDigest": "a67ebf7000860fa0dba699d543138c0b1173a59be51c2b3ae90b8b5d2b2c0653",
+  "files": 303,
+  "acceptance": {
+    "path": "test/pm-pilot-acceptance.test.js",
+    "sha256": "dd3558b1735ac9f11974c3c37a95062cb471be478e55e1c0dc1b3e6220526736"
+  },
+  "verifiedEqualCopies": true,
+  "preflightMutatedInput": false,
+  "modelCalls": 0,
+  "executionAuthorized": false,
+  "preparationElapsedMs": 242,
+  "failuresBeforeFix": 2,
+  "failure": "Untrimmed git revision; fixed before freezing successful input.",
+  "humanPreparationMs": null,
+  "preparationCostUsd": null
+}

@@ -1,0 +1,100 @@
+{
+  "schema": "agent-meeting/pm-pilot-ledger@1",
+  "inputDigest": "c3d6bced453a2c6a6247028b523878250de1c609af0cb52d1909ea3a0ad43e0e",
+  "taskDigest": "a67ebf7000860fa0dba699d543138c0b1173a59be51c2b3ae90b8b5d2b2c0653",
+  "authorization": {
+    "granted": false,
+    "model": null,
+    "cliVersion": null,
+    "profileId": "opus-claude",
+    "budgetUsd": null,
+    "monetaryHardCap": false
+  },
+  "order": [
+    "direct",
+    "pm"
+  ],
+  "primaryThresholdPercent": 20,
+  "secondaryIncreaseLimitPercent": 10,
+  "sharedSetup": {
+    "humanActiveMs": null,
+    "elapsedMs": 242,
+    "decisions": null,
+    "maintenanceMs": null,
+    "usage": null,
+    "costUsd": null,
+    "provenance": null
+  },
+  "runs": [
+    {
+      "id": "runtime-evidence-direct-01",
+      "arm": "direct",
+      "status": "not-run",
+      "inputDigest": "c3d6bced453a2c6a6247028b523878250de1c609af0cb52d1909ea3a0ad43e0e",
+      "taskDigest": "a67ebf7000860fa0dba699d543138c0b1173a59be51c2b3ae90b8b5d2b2c0653",
+      "requestedModel": null,
+      "actualModels": null,
+      "cliVersion": null,
+      "quality": {
+        "acceptance": null,
+        "regression": null,
+        "scope": null,
+        "review": null,
+        "artifacts": []
+      },
+      "elapsedMs": null,
+      "director": {
+        "activeMs": null,
+        "actions": null,
+        "decisions": null,
+        "events": []
+      },
+      "setup": {
+        "elapsedMs": null,
+        "directorActiveMs": null
+      },
+      "recoveryMs": null,
+      "maintenanceMs": null,
+      "calls": [],
+      "completeCallInventory": false,
+      "totalCostUsd": null,
+      "costProvenance": null,
+      "notes": []
+    },
+    {
+      "id": "runtime-evidence-pm-01",
+      "arm": "pm",
+      "status": "not-run",
+      "inputDigest": "c3d6bced453a2c6a6247028b523878250de1c609af0cb52d1909ea3a0ad43e0e",
+      "taskDigest": "a67ebf7000860fa0dba699d543138c0b1173a59be51c2b3ae90b8b5d2b2c0653",
+      "requestedModel": null,
+      "actualModels": null,
+      "cliVersion": null,
+      "quality": {
+        "acceptance": null,
+        "regression": null,
+        "scope": null,
+        "review": null,
+        "artifacts": []
+      },
+      "elapsedMs": null,
+      "director": {
+        "activeMs": null,
+        "actions": null,
+        "decisions": null,
+        "events": []
+      },
+      "setup": {
+        "elapsedMs": null,
+        "directorActiveMs": null
+      },
+      "recoveryMs": null,
+      "maintenanceMs": null,
+      "calls": [],
+      "completeCallInventory": false,
+      "totalCostUsd": null,
+      "costProvenance": null,
+      "notes": []
+    }
+  ]
+}

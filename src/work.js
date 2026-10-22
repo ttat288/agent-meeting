@@ -69,13 +69,14 @@ function checkTask(d) {
   if (!d.acceptance.length || d.acceptance.some(x => !x.trim())) throw failure('Acceptance criteria required');
   if (d.writePaths.some(p => !relative(p)) || d.testFiles.some(p => !relative(p) || !/\.test\.js$/.test(p))) throw failure('Invalid write/test paths');
   if (d.testFiles.some(t => d.writePaths.some(w => t === w || t.startsWith(w + '/')))) throw failure('Verification tests must be outside agent write scope');
+  if (d.risk !== undefined && !['low','medium','high'].includes(d.risk)) throw failure('Invalid risk');
   routing.validateTask(d);
   return d;
 }
 const ADAPTER_FOR = { 'claude-code': 'claude', agy: 'agy' };
 class WorkManager {
   constructor({ dir, configStore, runner = runtime.runCli }) {
-    this.dir = path.resolve(dir); this.configStore = configStore; this.runner = runner; this.active = new Map();
+    this.dir = path.resolve(dir); this.configStore = configStore; this.runner = runner; this.active = new Map(); this.pending = new Set();
     this.store = new ConfigStore({ dir: this.dir, defaults: () => ({ schema: 'agent-meeting/work@1', revision: 1, tasks: [], runs: [], observations: [] }),
       validate: d => { if (d.schema !== 'agent-meeting/work@1' || !['tasks','runs','observations'].every(k => Array.isArray(d[k]))) throw failure('Invalid work data'); } });
     // A restarted server cannot prove that the old external process stopped. Never automatically reassign it.
@@ -140,7 +141,7 @@ class WorkManager {
     const state = this.read();
     if (state.runs.some(r => r.taskId === id && ['running','verifying','integrating','interrupted'].includes(r.status))) throw failure('Cancel or reconcile the existing run before changing execution requirements', 409);
     const next = copy(task);
-    for (const key of ['purpose','topology','management','acceptance','dependencies','writePaths','testFiles','sources','facts','unknowns','workspace','baseRevision']) if (input[key] !== undefined) next[key] = copy(input[key]);
+    for (const key of ['risk','purpose','topology','management','acceptance','dependencies','writePaths','testFiles','sources','facts','unknowns','workspace','baseRevision']) if (input[key] !== undefined) next[key] = copy(input[key]);
     checkTask(next);
     if (next.dependencies.some(dep => dep === id || !state.tasks.some(t => t.id === dep))) throw failure('Unknown or self dependency');
     // Reject cycles, including those introduced by editing an existing plan.
@@ -173,7 +174,7 @@ class WorkManager {
     const observations = observationStore(this.configStore), current = observations.read(); current.observations = current.observations.filter(o => o.profileId !== p.id); current.observations.push(observed); observations.save(current, current.revision);
     return observed;
   }
-  start(taskId, profileId) {
+  start(taskId, profileId, managed = {}) {
     if (this.active.size) throw failure('A run is active; finish or cancel it first', 409);
     this.assertCurrent(taskId);
     const state = this.read(), task = state.tasks.find(t => t.id === taskId);
@@ -204,7 +205,7 @@ class WorkManager {
     const controller = new AbortController(); this.active.set(id, controller);
     const prompt = JSON.stringify({ id: task.id, objective: task.goal, context: task.context || '', origin: task.origin || null, scope: task.writePaths, acceptance: task.acceptance, sources: task.sources, facts: task.facts, unknowns: task.unknowns, baseRevision,
       rules: ['Work only in the supplied copy.', 'Only modify the listed paths.', 'Do not commit, push, deploy, read secrets or edit credentials/settings.', 'Return changed files and evidence; completion requires independent verification.'], timeoutMs: 120000 });
-    Promise.resolve().then(() => this.runner({ adapter, modelId: m.providerModelId, prompt, workspace, write: task.writePaths.length > 0, timeoutMs: 120000, signal: controller.signal })).then(result => {
+    const pending = Promise.resolve().then(() => (managed.runner || this.runner)({ adapter, modelId: m.providerModelId, prompt, workspace, write: task.writePaths.length > 0, timeoutMs: 120000, signal: controller.signal })).then(result => {
       const after = inventory(workspace), diff = changes(before, after);
       const outside = diff.filter(c => !task.writePaths.some(w => c.file === w || c.file.startsWith(w + '/')));
       this.update(d => { const r = d.runs.find(r => r.id === id);
@@ -213,7 +214,8 @@ class WorkManager {
           exitCode: result.exitCode, changes: diff, finishedAt: new Date().toISOString() });
         d.tasks.find(t => t.id === taskId).status = r.status === 'reported' ? 'verifying' : r.status;
       });
-    }).catch(e => { this.update(d => { const r = d.runs.find(r => r.id === id); r.status = 'failed'; r.error = e.message; d.tasks.find(t => t.id === taskId).status = 'failed'; }); }).finally(() => this.active.delete(id));
+    }).catch(e => { this.update(d => { const r = d.runs.find(r => r.id === id); r.status = 'failed'; r.error = e.message; d.tasks.find(t => t.id === taskId).status = 'failed'; }); }).finally(() => { this.active.delete(id); managed.settled?.(id); this.pending.delete(pending); });
+    this.pending.add(pending);
     return copy(run);
   }
   rebase(id) {
@@ -336,7 +338,7 @@ class WorkManager {
     } finally { if (this.active.get(id) === controller) this.active.delete(id); }
     return this.read().runs.find(r => r.id === id);
   }
-  close() { for (const controller of this.active.values()) controller.abort(); }
+  close() { for (const controller of this.active.values()) controller.abort(); return Promise.allSettled([...this.pending]); }
 }
 function atomicReplace(target, bytes, mode = 0o600) {
   const tmp = target + '.' + crypto.randomUUID() + '.tmp';
@@ -379,4 +381,4 @@ function runTest(workspace, file, signal, isolate = false) {
     child.on('error', e => done(null, e)); child.on('close', code => done(code));
   });
 }
-module.exports = { WorkManager, checkTask, inventory, changes, safeFile, runTest };
+module.exports = { WorkManager, checkTask, inventory, sourceInventory, changes, safeFile, runTest };

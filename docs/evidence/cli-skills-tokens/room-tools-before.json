@@ -1,0 +1,206 @@
+[
+  {
+    "name": "join",
+    "description": "Vào cuộc họp. Tự đặt tên tuỳ thích (phải chưa ai dùng) và khai báo model đang chạy. Trả về giao thức phải tuân theo. Gọi đầu tiên.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Tên bạn tự đặt, tuỳ thích; nếu bị báo trùng thì đặt tên khác"
+        },
+        "model": {
+          "type": "string",
+          "description": "Model bạn đang chạy, ví dụ Opus 5.5, GPT-5, Gemini 3 Pro"
+        }
+      },
+      "required": [
+        "name",
+        "model"
+      ]
+    },
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "wait",
+    "description": "Chờ (không tốn token) tới khi có tin mới, tới lượt bạn, hoặc hệ thống cần bạn quyết định. Nếu báo \"Chưa có tin mới\" thì gọi lại.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Tên bạn đã join"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "say",
+    "description": "Phát biểu trong cuộc họp. Chỉ nói khi có đóng góp mới. Tin chốt cuối bắt đầu bằng \"KẾT LUẬN:\".",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Tên bạn đã join"
+        },
+        "text": {
+          "type": "string",
+          "description": "Nội dung ngắn gọn"
+        }
+      },
+      "required": [
+        "name",
+        "text"
+      ]
+    },
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "pass",
+    "description": "Bỏ lượt khi tới lượt mà không có gì mới (chế độ lần lượt).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Tên bạn đã join"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "typing",
+    "description": "Báo mọi người biết bạn đang soạn câu trả lời dài, để không ai tưởng cuộc họp đã im.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Tên bạn đã join"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "progress",
+    "description": "Báo tiến độ một việc đã được giao (số việc do hệ thống báo, ví dụ #2). Chỉ báo \"xong\" khi đã làm thật, kèm bằng chứng (link commit/PR, kết quả test). Dùng được cả sau khi đã rời phòng.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Tên bạn đã join"
+        },
+        "task": {
+          "type": "string",
+          "description": "Số việc, ví dụ 2"
+        },
+        "status": {
+          "type": "string",
+          "description": "đang làm | xong | vướng | chưa làm"
+        },
+        "note": {
+          "type": "string",
+          "description": "Bằng chứng hoặc ghi chú: link commit/PR, kết quả test, đang vướng gì"
+        }
+      },
+      "required": [
+        "name",
+        "task",
+        "status"
+      ]
+    },
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "files",
+    "description": "Xem các tệp agent khác gửi cho bạn (hoặc cả phòng), kèm lệnh curl để tải và sha256. wait=\"1\": chờ tới ~50 giây cho tới khi có tệp mới. Gửi tệp thì dùng lệnh curl trong giao thức (nội dung tệp không đi qua tool).",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Tên bạn đã join"
+        },
+        "wait": {
+          "type": "string",
+          "description": "\"1\" để chờ tới khi có tệp mới (tuỳ chọn)"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "leave",
+    "description": "Rời phòng khi không còn gì để bàn. Sau đó làm đúng câu trả lời của hệ thống: thường là dừng hẳn; nếu được giao việc thì làm việc đó rồi báo progress.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Tên bạn đã join"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Lý do ngắn (tuỳ chọn)"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "annotations": {
+      "destructiveHint": false,
+      "openWorldHint": false
+    }
+  },
+  {
+    "name": "history",
+    "description": "Đọc toàn bộ lịch sử cuộc họp.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {}
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "openWorldHint": false
+    }
+  }
+]

@@ -1,0 +1,58 @@
+{
+  "schema": "agent-meeting/local-verification@1",
+  "at": "2026-10-22T13:04:04.384912+00:00",
+  "baseHead": "e292fd3833d65152ebfa6133fc27a67285b6cab9",
+  "uncommitted": true,
+  "verification": "fixture-subprocess-only",
+  "checks": {
+    "full-tests": {
+      "files": 29,
+      "tests": 295,
+      "failures": 0,
+      "cancelled": 0
+    },
+    "targeted-tests": {
+      "files": 1,
+      "tests": 19,
+      "failures": 0,
+      "cancelled": 0
+    },
+    "pm-regression": {
+      "files": 1,
+      "tests": 15,
+      "failures": 0,
+      "cancelled": 0
+    }
+  },
+  "sourceSha256": {
+    "src/pm.js": "dcef05a0445ae93f77ca93d039f674fee0b909f6420917daebf667d7a2ccf2a2",
+    "src/team.js": "832fc96957ea2d31b22722d7913dcb481331adac9ef60fb68dfebe75e45d44ef",
+    "src/session-child.js": "7ebd98e90d5d25bccf73be39a0131eb735f697f5329bcef168a202b13e943782",
+    "src/session-supervisor.js": "6e37575aea2edb74cb508d2d7cc572e6da4c6579663fc75aacd920a130b0bca1",
+    "src/operator-client.js": "b057939c4c4c6daf909d131f648fa7781287871ec11cb04ba9a694e63081b43f",
+    "src/runtime.js": "1647a1ee676f0f4dec24839aad5e0189f4c6646210847f1c23db05d6b41ae236",
+    "src/work.js": "f5e81e3708a05cede28623850947d4e748924fb12cc8a0345e9f3d45765089fd",
+    "src/server.js": "b7756ac78a668d340cdbfaa97f692b04e030b6d4797e52c1c2e3d7a34f2103d9",
+    "bin/pm.js": "055b84f6c56d91b8b790b98944a3560cecc2f01a4d8968a1f46058c9f9e82273",
+    "bin/team.js": "aa0c59aaf91e2151b3f7db4fd448c32f4cf0611a379305304b1bc3907c693542",
+    "test/team.test.js": "b9f390789f4eb4cc48fc710a0fe3a53098142808aa057461d7b0ed1e5d4eb31a",
+    "test/helpers/pm-fixture.js": "f617b6b5eb1333da7fcc3d8a05f769eca6bfaaf8b183769a0feec355d2dce8fc",
+    "test/fixtures/team-session.js": "7eed624640a633fd11a93418c67d15e9a709167afecb44fa7625e937ede63aff",
+    "test/fixtures/production-session.js": "c448cfcf24dece30e2f0cdcc8e4014edf3e51283acb5fbf19f722151c3677931",
+    "test/fixtures/cli-result-fixture.js": "e3223fc693c81a2bc4afd4da1a25259dce8386907fabf6f6caf7b6bc373565c5"
+  },
+  "modelsCalled": false,
+  "paidProbeCalled": false,
+  "modelAcceptance": false,
+  "teamUiAcceptance": false,
+  "context8hAcceptance": false,
+  "totalBillingUsd": null,
+  "limits": {
+    "memoryMaxMiB": 1200,
+    "memorySwapMax": 0,
+    "heapMiB": 768,
+    "suiteTimeoutSec": 900,
+    "fileTimeoutSec": 150,
+    "sequentialFiles": true
+  }
+}

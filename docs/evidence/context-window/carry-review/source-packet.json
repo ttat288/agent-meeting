@@ -1,0 +1,186 @@
+{
+  "schema": "agent-meeting/readonly-review-packet@1",
+  "baseHead": "e292fd3833d65152ebfa6133fc27a67285b6cab9",
+  "workspace": "/home/theo/workspace/agent-meeting",
+  "dirty": true,
+  "task": "Context metrics and no-extra-summary carry feasibility, read-only review only",
+  "proposal": "# Review packet — context metric và kế thừa bằng dữ liệu, 2026-10-22\n\nTrạng thái: đề xuất chờ phản biện CLI; không tự xem fixture là nghiệm thu model. Người dùng đã cho phép hai lượt review chỉ đọc: Antigravity/Gemini Flash3.8 (trả phí, giao kiểm kê dữ kiện) và có thể thử Claude (giao phản biện thiết kế). Không retry/probe model riêng, không đổi global settings/config catalog, không commit/push hoặc đụng3000/bản cài local. Runtime đã kiểm executable/version: agy1.4.3, Claude Code2.1.289; quyền model vẫn unknown cho tới invocation thực. `agy models` chỉ liệt kê ID, không là model probe: Flash có low/medium/high. Chọn `gemini-3.8-flash-low` cho extraction, Claude native `claude-opus-5-5` theo machine evidence lịch sử trong repo, không hứa access hiện tại. Không chọn model khác hoặc retry nếu fail. Không có hard USD cap; usage/cost unknown phải ghi null, hai invocation không là hai provider request.\n\n## Mục tiêu review\n\nNgười dùng muốn agent không mất mạch khi context gần đầy, giữ được task/WIP/decisions/evidence qua swap, và tránh gọi model chỉ để nhắc lại log. Chấp nhận nghiên cứu hướng khả thi, không hứa “0 token” hoặc context không tăng. Câu hỏi cần kết luận: có thể dựng capsule từ canonical tool state mà không gọi CLI model tóm tắt lại không; còn dữ liệu nào phải ghi trong lúc làm, không thể suy từ task done; đo và đối chứng thế nào trước tự động hóa?\n\n## Source facts đã kiểm (cần reviewer tự đối chiếu packet source)\n\n- `tools/measure-context-window.js` chỉ phân tích trace offline, current input/cache/percentage, null/mismatch giữ unknown. Không collector hoặc controller dự báo. Context resident/usage/billing khác nhau.\n- `src/team.js` checkpoint giữ goal/plan/task revision, snapshot/WIP, acceptance/scope; vẫn yêu cầu agent cung cấp `decisions`, `unknowns`, `next`. `contextFor` chỉ bỏ snapshot full, không tự tạo semantic summary từ task log.\n- `src/work.js` giữ task/run/result/diff/tests và integrate evidence. Báo reported chưa là verified/integrated. Task status không bao phủ mọi constraint, rejected alternatives, failed attempts hay reasoning chưa được ghi.\n- `src/session-child.js` gọi model một lần bootstrap read-only ACK và một lần activate. Claude args `--no-session-persistence`: bootstrap không truyền native model history sang activation; activation nạp lại checkpoint trong prompt. Tính cả hai invocation/token/cache/latency. ACK hash không chứng minh hiểu semantic.\n- Swap/manual/runtime-request có fixture subprocess và full suite295/29 tại lượt trước. Chưa model context telemetry/auto-trigger/8h. Review lần này không là benchmark thực thi task/retention.\n\n## Phương án để phản biện (chưa build)\n\n1. App dựng **phần đã ghi nhận** bằng code từ canonical task/run/decision/evidence references, gắn revision/hash/actor/generation. Không gọi model để tóm tắt lại dữ kiện đã có. State có status thực; không biến lời done thành verified. Capsule không bao gồm private PM transcript hoặc credential.\n2. Agent ghi delta rất nhỏ tại mốc cần thiết: quyết định/ràng buộc mới, lý do có ý nghĩa, phương án thất bại cần tránh, blocker/WIP không thể suy từ artifact, bước tiếp. Tận dụng output đang phải trả; tránh thêm lượt model chuyên tóm tắt. Metadata output và successor đọc vẫn tốn token, tính đủ; thiếu delta thì unknown/block, không tự bịa nội dung.\n3. Snapshot/evidence bên ngoài model không đồng nghĩa đã có trong context successor. Bootstrap phần tối thiểu + truy hồi có giới hạn theo task/source hash, có đường lấy phần thiếu; chống stale và replay. Giữ cùng slot và single writer. Không tự xây memory engine/embedding/vector DB.\n4. Collector một adapter trước, không gọi model đo chính mình. Dự báo dùng telemetry mới + input app biết + upper error margin/headroom để checkpoint; freeze schema/clock/capacity/model/version. Không cộng tổng billing để tính context; không ngưỡng80% phổ quát. Thiếu/stale telemetry không được tự suy là an toàn. Dùng shadow mode trước controller.\n5. Benchmark đối chứng direct CLI native context/compaction mạnh, cùng task/source/acceptance/quyền/model/version, không nhồi history để ép baseline thua. Kiểm end-to-end quality/WIP/decisions/source sau swap; tính PM/lead/worker/notes/bootstrap/retrieval/compaction/retry/cache/tool overhead/công người dùng. Không đo riêng payload rồi claim billing.\n\n## Metric cần ghi\n\n- Observation: nguồn/schema/CLI version/model/session/generation, timestamp + freshness, sample coverage, unknown/mismatch, peak observed context; khoảng chưa đo không được bảo đảm.\n- Forecast: forecast trước bước, actual tại cùng semantic boundary, underprediction distribution/maximum/exceedance, interval coverage. Không chọn P95/P99 tin cậy trên vài mẫu; cỡ mẫu/CI và workload phải công khai. Telemetry thiếu actual thì forecast error=null.\n- Recovery: checkpoint coverage của must-preserve facts với gold oracle độc lập, missing-critical-fact, repeated/forgotten work, unauthorized/stale write, đủ headroom bàn giao, source tests, swapped generations, recovery latency. Fact chỉ check có key là structural coverage, không semantic retention.\n- Cost: số lần gọi model dành riêng để summary/collector; token/duration/cost mọi actor + startup/ACK/rehydrate/tool/cache, setup/phục hồi, unknown tách0. “Assembler model calls=0” không là total tokens=0.\n- Outcome: chất lượng task như baseline; swap late/avoidable, success rate và sample count.8h chỉ được nói khi chạy workload thật8h, không simulated/replay.\n\n## Phép thử local đã chạy\n\n`benchmark-local.js` dựng capsule thử nghiệm bằng code từ evidence export fixture đã có.5 invariant đạt; assembler model calls0; capsule1154 byte so projection dữ kiện đã biết660 byte (**thêm494 byte**). Export đầy đủ6456 byte là baseline transport yếu, không là CLI benchmark. Export thiếu4 trường metadata cho kế thừa (decision/unknown/base/requirement revision); code báo thiếu và không tự nhận ready. Đây là **export evidence thiếu**, không chứng minh live work store thiếu hết các trường tương ứng. Không có actual token/context/billing/model semantic quality; mọi trường đó null. Không biến local experiment thành runtime đã tích hợp.\n\n## Output yêu cầu\n\nFlash: chỉ trả bảng facts/evidence/source location/missing/conflicts, tối đa12 dòng; không chốt kiến trúc hoặc dự báo mô hình. Claude: verdict feasible/conditional/not-feasible + blocker thực tế, sửa phương án nhỏ nhất, metric/oracle/baseline, tiêu chí dừng; kiểm cả overhead/bước ACK. Tối đa900 từ, không dùng tool/mạng/subagent, không sửa file, không gọi model khác, không commit/push. Không coi quan điểm reviewer là facts cho tới đối chiếu source. Nếu thiếu bằng chứng, nêu unknown, không hứa0 token/8h.\n",
+  "sources": [
+    {
+      "path": "src/team.js",
+      "sha256": "832fc96957ea2d31b22722d7913dcb481331adac9ef60fb68dfebe75e45d44ef",
+      "excerpts": [
+        {
+          "start": 12,
+          "end": 23,
+          "text": "12:     const p = pm.read();\n13:     if (p?.team) pm.update(p => { p.team.tokenHash = null; p.team.status = 'suspended'; p.team.approval = null; if (p.team.swap && !['completed','failed'].includes(p.team.swap.status)) p.team.swap.status = 'interrupted'; });\n14:   }\n15:   get() { return this.pm.read()?.team; }\n16:   contextFor(checkpoint) {\n17:     if (!checkpoint) return null;\n18:     const { snapshot, ...context } = checkpoint;\n19:     return { ...context, inputSnapshotHash: digest(snapshot) };\n20:   }\n21:   safe() {\n22:     const t = this.get(); if (!t) return null;\n23:     const { tokenHash, ...safe } = t; return { ...safe, ...(t.checkpoint ? { checkpoint: this.contextFor(t.checkpoint) } : {}) };"
+        },
+        {
+          "start": 123,
+          "end": 134,
+          "text": "123:       if (events.length) return { events, goalRevision: p.goalRevision, planRevision: t.planRevision, status: t.status };\n124:       if (Date.now() >= until) return { events: [], waiting: true, status: t.status };\n125:       await new Promise(r => setTimeout(r, 100));\n126:     } while (!this.closed);\n127:     fail('Operator closed');\n128:   }\n129:   ack(input) {\n130:     const { t } = this.valid(); const e = t.events.find(e => e.id === input.eventId);\n131:     if (!e || e.goalRevision !== input.goalRevision || e.planRevision !== t.planRevision) fail('Event is stale or unknown');\n132:     this.pm.update(p => { p.team.events.find(x => x.id === e.id).acked = true; }); return { ok: true, eventId: e.id };\n133:   }\n134:   async execute(options) {"
+        },
+        {
+          "start": 157,
+          "end": 180,
+          "text": "157:         const runtimeGeneration = this.get().generation;\n158:         const result = await this.supervisor.activate(session);\n159:         const t = this.get();\n160:         this.work.update(d => { const r = d.runs.find(r => r.id === t?.runId); if (r) { const entry = r.sessions.find(x => x.kind === 'execution' && x.generation === runtimeGeneration); if (entry) Object.assign(entry, { reportedModel: result.reportedModel || 'unknown', status: this.live?.replacement ? 'superseded' : result.status, usage: result.usage ?? null, costUsd: result.costUsd ?? null, finishedAt: Date.now() }); } });\n161:         if (this.live?.replacement) {\n162:           const replacement = this.live.replacement;\n163:           if (replacement.waiting) await new Promise(resolve => { replacement.release = resolve; });\n164:           if (replacement.failed) return { status: 'interrupted', reportedModel: 'unknown', error: 'Swap failed after writer quiesce; reconcile required' };\n165:           session = replacement.session; this.live = { session, options: replacement.options }; continue;\n166:         }\n167:         // Whole-run billing cannot be inferred from only the final CLI. Keep each\n168:         // invocation's observations, including killed epochs with unknown usage.\n169:         const entries = this.work.read().runs.find(r => r.id === t?.runId)?.sessions || [];\n170:         const totalCost = entries.length && entries.every(x => Number.isFinite(x.costUsd) && x.costUsd >= 0) ? entries.reduce((n,x) => n + x.costUsd, 0) : null;\n171:         return { ...result, status: options.signal?.aborted ? 'cancelled' : result.status, costUsd: totalCost, usage: null, elapsedMs: Date.now() - startedAt };\n172:       }\n173:     } catch (e) { await this.supervisor.stop(session); return { status: options.signal?.aborted ? 'cancelled' : 'failed', reportedModel: 'unknown', error: e.message }; }\n174:     finally { options.signal?.removeEventListener('abort', abort); this.live = null; }\n175:   }\n176:   start() {\n177:     const { p, t, g } = this.valid();\n178:     const previousRun = this.work.read().runs.find(r => r.id === t.runId);\n179:     const retry = t.status === 'working' && previousRun && ['failed','timeout','output-limit'].includes(previousRun.status) && !this.work.active.size;\n180:     if ((!retry && t.status !== 'ready') || !t.approval || t.approval.planRevision !== t.planRevision) fail('PM must approve this plan revision');"
+        },
+        {
+          "start": 197,
+          "end": 215,
+          "text": "197:   checkpoint(input) {\n198:     const { t, g } = this.valid(), run = this.work.read().runs.find(r => r.id === t.runId);\n199:     if (!run || run.status !== 'running' || !this.live || t.swap && !['completed','failed'].includes(t.swap.status)) fail('A live managed writer and no pending swap are required');\n200:     this.work.assertCurrent(run.taskId, run.requirementRevision);\n201:     if (input.taskId !== run.taskId || input.requirementRevision !== run.requirementRevision || input.planRevision !== t.planRevision || input.baseRevision !== run.baseRevision) fail('Checkpoint revisions do not match');\n202:     if (changes(run.before, require('./work').sourceInventory(run.source)).length) fail('Source changed before checkpoint');\n203:     const snapshot = inventory(run.workspace);\n204:     if (changes(run.before, snapshot).some(c => !g.writePaths.some(w => c.file === w || c.file.startsWith(w + '/')))) fail('Checkpoint contains changes outside scope');\n205:     const wip = changes(run.before, snapshot);\n206:     if (wip.length > 1) fail('This execution lane supports a single changed file; reconcile multi-file WIP manually');\n207:     const data = { schema: 'agent-meeting/checkpoint@1', revision: (t.checkpoint?.revision || 0) + 1, wip, goalRevision: t.goalRevision, planRevision: t.planRevision, taskId: run.taskId, requirementRevision: run.requirementRevision, runId: run.id, slot: t.slot, generation: t.generation + 1, baseRevision: run.baseRevision, workspace: run.workspace, snapshot, acceptance: this.pm.read().acceptance, scope: g.writePaths,\n208:       decisions: this.pm.text(input.decisions, 8000), unknowns: this.pm.text(input.unknowns, 4000), next: this.pm.text(input.next, 4000), evidence: run.evidence || [], at: this.pm.now() };\n209:     const checkpoint = { ...data, hash: digest(data) };\n210:     this.pm.update(p => { p.team.checkpoint = checkpoint; }); return checkpoint;\n211:   }\n212:   async swap(input, { internal = false } = {}) {\n213:     const { t, g } = this.valid(), c = t.checkpoint;\n214:     if (this.pending || t.swap && !['completed','failed'].includes(t.swap.status) || !this.live || !c || c.hash !== input.checkpointHash || c.generation !== t.generation + 1 || c.planRevision !== t.planRevision || t.status !== 'working' || t.swapsUsed >= g.team.maxSwaps) fail('Invalid/stale checkpoint or swap cap');\n215:     if (!g.team.profiles.includes(input.profileId)) fail('Successor model/profile is outside allowlist');"
+        },
+        {
+          "start": 229,
+          "end": 248,
+          "text": "229:     this.pm.update(p => { p.team.swapsUsed++; p.team.swap = { id: crypto.randomUUID(), status: 'preparing', checkpointHash: c.hash, generation: c.generation, model: profile.m.providerModelId }; });\n230:     this.work.update(d => { d.runs.find(r => r.id === c.runId).sessions.push({ generation: c.generation, model: profile.m.providerModelId, reportedModel: 'unknown', kind: 'bootstrap', status: 'preparing', usage: null, costUsd: null, checkpointHash: c.hash }); });\n231:     const old = this.live, nextOptions = { ...old.options, adapter: profile.adapter, modelId: profile.m.providerModelId, prompt: JSON.stringify({ purpose: 'continue-same-slot', checkpoint: this.contextFor(c), runtimeControl: { ...JSON.parse(old.options.prompt).runtimeControl, profileId: input.profileId }, runtimeInstruction: JSON.parse(old.options.prompt).runtimeInstruction, rules: ['Preserve WIP, acceptance and scope.', 'Do not commit, push, deploy or change settings.', 'Return changes and evidence for independent verification.'] }) };\n232:     let pending, fence = false;\n233:     try {\n234:       const { signal } = nextOptions;\n235:       pending = this.supervisor.open(nextOptions, this.contextFor(c)); this.pending = pending;\n236:       const ready = await pending.ready;\n237:       if (ready.checkpointHash !== c.hash || ready.generation !== c.generation || ready.model !== profile.m.providerModelId) fail('Successor acknowledgement mismatch');\n238:       this.work.update(d => { const entry = d.runs.find(r => r.id === c.runId).sessions.find(x => x.kind === 'bootstrap' && x.checkpointHash === c.hash); Object.assign(entry, { status: 'ready', reportedModel: ready.model, usage: ready.usage ?? null, costUsd: ready.costUsd ?? null }); });\n239:       this.valid();\n240:       if (!sourceCurrent() || this.live !== old || old.session.stopped || signal?.aborted || digest(inventory(c.workspace)) !== digest(c.snapshot) || this.get().checkpoint.hash !== c.hash) fail('Writer/checkpoint changed during successor readiness');\n241:       this.pm.update(p => { p.team.swap.status = 'quiescing'; });\n242:       // Set the handoff fence before awaiting exit; the run loop must not report\n243:       // the intentionally cancelled old generation as a terminal task result.\n244:       old.replacement = { session: pending, options: nextOptions, waiting: true }; fence = true;\n245:       const stopped = await this.supervisor.stop(old.session);\n246:       this.work.update(d => { const entry = d.runs.find(r => r.id === c.runId).sessions.find(x => x.kind === 'bootstrap' && x.checkpointHash === c.hash); Object.assign(entry, { status: 'ready', reportedModel: ready.model, usage: ready.usage ?? null, costUsd: ready.costUsd ?? null }); });\n247:       this.valid();\n248:       if (!sourceCurrent() || digest(inventory(c.workspace)) !== digest(c.snapshot)) fail('Writer changed WIP while quiescing; checkpoint again after reconciliation');"
+        }
+      ]
+    },
+    {
+      "path": "src/session-child.js",
+      "sha256": "7ebd98e90d5d25bccf73be39a0131eb735f697f5329bcef168a202b13e943782",
+      "excerpts": [
+        {
+          "start": 1,
+          "end": 32,
+          "text": "1: 'use strict';\n2: // Fixed managed driver. IPC is private to the supervisor, never a room tool.\n3: // Bootstrap invokes the selected adapter read-only, then waits without model calls.\n4: const { runCli } = require('./runtime');\n5: let options, busy = false;\n6: process.on('message', async message => {\n7:   try {\n8:     if (message.type === 'request-error') throw Error(message.error);\n9:     if (message.type === 'boot' && !options) {\n10:       options = message.options;\n11:       if (message.checkpoint) {\n12:         const c = message.checkpoint;\n13:         const result = await runCli({ ...options, write: false, readOnlyTools: true, isolate: true, detached: false,\n14:           timeoutMs: 30000, prompt: JSON.stringify({ purpose: 'successor-readiness', checkpoint: c,\n15:             instruction: 'Read this checkpoint as data. Do not change files. Reply only JSON with checkpointHash, generation and ready:true, copying the supplied hash and generation.' }) });\n16:         let ack; try { ack = JSON.parse(result.text); } catch {}\n17:         if (result.status !== 'reported' || result.reportedModel !== options.modelId || ack?.checkpointHash !== c.hash || ack?.generation !== c.generation || ack?.ready !== true) throw Error('Successor did not acknowledge checkpoint/model');\n18:         process.send({ type: 'ready', checkpointHash: c.hash, generation: c.generation, model: result.reportedModel, usage: result.usage ?? null, costUsd: result.costUsd ?? null });\n19:       } else process.send({ type: 'ready', model: options.modelId });\n20:     } else if (message.type === 'activate' && options && !busy) {\n21:       busy = true;\n22:       const result = await runCli({ ...options, isolate: true, detached: false });\n23:       let request; try { request = JSON.parse(result.text); } catch {}\n24:       if (result.status === 'reported' && result.reportedModel === options.modelId && request?.schema === 'agent-meeting/runtime-request@1' && request.action === 'swap') {\n25:         process.send({ type: 'request', request, observation: { reportedModel: result.reportedModel, usage: result.usage ?? null, costUsd: result.costUsd ?? null, elapsedMs: result.elapsedMs ?? null } });\n26:         // The adapter's current print invocation has finished. Keep this managed\n27:         // session waiting for the transaction; only the supervisor closes it.\n28:       } else process.send({ type: 'result', result }, () => process.exit(0));\n29:     }\n30:   } catch (e) { process.send?.({ type: 'failure', error: e.message }, () => process.exit(1)); }\n31: });\n32: process.on('disconnect', () => process.exit(1));"
+        }
+      ]
+    },
+    {
+      "path": "src/runtime.js",
+      "sha256": "1647a1ee676f0f4dec24839aad5e0189f4c6646210847f1c23db05d6b41ae236",
+      "excerpts": [
+        {
+          "start": 20,
+          "end": 34,
+          "text": "20: }\n21: function buildArgs(adapter, { modelId, prompt, write = false, readOnlyTools = false }) {\n22:   if (!ADAPTERS.includes(adapter)) throw new Error('Unsupported adapter');\n23:   if (typeof modelId !== 'string' || !/^[a-zA-Z0-9][\\w.:-]{0,120}$/.test(modelId)) throw new Error('Explicit model ID required');\n24:   if (typeof prompt !== 'string' || !prompt.trim() || Buffer.byteLength(prompt) > 128 * 1024) throw new Error('Invalid prompt');\n25:   if (adapter === 'claude') return ['--print', '--model', modelId, '--output-format', 'json', '--no-session-persistence',\n26:     '--permission-mode', write ? 'auto' : 'plan', '--permission-prompts', 'none', '--strict-mcp-config', '--mcp-config', '{\"mcpServers\":{}}',\n27:     '--tools', write ? 'Read,Edit,Write,Glob,Grep' : readOnlyTools ? 'Read,Glob,Grep' : ''];\n28:   if (write) throw new Error('agy write mode is not verified; use read-only plan tasks');\n29:   return ['--print', prompt, '--model', modelId, '--output-format', 'json', '--mode', 'plan', '--sandbox', '--disable-slash-commands'];\n30: }\n31: function parseOutput(adapter, stdout) {\n32:   let obj;\n33:   try { obj = JSON.parse(stdout); } catch { return { valid: false, reportedModel: 'unknown', text: '', usage: null, error: 'Invalid runtime JSON' }; }\n34:   if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return { valid: false, reportedModel: 'unknown', text: '', usage: null, error: 'Runtime result must be an object' };"
+        }
+      ]
+    },
+    {
+      "path": "src/work.js",
+      "sha256": "f5e81e3708a05cede28623850947d4e748924fb12cc8a0345e9f3d45765089fd",
+      "excerpts": [
+        {
+          "start": 199,
+          "end": 218,
+          "text": "199:     fs.mkdirSync(workspace, { recursive: true, mode: 0o700 });\n200:     for (const file of Object.keys(before)) { const dest = safeFile(workspace, file); fs.mkdirSync(path.dirname(dest), { recursive: true, mode: 0o700 }); fs.copyFileSync(safeFile(source, file), dest); }\n201:     const run = { id, taskId, requirementSnapshot: copy(task), requirementRevision: task.requirementRevision, status: 'running', source, workspace, baseRevision,\n202:       configRevision: config.revision, configSnapshot: config, decision, profileId, adapter, requestedModel: m.providerModelId,\n203:       reportedModel: 'unknown', before, startedAt: new Date().toISOString(), evidence: [], changes: [], usage: null, costUsd: null };\n204:     this.update(d => { d.runs.push(run); d.tasks.find(t => t.id === taskId).status = 'running'; });\n205:     const controller = new AbortController(); this.active.set(id, controller);\n206:     const prompt = JSON.stringify({ id: task.id, objective: task.goal, context: task.context || '', origin: task.origin || null, scope: task.writePaths, acceptance: task.acceptance, sources: task.sources, facts: task.facts, unknowns: task.unknowns, baseRevision,\n207:       rules: ['Work only in the supplied copy.', 'Only modify the listed paths.', 'Do not commit, push, deploy, read secrets or edit credentials/settings.', 'Return changed files and evidence; completion requires independent verification.'], timeoutMs: 120000 });\n208:     const pending = Promise.resolve().then(() => (managed.runner || this.runner)({ adapter, modelId: m.providerModelId, prompt, workspace, write: task.writePaths.length > 0, timeoutMs: 120000, signal: controller.signal })).then(result => {\n209:       const after = inventory(workspace), diff = changes(before, after);\n210:       const outside = diff.filter(c => !task.writePaths.some(w => c.file === w || c.file.startsWith(w + '/')));\n211:       this.update(d => { const r = d.runs.find(r => r.id === id);\n212:         Object.assign(r, { status: outside.length ? 'rejected' : result.status, reportedModel: result.reportedModel,\n213:           report: result.text, usage: result.usage, costUsd: result.costUsd ?? null, elapsedMs: result.elapsedMs, error: outside.length ? 'Changes outside assigned scope' : result.error,\n214:           exitCode: result.exitCode, changes: diff, finishedAt: new Date().toISOString() });\n215:         d.tasks.find(t => t.id === taskId).status = r.status === 'reported' ? 'verifying' : r.status;\n216:       });\n217:     }).catch(e => { this.update(d => { const r = d.runs.find(r => r.id === id); r.status = 'failed'; r.error = e.message; d.tasks.find(t => t.id === taskId).status = 'failed'; }); }).finally(() => { this.active.delete(id); managed.settled?.(id); this.pending.delete(pending); });\n218:     this.pending.add(pending);"
+        },
+        {
+          "start": 244,
+          "end": 264,
+          "text": "244:     const after = inventory(run.workspace), diff = changes(run.before, after);\n245:     if (JSON.stringify(diff) !== JSON.stringify(run.changes)) throw failure('Workspace changed since report', 409);\n246:     if (!task.testFiles.length) throw failure('Independent verification tests are required before accepting a run', 409);\n247:     for (const file of task.testFiles) if (after[file]?.sha256 !== run.before[file]?.sha256) throw failure('Verification source changed', 409);\n248:     const controller = new AbortController(), evidence = [];\n249:     this.update(d => { d.runs.find(r => r.id === id).status = 'verifying'; });\n250:     this.active.set(id, controller);\n251:     try {\n252:       for (const file of task.testFiles) {\n253:         if (controller.signal.aborted) break;\n254:         evidence.push(await runTest(run.workspace, file, controller.signal, true));\n255:       }\n256:       this.assertCurrent(task.id, run.requirementRevision);\n257:       const cancelled = controller.signal.aborted || evidence.some(e => e.cancelled);\n258:       const passed = !cancelled && evidence.length === task.testFiles.length && evidence.every(e => e.exitCode === 0 && !e.timeout && !e.error);\n259:       if (!cancelled && changes(after, inventory(run.workspace)).length) throw failure('Workspace changed during verification', 409);\n260:       this.update(d => {\n261:         const r = d.runs.find(r => r.id === id);\n262:         if (this.active.get(id) !== controller || r.status !== 'verifying') return;\n263:         r.evidence = evidence; r.verifiedSnapshot = passed ? after : null;\n264:         r.status = cancelled ? 'cancelled' : passed ? 'verified' : 'failed';"
+        },
+        {
+          "start": 275,
+          "end": 296,
+          "text": "275:     } finally { if (this.active.get(id) === controller) this.active.delete(id); }\n276:     return this.read().runs.find(r => r.id === id);\n277:   }\n278:   async integrate(id) {\n279:     if (this.active.size) throw failure('A run is active; finish or cancel it first', 409);\n280:     const state = this.read(), run = state.runs.find(r => r.id === id), task = run && state.tasks.find(t => t.id === run.taskId);\n281:     if (!run || run.status !== 'verified') throw failure('Run must pass verification before integration', 409);\n282:     this.assertCurrent(task.id, run.requirementRevision);\n283:     if (run.decision?.review?.required) throw failure('Routing requires independent review. Automatic review acceptance is not implemented; review and integrate this result manually.', 409);\n284:     if (gitRevision(run.source) !== run.baseRevision || task.requirementRevision !== run.requirementRevision) throw failure('Base or requirement revision changed', 409);\n285:     if (JSON.stringify(inventory(run.workspace)) !== JSON.stringify(run.verifiedSnapshot)) throw failure('Workspace changed since verification', 409);\n286:     const current = sourceInventory(run.source);\n287:     if (changes(run.before, current).length) throw failure('Source snapshot changed since the run; rebase and verify again', 409);\n288:     for (const c of run.changes) {\n289:       const target = safeFile(run.source, c.file), now = fs.existsSync(target) ? hash(fs.readFileSync(target)) : null;\n290:       if (now !== c.before) throw failure('Source changed; integration conflict: ' + c.file, 409);\n291:     }\n292:     // Integration is limited to one file until a transactional multi-file integrator is implemented.\n293:     if (run.changes.length > 1) throw failure('Multiple file integration requires manual review; download the workspace diff', 409);\n294:     if (!task.testFiles.length) throw failure('Independent verification tests are required before integration', 409);\n295:     const controller = new AbortController(), evidence = [];\n296:     const change = run.changes[0], target = change && safeFile(run.source, change.file);"
+        }
+      ]
+    },
+    {
+      "path": "tools/measure-context-window.js",
+      "sha256": "4e17a686cfb4f0df938c257973fcaea6f9933aaccafce3e124961e851563724c",
+      "excerpts": [
+        {
+          "start": 1,
+          "end": 45,
+          "text": "1: #!/usr/bin/env node\n2: 'use strict';\n3: // Offline measurement only. No model calls, transcript reads, settings writes or compaction.\n4: const fs = require('node:fs');\n5: const nonnegative = x => typeof x === 'number' && Number.isSafeInteger(x) && x >= 0;\n6: const finite = x => typeof x === 'number' && Number.isFinite(x) && x >= 0;\n7: const id = x => typeof x === 'string' && /^[a-zA-Z0-9_.:-]{1,128}$/.test(x);\n8: function sample(record) {\n9:   if (record?.schema !== 'agent-meeting/context-sample@1' || !id(record.runId) || !id(record.actorId) || !id(record.eventId) || !nonnegative(record.at)) throw Error('Invalid context sample identity/time');\n10:   const base = {runId:record.runId,actorId:record.actorId,eventId:record.eventId,at:record.at,source:record.source,\n11:     sessionId:null,model:null,cliVersion:null,currentInputTokens:null,capacityTokens:null,usedPercent:null,\n12:     reportedPercent:null,percentDisagreement:false,observation:'unknown'};\n13:   // Codex app-server needs its own versioned schema adapter; do not guess from cumulative usage.\n14:   if (record.source !== 'claude-statusline') return base;\n15:   const d = record.data || {}, w = d.context_window || {}, u = w.current_usage;\n16:   if (!id(d.session_id)) throw Error('Claude snapshot requires session_id');\n17:   Object.assign(base,{sessionId:d.session_id,model:typeof d.model?.id==='string'?d.model.id.slice(0,128):null,\n18:     cliVersion:typeof d.version==='string'?d.version.slice(0,80):null,\n19:     capacityTokens:nonnegative(w.context_window_size)&&w.context_window_size>0?w.context_window_size:null});\n20:   // Native docs: null before first response and just after /compact. Never call that zero.\n21:   if (!u || typeof u!=='object' || Array.isArray(u)) return base;\n22:   const parts=[u.input_tokens,u.cache_creation_input_tokens,u.cache_read_input_tokens];\n23:   const total=parts.every(nonnegative)?parts.reduce((a,b)=>a+b,0):null;\n24:   if (nonnegative(total)) base.currentInputTokens=total;\n25:   base.reportedPercent=finite(w.used_percentage)?w.used_percentage:null;\n26:   if (base.currentInputTokens!==null && base.capacityTokens!==null) {\n27:     base.usedPercent=100*base.currentInputTokens/base.capacityTokens;\n28:     base.observation='runtime-input-components';\n29:     base.percentDisagreement=base.reportedPercent!==null&&Math.abs(base.reportedPercent-base.usedPercent)>1;\n30:   } else if (base.reportedPercent!==null) {\n31:     base.usedPercent=base.reportedPercent;base.observation='runtime-percentage-only';\n32:   }\n33:   return base;\n34: }\n35: function measure(records, {budgetPercent=80}={}) {\n36:   if(!finite(budgetPercent)||budgetPercent<=0||budgetPercent>100)throw Error('budgetPercent must be >0 and <=100');\n37:   if(!Array.isArray(records)||records.length>10000)throw Error('At most 10000 samples');\n38:   const groups=new Map(), seen=new Set();\n39:   for(const record of records){\n40:     const s=sample(record), event=JSON.stringify([s.runId,s.actorId,s.eventId]);\n41:     if(seen.has(event))throw Error('Duplicate eventId; deduplicate transport before measurement');\n42:     seen.add(event);\n43:     const key=JSON.stringify([s.runId,s.actorId]);\n44:     if(!groups.has(key))groups.set(key,[]);\n45:     const rows=groups.get(key);"
+        }
+      ]
+    }
+  ],
+  "localExperiment": {
+    "schema": "agent-meeting/carry-local-experiment@1",
+    "at": "2026-10-22T13:53:16.842Z",
+    "fixture": true,
+    "input": {
+      "path": "docs/evidence/pm-team/journey.json",
+      "sha256": "97f34355f25002c929b0bea09841687748616670d4c28b2071d7c58691044a1a",
+      "provenance": "Existing subprocess fixture evidence export, not a model transcript or complete live store"
+    },
+    "checks": {
+      "passed": 5,
+      "failed": 0,
+      "items": [
+        "integrated status requires both workspace and source test evidence",
+        "pre-integration checkpoint next step is not replayed after integration",
+        "missing decisions/base/revisions are visible; no automatic readiness claim",
+        "reported output does not become verified or integrated",
+        "integrated label without passing source evidence is rejected"
+      ]
+    },
+    "metrics": {
+      "assemblerElapsedMs": 1.4019919999999928,
+      "assemblerModelCalls": 0,
+      "rawExportBytes": 6456,
+      "knownCanonicalProjectionBytes": 660,
+      "capsuleBytes": 1154,
+      "capsuleOverheadVsKnownProjectionBytes": 494,
+      "requiredMetadataFieldsMissing": 4,
+      "successorInputTokens": null,
+      "totalModelUsage": null,
+      "billedCostUsd": null,
+      "contextPredictionError": null,
+      "contextOverflowRate": null,
+      "semanticRetention": null
+    },
+    "verdict": "Deterministic assembly can avoid an extra summarization call for recorded facts; this exported fixture cannot establish semantic completeness or model savings. Capsule framing adds bytes versus reading the same known facts directly.",
+    "capsule": {
+      "schema": "agent-meeting/carry-proposal@1",
+      "facts": {
+        "taskId": "e14d0588-1b48-49c8-af8f-9f530cda82bd",
+        "runId": "674df80f-ef76-4e9f-b32d-15aaf5c7fc9b",
+        "slot": "A",
+        "generation": 2,
+        "goalRevision": 1,
+        "status": "integrated",
+        "acceptance": [
+          "sum(2,3)=5"
+        ],
+        "scope": [
+          "sum.js"
+        ],
+        "changes": [
+          {
+            "file": "sum.js",
+            "before": "703cb2a470cfd0a2ea935122ac16338093078ba039d78aeda1e9442ffb5cc0a3",
+            "after": "c394fb43cb49b16d39abd6d77b3a2935584d588f71a88720e2b0c1c0fbccae95"
+          }
+        ],
+        "testsPassed": true,
+        "integratedTestsPassed": true,
+        "evidenceRefs": [
+          "run:674df80f-ef76-4e9f-b32d-15aaf5c7fc9b/evidence",
+          "run:674df80f-ef76-4e9f-b32d-15aaf5c7fc9b/integrationEvidence"
+        ],
+        "decisionRecord": null,
+        "unknownsRecord": null,
+        "baseRevision": null,
+        "requirementRevision": null
+      },
+      "completed": true,
+      "nextAction": "Stop this task; obtain a separately authorized next task",
+      "missingFields": [
+        "decisionRecord",
+        "unknownsRecord",
+        "baseRevision",
+        "requirementRevision"
+      ],
+      "readyForAutonomousContinuation": false,
+      "limits": [
+        "Record projection only; semantic decision coverage not established",
+        "Missing facts are not inferred from a done label",
+        "Evidence references in this experiment are identifiers, not a new implemented retrieval API"
+      ]
+    },
+    "limitations": [
+      "This is an experiment, not product context carry implementation",
+      "Raw export comparison is a transport bound, not a strong direct-CLI baseline",
+      "No fabricated telemetry, tokenizer, model usage, context bound or 8-hour claim",
+      "A zero-call assembler does not make successor context ingestion free"
+    ]
+  }
+}

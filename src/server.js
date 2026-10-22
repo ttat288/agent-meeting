@@ -13,6 +13,7 @@ const os = require('os');
 const routing = require('./routing');
 const { ConfigStore } = require('./config-store');
 const { WorkManager, safeFile } = require('./work');
+const { PmOperator } = require('./pm');
 const runtime = require('./runtime');
 const { RemoteCoordinator } = require('./remote');
 const { aggregateResults } = require('./evaluation');
@@ -22,6 +23,7 @@ const ASSETS = {
   '/assets/workspace.css': ['workspace.css', 'text/css; charset=utf-8'],
   '/assets/workspace.js': ['workspace.js', 'text/javascript; charset=utf-8'],
   '/assets/app.css': ['app.css', 'text/css; charset=utf-8'],
+  '/assets/pm-ui.js': ['pm-ui.js', 'text/javascript; charset=utf-8'],
   '/assets/app.js': ['app.js', 'text/javascript; charset=utf-8'],
   '/assets/i18n.js': ['i18n.js', 'text/javascript; charset=utf-8'],
   '/assets/brief.js': ['../brief.js', 'text/javascript; charset=utf-8'], // dùng chung với Node (src/brief.js)
@@ -41,18 +43,19 @@ const named = (extra = {}, req = []) => ({ type: 'object', properties: { name: s
 // thiếu các gợi ý này (đã thử thật với 0.162): một cuộc họp gọi wait hàng chục lần thì người dùng bị hỏi liên tục.
 const CLOSED = { destructiveHint: false, openWorldHint: false };
 const TOOLS = [
-  { name: 'join', description: 'Vào cuộc họp. Tự đặt tên tuỳ thích (phải chưa ai dùng) và khai báo model đang chạy. Trả về giao thức phải tuân theo. Gọi đầu tiên.',
-    inputSchema: { type: 'object', properties: { name: str('Tên bạn tự đặt, tuỳ thích; nếu bị báo trùng thì đặt tên khác'), model: str('Model bạn đang chạy, ví dụ Opus 5.5, GPT-5, Gemini 3 Pro') }, required: ['name', 'model'] } },
-  { name: 'wait', description: 'Chờ (không tốn token) tới khi có tin mới, tới lượt bạn, hoặc hệ thống cần bạn quyết định. Nếu báo "Chưa có tin mới" thì gọi lại.', inputSchema: named() },
+  { name: 'join', description: 'Gọi đầu tiên để vào phòng; đọc và theo giao thức trả về.',
+    inputSchema: { type: 'object', properties: { name: str('Tên chưa ai dùng; trùng thì chọn lại'), model: str('Model bạn thực sự đang dùng') }, required: ['name', 'model'] } },
+  { name: 'wait', description: 'Chờ tin mới/tới lượt, tối đa ~50s. Chưa có tin thì gọi lại. Phản hồi vẫn dùng context.', inputSchema: named() },
   { name: 'say', description: 'Phát biểu trong cuộc họp. Chỉ nói khi có đóng góp mới. Tin chốt cuối bắt đầu bằng "KẾT LUẬN:".', inputSchema: named({ text: str('Nội dung ngắn gọn') }, ['text']) },
   { name: 'pass', description: 'Bỏ lượt khi tới lượt mà không có gì mới (chế độ lần lượt).', inputSchema: named() },
-  { name: 'typing', description: 'Báo mọi người biết bạn đang soạn câu trả lời dài, để không ai tưởng cuộc họp đã im.', inputSchema: named() },
-  { name: 'progress', description: 'Báo tiến độ một việc đã được giao (số việc do hệ thống báo, ví dụ #2). Chỉ báo "xong" khi đã làm thật, kèm bằng chứng (link commit/PR, kết quả test). Dùng được cả sau khi đã rời phòng.',
+  { name: 'typing', description: 'Báo đang suy nghĩ lâu để phòng chờ bạn.', inputSchema: named() },
+  { name: 'progress', description: 'Báo tiến độ việc được giao, dùng được sau leave. Chỉ báo xong khi làm thật, có bằng chứng.',
     inputSchema: named({ task: str('Số việc, ví dụ 2'), status: str('đang làm | xong | vướng | chưa làm'), note: str('Bằng chứng hoặc ghi chú: link commit/PR, kết quả test, đang vướng gì') }, ['task', 'status']) },
-  { name: 'files', description: 'Xem các tệp agent khác gửi cho bạn (hoặc cả phòng), kèm lệnh curl để tải và sha256. wait="1": chờ tới ~50 giây cho tới khi có tệp mới. Gửi tệp thì dùng lệnh curl trong giao thức (nội dung tệp không đi qua tool).',
+  { name: 'files', description: 'Liệt kê tệp được phép xem, cách tải và sha256. wait="1": chờ tệp mới tới ~50s. Gửi/nhận theo giao thức.',
     inputSchema: named({ wait: str('"1" để chờ tới khi có tệp mới (tuỳ chọn)') }), annotations: { readOnlyHint: true, openWorldHint: false } },
-  { name: 'leave', description: 'Rời phòng khi không còn gì để bàn. Sau đó làm đúng câu trả lời của hệ thống: thường là dừng hẳn; nếu được giao việc thì làm việc đó rồi báo progress.', inputSchema: named({ reason: str('Lý do ngắn (tuỳ chọn)') }) },
-  { name: 'history', description: 'Đọc toàn bộ lịch sử cuộc họp.', inputSchema: { type: 'object', properties: {} }, annotations: { readOnlyHint: true, openWorldHint: false } },
+  { name: 'leave', description: 'Rời khi hết ý; theo phản hồi cuối: dừng hoặc làm việc được giao rồi progress.', inputSchema: named({ reason: str('Lý do ngắn (tuỳ chọn)') }) },
+  { name: 'history', description: 'Đọc lại: offset=0, limit=20, maxChars=8000 trả JSON/nextOffset; giữ cursor wait. Bỏ tham số trả toàn bộ.',
+    inputSchema: { type: 'object', properties: { offset: { type: 'integer', minimum: 0 }, limit: { type: 'integer', minimum: 1, maximum: 100 }, maxChars: { type: 'integer', minimum: 1024, maximum: 32000 } } }, annotations: { readOnlyHint: true, openWorldHint: false } },
 ].map(t => ({ ...t, annotations: t.annotations || CLOSED }));
 const INSTRUCTIONS = 'Phòng họp nhiều agent. Bắt đầu bằng join(name, model): tự đặt tên tuỳ thích và khai báo model đang chạy; nếu bị báo trùng tên thì đặt tên khác. Sau đó làm theo giao thức nó trả về: lặp wait -> say cho tới khi cuộc họp kết thúc, và leave khi không còn gì để bàn. Gửi/nhận tệp bằng lệnh curl trong giao thức.';
 
@@ -69,6 +72,7 @@ async function invoke(m, tool, a = {}, ctx = {}) {
   if (!m) return GONE_TEXT;
   const { how = null, base } = ctx;
   if (tool === 'join') {
+    if (m.pmEnabled && !m.pmReady?.()) return 'PM must join and be approved by the director before workers join.';
     const token = newToken();
     const out = m.join(a.name, a.model, how, base, { token, presented: ctx.token, sid: ctx.sid, via: ctx.via, ip: ctx.ip, bridge: ctx.bridge });
     const id = m.identify({ token }) || m.identify({ token: ctx.token, sid: ctx.sid });
@@ -95,7 +99,7 @@ async function invoke(m, tool, a = {}, ctx = {}) {
     case 'progress': return m.progress(a.name, a.task, a.status, a.note);
     case 'leave': return m.leave(a.name, a.reason);
     case 'files': return m.listFiles(a.name, a.wait);
-    case 'history': return m.history(a.name);
+    case 'history': return m.history(a.name, a);
   }
 }
 
@@ -170,7 +174,15 @@ function limiter() {
 function createApp(cfg = {}) {
   const log = cfg.log || (() => {});
   const configStore = new ConfigStore({ dir: cfg.configDir, defaults: routing.defaults, validate: routing.validate });
-  const workManagers = new Map();
+  const workManagers = new Map(), pmOperators = new Map();
+  function pmFor(room) {
+    if (!pmOperators.has(room)) {
+      const work = workFor(room.hostKey);
+      for (const [oldRoom, operator] of pmOperators) if (operator.work === work && oldRoom !== room) { operator.close(); pmOperators.delete(oldRoom); }
+      pmOperators.set(room, new PmOperator(work, room, (ev, data) => audit(ev, { room: rid(room), ...data }), Date.now, cfg.sessionOptions));
+    }
+    return pmOperators.get(room);
+  }
   let remoteCoordinator;
   const remoteFor = () => remoteCoordinator ||= new RemoteCoordinator({ dir: cfg.remoteDir || path.join(cfg.workDir || path.join(os.homedir(), '.agent-meeting', 'work'), 'remote') });
   const workKeyFor = room => room.workKey || crypto.createHash('sha256').update(room.hostKey).digest('hex');
@@ -254,6 +266,7 @@ function createApp(cfg = {}) {
   const create = (overrides = {}) => {
     const m = new Meeting({ ...cfg, maxFileMb: lim.maxFileMb, ...overrides });
     m.fixed = !!overrides.fixed;
+    m.pmReady = () => pmFor(m).state().status === 'active';
     byAgent.set(m.id, m); byHost.set(m.hostKey, m);
     m.ev.once('ended', () => { onEnded(m).finally(() => app.ev.emit('ended', m)); });
     m.ev.once('work', () => { onEnded(m, 'work'); });
@@ -303,6 +316,7 @@ function createApp(cfg = {}) {
   // Cuộc họp nối tiếp dùng lại mã agent (agent đã cài MCP không phải cài lại) và các tuỳ chọn của cuộc trước.
   // carry: "Họp tiếp" mang việc chưa xong (giữ số) + quyết định + việc đã xong sang làm bối cảnh cuộc sau.
   const renew = (mt, carry) => {
+    if (mt.pmEnabled) { pmFor(mt).host('revoke'); pmOperators.get(mt)?.close(); }
     const s = mt.cfg;
     const n = create({ id: mt.id, hostKey: mt.fixed ? mt.hostKey : undefined, fixed: mt.fixed, mode: s.mode, maxMsgs: s.maxMsgs, idleMs: s.idleMs, timeLimitMin: s.timeLimitMin, followUp: s.followUp });
     if (carry) { n.workKey = workKeyFor(mt); n.createdAt = Math.max(n.createdAt, mt.createdAt + 1); }
@@ -471,6 +485,42 @@ function createApp(cfg = {}) {
         } catch (e) { return json(e.status || 400, { error: e.message }); }
       }
 
+      // PM has a distinct local-only capability. Never add it to conversation MCP tools.
+      if ((m = p.match(/^\/api\/host\/(\w+)\/pm\/(state|invite|approve|goal|grant|message|pause|revoke|takeover)$/))) {
+        const room = byHost.get(m[1]);
+        if (!room) return json(404, { error: 'Meeting not found' });
+        if (where(req).via !== 'local') return json(403, { error: 'PM controls require the local host' });
+        try {
+          if (req.method === 'GET' && m[2] === 'state') return json(200, room.pmEnabled || room.pmHistory ? pmFor(room).host('state') : { status: 'human' });
+          if (req.method !== 'POST') return json(405, { error: 'POST only' });
+          const body = JSON.parse(await readBody(req));
+          const operator = pmFor(room), result = operator.host(m[2], body);
+          if (m[2] === 'invite') result.clientPath = path.resolve(__dirname, '../bin/pm.js');
+          if (m[2] === 'invite') { room.pmHistory = true; room.pmEnabled = true; room._changed(); }
+          if (m[2] === 'takeover') { room.pmHistory = true; room.pmEnabled = false; room._changed(); }
+          return json(200, result);
+        } catch (e) { return json(e.status || 400, { error: e.message }); }
+      }
+      if ((m = p.match(/^\/api\/pm\/(\w+)\/(join|state|wait|message|plan|run|verify|integrate|report|team-invite|approve-plan|events|ack-event|chair)$/))) {
+        const room = byAgent.get(m[1]);
+        if (!room || !room.pmEnabled) return json(404, { error: 'PM meeting not found' });
+        if (where(req).via !== 'local' || !sameOrigin(req)) return json(403, { error: 'PM API requires local same-origin access' });
+        if (req.method !== 'POST') return json(405, { error: 'POST only' });
+        if (!rate.take('pm:' + where(req).ip, 120, 120)) return json(429, { error: 'PM request limit; wait before retrying' });
+        try { return json(200, await pmFor(room).command(bearer(req), m[2], JSON.parse(await readBody(req)))); }
+        catch (e) { return json(e.status || 400, { error: e.message }); }
+      }
+
+      if ((m = p.match(/^\/api\/team\/(\w+)\/(join|state|propose|run|checkpoint|swap|verify|integrate|submit|blocker)$/))) {
+        const room = byAgent.get(m[1]);
+        if (!room || !room.pmEnabled) return json(404, { error: 'Team meeting not found' });
+        if (where(req).via !== 'local' || !sameOrigin(req)) return json(403, { error: 'Team API requires local same-origin access' });
+        if (req.method !== 'POST') return json(405, { error: 'POST only' });
+        if (!rate.take('team:' + where(req).ip, 120, 120)) return json(429, { error: 'Team request limit' });
+        try { return json(200, await pmFor(room).team.command(bearer(req), m[2], JSON.parse(await readBody(req)))); }
+        catch (e) { return json(e.status || 400, { error: e.message }); }
+      }
+
       // Host capability remains mandatory. Invitation links cannot open admin or start processes.
       if ((m = p.match(/^\/m\/(\w+)\/workspace$/)) && byHost.has(m[1]))
         return send(302, 'text/plain', '', { location: '/m/' + m[1] + u.search + '#plan', 'cache-control': 'no-store' });
@@ -602,6 +652,7 @@ function createApp(cfg = {}) {
         if (req.method !== 'POST') return json(405, { error: 'POST only' });
         const d = parseArgs(u, await readBody(req));
         if (act === 'start') {
+          if (mt.pmEnabled && !mt.pmReady()) return json(409, { error: 'Approve the PM before starting the meeting' });
           // brief có N vai trò mà chưa đủ N agent (tính cả agent vắng): không bắt đầu, trừ khi chủ trì cố ý gửi force
           const need = rolesNeeded(d.roles), have = mt.state === 'LOBBY' ? mt._present().length : need;
           if (have < need && d.force !== true && d.force !== 'true')
@@ -610,7 +661,7 @@ function createApp(cfg = {}) {
           if (ok) audit('start', { room: rid(mt), agents: mt._present().map(a => a.name), force: have < need });
           return json(200, { ok });
         }
-        if (act === 'stop') { mt.stop(); audit('stop', { room: rid(mt), state: mt.state }); return json(200, { ok: true }); }
+        if (act === 'stop') { if (mt.pmEnabled) pmFor(mt).host('pause'); mt.stop(); audit('stop', { room: rid(mt), state: mt.state }); return json(200, { ok: true }); }
         if (act === 'say') return json(200, { ok: mt.hostSay(d.text, d.to) });
         if (act === 'next') return json(200, { ok: mt.hostNextItem() });
         if (act === 'role') return json(200, { ok: mt.setRole(d.name, d.role) });
@@ -691,7 +742,7 @@ function createApp(cfg = {}) {
     } catch (e) { log(`⚠ Lỗi xử lý ${req.method} ${p.replace(/\/(\w{6})\w+/g, '/$1…')}: ${e.message || e}`); if (!res.headersSent) json(500, { error: String(e.message || e) }); else res.end(); }
   }
   server.requestTimeout = 0; // long-poll và wait giữ kết nối lâu
-  const app = { configStore, server, create, renew, meetings: byHost, limits: lim, ev: new EventEmitter(), setPublicOrigin: (o, fixed) => { publicOrigin = o; if (fixed) fixedOrigin = o; }, flush, restore, close: () => { for (const manager of workManagers.values()) manager.close(); clearInterval(sweep); flush(); server.close(); server.closeAllConnections?.(); } };
+  const app = { configStore, server, create, renew, meetings: byHost, limits: lim, ev: new EventEmitter(), setPublicOrigin: (o, fixed) => { publicOrigin = o; if (fixed) fixedOrigin = o; }, flush, restore, close: () => { const draining = [...pmOperators.values()].map(operator => operator.close()); draining.push(...[...workManagers.values()].map(manager => manager.close())); clearInterval(sweep); flush(); server.close(); server.closeAllConnections?.(); return Promise.allSettled(draining); } };
   return app;
 }
 

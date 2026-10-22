@@ -13,6 +13,12 @@ const opt = (n, d) => { const i = args.indexOf(n); return i >= 0 && args[i + 1] 
 const opts = (n) => args.flatMap((a, i) => a === n && args[i + 1] ? [args[i + 1]] : []);
 const env = process.env;
 
+if (args[0] === 'skills' || args[0] === 'doctor') {
+  try { require('../src/cli-discovery').run(args); }
+  catch (e) { console.error('Lỗi: ' + e.message); process.exitCode = 1; }
+  return;
+}
+
 if (args[0] === 'install' || args[0] === 'uninstall') {
   try { process.exit(require('../src/desktop-install').runCLI(args)); }
   catch (e) { console.error('Install error: ' + e.message); process.exit(1); }
@@ -37,6 +43,10 @@ Dùng:  npx github:ttat288/agent-meeting [tuỳ chọn]
        npx github:ttat288/agent-meeting disconnect <claude|codex|gemini>
        npx github:ttat288/agent-meeting install [--dry-run]
        npx github:ttat288/agent-meeting uninstall [--dry-run]
+       agent-meeting doctor
+       agent-meeting skills list [--local] [--dir <thư mục skills>] [--query <từ>] [--graph] [--offset <n>] [--limit <n>]
+       agent-meeting skills show <tên> [--local] [--dir <thư mục skills>] [--resource <file>]
+       agent-meeting skills inspect <tên> [--local] [--dir <thư mục skills>]
 
 connect: một lần cho mỗi máy, cài MCP "agent-meeting" cho agent (qua CLI của chính agent đó) và cấp quyền đúng các tool
 hội thoại, để agent (cả Claude Code ở auto mode) vào họp không phải duyệt từng lệnh. Gửi tệp vẫn được hỏi từng lần.

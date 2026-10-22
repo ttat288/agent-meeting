@@ -1,0 +1,124 @@
+TAP version 13
+# Subtest: event-driven team end to end: same slot swap, one writer, WIP, independent verification, integrated evidence and PM report
+ok 1 - event-driven team end to end: same slot swap, one writer, WIP, independent verification, integrated evidence and PM report
+  ---
+  duration_ms: 1837.629139
+  type: 'test'
+  ...
+# Subtest: team requires revision approval; unknown cost, stale scopes, spoof and replay cannot dispatch or promote
+ok 2 - team requires revision approval; unknown cost, stale scopes, spoof and replay cannot dispatch or promote
+  ---
+  duration_ms: 977.882541
+  type: 'test'
+  ...
+# Subtest: team pause cancels managed process, invalidates capability and prevents stale swap/result
+ok 3 - team pause cancels managed process, invalidates capability and prevents stale swap/result
+  ---
+  duration_ms: 595.036994
+  type: 'test'
+  ...
+# Subtest: team revoke cancels managed process, invalidates capability and prevents stale swap/result
+ok 4 - team revoke cancels managed process, invalidates capability and prevents stale swap/result
+  ---
+  duration_ms: 571.233181
+  type: 'test'
+  ...
+# Subtest: team goal cancels managed process, invalidates capability and prevents stale swap/result
+ok 5 - team goal cancels managed process, invalidates capability and prevents stale swap/result
+  ---
+  duration_ms: 626.854656
+  type: 'test'
+  ...
+# Subtest: team takeover cancels managed process, invalidates capability and prevents stale swap/result
+ok 6 - team takeover cancels managed process, invalidates capability and prevents stale swap/result
+  ---
+  duration_ms: 608.478288
+  type: 'test'
+  ...
+# Subtest: blocking events coalesce, persist unacknowledged while PM disconnected, enforce wake cap and remain private
+ok 7 - blocking events coalesce, persist unacknowledged while PM disconnected, enforce wake cap and remain private
+  ---
+  duration_ms: 334.925084
+  type: 'test'
+  ...
+# Subtest: successor bad-ack keeps old writer, consumes bounded reservation and never promotes
+ok 8 - successor bad-ack keeps old writer, consumes bounded reservation and never promotes
+  ---
+  duration_ms: 814.183555
+  type: 'test'
+  ...
+# Subtest: successor timeout keeps old writer, consumes bounded reservation and never promotes
+ok 9 - successor timeout keeps old writer, consumes bounded reservation and never promotes
+  ---
+  duration_ms: 1871.943203
+  type: 'test'
+  ...
+# Subtest: source/WIP changes make checkpoint stale and cannot be promoted or integrated
+ok 10 - source/WIP changes make checkpoint stale and cannot be promoted or integrated
+  ---
+  duration_ms: 657.033667
+  type: 'test'
+  ...
+# Subtest: PM lease can lapse during delegated work; grant/time expiry instead cancels and retains a guard event
+ok 11 - PM lease can lapse during delegated work; grant/time expiry instead cancels and retains a guard event
+  ---
+  duration_ms: 612.272293
+  type: 'test'
+  ...
+# Subtest: restart preserves pending events/checkpoint but revokes capabilities and cannot silently resume or duplicate run
+ok 12 - restart preserves pending events/checkpoint but revokes capabilities and cannot silently resume or duplicate run
+  ---
+  duration_ms: 314.038527
+  type: 'test'
+  ...
+# Subtest: packaged watch blocks in code and returns actionable data once, without snapshots or automatic ack
+ok 13 - packaged watch blocks in code and returns actionable data once, without snapshots or automatic ack
+  ---
+  duration_ms: 736.486015
+  type: 'test'
+  ...
+# Subtest: runtime requests its own bounded same-slot swap via structured protocol; PM performs no progress calls
+ok 14 - runtime requests its own bounded same-slot swap via structured protocol; PM performs no progress calls
+  ---
+  duration_ms: 1571.428535
+  type: 'test'
+  ...
+# Subtest: pending successor readiness + goal never promotes a stale writer
+ok 15 - pending successor readiness + goal never promotes a stale writer
+  ---
+  duration_ms: 622.315291
+  type: 'test'
+  ...
+# Subtest: pending successor readiness + revoke never promotes a stale writer
+ok 16 - pending successor readiness + revoke never promotes a stale writer
+  ---
+  duration_ms: 636.714872
+  type: 'test'
+  ...
+# Subtest: pending successor readiness + source never promotes a stale writer
+ok 17 - pending successor readiness + source never promotes a stale writer
+  ---
+  duration_ms: 1105.412146
+  type: 'test'
+  ...
+# Subtest: unknown cost and invocation budget are independent guards, neither implies a spending cap
+ok 18 - unknown cost and invocation budget are independent guards, neither implies a spending cap
+  ---
+  duration_ms: 930.84812
+  type: 'test'
+  ...
+# Subtest: allowlisted model change preserves task/slot/WIP and records actual runtime identity per generation
+ok 19 - allowlisted model change preserves task/slot/WIP and records actual runtime identity per generation
+  ---
+  duration_ms: 1507.119073
+  type: 'test'
+  ...
+1..19
+# tests 19
+# suites 0
+# pass 19
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 17086.656088

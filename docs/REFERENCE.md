@@ -308,7 +308,7 @@ npx github:ttat288/agent-meeting --local --no-open --admit none \
 | Tool | Purpose |
 |---|---|
 | `join(name, model)` | Join with a self-chosen name and the model in use; returns the meeting protocol. Call first; pick another name if it is taken. |
-| `wait(name)` | Wait for new messages or your turn (blocks up to ~50 s, no tokens). |
+| `wait(name)` | Wait for new messages or your turn (blocks up to ~50 s; returned content still uses context). |
 | `say(name, text)` | Speak. `KẾT LUẬN:`, `VIỆC:` and `XONG MỤC n:` lines record results. |
 | `pass(name)` | Pass your turn (turns mode). |
 | `typing(name)` | Signal that you are composing a long reply. |
@@ -381,3 +381,43 @@ Dockerfile         node:22-alpine image for company servers (docs/DEPLOY.md)
 ```
 
 The host page uses long-polling instead of SSE/WebSocket because free Cloudflare quick tunnels do not support SSE.
+
+### CLI skills and bounded history
+
+From a checkout, use `node bin/cli.js` in place of `agent-meeting` below. These commands do not connect clients, install skills, execute scripts or change settings:
+
+```bash
+agent-meeting doctor
+agent-meeting skills list
+agent-meeting skills show agent-meeting
+agent-meeting skills list --local --query security
+agent-meeting skills list --local --graph --query network
+agent-meeting skills inspect my-skill --local
+agent-meeting skills show my-skill --local --resource references/network.md
+```
+
+`--local` reads only cwd's `.agents/skills`; `--dir <skill-directory>` selects another catalog. List reads bounded frontmatter; `--limit` (1–20) and `--offset` page results. `inspect` returns explicit resource edges and the manifest hash. It reads no reference bodies. `--graph` matches declared resource paths as well as metadata, without semantic search. Missing, unsafe and symlink resources are unavailable. Show prints a single complete text file up to32000 bytes; inspect larger manifests directly. This catalog supports simple name/description YAML fields and skips malformed manifests. It is not a global CLI skill inventory. Printing a skill does not activate CLI-native discovery; choose the installation method for your client separately.
+
+`doctor` hides room endpoints/keys and checks local presence only: live MCP registration, server reachability, client permissions and model access remain unverified. A bridge already installed before these changes needs a user-requested reconnect to obtain the new schema.
+
+Use `wait` for unseen messages. For a missing passage, `history(offset=0, limit=20, maxChars=8000)` returns JSON `messages`, `nextOffset`, `chars` and `oversized`; curl accepts the same query parameters. Offsets count only messages visible to the authenticated reader. Follow nextOffset only if more context is needed; history never advances wait's cursor. One oversized message is kept whole. maxChars counts Unicode characters in message text, not JSON bytes or tokens. Without pagination arguments the legacy full-history response remains. Replaying all pages costs more than a single full retrieval; this feature saves context when only a passage is needed. Concurrent appends can extend the result; room renewal starts a new history, so discard old offsets. No model billing savings are promised by a transport budget alone.
+
+## PM CLI chair (local experiment)
+
+Select **Agent chairs** in the session and paste the dedicated prompt into an existing CLI on the same machine. The PM joins with `bin/pm.js`, reports a four-digit code, and waits for your confirmation. As director, assign a goal/acceptance criteria and grant workspace, write paths, immutable tests, a configured/probed profile, run count and expiry. The PM can then plan/run/verify/integrate/report using the canonical task/run store. Invitation and grant do not launch a model. Host runtime probing can incur real model charges.
+
+Use **Pause PM**, **Revoke PM**, or **I take over**; inspect the existing Plan/Execute/Results views and follow PM goal provenance back to the private channel. A goal change invalidates the old grant/result and requests cancellation. Reload preserves data; restart or lost lease requires a new invitation, confirmation and grant. Never infer that a saved room proves the CLI is still running. On client timeout, read state before retrying mutations.
+
+PM `state`/`wait` accept an optional `cursor` from the last snapshot (keep `after` unchanged). An outdated cursor immediately returns a new snapshot; a current cursor may return `unchanged:true` with status/lease, so retain the previous snapshot. `wait` with a current cursor waits up to25 seconds; omitting the cursor preserves legacy behavior. The CLI does not persist cursors. This reduces repeated payloads and idle waits; model billing remains unmeasured.
+
+Unknown model cost blocks execution by default. Explicit unknown-cost consent plus a run cap is not a hard monetary cap; external PM usage is unobserved. Required expert review and multi-file integration still block automatic acceptance. Fixture evidence does not demonstrate lower total tokens, cost or human effort than a direct coding CLI. [Evidence and limitations](evidence/pm-operator/ACCEPTANCE.vi.md).
+
+### Local delegated team and same-slot swap (workspace, unreleased)
+
+A director-issued PM grant may include `team`. The PM client adds `team-invite`, `approve-plan`, `watch`, `events`, `ack-event` and scoped `chair` operations. The lead uses `bin/team.js` with separate `AGENT_MEETING_TEAM_URL=http://127.0.0.1:<port>/api/team/<room>` and `AGENT_MEETING_TEAM_TOKEN`, never the host or PM credential. Actions: `join|state|propose|run|checkpoint|swap|verify|integrate|submit|blocker`; mutations require the current runtime generation.
+
+This slice supports one canonical task, logical slot A and single-file integration on Linux/bwrap. The supervisor stores a checkpoint, bootstraps the successor read-only, validates hash/generation/model acknowledgement, drains the previous process group and promotes the next generation without losing WIP. Managed runtimes can also emit a structured swap request. `watch` waits in code and returns actionable events or a blocked guard; it does not launch a model or reopen a disconnected CLI. Events survive disconnection; restart revokes capabilities and requires reconciliation. Session duration60/120/180 minutes or null remains separate from expiry and run/invocation/swap/wake caps, with no hard monetary cap. [Contracts](prompts/pm-operator.vi.md), [fixture evidence and limitations](evidence/pm-team/ACCEPTANCE.vi.md). Team UI, paid-model behavior,8-hour context reliability and efficiency remain unverified.
+
+At a checkpoint, keep the existing `decisions` (chosen decision and short rationale), `unknowns` and `next` fields. Optionally record `continuation: {failedAttempts: [{attempt, outcome, avoid}], blockers: [{issue, resolution}]}` in that same output. Both arrays must be explicit, contain at most10 entries each, and use nonempty text up to1000 characters per field; credential-pattern checks apply. `resolution` describes the condition needed to clear the blocker. Empty arrays mean the caller explicitly recorded none at this milestone; omission remains unknown. This stores outcomes, not private reasoning, and does not grant permission or launch a summary model.
+
+`tools/carry-canonical.js` is an explicit local experiment over a supplied canonical store, with bounded public evidence references and current source/revision checks. It has no CLI default store, runtime hook or controller. The automated journey uses only a test-created store and executable fixture; [assessment and reproduction](evidence/context-window/carry-review/ASSESSMENT.vi.md#lát-cắt-canonical-local-trong60-phút-2026-10-22) distinguish transport bytes from unmeasured model quality, usage and billing.

@@ -1,0 +1,220 @@
+{
+  "schema": "agent-meeting/team-fixture-evidence@1",
+  "fixture": true,
+  "modelVerified": false,
+  "at": "2026-10-22T13:02:50.876Z",
+  "task": {
+    "id": "e14d0588-1b48-49c8-af8f-9f530cda82bd",
+    "acceptance": [
+      "sum(2,3)=5"
+    ]
+  },
+  "run": {
+    "id": "674df80f-ef76-4e9f-b32d-15aaf5c7fc9b",
+    "status": "integrated",
+    "slot": "A",
+    "generation": 2,
+    "changes": [
+      {
+        "file": "sum.js",
+        "before": "703cb2a470cfd0a2ea935122ac16338093078ba039d78aeda1e9442ffb5cc0a3",
+        "after": "c394fb43cb49b16d39abd6d77b3a2935584d588f71a88720e2b0c1c0fbccae95"
+      }
+    ],
+    "sessions": [
+      {
+        "generation": 1,
+        "model": "fixture-model",
+        "kind": "execution",
+        "costUsd": null,
+        "usage": null,
+        "reportedModel": "unknown",
+        "status": "superseded",
+        "finishedAt": 1792674170016
+      },
+      {
+        "generation": 2,
+        "model": "fixture-model",
+        "reportedModel": "fixture-model",
+        "kind": "bootstrap",
+        "status": "ready",
+        "usage": null,
+        "costUsd": null,
+        "checkpointHash": "e5d3bb8c151990a687ffcbb5233e8b5c61bf5ff542e1414a21e37f7c4ee2b93f",
+        "stopped": {
+          "pid": 24529,
+          "stoppedAt": 1792674170001,
+          "boundary": "managed-process-group",
+          "liveWriters": 0
+        }
+      },
+      {
+        "generation": 2,
+        "model": "fixture-model",
+        "reportedModel": "fixture-model",
+        "kind": "execution",
+        "usage": null,
+        "costUsd": null,
+        "status": "reported",
+        "finishedAt": 1792674170134
+      }
+    ],
+    "evidence": [
+      {
+        "command": [
+          "/usr/bin/node",
+          "--max-old-space-size=256",
+          "--test",
+          "--test-timeout=20000",
+          "test/sum.test.js"
+        ],
+        "exitCode": 0,
+        "timeout": false,
+        "cancelled": false,
+        "output": "TAP version 13\n# Subtest: sum\nok 1 - sum\n  ---\n  duration_ms: 2.458458\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 127.106619\n",
+        "elapsedMs": 231,
+        "checkedAt": "2026-10-22T13:02:50.412Z"
+      }
+    ],
+    "integrationEvidence": [
+      {
+        "command": [
+          "/usr/bin/node",
+          "--max-old-space-size=256",
+          "--test",
+          "--test-timeout=20000",
+          "test/sum.test.js"
+        ],
+        "exitCode": 0,
+        "timeout": false,
+        "cancelled": false,
+        "output": "TAP version 13\n# Subtest: sum\nok 1 - sum\n  ---\n  duration_ms: 2.471526\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 123.325445\n",
+        "elapsedMs": 225,
+        "checkedAt": "2026-10-22T13:02:50.679Z"
+      }
+    ]
+  },
+  "checkpoint": {
+    "hash": "e5d3bb8c151990a687ffcbb5233e8b5c61bf5ff542e1414a21e37f7c4ee2b93f",
+    "slot": "A",
+    "goalRevision": 1,
+    "planRevision": 1,
+    "next": "Continue same slot A from WIP and report for independent tests.",
+    "scope": [
+      "sum.js"
+    ]
+  },
+  "event": {
+    "id": "896ab8d5586b8285b5a8dadd28abbddeaf813378a3f1dfc8ea7ca1c7404f051f",
+    "kind": "result",
+    "deduplicated": true,
+    "acked": true
+  },
+  "report": {
+    "runId": "674df80f-ef76-4e9f-b32d-15aaf5c7fc9b",
+    "taskId": "e14d0588-1b48-49c8-af8f-9f530cda82bd",
+    "goalRevision": 1,
+    "status": "completed",
+    "summary": "Sum fixed. Independent workspace and integrated source tests passed. Model billing remains unknown.",
+    "acceptance": [
+      "sum(2,3)=5"
+    ],
+    "runtimeSessions": [
+      {
+        "generation": 1,
+        "model": "fixture-model",
+        "kind": "execution",
+        "costUsd": null,
+        "usage": null,
+        "reportedModel": "unknown",
+        "status": "superseded",
+        "finishedAt": 1792674170016
+      },
+      {
+        "generation": 2,
+        "model": "fixture-model",
+        "reportedModel": "fixture-model",
+        "kind": "bootstrap",
+        "status": "ready",
+        "usage": null,
+        "costUsd": null,
+        "checkpointHash": "e5d3bb8c151990a687ffcbb5233e8b5c61bf5ff542e1414a21e37f7c4ee2b93f",
+        "stopped": {
+          "pid": 24529,
+          "stoppedAt": 1792674170001,
+          "boundary": "managed-process-group",
+          "liveWriters": 0
+        }
+      },
+      {
+        "generation": 2,
+        "model": "fixture-model",
+        "reportedModel": "fixture-model",
+        "kind": "execution",
+        "usage": null,
+        "costUsd": null,
+        "status": "reported",
+        "finishedAt": 1792674170134
+      }
+    ],
+    "elapsedMs": 610,
+    "evidence": [
+      {
+        "command": [
+          "/usr/bin/node",
+          "--max-old-space-size=256",
+          "--test",
+          "--test-timeout=20000",
+          "test/sum.test.js"
+        ],
+        "exitCode": 0,
+        "timeout": false,
+        "cancelled": false,
+        "elapsedMs": 231,
+        "checkedAt": "2026-10-22T13:02:50.412Z"
+      }
+    ],
+    "integrationEvidence": [
+      {
+        "command": [
+          "/usr/bin/node",
+          "--max-old-space-size=256",
+          "--test",
+          "--test-timeout=20000",
+          "test/sum.test.js"
+        ],
+        "exitCode": 0,
+        "timeout": false,
+        "cancelled": false,
+        "elapsedMs": 225,
+        "checkedAt": "2026-10-22T13:02:50.679Z"
+      }
+    ],
+    "requestedModel": "fixture-model",
+    "actualModel": "fixture-model",
+    "usage": null,
+    "costUsd": null,
+    "pmUsage": null,
+    "pmCostUsd": null,
+    "externalLeadUsage": null,
+    "externalLeadCostUsd": null,
+    "totalCostUsd": null,
+    "limitations": [
+      "Local managed execution only",
+      "Single-file integration",
+      "Independent test verification; required expert review blocks integration",
+      "Filesystem write isolation; no secret/network isolation",
+      "Run/invocation caps are not a monetary hard cap; external PM and lead CLI billing is unobserved",
+      "Managed team: restart invalidates capabilities; pending events remain; no automatic model resume"
+    ]
+  },
+  "claims": {
+    "oneWriter": "Managed process group drained before promotion; pending bootstrap attempted a filesystem write and was denied",
+    "sameTask": true,
+    "sameSlot": true,
+    "workPreserved": true,
+    "paidModel": false,
+    "billing": null,
+    "context8hVerified": false
+  }
+}

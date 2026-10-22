@@ -1,0 +1,124 @@
+{
+  "schema": "agent-meeting/canonical-carry-verification@1",
+  "fixture": true,
+  "timebox": {
+    "timezone": "Asia/Bangkok",
+    "start": "2026-10-22T21:42:20+07:00",
+    "deadline": "2026-10-22T22:42:20+07:00",
+    "stop": "2026-10-22T22:01:18.978889+07:00",
+    "elapsedSeconds": 1139.0,
+    "stoppedEarly": true
+  },
+  "workspace": {
+    "path": "/home/theo/workspace/agent-meeting",
+    "head": "e292fd3833d65152ebfa6133fc27a67285b6cab9",
+    "committed": false,
+    "pushed": false,
+    "existingUserChangesPreserved": true
+  },
+  "verification": {
+    "fullSuite": {
+      "command": "AM_CARRY_EVIDENCE_DIR=\"$PWD/docs/evidence/context-window/carry-review\" systemd-run --user --scope -q -p MemoryMax=1200M -p MemorySwapMax=0 timeout 900 npm test",
+      "exitCode": 0,
+      "files": 30,
+      "tests": 338,
+      "pass": 338,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "canonicalJourney": {
+      "checks": 42,
+      "nodeTestsIncludingParent": 43,
+      "fixtureSourceIntegrated": true,
+      "actualModelsVerified": false
+    },
+    "syntaxChecks": {
+      "passed": true,
+      "files": [
+        "src/team.js",
+        "tools/carry-canonical.js",
+        "test/carry-canonical.test.js",
+        "test/fixtures/carry-session.js",
+        "test/fixtures/carry-cli-fixture.js"
+      ]
+    },
+    "gitDiffCheck": true,
+    "untrackedSourceWhitespaceChecked": true,
+    "benchmarkSourceHashesMatch": true
+  },
+  "artifacts": [
+    {
+      "path": "docs/evidence/context-window/carry-review/canonical-benchmark.json",
+      "sha256": "197ce7a4b727c8c3ed2324fe1c072e2002aedd7fca93b0df275b19a65c645566"
+    },
+    {
+      "path": "docs/evidence/context-window/carry-review/canonical-tests.txt",
+      "sha256": "6ae516df559cdfda4bfa1915f1a2e42418e5c0413afc03068b67d6498937565f"
+    }
+  ],
+  "changedFiles": [
+    {
+      "path": "src/team.js",
+      "sha256": "e823fe22467d0f2a03fc5b6094b5970c98cf5e931338a9fe774866ca6af14452"
+    },
+    {
+      "path": "tools/carry-canonical.js",
+      "sha256": "609d66b2f7ddf7d234eb98337cd8e48d65bdd14d8e1d2e92a88880d04196b225"
+    },
+    {
+      "path": "test/carry-canonical.test.js",
+      "sha256": "143c5787a4c53b58b560a3227e32c5bd0ff2572174d49ab0c39ea58bcbc9e382"
+    },
+    {
+      "path": "test/fixtures/carry-session.js",
+      "sha256": "81f880435230f9918fc842948eba6477ee03367141939095b02fcd65c1c1ae85"
+    },
+    {
+      "path": "test/fixtures/carry-cli-fixture.js",
+      "sha256": "1bc2935dc823d57d653a0c3852e71f5473f1043144513a9d5bbd25a53222e03f"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "375b373533131d01a585aaf2b7fecc170ea252294a4eb5b292a3b32528186eed"
+    },
+    {
+      "path": "docs/REFERENCE.md",
+      "sha256": "d98adb0872089d6c6ab42603b50454250dff1d1e07556df2986de348b971f012"
+    },
+    {
+      "path": "docs/REFERENCE.vi.md",
+      "sha256": "15dcf0795cc4ed5be08405a75a7ddedeebab1c7af94239787c8f46c4440e7539"
+    },
+    {
+      "path": "docs/HANDOFF.md",
+      "sha256": "198bd1bb2cc45225025a8bf88656cbf337df3cac7aeee9db40b97200f5539975"
+    },
+    {
+      "path": "docs/evidence/context-window/carry-review/ASSESSMENT.vi.md",
+      "sha256": "370dcf10de80cef3319395884568b6d8b912bf212c515794a44f97ed1b151da2"
+    }
+  ],
+  "stateDistinction": {
+    "reported": "Caller delta and executable fixture output remain reported, not semantic truth.",
+    "verified": "Local source/revision/privacy/WIP checks, subprocess writer fence and independent tests passed.",
+    "integrated": "Single fixture task integrated only in the temporary checkout; assembler not hooked into runtime. All code changes remain uncommitted."
+  },
+  "boundaries": {
+    "realModelCalls": 0,
+    "subagents": 0,
+    "liveUserStoreAccess": false,
+    "oauthOrSettingsChanged": false,
+    "port3000OrInstalledAppTouched": false,
+    "controllerEnabled": false,
+    "pilotInputOrParserChanged": false
+  },
+  "unverified": [
+    "Semantic retention and behavior with actual models",
+    "Headless per-internal-turn context telemetry and forecasting",
+    "Direct-native recovery and matched model A/B total cost/human effort",
+    "Independent Claude design review (previous auth failure, no new attempt)",
+    "8-hour run or continuous context bound"
+  ],
+  "nextDecision": "No decision needed for completed local slice. Further model/live-store/controller work needs separate scope and authorization; do not infer consent."
+}

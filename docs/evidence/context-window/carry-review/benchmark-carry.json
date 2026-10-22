@@ -1,0 +1,159 @@
+{
+  "schema": "agent-meeting/carry-evidence-benchmark@1",
+  "fixture": true,
+  "at": "2026-10-22T14:31:16.572Z",
+  "input": {
+    "path": "docs/evidence/pm-team/journey.json",
+    "sha256": "97f34355f25002c929b0bea09841687748616670d4c28b2071d7c58691044a1a",
+    "taskId": "e14d0588-1b48-49c8-af8f-9f530cda82bd",
+    "runId": "674df80f-ef76-4e9f-b32d-15aaf5c7fc9b",
+    "slot": "A",
+    "generation": 2,
+    "goalRevision": 1,
+    "planRevision": 1
+  },
+  "sourceHashes": [
+    {
+      "path": "src/team.js",
+      "sha256": "832fc96957ea2d31b22722d7913dcb481331adac9ef60fb68dfebe75e45d44ef"
+    },
+    {
+      "path": "src/work.js",
+      "sha256": "f5e81e3708a05cede28623850947d4e748924fb12cc8a0345e9f3d45765089fd"
+    },
+    {
+      "path": "src/session-child.js",
+      "sha256": "7ebd98e90d5d25bccf73be39a0131eb735f697f5329bcef168a202b13e943782"
+    },
+    {
+      "path": "src/runtime.js",
+      "sha256": "1647a1ee676f0f4dec24839aad5e0189f4c6646210847f1c23db05d6b41ae236"
+    },
+    {
+      "path": "tools/measure-context-window.js",
+      "sha256": "4e17a686cfb4f0df938c257973fcaea6f9933aaccafce3e124961e851563724c"
+    }
+  ],
+  "checks": {
+    "passed": 21,
+    "failed": 0,
+    "items": [
+      "Public evidence projections resolve against pinned file hash and identity",
+      "Integrated task stops; stale checkpoint next is not replayed",
+      "Missing critical continuation facts stay explicit and blocked",
+      "Reported is not promoted to integrated",
+      "Missing source tests reject completion",
+      "Failed workspace tests reject completion",
+      "Cancelled source tests reject completion",
+      "Timed out source tests reject completion",
+      "Changed source rejects old references even with unchanged IDs",
+      "Cross-task report is rejected",
+      "Cross-run report is rejected",
+      "Stale generation is rejected",
+      "Changed plan revision is rejected",
+      "Changed goal revision is rejected",
+      "Changed slot is rejected",
+      "Conflicting acceptance is rejected",
+      "Private fields and untrusted instructions are excluded from projection",
+      "Private pointer and arbitrary path reads are rejected",
+      "Tampered projection digest is rejected",
+      "Retrieval size budget and duplicate references fail closed",
+      "Fixture writer evidence does not authorize a live writer or prove retention"
+    ]
+  },
+  "capsule": {
+    "schema": "agent-meeting/carry-evidence-experiment@1",
+    "facts": {
+      "taskId": "e14d0588-1b48-49c8-af8f-9f530cda82bd",
+      "runId": "674df80f-ef76-4e9f-b32d-15aaf5c7fc9b",
+      "slot": "A",
+      "generation": 2,
+      "goalRevision": 1,
+      "planRevision": 1,
+      "status": "integrated",
+      "acceptance": [
+        "sum(2,3)=5"
+      ],
+      "scope": [
+        "sum.js"
+      ],
+      "changes": [
+        {
+          "file": "sum.js",
+          "before": "703cb2a470cfd0a2ea935122ac16338093078ba039d78aeda1e9442ffb5cc0a3",
+          "after": "c394fb43cb49b16d39abd6d77b3a2935584d588f71a88720e2b0c1c0fbccae95"
+        }
+      ],
+      "workspaceTestsPassed": true,
+      "sourceTestsPassed": true
+    },
+    "evidenceRefs": [
+      {
+        "path": "docs/evidence/pm-team/journey.json",
+        "pointer": "/run/evidence",
+        "sourceSha256": "97f34355f25002c929b0bea09841687748616670d4c28b2071d7c58691044a1a",
+        "projectionSha256": "e352a69afc31f95d274ac0a2a611825b0032ec30cc93cb10832b3a5c3047d4de"
+      },
+      {
+        "path": "docs/evidence/pm-team/journey.json",
+        "pointer": "/run/integrationEvidence",
+        "sourceSha256": "97f34355f25002c929b0bea09841687748616670d4c28b2071d7c58691044a1a",
+        "projectionSha256": "84fb39ad7ee1a9d427c28b6af24340a752d5ac30d9fe4e318ef53561a377f062"
+      },
+      {
+        "path": "docs/evidence/pm-team/journey.json",
+        "pointer": "/run/changes",
+        "sourceSha256": "97f34355f25002c929b0bea09841687748616670d4c28b2071d7c58691044a1a",
+        "projectionSha256": "ccf7cf38d36b322eb8bf749c007d5950bf9b2de0f38282d4ed1a333c854508ae"
+      }
+    ],
+    "missing": [
+      "goal",
+      "requirementRevision",
+      "baseRevision",
+      "sourceSnapshot",
+      "grantConstraints",
+      "decisionsAndRationale",
+      "failedAttempts",
+      "unknownsAndBlockers",
+      "checkpointWip",
+      "currentNextAction"
+    ],
+    "completedInFixture": true,
+    "nextAction": "Stop integrated task; no next task authorized by this export",
+    "autonomousContinuationReady": false,
+    "semanticRetentionVerified": false,
+    "writerPromotionAuthorized": false
+  },
+  "metrics": {
+    "assemblerModelCalls": 0,
+    "rawExportBytes": 6456,
+    "sameFactsDirectBytes": 459,
+    "capsuleBytes": 1666,
+    "capsuleOverheadBytes": 1207,
+    "retrievedMetadataBytes": 708,
+    "sameFactsPlusSameEvidenceDirectBytes": 1167,
+    "capsulePlusAllRetrievalBytes": 2374,
+    "experimentAndChecksElapsedMs": 4.753622000000007,
+    "successorInputTokens": null,
+    "deltaOutputTokens": null,
+    "totalModelUsage": null,
+    "billedCostUsd": null,
+    "semanticRetention": null,
+    "contextPredictionError": null,
+    "contextOverflowRate": null,
+    "recoveryLatencyMs": null,
+    "liveWriterCount": null,
+    "realModelRuns": 0,
+    "continuousContextBoundGuaranteed": false,
+    "context8hVerified": false
+  },
+  "limitations": [
+    "Local reference resolver over one pinned public evidence fixture; not a product retrieval API or live-store assembler.",
+    "Document/projection hashes bind saved bytes only, not present workspace state, live grants, semantic truth, or writer quiescence.",
+    "Privacy checks exclude extra fixture fields and raw test output; allowlisted text still requires product redaction/authorization before live use.",
+    "Mutation cases are synthetic negatives, never recovered missing facts or actual model observations.",
+    "Direct comparison contains exactly the same recorded facts; capsule and retrieval add transport bytes, not proof of model savings.",
+    "Elapsed time includes checks; not model latency or a performance distribution. Unknown costs remain null."
+  ]
+}

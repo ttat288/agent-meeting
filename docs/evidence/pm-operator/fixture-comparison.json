@@ -1,0 +1,60 @@
+{
+  "schema": "agent-meeting/context-measurements@1",
+  "tiktoken": "0.14.0",
+  "scope": "Synthetic payload comparison, not model turns or billing. Excludes PM invitation prompt, reasoning, hidden prompts, caching, network envelopes, PM external CLI usage, runtime probe/setup, review/fix loops, retries and human time. PM token count is a lower bound on orchestration overhead, not a total cost estimate.",
+  "cases": [
+    {
+      "id": "single-sum-fixture",
+      "before": {
+        "utf8Bytes": 439,
+        "unicodeCharacters": 439,
+        "sha256": "5c4b72514b560fdc9bf6e14113cad84ac97e3517a6daa6ecb0bcd8ff06fbb866",
+        "tokens": {
+          "cl100k_base": 149,
+          "o200k_base": 154
+        }
+      },
+      "after": {
+        "utf8Bytes": 7919,
+        "unicodeCharacters": 7919,
+        "sha256": "c7dc5769b40a75e15fe6c969db1bbeae208846315827fa89eb5cfce7d2b98e0f",
+        "tokens": {
+          "cl100k_base": 2584,
+          "o200k_base": 2643
+        }
+      },
+      "tokenReductionPercent": {
+        "cl100k_base": -1634.23,
+        "o200k_base": -1616.23
+      }
+    }
+  ],
+  "metrics": {
+    "sameObjective": "Correct sum",
+    "sameAcceptance": [
+      "sum(2,3)=5"
+    ],
+    "sameOutput": true,
+    "direct": {
+      "workerCalls": 1,
+      "independentTestRuns": 1,
+      "elapsedMs": 309
+    },
+    "pm": {
+      "workerCalls": 1,
+      "independentTestRuns": 2,
+      "operations": [
+        "plan",
+        "run",
+        "state",
+        "verify",
+        "integrate",
+        "report"
+      ],
+      "elapsedMs": 623
+    },
+    "usage": null,
+    "costUsd": null,
+    "userInterventions": "Not measured: fixture scripts emulate both actors. PM removes manual run/verify/integrate controls after grant but adds invitation/confirmation/goal/grant setup. A direct coding CLI can already do this task with one goal."
+  }
+}

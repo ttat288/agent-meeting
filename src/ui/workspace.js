@@ -718,16 +718,27 @@
     if ((remote.runs || []).length) page.append(node('section', { class: 'ws-panel' }, node('h3', {}, t('Phân công và lease từ xa', 'Remote assignments and leases')), json(remote.runs)));
   }
 
-  let loaded = false, loading = false;
+  let loaded = false, loading = null;
   const workVisitedKey = 'agent-meeting:' + hostKey + ':work-opened';
   const workWasVisited = () => { try { return localStorage.getItem(workVisitedKey) === '1'; } catch { return false; } };
-  async function load() {
-    if (loading) return;
-    loading = true;
+  function load() {
+    if (loading) return loading;
     const page = $('page'); page.replaceChildren(node('p', { role: 'status' }, t('Đang tải dữ liệu phiên…', 'Loading session data…')));
-    try { config = await api('/config'); if (admin) { await loadAuxiliary(); renderAdmin(); } else { await Promise.all([api('/work').then(acceptWork), loadAuxiliary()]); renderDaily(); } loaded = true; if (!admin) try { localStorage.setItem(workVisitedKey, '1'); } catch {} }
-    catch (error) { page.replaceChildren(...heading(t('Không tải được dữ liệu', 'Could not load data'), t('Kiểm tra kết nối và quyền chủ trì local. Bản nháp task đã lưu trong trình duyệt được giữ lại.', 'Check the connection and local host capability. Saved task drafts are retained in this browser.'))); errorBox(page, error); page.append(button(t('Thử lại', 'Retry'), load)); }
-    finally { loading = false; }
+    loading = (async () => {
+      try { config = await api('/config'); if (admin) { await loadAuxiliary(); renderAdmin(); } else { await Promise.all([api('/work').then(acceptWork), loadAuxiliary()]); renderDaily(); } loaded = true; if (!admin) try { localStorage.setItem(workVisitedKey, '1'); } catch {} }
+      catch (error) {
+        page.replaceChildren(...heading(t('Không tải được dữ liệu', 'Could not load data'), t('Kiểm tra kết nối và quyền chủ trì local. Bản nháp task đã lưu trong trình duyệt được giữ lại.', 'Check the connection and local host capability. Saved task drafts are retained in this browser.'))); errorBox(page, error);
+        const retry = async () => {
+          const hash = location.hash, section = adminTab;
+          await load();
+          if (location.hash !== hash || adminTab !== section || document.activeElement !== document.body) return;
+          if (admin) $('main')?.focus(); else if (!$('workView').hidden) $('workTitle')?.focus();
+        };
+        page.append(button(t('Thử lại', 'Retry'), retry));
+      }
+      finally { loading = null; }
+    })();
+    return loading;
   }
   if (embedded) {
     document.querySelector('.skip-link').onclick = event => { event.preventDefault(); $('sessionNav').querySelector('a')?.focus(); };

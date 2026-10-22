@@ -52,3 +52,26 @@ test('initial work load focuses the active view heading',async()=>{
 test('an initial load completing after return to conversation cannot take focus',async()=>{
  const f=fixture();let done;f.context.loaded=false;f.context.load=()=>new Promise(resolve=>{done=resolve;});const pending=f.navigate();f.context.location.hash='#conversation';await f.navigate();done();await pending;assert.equal(f.focuses(),0);
 });
+
+function installLoader(f,{failConfigOnce=false}={}){
+ let configReads=0,workReads=0,draws=0,release,retryButton;const waiting=new Promise(resolve=>{release=resolve;}),heading=f.elements.workTitle;
+ f.context.loaded=false;f.context.loading=null;f.context.admin=false;f.context.adminTab='models';f.context.workVisitedKey='fixture:visited';f.context.localStorage={setItem:()=>{}};f.context.node=()=>({});f.context.button=(label,callback)=>({label,callback});f.context.heading=()=>[];f.context.t=(vi,en)=>en;
+ f.elements.page.replaceChildren=()=>{delete f.elements.workTitle;};f.elements.page.append=button=>{retryButton=button;};
+ f.context.api=async endpoint=>{if(endpoint==='/config'){configReads++;if(failConfigOnce&&configReads===1)throw Error('Controlled config read failure');return{revision:1};}workReads++;return{tasks:[],runs:[]};};
+ f.context.loadAuxiliary=()=>waiting;f.context.renderDaily=()=>{draws++;f.elements.workTitle=heading;};
+ const at=source.indexOf('function load() {'),start=source.lastIndexOf('\n',at)+1,end=source.indexOf('  if (embedded) {',at);assert(at>=0&&end>start);vm.runInContext(source.slice(start,end),f.context);
+ return{release,configReads:()=>configReads,workReads:()=>workReads,draws:()=>draws,retry:()=>retryButton.callback()};
+}
+test('concurrent initial-load consumers wait for readiness without duplicate reads',async()=>{
+ const f=fixture(),l=installLoader(f);let secondReady=false;const first=f.context.load(),second=f.context.load().then(()=>{secondReady=true;});await new Promise(resolve=>setImmediate(resolve));assert.equal(secondReady,false,'A later caller must await the in-flight load');assert.equal(l.configReads(),1);assert.equal(l.workReads(),1);l.release();await Promise.all([first,second]);assert.equal(l.draws(),1);assert.equal(f.context.loaded,true);
+});
+test('the latest initial work navigation focuses only after the shared load renders its heading',async()=>{
+ const f=fixture(),l=installLoader(f),old=f.navigate();await new Promise(resolve=>setImmediate(resolve));f.context.location.hash='#results';const current=f.navigate();l.release();await Promise.all([old,current]);assert.equal(f.focuses(),1);assert.equal(f.context.tab,'results');assert.equal(l.configReads(),1);assert.equal(l.workReads(),1);assert.equal(l.draws(),1);
+});
+test('failed initial load releases its pending state so an explicit retry can recover',async()=>{
+ const f=fixture(),l=installLoader(f,{failConfigOnce:true});await f.context.load();assert.equal(f.context.loaded,false);assert.equal(Boolean(f.context.loading),false);assert.deepEqual(f.errors,['Controlled config read failure']);f.context.document.activeElement=f.context.document.body;const retry=l.retry();l.release();await retry;assert.equal(f.context.loaded,true);assert.equal(l.configReads(),2);assert.equal(l.workReads(),1);assert.equal(l.draws(),1);assert.equal(f.focuses(),1);
+});
+
+test('retry recovery does not pull focus from a newer outside interaction',async()=>{
+ const f=fixture(),l=installLoader(f,{failConfigOnce:true});await f.context.load();const retry=l.retry(),outside={};f.context.document.activeElement=outside;l.release();await retry;assert.equal(f.context.loaded,true);assert.equal(f.focuses(),0);assert.equal(f.context.document.activeElement,outside);
+});

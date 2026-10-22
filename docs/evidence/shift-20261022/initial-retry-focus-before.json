@@ -1,0 +1,10 @@
+{
+  "sourceStage": "shared loader in working tree afterac84999 before retry focus guard",
+  "case": "retry recovered data",
+  "focus": {
+    "id": "",
+    "tag": "BODY"
+  },
+  "hash": "#plan",
+  "title": "Plan (5)"
+}

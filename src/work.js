@@ -4,7 +4,7 @@ const { execFileSync, spawn } = require('child_process');
 const { ConfigStore } = require('./config-store');
 const routing = require('./routing');
 const runtime = require('./runtime');
-const { observationStore, savedEnvironment } = require('./routing-tools');
+const { observationStore, savedEnvironment, currentEnvironment } = require('./routing-tools');
 const hash = b => crypto.createHash('sha256').update(b).digest('hex');
 const copy = x => JSON.parse(JSON.stringify(x));
 const failure = (message, status = 400) => Object.assign(new Error(message), { status });
@@ -159,9 +159,8 @@ class WorkManager {
     return { p, m, adapter };
   }
   environment() {
-    const now = Date.now();
     const config = this.configStore.read();
-    return [...this.read().observations, ...savedEnvironment(this.configStore, config)].filter(o => { const profile = config.profiles.find(p => p.id === o.profileId); return o.configRevision === config.revision && profile?.runtimeId === o.runtimeId && now - Date.parse(o.checkedAt) >= 0 && now - Date.parse(o.checkedAt) < 30 * 60000; });
+    return currentEnvironment(config, [...this.read().observations, ...savedEnvironment(this.configStore, config)]);
   }
   assertOpen() { if (this.closed) throw failure('Work manager is shutting down', 409); }
   async probe(profileId, expectedConfigRevision) {

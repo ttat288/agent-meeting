@@ -1,0 +1,23 @@
+{
+  "recordedAt": "2026-10-22T18:55:17.166428+00:00",
+  "counts": {
+    "tests": 382,
+    "pass": 382,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "testFiles": 34,
+  "sourceSha256": {
+    "src/work.js": "8a6f324a48c87916e98315ea472154d1655fa11fdb86551c8469f904108eda5e",
+    "src/routing-tools.js": "b9bb77bc9023dac5c21a131aed8fb592d60c5e2dd27060f7648950ace480c3bc",
+    "src/routing.js": "a44f5056b2572ae4991d3af6d90cfce6b424467f71b7403e9e9406c061c2d62b",
+    "test/work.test.js": "e94b28ba6bb058192ea43460520458e602210e60beb63fee155fbc8f19d32d1c",
+    "test/routing-tools.test.js": "40e69d88939f6152a3b574a6ed2c6ccd0cbe18da3d815ac11f84ef6bd663a447"
+  },
+  "command": "systemd-run --user --scope -q -p MemoryMax=1200M -p MemorySwapMax=0 timeout 900 npm test",
+  "limits": [
+    "No native model calls; deterministic access observation/dispatch tests",
+    "Latest timestamp and shared-copy tie rule within existing thirty-minute validity window; not access or quota guarantee"
+  ]
+}

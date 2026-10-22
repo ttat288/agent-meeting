@@ -138,3 +138,19 @@ test('a closed manager rejects new dispatch, probes and tests instead of restart
  await assert.rejects(work.integrate('missing'),/shutting down/);
  assert.equal(calls,0);await work.close();assert.equal(work.pending.size,0);
 });
+
+test('a persisted probe appears once in the merged environment',async t=>{
+ const{work}=setup(t);await work.probe('opus-claude');
+ assert.equal(work.environment().filter(o=>o.profileId==='opus-claude').length,1,'Local and shared copies are one access observation');
+});
+for(const sameTimestamp of [false,true])test('newer shared access failure overrides old local success'+(sameTimestamp?' at equal timestamps':''),async t=>{
+ let starts=0;const{dir,source,store,work}=setup(t,async args=>{if(!args.prompt.includes('READY'))starts++;return{status:'reported',reportedModel:'claude-opus-5-5'};});
+ await work.probe('opus-claude');
+ const other=new WorkManager({dir:path.join(dir,'other-work'),configStore:store,runner:async()=>({status:'failed',reportedModel:'unknown',error:'Controlled access failure'})});t.after(()=>other.close());
+ const failure=await other.probe('opus-claude');
+ work.update(d=>{d.observations[0].checkedAt=sameTimestamp?failure.checkedAt:new Date(Date.parse(failure.checkedAt)-1000).toISOString();});
+ const environment=work.environment();
+ assert.equal(environment.find(o=>o.profileId==='opus-claude').available,false,'The current shared failure must not be masked by room-local success');
+ assert(!routing.recommend(store.read(),{kind:'coding'},environment).candidates.some(c=>c.profileId==='opus-claude'));
+ const job=work.createTask(task(source));assert.throws(()=>work.start(job.id,'opus-claude'),/probe/);assert.equal(starts,0);assert.equal(work.read().runs.length,0);
+});

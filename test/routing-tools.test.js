@@ -7,7 +7,7 @@ const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 const { ConfigStore } = require('../src/config-store');
 const routing = require('../src/routing');
-const { TOOLS, query } = require('../src/routing-tools');
+const { TOOLS, query, currentEnvironment } = require('../src/routing-tools');
 const { TOOLS: conversationTools } = require('../src/server');
 const { ALLOWED } = require('../src/connect');
 
@@ -141,4 +141,14 @@ test('saved runtime probes are shared with standalone lookup and expire on confi
  const c = routing.defaults(), m = c.models.find(m=>m.id==='opus'); Object.assign(m,{enabled:true,verification:'verified',providerModelId:'claude-opus-5-5',source:{...m.source,checkedAt:new Date().toISOString(),confidence:'observed'}});c.profiles.find(p=>p.id==='opus-claude').enabled=true;
  const store=new ConfigStore({dir,defaults:()=>c,validate:routing.validate}); const observations=require('../src/routing-tools').observationStore(store);const snapshot=observations.read();snapshot.observations.push({profileId:'opus-claude',providerModelId:'claude-opus-5-5',runtimeId:'claude-code',configRevision:1,available:true,modelVerified:true,quotaAvailable:true,checkedAt:new Date().toISOString(),tools:[],permissions:[]});observations.save(snapshot,1);
  assert.equal(query(store,'recommend_profile',{task:{kind:'review'}}).candidates[0].profileId,'opus-claude'); const next=store.read();next.policy.maxCandidates=2;store.save(next,1);assert.equal(query(store,'recommend_profile',{task:{}}).outcome,'no-candidate');
+});
+
+test('environment merging keeps the freshest dated observation and excludes stale or unmapped evidence',()=>{
+ const config=routing.defaults(),p=config.profiles[0],now=Date.now();
+ const good={profileId:p.id,runtimeId:p.runtimeId,configRevision:config.revision,checkedAt:new Date(now-100).toISOString(),available:false};
+ const old={...good,checkedAt:new Date(now-200).toISOString(),available:true};
+ const invalid=[null,{...good,checkedAt:'unknown'},{...good,checkedAt:new Date(now+1).toISOString()},{...good,checkedAt:new Date(now-30*60000).toISOString()},{...good,configRevision:config.revision+1},{...good,runtimeId:'other-runtime'},{...good,profileId:'not-configured',runtimeId:undefined}];
+ assert.deepEqual(currentEnvironment(config,[good,old,...invalid],now),[good]);
+ assert.deepEqual(currentEnvironment(config,[old,good],now),[good]);
+ const sameDate={...good,available:true};assert.deepEqual(currentEnvironment(config,[good,sameDate],now),[sameDate]);
 });

@@ -1,0 +1,21 @@
+{
+  "sameProbeObservationCount": 2,
+  "afterNewerFailure": [
+    {
+      "profileId": "opus-claude",
+      "available": true,
+      "checkedAt": "2026-10-22T18:50:46.821Z",
+      "error": null
+    },
+    {
+      "profileId": "opus-claude",
+      "available": false,
+      "checkedAt": "2026-10-22T18:50:46.836Z",
+      "error": "Controlled access failure"
+    }
+  ],
+  "candidateProfiles": [
+    "opus-claude"
+  ],
+  "nativeModelCalls": 0
+}

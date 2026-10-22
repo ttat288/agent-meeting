@@ -1,0 +1,117 @@
+{
+  "beforeSourceCommit": "953225b92604e706d37e49cdb6688bb94a3c4f20",
+  "before": {
+    "at": "2026-10-22T23:06:36.936Z",
+    "bodyOverflow": true,
+    "composer": {
+      "bottom": 234,
+      "height": 112,
+      "left": 100,
+      "right": 232.2890625,
+      "top": 122,
+      "width": 132.2890625,
+      "x": 100,
+      "y": 122
+    },
+    "draft": "Draft gi\u1eef nguy\u00ean khi c\u00f3 nhi\u1ec1u th\u00f4ng b\u00e1o",
+    "focus": "hostMsg",
+    "height": 568,
+    "toastBox": {
+      "bottom": 737,
+      "height": 648,
+      "left": 0,
+      "right": 360,
+      "top": 89,
+      "width": 360,
+      "x": 0,
+      "y": 89
+    },
+    "toastCount": 12,
+    "width": 375
+  },
+  "after": [
+    {
+      "at": "2026-10-22T23:08:04.919Z",
+      "bodyOverflow": false,
+      "clientHeight": 142,
+      "composer": {
+        "bottom": 418,
+        "height": 112,
+        "left": 100,
+        "right": 247.2890625,
+        "top": 306,
+        "width": 147.2890625,
+        "x": 100,
+        "y": 306
+      },
+      "composerFullyVisible": true,
+      "count": 12,
+      "draft": "Draft gi\u1eef nguy\u00ean khi c\u00f3 nhi\u1ec1u th\u00f4ng b\u00e1o",
+      "focus": "hostMsg",
+      "height": 568,
+      "latestFullyInside": true,
+      "scrollHeight": 688,
+      "scrollTop": 546,
+      "toastBox": {
+        "bottom": 568,
+        "height": 142,
+        "left": 0,
+        "right": 375,
+        "top": 426,
+        "width": 375,
+        "x": 0,
+        "y": 426
+      },
+      "toastInputIntersection": 0,
+      "width": 375
+    },
+    {
+      "bodyOverflow": false,
+      "composerFullyVisible": true,
+      "count": 12,
+      "draft": "Keep the draft while twelve admission notifications arrive",
+      "focus": "hostMsg",
+      "height": 360,
+      "intersection": 0,
+      "latestFullyInside": true,
+      "stackHeight": 90,
+      "stackTop": 270,
+      "theme": "light",
+      "width": 640
+    },
+    {
+      "bodyOverflow": false,
+      "composerFullyVisible": true,
+      "count": 12,
+      "focus": "hostMsg",
+      "height": 812,
+      "intersection": 0,
+      "latestFullyInside": true,
+      "stackHeight": 160,
+      "width": 1280
+    }
+  ],
+  "expiryRecovery": {
+    "at": "2026-10-22T23:08:44.738Z",
+    "bodyOverflow": false,
+    "count": 0,
+    "draft": "Draft gi\u1eef nguy\u00ean khi c\u00f3 nhi\u1ec1u th\u00f4ng b\u00e1o",
+    "focus": "hostMsg",
+    "height": 0
+  },
+  "nativeModelCalls": 0,
+  "scope": [
+    "12 local synthetic admission requests; no real participants or inference",
+    "Before/after names/codes are not byte-identical; geometry regression checks, not a latency/billing benchmark",
+    "Before captures container geometry and body overflow; no exact per-toast paint intersection claim",
+    "Bounded scroller reserves at most min(25dvh,160px), latest message visible; older live notifications may require scrolling before existing2.6s expiry",
+    "No physical-device, screen-reader or human UX acceptance claim"
+  ],
+  "sourceHashes": {
+    "src/ui/app.css": "5002d18fc97a7a83fb78b827200e83b620c4fcd1b9c3e1fed61057d768820a4e",
+    "src/ui/app.js": "3080aeb9bab5c8912b9f8263c87a27fa28041b2dc62e436779b2df2e9f58e529",
+    "src/ui/index.html": "8c74b07c8bf0a4e4457cfaf72b1c52959b154e83d9ac24a31b263348476d505e",
+    "src/ui/workspace.css": "9c5c34ee23cc1e5b04151a3117d6029904ada3182c942951b1ef1d34ff7b9a1a",
+    "src/ui/workspace.js": "466e76c320bfadda9074dc5b3d75e4699085b8a4596408d87c3dca5ba23b5812"
+  }
+}

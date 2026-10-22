@@ -241,7 +241,7 @@ textarea { resize: vertical; min-height: 44px; line-height: 1.5; }
 .modal-a { display: flex; gap: 10px; justify-content: flex-end; }
 .notfound { position: fixed; inset: 0; z-index: 40; background: var(--bg); display: grid; place-items: center; padding: 16px; }
 .notfound .card { max-width: 480px; }
-.toasts { position:relative; flex:none; z-index:50; display:grid; justify-items:center; pointer-events:none; }
+.toasts { position:relative; flex:none; z-index:50; display:grid; justify-items:center; max-height:min(25dvh,160px); overflow:auto; }
 .toasts .toast { max-width:calc(100vw - 2 * var(--gutter)); margin:var(--space-2) 0; overflow-wrap:anywhere; }
 .toast { background: var(--ink); color: var(--bg); padding: 9px 16px; border-radius: 10px; font-size:var(--text-ui); font-weight: 600; box-shadow: var(--shadow-lg); animation: rise .2s ease-out; }
 .toast.bad { background: var(--bad); color: #fff; }

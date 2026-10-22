@@ -139,3 +139,6 @@ J22: PM Send chậm/nhấn lặp không xóa bản nháp chưa gửi, response t
 
 
 J23 (đích trước sửa): khi bản nháp vN bị409 do yêu cầu vN+1 đã đổi, áp dụng cập nhật/Back/reload phải có đường xem draft cũ trong phần Chuẩn bị của cùng task. Chỉ đọc nội dung đã lưu local theo đúng host/task, không tự merge hoặc save; current form vẫn theo revision mới, người dùng tự chép phần cần giữ. Chỉ hiện phần khôi phục khi có draft hợp lệ trước revision hiện tại; không thêm màn quản lý draft hoặc gửi nội dung này cho worker. Test browser phải kiểm both old/current acceptance cùng tồn tại, readonly, reload, backend unchanged/no run, VI/EN và local storage unavailable fallback.
+
+
+J24 (S05, củng cố J15): profile đã chọn giữ khi task khác/conversation cập nhật và focus ở ngoài task, nếu requirement/config revision còn nguyên và profile còn enabled. Chọn rỗng, requirement/config đổi hoặc reload yêu cầu chọn lại; không lưu ý định chạy vào local storage. Run gửi expectedRequirementRevision/expectedConfigRevision của view; server kiểm trên snapshot dùng dispatch,409 trước runtime khi lệch kể cả probe khác client đã refresh. API cũ không gửi optional revision giữ hành vi chọn cấu hình hiện hành; PM/team guards riêng giữ nguyên. Test browser unrelated update/Back/reset-on-revision và HTTP stale/current/no-call+config/requirement snapshots.

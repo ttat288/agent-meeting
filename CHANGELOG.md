@@ -6,6 +6,7 @@
 - Human chair stays the default, with optional PM controls/history in Options. PM connection errors clear on recovery without erasing action errors; terminal invitation words use POSIX quoting.
 - Slow verification/integration can be cancelled from Results; late completions preserve drafts opened in another view. PM updates preserve supervision focus and unsent drafts; director stop controls take priority over pending ordinary requests.
 - Task forms expose saved differences from the latest older draft for read-only recovery after a requirement change; no automatic replay or merge. Malformed or unavailable browser storage falls back to current server requirements.
+- Live renders retain profile choices within the same task/config revision. Web Run fences both viewed revisions before dispatch, including after another client probes a remapped profile.
 - Source inventories preserve prototype-named files in both local and remote worker copies. Rollback preserves concurrent chmod/path replacements and records a conflict for manual reconciliation.
 - Runtime and test streams retain Vietnamese/emoji across UTF-8 chunks and bounded report/log truncation.
 - Runtime evidence keeps negative costs and ambiguous multiple-model identity unknown; agy SUCCESS with denied_actions is a permission failure with an actionable diagnostic. Team checkpoint/swap/activation and completion reports check Git HEAD as well as file snapshots.

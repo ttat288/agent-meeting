@@ -16,6 +16,7 @@
   let config, work = { tasks: [], runs: [] }, tab = 'tasks', adminTab = 'models', selectedModel, runtime = [];
   let remote = { hosts: [], runs: [] }, remoteError = null, metrics = null, metricsError = null, importDraft = '';
   let workReadVersion = 0, activeWorkReads = 0, pollController, pendingWork = null, syncState = 'live';
+  const profileSelections = new Map();
   const node = (tag, attrs = {}, ...children) => {
     const e = document.createElement(tag);
     for (const [k, v] of Object.entries(attrs)) {
@@ -55,6 +56,7 @@
       'Acceptance criteria required': 'Cần ít nhất một tiêu chí nghiệm thu.',
       'Runtime access is unverified or routing constraints reject this task; probe the profile first': 'Chưa xác nhận quyền truy cập runtime hoặc task không đáp ứng quy tắc chia việc. Vào Quản trị → Agent & runtime để kiểm tra hồ sơ.',
       'Task changed; reload before saving this draft': 'Task đã thay đổi. Bản nháp được giữ theo revision cũ; làm mới để xem yêu cầu hiện tại.',
+      'Task changed; refresh before running this task': 'Yêu cầu của task đã đổi. Xem cập nhật trước khi chọn hồ sơ và chạy lại.',
       'Cancel or reconcile the existing run before changing execution requirements': 'Hủy hoặc xử lý phiên chạy hiện tại trước khi sửa yêu cầu.',
       'Task source is no longer in this meeting; review the current plan': 'Nguồn task không còn trong phòng. Xem lại kế hoạch hiện tại.',
       'Requirement revision changed; the old result cannot be accepted': 'Yêu cầu đã đổi phiên bản. Không thể nghiệm thu kết quả cũ.',
@@ -64,7 +66,8 @@
       'Dependency cycle': 'Các task đang phụ thuộc vòng vào nhau.',
       'Server restarted; reconcile the old process before starting a new task.': 'Server đã khởi động lại. Cần đối chiếu và xử lý tiến trình cũ trước khi chạy tiếp; chưa hỗ trợ phục hồi tự động.',
       'Base revision changed': 'Base revision đã thay đổi. Kiểm tra lại checkout nguồn.',
-      'Source checkout path changed': 'Đường dẫn checkout nguồn đã đổi. Kiểm tra thư mục thật trước khi tích hợp.'
+      'Source checkout path changed': 'Đường dẫn checkout nguồn đã đổi. Kiểm tra thư mục thật trước khi tích hợp.',
+      'Configuration changed; refresh before selecting an execution profile': 'Cấu hình đã đổi. Bấm Làm mới để xem và chọn hồ sơ chạy hiện tại.'
     };
     return lang === 'vi' && translations[message] || message;
   }
@@ -277,14 +280,19 @@
         if (task.purpose === 'execute' && task.topology === 'local' && task.management === 'managed') {
           const profileId = 'profile-' + task.id;
           const profiles = (config?.profiles || []).filter(p => p.enabled);
+          const configRevision = config?.revision, savedProfile = profileSelections.get(task.id);
+          const selectedProfile = savedProfile?.requirementRevision === task.requirementRevision && savedProfile.configRevision === configRevision && profiles.some(p => p.id === savedProfile.id) ? savedProfile.id : '';
+          if (!selectedProfile) profileSelections.delete(task.id);
           const controls = node('div', { class: 'ws-run-controls' });
           const run = button(t('Chạy trong workspace riêng', 'Run in isolated workspace'), () => action(run, card, async () => {
             if (!val(profileId)) { errorBox(card, new Error(t('Chọn hồ sơ chạy trước.', 'Select an execution profile first.')), profileId); return; }
-            await api('/work/tasks/' + encodeURIComponent(task.id) + '/run', { profileId: val(profileId) }); acceptWork(await api('/work')); renderTaskList(); notify(t('Đã gửi yêu cầu chạy.', 'Run requested.'));
+            await api('/work/tasks/' + encodeURIComponent(task.id) + '/run', { profileId: val(profileId), expectedConfigRevision: configRevision, expectedRequirementRevision: task.requirementRevision }); acceptWork(await api('/work')); renderTaskList(); notify(t('Đã gửi yêu cầu chạy.', 'Run requested.'));
           }), true);
           const existingResult = runs.some(r => r.requirementRevision === task.requirementRevision && !['failed','cancelled','timeout','output-limit','rejected'].includes(r.status));
           run.disabled = !profiles.length || runs.some(activeRun) || existingResult;
-          controls.append(selectField(t('Hồ sơ chạy', 'Execution profile'), profileId, [['', t('Chọn hồ sơ', 'Select a profile')], ...profiles.map(p => [p.id, p.label])], ''), run);
+          const choice = selectField(t('Hồ sơ chạy', 'Execution profile'), profileId, [['', t('Chọn hồ sơ', 'Select a profile')], ...profiles.map(p => [p.id, p.label])], selectedProfile);
+          choice.querySelector('select').onchange = event => { if (event.target.value) profileSelections.set(task.id, { id: event.target.value, requirementRevision: task.requirementRevision, configRevision }); else profileSelections.delete(task.id); };
+          controls.append(choice, run);
           if (!existingResult && !runs.some(activeRun)) card.append(controls);
           if (!profiles.length) card.append(node('p', { class: 'ws-warning' }, t('Chưa có hồ sơ được bật. Mở Quản trị → Agent & runtime để cấu hình.', 'No enabled profiles. Open Administration → Agents & runtimes to configure one.')));
 

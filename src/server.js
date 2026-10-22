@@ -621,7 +621,7 @@ function createApp(cfg = {}) {
           if (action === 'work/tasks') return json(201, work.createTask(body));
           const bits = action.split('/');
           if (bits[1] === 'tasks' && bits[3] === 'configure') return json(200, work.configureTask(bits[2], body));
-          if (bits[1] === 'tasks' && bits[3] === 'run') return json(202, work.start(bits[2], body.profileId));
+          if (bits[1] === 'tasks' && bits[3] === 'run') return json(202, work.start(bits[2], body.profileId, { expectedConfigRevision: body.expectedConfigRevision, expectedRequirementRevision: body.expectedRequirementRevision }));
           if (bits[1] === 'runs' && bits[3] === 'rebase') return json(200, work.rebase(bits[2]));
           if (bits[1] === 'runs' && bits[3] === 'cancel') return json(202, work.cancel(bits[2]));
           if (bits[1] === 'runs' && bits[3] === 'verify') return json(200, await work.verify(bits[2]));

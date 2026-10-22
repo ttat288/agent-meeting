@@ -179,12 +179,15 @@ class WorkManager {
     this.assertCurrent(taskId);
     const state = this.read(), task = state.tasks.find(t => t.id === taskId);
     if (!task) throw failure('Task not found', 404);
+    if (managed.expectedRequirementRevision !== undefined && task.requirementRevision !== managed.expectedRequirementRevision) throw failure('Task changed; refresh before running this task', 409);
     if (task.purpose !== 'execute' || task.topology !== 'local' || task.management !== 'managed') throw failure('Managed execution currently supports local execution tasks only', 409);
     if (state.runs.some(r => r.status === 'interrupted')) throw failure('An interrupted run needs reconciliation; no automatic re-dispatch', 409);
     if (state.runs.some(r => r.taskId === taskId && r.requirementRevision === task.requirementRevision && !['failed','cancelled','timeout','output-limit','rejected'].includes(r.status))) throw failure('Task already has an active or completed attempt', 409);
     checkTask(copy(task));
     if (task.dependencies.some(id => state.tasks.find(t => t.id === id)?.status !== 'done' || state.tasks.find(t => t.id === id)?.sourceCurrent === false)) throw failure('Dependencies not integrated', 409);
-    const config = this.configStore.read(), { m, adapter } = this.profile(config, profileId);
+    const config = this.configStore.read();
+    if (managed.expectedConfigRevision !== undefined && config.revision !== managed.expectedConfigRevision) throw failure('Configuration changed; refresh before selecting an execution profile', 409);
+    const { m, adapter } = this.profile(config, profileId);
     const source = fs.realpathSync(task.workspace || ''), baseRevision = gitRevision(source);
     if (task.baseRevision && task.baseRevision !== baseRevision) throw failure('Base revision changed', 409);
     const observation = this.environment().find(o => o.profileId === profileId);

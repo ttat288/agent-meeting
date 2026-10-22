@@ -303,3 +303,6 @@ Snapshot dictionaries không có prototype: tên file hợp lệ `__proto__` ph�
 
 
 Integration từ chối khi đường dẫn source canonical đã bị thay thành symlink trước lúc ghi, kiểm lại sau integrated tests. Rollback kiểm root canonical và từng parent qua safeFile trước lstat/hash/mode của target: không chỉ kiểm symlink ở basename. Nếu thư mục root/parent bị thay trong bước await, giữ cây bên ngoài và báo manual rollback conflict. Các kiểm này tránh ca redirect đã tái hiện, không biến thao tác filesystem thành giao dịch nguyên tử hoặc chặn mọi race của tiến trình host cùng quyền. Khôi phục đúng directory path rồi retry tường minh phải qua toàn bộ snapshot/HEAD/test guards.
+
+
+Interactive Run gửi expected config/requirement revisions của view. WorkManager kiểm trên cùng config/task snapshot trước tạo run/copy/dispatch, kể cả khi runtime probe khác client đã được cập nhật. Đây là optimistic intent fence, không tự đổi model theo profile đã remap mà view cũ chưa xem. HTTP chỉ chuyển hai expected fields tới managed options, không nhận runner/executable từ client. Fields optional để giữ hợp đồng CLI/API cũ chọn state hiện hành khi gọi; grant PM/team tiếp tục có guards riêng.

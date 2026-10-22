@@ -197,3 +197,27 @@ test('conditional work reads track work, room and remote state without bypassing
   const other = app.create({ hostKey: 'other_host_work_0123456789', id: 'other_agent_work_0123456789', fixed: true });
   assert.equal((await fetch(base + '/api/host/' + other.hostKey + '/work', { headers: { 'if-none-match': latest } })).status, 200);
 });
+
+test('run HTTP fences the viewed config and requirement before any runtime dispatch', async t => {
+  let starts = 0;
+  const {app,root,url}=await boot(t,{runCli:async options=>{if(!options.prompt.includes('READY'))starts++;return{status:'reported',reportedModel:'fixture-model',text:'Deterministic fixture; not an AI call',exitCode:0};}});
+  const source=path.join(root,'source');fs.mkdirSync(path.join(source,'test'),{recursive:true});
+  fs.writeFileSync(path.join(source,'sum.js'),'module.exports=(a,b)=>a-b;\n');
+  fs.writeFileSync(path.join(source,'test/sum.test.js'),"require('node:test')('sum',()=>require('node:assert/strict').equal(require('../sum')(2,3),5));\n");
+  const {execFileSync}=require('node:child_process');execFileSync('git',['init','-q',source]);execFileSync('git',['-C',source,'add','.']);execFileSync('git',['-C',source,'-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','fixture']);
+  const config=app.configStore.read(),model=config.models.find(m=>m.id==='opus');
+  Object.assign(model,{enabled:true,providerModelId:'fixture-model',verification:'verified',source:{...model.source,checkedAt:new Date().toISOString(),confidence:'user-configured'}});config.profiles.find(p=>p.id==='opus-claude').enabled=true;
+  const viewed=app.configStore.save(config,config.revision).revision;
+  const task=await(await post(url('/work/tasks'),{goal:'Bounded view revision fixture',acceptance:['sum(2,3)=5'],purpose:'execute',workspace:source,writePaths:['sum.js'],testFiles:['test/sum.test.js']})).json();
+  const changed=app.configStore.read();changed.models[0].label+=' updated elsewhere';const current=app.configStore.save(changed,changed.revision).revision;
+  assert.equal((await post(url('/runtime/probe'),{profileId:'opus-claude'})).status,200);
+  const stale=await post(url(`/work/tasks/${task.id}/run`),{profileId:'opus-claude',expectedConfigRevision:viewed,expectedRequirementRevision:task.requirementRevision});
+  assert.equal(stale.status,409);assert.match((await stale.json()).error,/Configuration changed/);assert.equal(starts,0);
+  const edited=await(await post(url(`/work/tasks/${task.id}/configure`),{expectedRevision:task.requirementRevision,acceptance:['Changed acceptance from another client']})).json();
+  const oldTask=await post(url(`/work/tasks/${task.id}/run`),{profileId:'opus-claude',expectedConfigRevision:current,expectedRequirementRevision:task.requirementRevision});
+  assert.equal(oldTask.status,409);assert.match((await oldTask.json()).error,/Task changed/);assert.equal(starts,0);
+  assert.equal((await(await fetch(url('/work'))).json()).runs.length,0);
+  const launch=await post(url(`/work/tasks/${task.id}/run`),{profileId:'opus-claude',expectedConfigRevision:current,expectedRequirementRevision:edited.requirementRevision});
+  assert.equal(launch.status,202);const run=await launch.json();assert.equal(run.configRevision,current);assert.equal(run.requirementRevision,edited.requirementRevision);
+  for(let i=0;i<50&&!starts;i++)await new Promise(r=>setTimeout(r,10));assert.equal(starts,1);
+});

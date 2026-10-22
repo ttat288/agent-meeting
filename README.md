@@ -97,6 +97,8 @@ The current source also includes **UI v2 and experimental managed workflows**: v
 
 If requirements change while you edit, **View previous draft** in the task form lets you read saved differences and copy what you need into the current revision before saving.
 
+The web Run button checks the requirements and configuration you viewed. Changed revisions require a fresh review and profile selection before dispatch.
+
 Verification and integration show progress and **Cancel run** in Results. Cancellation waits for the test process to stop; if the source was edited or its permissions changed meanwhile, a rollback conflict requires manual reconciliation.
 
 ![Current Results view: a local subprocess fixture is integrated and independently tested; live updates share the compact session shell.](docs/evidence/shift-20261022/results-en-dark.jpg)

@@ -97,6 +97,8 @@ Source hiện có thêm **UI v2 và luồng thực thi được quản lý còn 
 
 Nếu yêu cầu đổi khi đang sửa, **Xem bản nháp trước** trong form task cho đọc phần khác đã lưu và tự chép nội dung cần giữ vào revision hiện tại trước khi lưu.
 
+Nút chạy trên web kiểm yêu cầu và cấu hình bạn đã xem. Khi revision đổi, cần xem lại và chọn profile hiện tại trước khi khởi chạy.
+
 Kiểm chứng và tích hợp hiển thị tiến trình cùng nút **Hủy phiên chạy** tại Kết quả. Hủy đợi test dừng; nếu source hoặc quyền file đã đổi trong lúc đó, rollback conflict cần được đối chiếu thủ công.
 
 ![Kết quả hiện tại: fixture subprocess local đã tích hợp và test độc lập, trạng thái tự cập nhật trong shell gọn.](docs/evidence/shift-20261022/results-vi-dark.jpg)

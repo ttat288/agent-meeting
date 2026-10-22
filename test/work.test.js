@@ -32,6 +32,32 @@ test('unverified access and remote modes cannot launch; stale probe revision rej
  const next=store.read();next.policy.maxCandidates=2;store.save(next,1);assert.equal(work.environment().length,0);assert.throws(()=>work.start(job.id,'opus-claude'),/probe/);
  const remote=work.createTask({...task(source),topology:'remote'});assert.throws(()=>work.start(remote.id,'opus-claude'),/local/);
 });
+test('a stale viewed config revision cannot dispatch even after another client refreshes the probe',async t=>{
+ let starts=0;
+ const {source,store,work}=setup(t,async args=>{if(!args.prompt.includes('READY'))starts++;return{status:'reported',reportedModel:'claude-opus-5-5',text:'Fixture, not an AI call',exitCode:0};});
+ await work.probe('opus-claude');const job=work.createTask(task(source)),viewed=store.read().revision;
+ const changed=store.read();changed.models[0].label+=' updated elsewhere';store.save(changed,changed.revision);
+ await work.probe('opus-claude');
+ let rejected;try{work.start(job.id,'opus-claude',{expectedConfigRevision:viewed});}catch(error){rejected=error;}
+ await wait(work);assert.equal(starts,0,'Stale UI config must not launch a runtime');assert.match(rejected?.message||'',/Configuration changed/);assert.equal(work.read().runs.length,0);
+ const current=store.read().revision,run=work.start(job.id,'opus-claude',{expectedConfigRevision:current});await wait(work);
+ assert.equal(starts,1);assert.equal(run.configRevision,current);
+});
+test('a stale viewed requirement revision cannot dispatch a changed task',async t=>{
+ let starts=0;const{source,work}=setup(t,async args=>{if(!args.prompt.includes('READY'))starts++;return{status:'reported',reportedModel:'claude-opus-5-5',text:'Fixture',exitCode:0};});
+ await work.probe('opus-claude');const job=work.createTask(task(source));work.configureTask(job.id,{expectedRevision:job.requirementRevision,acceptance:['New acceptance introduced by another client']});
+ let rejected;try{work.start(job.id,'opus-claude',{expectedRequirementRevision:job.requirementRevision});}catch(error){rejected=error;}
+ await wait(work);assert.equal(starts,0,'A changed task must not launch from an old view');assert.match(rejected?.message||'',/Task changed/);assert.equal(work.read().runs.length,0);
+});
+test('a profile remap with a fresh probe cannot silently switch the model chosen in an older view',async t=>{
+ const requested=[];const{source,store,work}=setup(t,async args=>{if(!args.prompt.includes('READY'))requested.push(args.modelId);return{status:'reported',reportedModel:args.modelId,text:'Deterministic model-identity fixture',exitCode:0};});
+ await work.probe('opus-claude');const job=work.createTask(task(source)),viewed=store.read().revision;
+ const changed=store.read();changed.models.find(m=>m.id==='opus').providerModelId='fixture-remapped-model';const current=store.save(changed,changed.revision).revision;
+ await work.probe('opus-claude');
+ assert.throws(()=>work.start(job.id,'opus-claude',{expectedConfigRevision:viewed}),/Configuration changed/);assert.deepEqual(requested,[]);
+ const run=work.start(job.id,'opus-claude',{expectedConfigRevision:current,expectedRequirementRevision:job.requirementRevision});await wait(work);
+ assert.deepEqual(requested,['fixture-remapped-model']);assert.equal(run.requestedModel,'fixture-remapped-model');assert.equal(work.read().runs[0].reportedModel,'fixture-remapped-model');
+});
 test('source dependency changes without HEAD change block integration',async t=>{
  const{source,work}=setup(t);await work.probe('opus-claude');const job=work.createTask(task(source)),run=work.start(job.id,'opus-claude');await wait(work);await work.verify(run.id);
  fs.appendFileSync(path.join(source,'test/sum.test.js'),'// changed\n');await assert.rejects(()=>work.integrate(run.id),/Source snapshot changed/);assert.match(fs.readFileSync(path.join(source,'sum.js'),'utf8'),/a-b/);

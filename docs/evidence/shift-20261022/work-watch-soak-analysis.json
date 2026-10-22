@@ -1,0 +1,131 @@
+{
+  "schema": "agent-meeting/work-watch-soak-analysis@1",
+  "analyzedAt": "2026-10-22T17:40:14.509460+00:00",
+  "rawSha256": "7e4f3faf93749b7eff81d5063f8809f454df6d26dea148994857ec5e2a23d9ae",
+  "sourceRef": "66a4e986d3aedac644b46caa859890741081f152",
+  "sourceHashesVerifiedAgainstRef": {
+    "src/server.js": true,
+    "src/work.js": true,
+    "src/meeting.js": true,
+    "src/remote.js": true,
+    "tools/soak-work-watch.js": true
+  },
+  "currentSourceHashMismatches": [
+    "src/work.js"
+  ],
+  "status": "completed",
+  "elapsedMs": 5400024.414184,
+  "requestedMinutes": 90,
+  "requests": 5403,
+  "taskCount": 100,
+  "modelCalls": 0,
+  "errors": [],
+  "restarts": [
+    {
+      "atMs": 2700854.309284,
+      "elapsedMs": 13.72421699995175
+    }
+  ],
+  "byClient": {
+    "unconditional": {
+      "requests": 1801,
+      "status200": 1801,
+      "status304": 0,
+      "bodyBytes": 87002541,
+      "latencyMs": {
+        "median": 5.599118999904022,
+        "p95": 9.368650999851525,
+        "p99": 10.72488599999997,
+        "max": 14.601861000061035
+      }
+    },
+    "conditional-A": {
+      "requests": 1801,
+      "status200": 181,
+      "status304": 1620,
+      "bodyBytes": 8754183,
+      "latencyMs": {
+        "median": 2.3020989997312427,
+        "p95": 7.216980000026524,
+        "p99": 8.320993999950588,
+        "max": 10.870328000281006
+      }
+    },
+    "conditional-B": {
+      "requests": 1801,
+      "status200": 181,
+      "status304": 1620,
+      "bodyBytes": 8754183,
+      "latencyMs": {
+        "median": 4.2073160000145435,
+        "p95": 7.546796999871731,
+        "p99": 8.939798999985214,
+        "max": 12.081835999999385
+      }
+    }
+  },
+  "byStatus": {
+    "200": {
+      "requests": 2163,
+      "status200": 2163,
+      "status304": 0,
+      "bodyBytes": 104510907,
+      "latencyMs": {
+        "median": 5.066541000036523,
+        "p95": 9.175279999850318,
+        "p99": 10.625220000001718,
+        "max": 14.601861000061035
+      }
+    },
+    "304": {
+      "requests": 3240,
+      "status200": 0,
+      "status304": 3240,
+      "bodyBytes": 0,
+      "latencyMs": {
+        "median": 3.5091479999828152,
+        "p95": 7.282094999914989,
+        "p99": 8.745033000130206,
+        "max": 12.081835999999385
+      }
+    }
+  },
+  "quantiles": "Nearest-rank empirical quantiles, descriptive only; no statistical/causal comparison",
+  "resources": {
+    "samples": 91,
+    "maxRssBytes": 114044928,
+    "first": {
+      "atMs": 482.17756799999995,
+      "rss": 95686656,
+      "heapTotal": 15110144,
+      "heapUsed": 12816504,
+      "external": 4923456,
+      "arrayBuffers": 687306,
+      "cpu": {
+        "user": 523058,
+        "system": 77751
+      }
+    },
+    "last": {
+      "atMs": 5400018.68621,
+      "rss": 112787456,
+      "heapTotal": 20647936,
+      "heapUsed": 14151536,
+      "external": 6249228,
+      "arrayBuffers": 1957529,
+      "cpu": {
+        "user": 28836832,
+        "system": 1965740
+      }
+    }
+  },
+  "limits": [
+    "Three logical clients are sequential within each round, alternating order; not three simultaneous requesters.",
+    "Restart was app.flush/close/createApp/restore inside the same Node process with a new listener; no OS-process restart, SIGKILL or crash-durability check.",
+    "Resource samples include server, driver and bounded raw collection in one process; not app-only cost or proof of no leaks.",
+    "Only HTTP response body bytes were captured; headers, client CPU, user effort, model tokens, cache and billing are not measured.",
+    "The raw source hashes match sourceRef; subsequent production changes do not retroactively receive this 90-minute coverage.",
+    "No model run, context retention, model-quality or eight-hour-runtime proof.",
+    "Assertions cover 100 canonical task IDs, zero runs and HTTP body/status shape; the soak does not independently compare every decision/log payload across clients. Targeted benchmark/API tests cover mutation content separately."
+  ]
+}

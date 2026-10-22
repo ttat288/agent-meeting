@@ -32,3 +32,19 @@ Tài liệu là tiêu chuẩn tham khảo journey/recovery, không benchmark th�
 Lần chạy harness đầu không xuất report hoàn chỉnh: gửi100 dòng trong một hostSay vượt MAX_TEXT, chỉ48 task nên assertion100 thất bại. Sửa setup v2 thành từng25 dòng theo giới hạn sản phẩm; không đổi payload/parser product hoặc giảm acceptance, không chọn kết quả thuận lợi. Kết quả lần hoàn chỉnh khóa theo source hashes v2; latency các workload trước lần lỗi không được lấy trộn.
 
 Setup v2 cũng thất bại: fuzzy dedup trong Meeting gộp các task gần giống của những tin khác nhau, chỉ còn25/100. Không dùng dữ liệu đó làm workload100 hoặc lẫn các sample. Setup v3 dùng API host `/work/tasks` chính thức, mỗi task có acceptance/sources/facts; không inject private store và không thay cơ chế dedup sản phẩm để ưu ái benchmark. Mọi trường đo/acceptance/arm/order giữ nguyên; workload nay ghi rõ canonical task API, không tự nhận task từ hội thoại. Hai lần lỗi là lỗi thiết kế fixture, không lỗi model và không được giấu trong kết quả.
+
+## Soak HTTP90 phút đã chạy — nguồn đóng băng riêng
+
+Raw/analysis `work-watch-soak-90m.json` và `work-watch-soak-analysis.json` thuộc sourceRef66a4e986d3aedac644b46caa859890741081f152 (5 hashes match), Node22.22.1, cgroup512M/swap0, service limit5700s. Mục tiêu là giữ100 task IDs/0 runs qua reads và clean restore; không là decision freshness mọi payload, crash hoặc model/context8h. Client labels gọi tuần tự mỗi round3s. Restart flush/close/createApp/restore cùng Node PID, listener mới. Request/body/resource sample thô được giữ; headers/CPU app-only/user/model billing chưa đo.
+
+Tái lập source mà không checkout/reset worktree hiện tại (không gọi model):
+
+```bash
+soak_source_dir="$(mktemp -d /tmp/am-soak-source-XXXXXX)"
+git archive 66a4e986d3aedac644b46caa859890741081f152 | tar -x -C "$soak_source_dir"
+cd "$soak_source_dir"
+systemd-run --user --scope -q -p MemoryMax=512M -p MemorySwapMax=0 \
+  timeout 5700 node tools/soak-work-watch.js 90 /tmp/am-soak-reproduction.json
+```
+
+UUID/timestamps của fixture mỗi lần khác; acceptance kiểm tính liên tục trong cùng lần, không ép bytes/cost giữa hai lần khác nguồn. Không gắn kết quả90 phút cũ cho source mới có WorkManager khác hash. Không tự chạy lại90 phút khi không có giả thuyết/lỗi mới cần kiểm.

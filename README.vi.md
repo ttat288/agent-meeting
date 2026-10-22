@@ -95,6 +95,8 @@ Source hiện có thêm **UI v2 và luồng thực thi được quản lý còn 
 
 **Theo dõi việc mà không liên tục Làm mới.** Kế hoạch, Thực hiện và Kết quả kiểm cập nhật khi đang mở. Bản đang sửa và bằng chứng đang đọc giữ nguyên; **Xem cập nhật** áp dụng trạng thái mới khi cần. Mất kết nối giữ kết quả cuối và tự thử lại. “Đã tích hợp và test” là kiểm tra tự động, còn nghiệm thu của người dùng được tách riêng.
 
+Nếu yêu cầu đổi khi đang sửa, **Xem bản nháp trước** trong form task cho đọc phần khác đã lưu và tự chép nội dung cần giữ vào revision hiện tại trước khi lưu.
+
 Kiểm chứng và tích hợp hiển thị tiến trình cùng nút **Hủy phiên chạy** tại Kết quả. Hủy đợi test dừng; nếu source hoặc quyền file đã đổi trong lúc đó, rollback conflict cần được đối chiếu thủ công.
 
 ![Kết quả hiện tại: fixture subprocess local đã tích hợp và test độc lập, trạng thái tự cập nhật trong shell gọn.](docs/evidence/shift-20261022/results-vi-dark.jpg)

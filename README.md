@@ -95,6 +95,8 @@ The current source also includes **UI v2 and experimental managed workflows**: v
 
 **Follow work without repeated refreshes.** Plan, Execute and Results check for updates while visible. Edits and open evidence stay in place; when needed, **Show updates** applies the new state. Connection failures keep the last result and retry. “Integrated and tested” describes automated checks, with user acceptance still separate.
 
+If requirements change while you edit, **View previous draft** in the task form lets you read saved differences and copy what you need into the current revision before saving.
+
 Verification and integration show progress and **Cancel run** in Results. Cancellation waits for the test process to stop; if the source was edited or its permissions changed meanwhile, a rollback conflict requires manual reconciliation.
 
 ![Current Results view: a local subprocess fixture is integrated and independently tested; live updates share the compact session shell.](docs/evidence/shift-20261022/results-en-dark.jpg)

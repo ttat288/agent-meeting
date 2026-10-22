@@ -1,0 +1,109 @@
+{
+  "at": "2026-10-22T17:26:27.843Z",
+  "scope": "Controlled browser fixture, no model or acceptance writes",
+  "cases": [
+    {
+      "current": "External revision 2: evidence must reflect cancellation and timeout",
+      "height": 812,
+      "locale": "en",
+      "old": "Unsent acceptance draft v1 — recover this after someone updates requirements",
+      "olderFields": 1,
+      "overflow": false,
+      "readonly": true,
+      "theme": "light",
+      "width": 375
+    },
+    {
+      "current": "External revision 2: evidence must reflect cancellation and timeout",
+      "height": 812,
+      "locale": "en",
+      "old": "Unsent acceptance draft v1 — recover this after someone updates requirements",
+      "olderFields": 1,
+      "overflow": false,
+      "readonly": true,
+      "theme": "dark",
+      "width": 375
+    },
+    {
+      "current": "External revision 2: evidence must reflect cancellation and timeout",
+      "height": 812,
+      "locale": "en",
+      "old": "Unsent acceptance draft v1 — recover this after someone updates requirements",
+      "olderFields": 1,
+      "overflow": false,
+      "readonly": true,
+      "theme": "light",
+      "width": 1280
+    },
+    {
+      "current": "External revision 2: evidence must reflect cancellation and timeout",
+      "height": 812,
+      "locale": "en",
+      "old": "Unsent acceptance draft v1 — recover this after someone updates requirements",
+      "olderFields": 1,
+      "overflow": false,
+      "readonly": true,
+      "theme": "dark",
+      "width": 1280
+    },
+    {
+      "current": "External revision 2: evidence must reflect cancellation and timeout",
+      "height": 812,
+      "locale": "vi",
+      "old": "Unsent acceptance draft v1 — recover this after someone updates requirements",
+      "olderFields": 1,
+      "overflow": false,
+      "readonly": true,
+      "theme": "light",
+      "width": 375
+    },
+    {
+      "current": "External revision 2: evidence must reflect cancellation and timeout",
+      "height": 812,
+      "locale": "vi",
+      "old": "Unsent acceptance draft v1 — recover this after someone updates requirements",
+      "olderFields": 1,
+      "overflow": false,
+      "readonly": true,
+      "theme": "dark",
+      "width": 375
+    },
+    {
+      "current": "External revision 2: evidence must reflect cancellation and timeout",
+      "height": 812,
+      "locale": "vi",
+      "old": "Unsent acceptance draft v1 — recover this after someone updates requirements",
+      "olderFields": 1,
+      "overflow": false,
+      "readonly": true,
+      "theme": "light",
+      "width": 1280
+    },
+    {
+      "current": "External revision 2: evidence must reflect cancellation and timeout",
+      "height": 812,
+      "locale": "vi",
+      "old": "Unsent acceptance draft v1 — recover this after someone updates requirements",
+      "olderFields": 1,
+      "overflow": false,
+      "readonly": true,
+      "theme": "dark",
+      "width": 1280
+    }
+  ],
+  "sourceAtLayoutPass": "7956406f414954c92cb58521402e5504db57b2fe9ab57292a6bcca283a7143b7",
+  "manualRecovery": {
+    "at": "2026-10-22T17:28:55.391Z",
+    "taskId": "6eee88f8-5ada-4a34-87d5-174c6f900c8e",
+    "requirementRevision": 5,
+    "acceptance": [
+      "External revision 3: keep cancellation evidence accurate",
+      "Unsent acceptance draft v1 — recover this after someone updates requirements",
+      "Keyboard focus returns to the updated Plan after saving"
+    ],
+    "runs": 1,
+    "focusVerified": "workTitle",
+    "workspaceSourceHash": "7b0adff38f3ae53b8f98e00d32cfd2213604847dab4fdf51c18b933bc5e41bb8",
+    "note": "Old draft v1 viewed at server revision3, explicit user-like copying/saving produced revision4; post-save focus check added third criterion and saved revision5. No automatic replay/merge or model/run launch."
+  }
+}

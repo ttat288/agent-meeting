@@ -136,3 +136,6 @@ J21: Verify/Integrate từ Results phải có trạng thái chờ và nút Hủy
 
 
 J22: PM Send chậm/nhấn lặp không xóa bản nháp chưa gửi, response thành công chỉ xóa đúng nội dung đã gửi. Pause/revoke/takeover vẫn thực thi khi request thường đang chờ; late response không thay supervision state mới. Proxy local trì hoãn response, backend API thật/no-model; giữ cùng private scope. Không nhận việc hủy HTTP là hủy thao tác server đã xử lý.
+
+
+J23 (đích trước sửa): khi bản nháp vN bị409 do yêu cầu vN+1 đã đổi, áp dụng cập nhật/Back/reload phải có đường xem draft cũ trong phần Chuẩn bị của cùng task. Chỉ đọc nội dung đã lưu local theo đúng host/task, không tự merge hoặc save; current form vẫn theo revision mới, người dùng tự chép phần cần giữ. Chỉ hiện phần khôi phục khi có draft hợp lệ trước revision hiện tại; không thêm màn quản lý draft hoặc gửi nội dung này cho worker. Test browser phải kiểm both old/current acceptance cùng tồn tại, readonly, reload, backend unchanged/no run, VI/EN và local storage unavailable fallback.

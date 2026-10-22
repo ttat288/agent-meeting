@@ -135,9 +135,33 @@
   applyTheme();
   if (admin) $('language').before(theme); else $('displayOptions').append(theme);
   function taskDraftKey(task) { return 'agent-meeting:' + hostKey + ':task:' + task.id + ':' + task.requirementRevision; }
+  const draftArrayFields = new Set(['acceptance','writePaths','testFiles','dependencies','sources','facts','unknowns']);
+  function storedTaskDraft(key, fields) {
+    try {
+      const saved = JSON.parse(localStorage.getItem(key));
+      if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return {};
+      return Object.fromEntries(fields.filter(name => draftArrayFields.has(name)
+        ? Array.isArray(saved[name]) && saved[name].every(value => typeof value === 'string')
+        : typeof saved[name] === 'string').map(name => [name, saved[name]]));
+    } catch { return {}; }
+  }
+  function previousTaskDraft(task, fields) {
+    const prefix = 'agent-meeting:' + hostKey + ':task:' + task.id + ':';
+    let previous = null;
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i); if (!key?.startsWith(prefix)) continue;
+        const revision = Number(key.slice(prefix.length));
+        if (!Number.isSafeInteger(revision) || revision < 1 || revision >= task.requirementRevision || revision <= (previous?.revision || 0)) continue;
+        const values = storedTaskDraft(key, fields);
+        if (Object.keys(values).length) previous = { revision, values };
+      }
+    } catch {}
+    return previous;
+  }
   function configureForm(task) {
     const prefix = 'edit-' + task.id + '-', fields = ['purpose','topology','management','workspace','baseRevision','acceptance','writePaths','testFiles','dependencies','sources','facts','unknowns'];
-    let draft = task; try { draft = { ...task, ...JSON.parse(localStorage.getItem(taskDraftKey(task)) || '{}') }; } catch {}
+    const draft = { ...task, ...storedTaskDraft(taskDraftKey(task), fields) }, previous = previousTaskDraft(task, fields);
     const form = node('form', { class: 'ws-panel' });
     const id = name => prefix + name;
     form.append(node('p', { class: 'ws-meta' }, t('Bổ sung điều kiện trên cùng task; lưu không khởi chạy agent.', 'Add prerequisites to this task; saving does not launch an agent.')),
@@ -145,12 +169,26 @@
         selectField(t('Mục đích', 'Purpose'), id('purpose'), [['plan', t('Lập kế hoạch', 'Plan')], ['execute', t('Thực hiện', 'Execute')]], draft.purpose),
         selectField(t('Vị trí', 'Location'), id('topology'), [['local', t('Cùng máy', 'Local')], ['remote', t('Nhiều máy', 'Remote')], ['mixed', t('Kết hợp', 'Mixed')]], draft.topology),
         selectField(t('Quản lý agent', 'Agent management'), id('management'), [['invited', t('Mời bên ngoài', 'Invited')], ['managed', t('Tool quản lý', 'Managed')], ['mixed', t('Kết hợp', 'Mixed')]], draft.management)));
-    for (const [name, vi, en, area] of [['acceptance','Tiêu chí nghiệm thu (mỗi dòng một mục)','Acceptance criteria (one per line)',true], ['workspace','Checkout nguồn','Source checkout'], ['baseRevision','Base revision','Base revision'], ['writePaths','Đường dẫn được sửa (mỗi dòng một mục)','Allowed write paths (one per line)',true], ['testFiles','Tệp Node test độc lập (mỗi dòng một mục)','Independent Node test files (one per line)',true], ['dependencies','Phụ thuộc: task ID (mỗi dòng một mục)','Dependencies: task IDs (one per line)',true], ['sources','Nguồn cần đọc (mỗi dòng một mục)','Sources to read (one per line)',true], ['facts','Facts (mỗi dòng một mục)','Facts (one per line)',true], ['unknowns','Điều chưa biết (mỗi dòng một mục)','Unknowns (one per line)',true]]) form.append(field(t(vi,en), id(name), area ? (draft[name] || []).join('\n') : draft[name] || '', '', area ? 'textarea' : 'input'));
+    const textFields = [['acceptance','Tiêu chí nghiệm thu (mỗi dòng một mục)','Acceptance criteria (one per line)',true], ['workspace','Checkout nguồn','Source checkout'], ['baseRevision','Base revision','Base revision'], ['writePaths','Đường dẫn được sửa (mỗi dòng một mục)','Allowed write paths (one per line)',true], ['testFiles','Tệp Node test độc lập (mỗi dòng một mục)','Independent Node test files (one per line)',true], ['dependencies','Phụ thuộc: task ID (mỗi dòng một mục)','Dependencies: task IDs (one per line)',true], ['sources','Nguồn cần đọc (mỗi dòng một mục)','Sources to read (one per line)',true], ['facts','Facts (mỗi dòng một mục)','Facts (one per line)',true], ['unknowns','Điều chưa biết (mỗi dòng một mục)','Unknowns (one per line)',true]];
+    for (const [name, vi, en, area] of textFields) form.append(field(t(vi,en), id(name), area ? (draft[name] || []).join('\n') : draft[name] || '', '', area ? 'textarea' : 'input'));
     const execution = node('div', { class: 'ws-grid two' });
     for (const name of ['workspace','baseRevision','writePaths','testFiles']) execution.append(form.querySelector('[id="' + id(name) + '"]').closest('.ws-field'));
     const advanced = disclosure(t('Phụ thuộc và bối cảnh bổ sung', 'Dependencies and additional context'));
     for (const name of ['dependencies','sources','facts','unknowns']) advanced.append(form.querySelector('[id="' + id(name) + '"]').closest('.ws-field'));
     form.append(node('h3', {}, t('Checkout và phạm vi kiểm chứng', 'Checkout and verification scope')), execution, advanced);
+    const previousFields = previous && fields.filter(name => Object.hasOwn(previous.values, name)
+      && JSON.stringify(previous.values[name]) !== JSON.stringify(draft[name] ?? (draftArrayFields.has(name) ? [] : '')));
+    if (previousFields?.length) {
+      const recovery = disclosure(t('Xem bản nháp trước · v', 'View previous draft · v') + previous.revision,
+        node('p', { class: 'ws-meta' }, t('Chỉ hiện trường khác với bản đang mở, chỉ đọc. Chép phần cần giữ vào trường hiện tại rồi kiểm tra trước khi lưu.', 'Only differing fields are shown, read-only. Copy what you need into the current fields and review before saving.')));
+      for (const [name, vi, en] of [['purpose','Mục đích','Purpose'], ['topology','Vị trí','Location'], ['management','Quản lý agent','Agent management'], ...textFields]) {
+        if (!previousFields.includes(name)) continue;
+        const value = previous.values[name], old = field(t(vi,en) + ' · v' + previous.revision, id('previous-' + name), Array.isArray(value) ? value.join('\n') : value, '', 'textarea');
+        old.querySelector('textarea').readOnly = true;
+        recovery.append(old);
+      }
+      form.append(recovery);
+    }
     const readDraft = () => Object.fromEntries(fields.map(name => [name, ['acceptance','writePaths','testFiles','dependencies','sources','facts','unknowns'].includes(name) ? split(val(id(name))) : val(id(name))]));
     form.oninput = form.onchange = () => { try { localStorage.setItem(taskDraftKey(task), JSON.stringify(readDraft())); } catch {} };
     const save = node('button', { class: 'btn primary', type: 'submit' }, t('Lưu yêu cầu của task', 'Save task requirements'));
@@ -158,7 +196,7 @@
     form.onsubmit = event => { event.preventDefault(); if (!split(val(id('acceptance'))).length) { errorBox(form, new Error(t('Cần ít nhất một tiêu chí nghiệm thu.', 'At least one acceptance criterion is required.')), id('acceptance')); return; } action(save, form, async () => {
       await api('/work/tasks/' + encodeURIComponent(task.id) + '/configure', { ...readDraft(), expectedRevision: task.requirementRevision });
       try { localStorage.removeItem(taskDraftKey(task)); } catch {}
-      acceptWork(await api('/work')); renderTaskList(); notify(t('Đã lưu; task ID được giữ nguyên. Chưa khởi chạy agent.', 'Saved with the same task ID. No agent has been launched.'));
+      acceptWork(await api('/work')); renderTaskList(); $('workTitle')?.focus(); notify(t('Đã lưu; task ID được giữ nguyên. Chưa khởi chạy agent.', 'Saved with the same task ID. No agent has been launched.'));
     }); };
     return node('details', { class: 'ws-configure' }, node('summary', {}, t('Chuẩn bị thực hiện / sửa yêu cầu', 'Prepare execution / edit requirements')), form);
   }

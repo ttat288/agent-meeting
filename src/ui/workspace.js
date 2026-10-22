@@ -6,6 +6,8 @@
   const queryLang = new URLSearchParams(location.search).get('lang');
   const lang = ['vi', 'en'].includes(queryLang) ? queryLang : ['vi', 'en'].includes(storedLang) ? storedLang : navigator.language.startsWith('vi') ? 'vi' : 'en';
   const t = (vi, en) => lang === 'vi' ? vi : en;
+  const adminSections = [['models', t('Model & năng lực', 'Models & capabilities')], ['routing', t('Quy tắc chia việc', 'Routing policy')], ['runtime', t('Agent & runtime', 'Agents & runtimes')], ['hosts', t('Máy & workspace', 'Hosts & workspaces')], ['data', t('Dữ liệu & nguồn', 'Data & provenance')]];
+  const querySection = new URLSearchParams(location.search).get('section');
   document.documentElement.lang = lang;
   const path = location.pathname.split('/').filter(Boolean);
   const hostKey = path[1];
@@ -13,7 +15,7 @@
   const meetingUrl = '/m/' + encodeURIComponent(hostKey);
   const admin = path[2] === 'admin';
   const embedded = !!$('workView');
-  let config, work = { tasks: [], runs: [] }, tab = 'tasks', adminTab = 'models', selectedModel, runtime = [];
+  let config, work = { tasks: [], runs: [] }, tab = 'tasks', adminTab = adminSections.some(([id]) => id === querySection) ? querySection : 'models', selectedModel, runtime = [], runtimeLoaded = false;
   let remote = { hosts: [], runs: [] }, remoteError = null, metrics = null, metricsError = null, importDraft = '';
   let workReadVersion = 0, activeWorkReads = 0, pollController, pendingWork = null, syncState = 'live';
   const profileSelections = new Map();
@@ -360,10 +362,11 @@
     renderAdmin();
   }
   function renderAdmin() {
+    const url = new URL(location.href); url.searchParams.set('section', adminTab); history.replaceState(null, '', url);
     $('shell').classList.add('admin'); $('sidebar').hidden = false;
-    $('sidebar').replaceChildren(node('nav', { 'aria-label': t('Nhóm quản trị', 'Administration sections') }, [['models', t('Model & năng lực', 'Models & capabilities')], ['routing', t('Quy tắc chia việc', 'Routing policy')], ['runtime', t('Agent & runtime', 'Agents & runtimes')], ['hosts', t('Máy & workspace', 'Hosts & workspaces')], ['data', t('Dữ liệu & nguồn', 'Data & provenance')]].map(([id, label]) => node('button', { type: 'button', class: 'btn ghost', 'aria-current': adminTab === id ? 'page' : null, onclick: () => { adminTab = id; renderAdmin(); } }, label))));
+    $('sidebar').replaceChildren(node('nav', { 'aria-label': t('Nhóm quản trị', 'Administration sections') }, adminSections.map(([id, label]) => node('button', { type: 'button', class: 'btn ghost', 'aria-current': adminTab === id ? 'page' : null, onclick: () => { adminTab = id; renderAdmin(); $('main').focus(); } }, label))));
     const page = $('page');
-    const titles = { models: t('Model & năng lực', 'Models & capabilities'), routing: t('Quy tắc chia việc', 'Routing policy'), runtime: t('Agent & runtime', 'Agents & runtimes'), hosts: t('Máy & workspace', 'Hosts & workspaces'), data: t('Dữ liệu & nguồn', 'Data & provenance') };
+    const titles = Object.fromEntries(adminSections);
     page.replaceChildren(node('header', { class: 'ws-view-heading ws-row between' }, node('div', {}, node('p', { class: 'ws-eyebrow' }, t('Quản trị', 'Administration')), node('h1', {}, titles[adminTab])), node('span', { class: 'ws-pill' }, t('Cấu hình v', 'Configuration v') + config.revision)));
     if (adminTab === 'models') renderModels(page);
     if (adminTab === 'routing') renderRouting(page);
@@ -434,7 +437,7 @@
   }
   function renderRuntime(page) {
     const viewedRevision = config.revision;
-    const refresh = button(t('Kiểm tra runtime', 'Check runtimes'), () => action(refresh, page, async () => { const result = await api('/runtime'); runtime = Array.isArray(result) ? result : [...(result.observations || []), ...(result.checks || [])]; renderRuntimeObservations(); notify(t('Đã cập nhật quan sát runtime. Có executable không đồng nghĩa có quyền truy cập model.', 'Runtime observations updated. An executable does not establish model access.')); }));
+    const refresh = button(t('Kiểm tra runtime', 'Check runtimes'), () => action(refresh, page, async () => { const result = await api('/runtime'); runtime = Array.isArray(result) ? result : [...(result.observations || []), ...(result.checks || [])]; runtimeLoaded = true; renderRuntimeObservations(); notify(t('Đã cập nhật quan sát runtime. Có executable không đồng nghĩa có quyền truy cập model.', 'Runtime observations updated. An executable does not establish model access.')); }));
     const diagnostics = disclosure(t('Dữ liệu chẩn đoán', 'Diagnostic data'), json(runtime)); diagnostics.id = 'runtimeDiagnostics';
     page.append(node('section', { class: 'ws-panel', id: 'runtimeObservations' },
       node('div', { class: 'ws-row between' }, node('h2', {}, t('Runtime trên máy', 'Local runtimes')), refresh),
@@ -459,7 +462,7 @@
         renderProbeButton(profile.id); if (probe.disabled) return;
         probingProfiles.add(profile.id); renderProbeButton(profile.id);
         try { await action(probe, form, async () => {
-          const observation = await api('/runtime/probe', { profileId: profile.id, expectedConfigRevision: viewedRevision }); const result = await api('/runtime'); runtime = Array.isArray(result) ? result : [...(result.observations || []), ...(result.checks || [])]; renderRuntimeObservations();
+          const observation = await api('/runtime/probe', { profileId: profile.id, expectedConfigRevision: viewedRevision }); const result = await api('/runtime'); runtime = Array.isArray(result) ? result : [...(result.observations || []), ...(result.checks || [])]; runtimeLoaded = true; renderRuntimeObservations();
           notify(observation.stale ? t('Cấu hình đã đổi; quan sát cũ chưa được áp dụng. Kiểm tra ánh xạ hiện tại trước khi probe lại.', 'Configuration changed; the old observation was not applied. Review the current mapping before probing again.') : t('Đã ghi quan sát truy cập model.', 'Model access observation recorded.'));
         }); } finally { probingProfiles.delete(profile.id); renderProbeButton(profile.id); }
       });
@@ -491,7 +494,7 @@
       const model = config.models.find(m => m.id === profile.modelId), observed = runtime.find(o => o.profileId === profile.id);
       const age = Date.now() - Date.parse(observed?.checkedAt);
       const current = observed && observed.configRevision === config.revision && observed.runtimeId === profile.runtimeId && observed.providerModelId === model?.providerModelId && age >= 0 && age < 30 * 60000;
-      let label = t('Truy cập chưa kiểm tra', 'Access untested'), status = '';
+      let label = runtimeLoaded ? t('Truy cập chưa kiểm tra', 'Access untested') : t('Chưa tải quan sát', 'Observations not loaded'), status = '';
       if (observed && !current) { label = t('Quan sát đã cũ; kiểm tra lại', 'Observation stale; check again'); status = 'stale'; }
       else if (current && observed.available !== true) { label = t('Probe thất bại', 'Probe failed'); status = 'failed'; }
       else if (current && observed.modelVerified === true && observed.reportedModel === model?.providerModelId) { label = t('Đã đối chiếu model', 'Model matched'); status = 'verified'; }

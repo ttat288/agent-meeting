@@ -1,0 +1,121 @@
+{
+  "checks": [
+    {
+      "case": "select_runtime",
+      "url": "http://127.0.0.1:3150/m/host_consistency_preview_1234/admin?lang=vi&section=runtime",
+      "heading": "Agent & runtime",
+      "sourcePhase": "before not-loaded/focus refinement"
+    },
+    {
+      "case": "reload_before_read",
+      "sourcePhase": "current",
+      "url": "http://127.0.0.1:3150/m/host_consistency_preview_1234/admin?lang=en&section=runtime",
+      "text": "Observations not loaded"
+    },
+    {
+      "case": "readonly_saved_observation_recovery",
+      "sourcePhase": "current",
+      "text": "Model matched\n\nReported model: fixture-model \u00b7 2026-10-22T18:56:15.780Z"
+    },
+    {
+      "case": "section_locale_reload",
+      "section": "models",
+      "sourcePhase": "current",
+      "focusAfterSelection": "main",
+      "afterLanguage": {
+        "url": "http://127.0.0.1:3150/m/host_consistency_preview_1234/admin?lang=vi&section=models",
+        "heading": "Model & n\u0103ng l\u1ef1c"
+      },
+      "afterReload": {
+        "url": "http://127.0.0.1:3150/m/host_consistency_preview_1234/admin?lang=vi&section=models",
+        "heading": "Model & n\u0103ng l\u1ef1c"
+      }
+    },
+    {
+      "case": "section_locale_reload",
+      "section": "routing",
+      "sourcePhase": "current",
+      "focusAfterSelection": "main",
+      "afterLanguage": {
+        "url": "http://127.0.0.1:3150/m/host_consistency_preview_1234/admin?lang=vi&section=routing",
+        "heading": "Quy t\u1eafc chia vi\u1ec7c"
+      },
+      "afterReload": {
+        "url": "http://127.0.0.1:3150/m/host_consistency_preview_1234/admin?lang=vi&section=routing",
+        "heading": "Quy t\u1eafc chia vi\u1ec7c"
+      }
+    },
+    {
+      "case": "section_locale_reload",
+      "section": "runtime",
+      "sourcePhase": "current",
+      "focusAfterSelection": "main",
+      "afterLanguage": {
+        "url": "http://127.0.0.1:3150/m/host_consistency_preview_1234/admin?lang=vi&section=runtime",
+        "heading": "Agent & runtime"
+      },
+      "afterReload": {
+        "url": "http://127.0.0.1:3150/m/host_consistency_preview_1234/admin?lang=vi&section=runtime",
+        "heading": "Agent & runtime"
+      }
+    },
+    {
+      "case": "section_locale_reload",
+      "section": "hosts",
+      "sourcePhase": "current",
+      "focusAfterSelection": "main",
+      "afterLanguage": {
+        "url": "http://127.0.0.1:3150/m/host_consistency_preview_1234/admin?lang=vi&section=hosts",
+        "heading": "M\u00e1y & workspace"
+      },
+      "afterReload": {
+        "url": "http://127.0.0.1:3150/m/host_consistency_preview_1234/admin?lang=vi&section=hosts",
+        "heading": "M\u00e1y & workspace"
+      }
+    },
+    {
+      "case": "section_locale_reload",
+      "section": "data",
+      "sourcePhase": "current",
+      "focusAfterSelection": "main",
+      "afterLanguage": {
+        "url": "http://127.0.0.1:3150/m/host_consistency_preview_1234/admin?lang=vi&section=data",
+        "heading": "D\u1eef li\u1ec7u & ngu\u1ed3n"
+      },
+      "afterReload": {
+        "url": "http://127.0.0.1:3150/m/host_consistency_preview_1234/admin?lang=vi&section=data",
+        "heading": "D\u1eef li\u1ec7u & ngu\u1ed3n"
+      }
+    },
+    {
+      "case": "invalid_section_fallback",
+      "sourcePhase": "current",
+      "url": "http://127.0.0.1:3150/m/host_consistency_preview_1234/admin?lang=en&view=results&section=__proto__",
+      "heading": "Models & capabilities"
+    },
+    {
+      "case": "return_results",
+      "sourcePhase": "current",
+      "url": "http://127.0.0.1:3150/m/host_consistency_preview_1234?lang=en&view=results&section=__proto__#results",
+      "title": "Results (1)",
+      "integrationVisible": true
+    },
+    {
+      "case": "back_to_admin",
+      "sourcePhase": "current",
+      "url": "http://127.0.0.1:3150/m/host_consistency_preview_1234/admin?lang=en&view=results&section=models",
+      "heading": "Models & capabilities"
+    }
+  ],
+  "limits": [
+    "Admin uses replaceState, preserving existing Back-to-session behavior rather than adding an internal section history",
+    "Reload/language change retains section, not unsaved admin form contents",
+    "Return links preserve existing query parameters; section is ignored on the session page",
+    "No native model calls; an unsupported role locator option failed before language action and was replaced by the actual h1 selector"
+  ],
+  "recordedAt": "2026-10-22T19:14:58.029760+00:00",
+  "sourceSha256": {
+    "src/ui/workspace.js": "3b84b4575540cf7376f11ba95d4ab2470de762e2fd1a10cd93f1b9f980e97762",
+    "src/ui/workspace.css": "c7c142354e5f145dd932ad46412510be27515fa64c6757fd5c7461ce5ca1e746"
+  }
+}

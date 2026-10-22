@@ -99,7 +99,7 @@ If requirements change while you edit, **View previous draft** in the task form 
 
 The web Run button checks the requirements and configuration you viewed. Changed revisions require a fresh review and profile selection before dispatch.
 
-Runtime administration keeps executable/version checks separate from dated model-access observations. Open **Edit mapping** or **Diagnostic data** when needed; unknown, failed and mismatched model identity remain explicit.
+The selected admin section survives reload and language changes. Runtime administration keeps executable/version checks separate from dated model-access observations. Open **Edit mapping** or **Diagnostic data** when needed; unknown, failed and mismatched model identity remain explicit.
 
 Verification and integration show progress and **Cancel run** in Results. Cancellation waits for the test process to stop; if the source was edited or its permissions changed meanwhile, a rollback conflict requires manual reconciliation.
 

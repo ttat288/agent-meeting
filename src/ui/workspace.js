@@ -629,7 +629,15 @@
     page.append(reset);
   }
   function renderHosts(page) {
-    const refresh = button(t('Làm mới máy và lease', 'Refresh hosts and leases'), () => action(refresh, page, async () => { remote = await api('/remote'); remoteError = null; renderAdmin(); }));
+    const refresh = button(t('Làm mới máy và lease', 'Refresh hosts and leases'), () => action(refresh, page, refreshHosts));
+    async function refreshHosts() {
+      const next = await api('/remote');
+      if ((next.revision || 0) < (remote.revision || 0)) return;
+      remote = next; remoteError = null;
+      if (!hosts.isConnected) return;
+      page.querySelector(':scope > .ws-error')?.remove(); drawHosts();
+      notify(t('Đã cập nhật quan sát máy và lease.', 'Host and lease observations updated.'));
+    }
     page.append(node('div', { class: 'ws-row between' }, node('h2', {}, t('Máy & workspace', 'Hosts & workspaces')), refresh),
       node('p', { class: 'ws-warning' }, t('Máy đăng ký không tự trở thành runtime. Token chỉ cấp quyền pull/heartbeat/report cho máy đó. Người vận hành phải cấu hình và khởi động worker riêng.', 'An enrolled host does not automatically become a runtime. Its token authorizes host-scoped pull/heartbeat/report. An operator must configure and start its worker separately.')));
     if (remoteError) page.append(node('p', { class: 'ws-error', role: 'alert' }, remoteError.message));

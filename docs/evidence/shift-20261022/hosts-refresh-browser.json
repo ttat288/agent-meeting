@@ -1,0 +1,33 @@
+{
+  "checks": [
+    {
+      "case": "same_view_draft",
+      "focus": "workerWorkspace",
+      "label": "Worker draft survives list refresh",
+      "workspace": "/tmp/worker-path-kept"
+    },
+    {
+      "case": "different_view_draft",
+      "focus": "modelLabel",
+      "label": "Model draft while old host read waits",
+      "section": "models"
+    },
+    {
+      "case": "refresh_error",
+      "label": "Draft remains through remote error",
+      "alert": "Chưa thể hoàn thành thao tác\n\nControlled remote refresh failure"
+    },
+    {
+      "case": "error_recovery",
+      "errors": 0,
+      "focus": "workerWorkspace",
+      "label": "Draft remains through remote error",
+      "workspace": "/tmp/draft-during-recovery"
+    }
+  ],
+  "limits": [
+    "Private response gate and one synthetic503; no worker enrollment, credential creation, dispatch or native model call",
+    "Fresh/stale/detached snapshot acceptance uses actual callback unit tests; browser cases use empty real host store",
+    "No second-machine/HTTPS/model capability acceptance inferred"
+  ]
+}

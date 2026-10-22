@@ -43,3 +43,19 @@ test('latest notice receives its full lifetime instead of an older hide timer',(
  context.notify('First result');advance(2000);context.notify('Newer result');advance(4000);
  assert.equal(notice.hidden,false);assert.equal(notice.textContent,'Newer result');advance(1999);assert.equal(notice.hidden,false);advance(1);assert.equal(notice.hidden,true);
 });
+
+function hostRefreshFixture({cached=1,incoming=2,mounted=true}={}){
+ let draws=0,removed=0;const notices=[];
+ const context=vm.createContext({remote:{revision:cached,hosts:['newer']},remoteError:'Earlier error',api:async()=>({revision:incoming,hosts:['incoming']}),hosts:{isConnected:mounted},page:{querySelector:()=>({remove:()=>{removed++;}})},drawHosts:()=>{draws++;},notify:text=>notices.push(text),t:(vi,en)=>en,renderAdmin:()=>{throw Error('A read-only refresh must not rebuild forms');}});
+ const start=source.indexOf('    async function refreshHosts()'),end=source.indexOf('    page.append(',start);assert(start>=0&&end>start);vm.runInContext(source.slice(start,end),context);
+ return{context,notices,draws:()=>draws,removed:()=>removed};
+}
+test('host refresh updates only the mounted list and clears its recovered error',async()=>{
+ const f=hostRefreshFixture();await f.context.refreshHosts();assert.equal(f.context.remote.revision,2);assert.equal(f.context.remoteError,null);assert.equal(f.draws(),1);assert.equal(f.removed(),1);assert.equal(f.notices.length,1);
+});
+test('stale host response cannot replace a newer snapshot or clear its error',async()=>{
+ const f=hostRefreshFixture({cached:3,incoming:2});await f.context.refreshHosts();assert.equal(f.context.remote.revision,3);assert.equal(f.context.remoteError,'Earlier error');assert.equal(f.draws(),0);assert.equal(f.removed(),0);assert.equal(f.notices.length,0);
+});
+test('a host response from a detached view cannot modify the new view',async()=>{
+ const f=hostRefreshFixture({mounted:false});await f.context.refreshHosts();assert.equal(f.context.remote.revision,2);assert.equal(f.draws(),0);assert.equal(f.removed(),0);assert.equal(f.notices.length,0);
+});

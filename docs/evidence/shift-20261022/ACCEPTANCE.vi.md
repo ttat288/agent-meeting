@@ -233,3 +233,11 @@ Guard mới đếm input/change của trang admin và kiểm origin form còn mo
 [Browser outcome](admin-save-race-browser.json):cùng form giữ label/focus; Save tiếp từ view 7 bị409, backend8 vẫnlabel đã gửi; explicitreload→manualrestoreSave9. ACK từModels khi đang nhập Data giữJSON/focus, explicitnavigation mới áp snapshot10. Import10→11 giữJSON gõ sausubmit; resetpolicy11→12 giữ draft/focus; mapping12→13 giữcheckbox chưa lưu/focus/open. VI policy13→14:backend 4, current field 5 giữ, không tràn375px. [Ảnh VI](admin-save-draft-vi-mobile.jpg). Counter adapter vẫn14/native0; chỉ sửa catalogfixture riêng, app3000/globalsettings không đổi. Một getAttribute(value) trảnull do HTMLfield dùng live property; fieldValue là assertion thật, không xem null là draft loss.
 
 [6 targeted tests](admin-save-state-tests.txt), [full388/35file](integrated-admin-save-tests.txt)/[source seal](verification-admin-save-tests.json):0 fail/skip/cancel. Giới hạn:explicitreload/language không giữ admin draft qua page reload; copy trước reload hoặc navigation theo hướng dẫn. Có thêm bước phục hồi so với auto-rebase nhưng tránh silently overwriting config; chưa đo human-time/net cost. Không nhận UI test/fixture token là model8h hoặcsemantic acceptance.
+
+## Hosts refresh giữ enrollment draft
+
+[Before](hosts-refresh-before.json):GETremote trả muộn ở2409aca dựng lại trang và xóa hostLabel/workerWorkspace đang nhập. Source mới chỉ vẽ list region còn mounted, không thay form/focus; snapshot revision thấp bị bỏ qua, callback từ view cũ chỉ cập nhật cache. Refresh thành công xóa đúng lỗi đọc trước đó.
+
+[Browser](hosts-refresh-browser.json):same-view draft/focus, chuyển Models khi chờ,503 giữ draft và retry hồi phục đều đạt trên375 VI; [ảnh](hosts-refresh-recovery-vi.jpg). Không enroll máy, tạo token, dispatch hoặc native model. Stale revision chỉ kiểm unit, không nhận đã thử worker vật lý. [Full391/35](integrated-host-refresh-tests.txt),0fail/skip/cancel, [source seal](verification-host-refresh-tests.json);9 UI unit gồm fresh/stale/detached callbacks chạy actual source. Lần viết seal đầu lỗi Python dùng keyword pass, chưa tạo receipt; đã sửa và đối chiếu tổng raw trước ghi seal.
+
+CI source2409aca:CI39847742122 và Desktop39847742044 overall completed/success; duplicate CI39847732330 cancelled. Không gán các run này cho source Hosts mới.

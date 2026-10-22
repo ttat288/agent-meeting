@@ -9,6 +9,7 @@
 - Task forms expose saved differences from the latest older draft for read-only recovery after a requirement change; no automatic replay or merge. Malformed or unavailable browser storage falls back to current server requirements.
 - Routing and execution use the freshest valid access observation across rooms sharing a catalog; a newer failed probe cannot be masked by an older room-local success. Duplicate local/shared copies appear once.
 - Small-screen administration uses one native section chooser; desktop keeps its sidebar. Both share the same section URLs and keyboard focus behavior.
+- Read-only host refresh preserves enrollment drafts and keyboard focus, ignores older snapshots and clears recovered refresh errors.
 - Late configuration saves preserve newer input and the viewed CAS revision. Explicit navigation/reload applies the acknowledged snapshot; import/reset/mapping responses share the guard. New notices keep their own display timer.
 - Administration retains the selected section across reload and language changes. Runtime views distinguish observations not loaded from access not tested, allowing a read-only check before a new paid probe.
 - Model-access badges expire locally at the observation deadline, preserving edits and diagnostic focus without automatic network requests or paid probes.

@@ -1,0 +1,40 @@
+{
+  "at": "2026-10-22T21:28:27.990119+00:00",
+  "preparationRevision": 2,
+  "sourceDigest": "491c16573db8a4e1ceb8fd6d5752fea6624f156a06fb0bc023f6bf3128d656c0",
+  "taskDigest": "a67ebf7000860fa0dba699d543138c0b1173a59be51c2b3ae90b8b5d2b2c0653",
+  "sourceFiles": 352,
+  "arms": [
+    {
+      "arm": "direct",
+      "head": "e292fd3833d65152ebfa6133fc27a67285b6cab9",
+      "commitObjects": [
+        "e292fd3833d65152ebfa6133fc27a67285b6cab9"
+      ],
+      "laterRuntimeFixObjectPresent": false,
+      "configuredRemotes": [],
+      "fetchHeadPresent": false,
+      "acceptanceExitCode": 1,
+      "acceptanceSha256": "dd3558b1735ac9f11974c3c37a95062cb471be478e55e1c0dc1b3e6220526736"
+    },
+    {
+      "arm": "pm",
+      "head": "e292fd3833d65152ebfa6133fc27a67285b6cab9",
+      "commitObjects": [
+        "e292fd3833d65152ebfa6133fc27a67285b6cab9"
+      ],
+      "laterRuntimeFixObjectPresent": false,
+      "configuredRemotes": [],
+      "fetchHeadPresent": false,
+      "acceptanceExitCode": 1,
+      "acceptanceSha256": "dd3558b1735ac9f11974c3c37a95062cb471be478e55e1c0dc1b3e6220526736"
+    }
+  ],
+  "modelCalls": 0,
+  "executionAuthorized": false,
+  "limitations": [
+    "Workingfile digest unchanged; Git metadata policy changed intentionally from old helper.",
+    "Local Git object isolation only; external file/network access not sandboxed by this preparer.",
+    "No new model A/B, timing comparison or cost proof."
+  ]
+}

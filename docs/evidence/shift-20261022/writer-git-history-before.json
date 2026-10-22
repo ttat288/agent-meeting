@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-22T21:25:59.762659+00:00",
+  "sourceCommit": "d78076aa67b44c758ecb27db8ce63d7599216453",
+  "frozenSourceDigest": "491c16573db8a4e1ceb8fd6d5752fea6624f156a06fb0bc023f6bf3128d656c0",
+  "frozenFiles": 352,
+  "baseRevision": "e292fd3833d65152ebfa6133fc27a67285b6cab9",
+  "armHead": "e292fd3833d65152ebfa6133fc27a67285b6cab9",
+  "visibleCommitObjectCount": 101,
+  "laterRuntimeFixCommit": "66a4e986d3aedac644b46caa859890741081f152",
+  "laterRuntimeFixObjectPresent": true,
+  "modelCalls": 0,
+  "scope": "Reproduction helper clone, not original failed native pilot. Working files hash-match but Git object store includes later code/history. No model arm executed."
+}

@@ -291,3 +291,13 @@ Run265ce1c9… reported, source/test vẫn hash đầu vào; Verifycandidate1/1,
 [11actual-source unit](heading-focus-unit-after.txt) sau [2red/9](heading-focus-unit-before.txt); [full418/36](integrated-heading-focus-tests.txt),0fail/skip/cancel, [hash seal](verification-heading-focus-tests.json) bao gồm CSSnotice mới. [Browser](work-heading-focus-browser.json):12routesVI/EN375/1280, Enter→heading→1TabRefresh, initial/Back/reload đúngfocus; pollPlan4→5 giữh1. HaiAPI-createdtaskkhôngrun/model, không sửa requirement/run đang có. [Ảnh375](work-heading-focus-after-vi375.jpg).4→1chỉ sốkeypress ở headerkhôngpendingupdate, không human-time/screenreader/modelwin.
 
 Lầnmatrixđầu chồnggoto+reload và Enterkhôngnavigate; đã kiểm href/focus/load, dùngdocumentổnđịnh, không tính lượt timeoutpass. CI23bd7e8 Node/desktop overallsuccess đúngSHA, sourceheadingmới chưa gán vào run đó.
+
+## Frozen writer input: Git history is part of the reading surface
+
+[Red audit](writer-git-history-before.json) ởd78076a:352workingfiles đúngdigest/baseHEAD nhưng clone có101commitobjects, bao gồm66a4e98 chứa runtimefix. Đây là helper tái tạo về sau, không originalauthfailedpilot; không suy model đã đọc answer hoặc sửa ledger cũ.
+
+[Preparationv2](writer-git-history-after.json)/[finalselfverified](writer-git-history-final.json):init+fetchdepth1no-tags/no-submodule+detachbase, bỏFETCH_HEADURL, kiểm allcommitobjects chỉbase. Botharms353files gồmacceptance, khôngextra/missing, modeDigestcùngnhau; source/task/acceptancebytehashgiữnguyên. Redacceptance2/2 mỗiarm ở [direct](writer-git-direct-acceptance-red.txt)/[PM](writer-git-pm-acceptance-red.txt) từv2đầucùngfrozenfiledigests; khôngmodel/nativecall. Gitmetadatađãđổi sohelperv1, không nhận fullinput/historyv1giữnguyên. [Solvedcurrentpreparer](writer-solved-input-rejected.txt) vẫnreject caseđãsửa, khôngtựđổiinputrồisoquảcũ.
+
+[4unitactualGit](writer-git-unit-tests.txt) gồmfutureobjectkhôngđọcđược, invalid/missingbase, inheritedtemplatefuturehistoryfailclosed; globalsettingskhôngghi. [Full422/37](integrated-writer-git-tests.txt),0fail/skip/cancel, [seal](verification-writer-git-tests.json) nay gồmtools ngoài src/bin/scripts/test để ràngbuộchelperđược require bởitest.
+
+Overhead:init/fetch/checkout/catfile so clone/checkout tăng2Gitprocess/arm (4/helper). Auditnàychạy4preparations (1v1,3v2 khi hoànthiệnselfcheck),8armtrees có131706544nominalsourcebytes; chưa kểGit/tar/index/overwriteI/O,CPU,tool-schema,developmentCodex,billing. Không có speed/costwin. LocalGitstoreisolationkhônglàOS/networkblindness; eventualnativewritersvẫnphải tuân readscope/trace. Nativeattempts toànca vẫn3, khôngcặpA/Bhoànthành; pháttriển8hkhôngnghiệmthumodel8h.

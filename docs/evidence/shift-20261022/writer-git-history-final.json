@@ -1,0 +1,41 @@
+{
+  "preparationRevision": 2,
+  "gitPolicy": "single shallow base commit; no tags, configured remote or FETCH_HEAD",
+  "gitCommitObjectsPerArm": 1,
+  "sourceDigest": "491c16573db8a4e1ceb8fd6d5752fea6624f156a06fb0bc023f6bf3128d656c0",
+  "taskDigest": "a67ebf7000860fa0dba699d543138c0b1173a59be51c2b3ae90b8b5d2b2c0653",
+  "sourceFiles": 352,
+  "acceptanceSha256": "dd3558b1735ac9f11974c3c37a95062cb471be478e55e1c0dc1b3e6220526736",
+  "foundation": "805f638bdd68cb08103c8c1ca93b832be54e1a69",
+  "baseRevision": "e292fd3833d65152ebfa6133fc27a67285b6cab9",
+  "modelCalls": 0,
+  "executionAuthorized": false,
+  "at": "2026-10-22T21:35:56.582250+00:00",
+  "armsVerified": [
+    {
+      "arm": "direct",
+      "commitObjects": [
+        "e292fd3833d65152ebfa6133fc27a67285b6cab9"
+      ],
+      "visibleFilesIncludingAcceptance": 353,
+      "unexpectedFiles": [],
+      "modeDigest": "48177b34089c720a4ca8f6a9b14be4e1c8eeee1aa6cc4a014657a812a94a203c",
+      "laterFixPresent": false
+    },
+    {
+      "arm": "pm",
+      "commitObjects": [
+        "e292fd3833d65152ebfa6133fc27a67285b6cab9"
+      ],
+      "visibleFilesIncludingAcceptance": 353,
+      "unexpectedFiles": [],
+      "modeDigest": "48177b34089c720a4ca8f6a9b14be4e1c8eeee1aa6cc4a014657a812a94a203c",
+      "laterFixPresent": false
+    }
+  ],
+  "toolSha256": "3d8c6bef45fb934fefa674c54644f3c4140fafb186c076e92638ab3da4828e4b",
+  "acceptanceReceiptScope": "Earlier preparationv2 red receipts have identical frozen workingfile and acceptance hashes; no native model invoked.",
+  "preparationAuditInvocations": 4,
+  "nominalSourceBytesMaterializedAcrossEightArmTrees": 131706544,
+  "overheadLimits": "Nominal tree bytes exclude Git, archive/index/overwrite writes, CPU, schemas, development Codex usage and billing; no measured IO/speed/cost advantage."
+}

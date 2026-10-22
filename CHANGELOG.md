@@ -6,6 +6,7 @@
 - Human chair stays the default, with optional PM controls/history in Options. PM connection errors clear on recovery without erasing action errors; terminal invitation words use POSIX quoting.
 - CLI SIGINT/SIGTERM and exit-on-end drain managed work and cancellation/rollback before exiting. Closed managers reject new dispatch instead of starting work during shutdown.
 - Slow verification/integration can be cancelled from Results; late completions preserve drafts opened in another view. PM updates preserve supervision focus and unsent drafts; director stop controls take priority over pending ordinary requests.
+- Frozen writer-input reproduction now isolates and checks a single shallow base commit, preventing later solution history from entering either prepared Git store. Preparationv2 keeps frozen source bytes while explicitly changing Git metadata.
 - Keyboard work-view navigation focuses its heading; background updates retain heading focus while preserving edits and outside navigation controls.
 - Session notices and send toasts reserve layout space so the focused message composer stays visible; feedback temporarily reduces content height.
 - Superseded navigation read failures cannot attach alerts to a newer work view or the conversation; current-view failures still surface.

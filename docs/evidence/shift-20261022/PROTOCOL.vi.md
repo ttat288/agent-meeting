@@ -48,3 +48,13 @@ systemd-run --user --scope -q -p MemoryMax=512M -p MemorySwapMax=0 \
 ```
 
 UUID/timestamps của fixture mỗi lần khác; acceptance kiểm tính liên tục trong cùng lần, không ép bytes/cost giữa hai lần khác nguồn. Không gắn kết quả90 phút cũ cho source mới có WorkManager khác hash. Không tự chạy lại90 phút khi không có giả thuyết/lỗi mới cần kiểm.
+
+## Revision2 cho Git store của input tái tạo (khóa trước sửa helper)
+
+Auditd78076a:reproducer hiện clone cả repo rồi detachbase.352workingfiles đúnghash nhưng .git chứa101commitobject, có66a4e98 sửa runtime về sau. Không coi workingfiledigest là toàn bộ Gitinput hoặc nhận model không thể đọc answer qua gitlog. Originalnativepilot đãauthfailed trước codework, không retroactively sửa receipt hoặc nhận nó thành arm thành công.
+
+Preparationrevision2 phải init repo rỗng, fetch local đúngbaseSHA với depth1/no-tags/no-submodule, detachbase rồi bỏ FETCH_HEAD URL. Mỗiarm chỉ1commitobject làbase, không configuredremote, không cófuturefixobject;352workingfile/acceptance/taskdigests vẫn giữ. Haiarm dùng cùngpolicy mới. Đây là đổi Gitmetadata input so với helpercũ, không nhận toàn bộinput gồmhistory đã giữ nguyên hoặc so performance/modelv2 với nativepilotv1. Không gọi model/repairOAuth trong kiểm này.
+
+Unit dùng repo Git disposable2commits (base vàanswer), không phụ thuộc lịch sử clone CI hoặc remote; acceptance thực dùng originalmanifest và reject prepared solved input hiện có. Overhead:newinit+fetch+checkout+cat-file selfcheck so oldclone+checkout tăng2Gitprocess/arm (4/helper), chưa đo setup CPU/time/invoice. Fullmodelblindness chưa được bảo đảm: nativeCLI vẫn theo phạm vi đọc đã giao, có thể có ambient external access; localGitstore isolation không là OS/network sandbox.
+
+Helperv2 tự kiểm mọi commitobject saufetch, không chỉgiảđịnh depth1 hoặc dựa checkoutHEAD. Nếu ambient Gittemplate mang thêm lịch sử, preparation phải fail; unit injects disposable template chỉ trong subprocess/test environment, không sửa Gitsettingsglobal.

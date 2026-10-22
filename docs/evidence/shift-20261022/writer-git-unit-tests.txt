@@ -1,0 +1,34 @@
+TAP version 13
+# Subtest: frozen arm contains only the requested base commit and cannot read a later answer object
+ok 1 - frozen arm contains only the requested base commit and cannot read a later answer object
+  ---
+  duration_ms: 102.654036
+  type: 'test'
+  ...
+# Subtest: invalid revision arguments are rejected before creating an arm
+ok 2 - invalid revision arguments are rejected before creating an arm
+  ---
+  duration_ms: 1.189084
+  type: 'test'
+  ...
+# Subtest: an absent base fails without changing the source repository
+ok 3 - an absent base fails without changing the source repository
+  ---
+  duration_ms: 54.566374
+  type: 'test'
+  ...
+# Subtest: unexpected history from an inherited Git template fails the frozen-store check
+ok 4 - unexpected history from an inherited Git template fails the frozen-store check
+  ---
+  duration_ms: 72.202042
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 423.50071

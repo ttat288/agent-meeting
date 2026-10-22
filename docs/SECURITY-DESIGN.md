@@ -300,3 +300,6 @@ Conditional304 của host work đi sau cùng local/host capability guards, gắn
 
 
 Snapshot dictionaries không có prototype: tên file hợp lệ `__proto__` phải được copy/hash/serialize và đi qua kiểm write scope như các file khác, ở cả local WorkManager lẫn worker. Rollback single-file kiểm lstat regular-file, SHA và permission mode đã áp dụng trước khi trả bytes cũ; chmod/path replacement đồng thời giữ nguyên để đối chiếu thủ công, ghi rollback conflict. Những guard này kiểm tại các mốc, không là snapshot nguyên tử hoặc bảo đảm không có race với editor ngoài.
+
+
+Integration từ chối khi đường dẫn source canonical đã bị thay thành symlink trước lúc ghi, kiểm lại sau integrated tests. Rollback kiểm root canonical và từng parent qua safeFile trước lstat/hash/mode của target: không chỉ kiểm symlink ở basename. Nếu thư mục root/parent bị thay trong bước await, giữ cây bên ngoài và báo manual rollback conflict. Các kiểm này tránh ca redirect đã tái hiện, không biến thao tác filesystem thành giao dịch nguyên tử hoặc chặn mọi race của tiến trình host cùng quyền. Khôi phục đúng directory path rồi retry tường minh phải qua toàn bộ snapshot/HEAD/test guards.

@@ -280,6 +280,7 @@ class WorkManager {
     const state = this.read(), run = state.runs.find(r => r.id === id), task = run && state.tasks.find(t => t.id === run.taskId);
     if (!run || run.status !== 'verified') throw failure('Run must pass verification before integration', 409);
     this.assertCurrent(task.id, run.requirementRevision);
+    if (fs.realpathSync(run.source) !== run.source) throw failure('Source checkout path changed', 409);
     if (run.decision?.review?.required) throw failure('Routing requires independent review. Automatic review acceptance is not implemented; review and integrate this result manually.', 409);
     if (gitRevision(run.source) !== run.baseRevision || task.requirementRevision !== run.requirementRevision) throw failure('Base or requirement revision changed', 409);
     if (JSON.stringify(inventory(run.workspace)) !== JSON.stringify(run.verifiedSnapshot)) throw failure('Workspace changed since verification', 409);
@@ -313,7 +314,7 @@ class WorkManager {
       this.assertCurrent(task.id, run.requirementRevision);
       if (controller.signal.aborted || evidence.some(e => e.cancelled)) throw failure('Integration verification cancelled');
       if (evidence.length !== task.testFiles.length || evidence.some(e => e.exitCode !== 0 || e.timeout || e.error)) throw failure('Integrated source verification failed');
-      if (gitRevision(run.source) !== run.baseRevision || changes(run.verifiedSnapshot, sourceInventory(run.source)).length) throw failure('Source changed during integration verification', 409);
+      if (fs.realpathSync(run.source) !== run.source || gitRevision(run.source) !== run.baseRevision || changes(run.verifiedSnapshot, sourceInventory(run.source)).length) throw failure('Source changed during integration verification', 409);
       this.update(d => {
         const r = d.runs.find(r => r.id === id), currentTask = d.tasks.find(t => t.id === task.id);
         if (this.active.get(id) !== controller || r.status !== 'integrating' || currentTask.requirementRevision !== run.requirementRevision) throw failure('Integration attempt is stale', 409);
@@ -324,6 +325,10 @@ class WorkManager {
       if (applied) {
         try {
           // Avoid overwriting unrelated edits made while verification was running.
+          try {
+            if (fs.realpathSync(run.source) !== run.source) throw failure('Source checkout path changed');
+            safeFile(run.source, change.file);
+          } catch { throw failure('Source path changed after integration; manual rollback required'); }
           let stat = null;
           try { stat = fs.lstatSync(target); } catch (e) { if (e.code !== 'ENOENT') throw e; }
           const now = stat?.isFile() ? hash(fs.readFileSync(target)) : null;

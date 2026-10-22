@@ -11,16 +11,17 @@ const { WorkManager, inventory, changes, runTest } = require('../src/work');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 async function until(fn) { for (let i = 0; i < 300; i++) { if (fn()) return; await sleep(10); } throw new Error('Condition did not become ready'); }
 function temp(t) { const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'am-cancel-')); t.after(() => fs.rmSync(dir, { recursive: true, force: true })); return dir; }
-function setup(t, testSource) {
+function setup(t, testSource, sumPath = 'sum.js') {
   const root = temp(t), source = path.join(root, 'source'), workspace = path.join(root, 'workspace');
   fs.mkdirSync(source); fs.mkdirSync(path.join(source, 'test'));
-  fs.writeFileSync(path.join(source, 'sum.js'), 'module.exports=(a,b)=>a-b;\n');
+  fs.mkdirSync(path.dirname(path.join(source,sumPath)),{recursive:true});
+  fs.writeFileSync(path.join(source, sumPath), 'module.exports=(a,b)=>a-b;\n');
   fs.writeFileSync(path.join(source, 'test/sum.test.js'), testSource || "require('node:test')('sum',()=>require('node:assert/strict').equal(require('../sum')(2,3),5));\n");
   execFileSync('git', ['init', '-q', source]); execFileSync('git', ['-C', source, 'add', '.']);
   execFileSync('git', ['-C', source, '-c', 'user.name=Test', '-c', 'user.email=test@example.invalid', 'commit', '-qm', 'fixture']);
   fs.cpSync(source, workspace, { recursive: true, filter: p => path.basename(p) !== '.git' });
   const before = inventory(workspace);
-  fs.writeFileSync(path.join(workspace, 'sum.js'), 'module.exports=(a,b)=>a+b;\n');
+  fs.writeFileSync(path.join(workspace, sumPath), 'module.exports=(a,b)=>a+b;\n');
   const config = new ConfigStore({ dir: path.join(root, 'config'), defaults: routing.defaults, validate: routing.validate });
   const work = new WorkManager({ dir: path.join(root, 'work'), configStore: config });
   t.after(() => work.close());
@@ -133,6 +134,49 @@ test('integration rollback preserves a concurrently installed symlink even when 
   assert.equal(result.rollback, 'conflict');
   assert.equal(result.status, 'cancelled');
   assert.match(result.error, /manual rollback required/);
+});
+
+test('rollback never follows a source-root symlink installed while verification runs', async t => {
+  const slow = "require('node:test')('sum',async()=>{require('node:assert/strict').equal(require('../sum')(2,3),5);if(require('node:path').basename(process.cwd())==='source')await new Promise(r=>setTimeout(r,15000));});\n";
+  const { work, root, source } = setup(t, slow), external = path.join(root,'external-source');
+  await work.verify('run');
+  const pending = work.integrate('run'), bytes = fs.readFileSync(path.join(source,'sum.js'));
+  fs.cpSync(source, external, {recursive:true});
+  fs.renameSync(source,source+'-moved'); fs.symlinkSync(external,source,'dir');
+  work.cancel('run');
+  const result = await pending;
+  assert.deepEqual(fs.readFileSync(path.join(external,'sum.js')),bytes,'Rollback must not write through the replaced source root');
+  assert(fs.lstatSync(source).isSymbolicLink());
+  assert.equal(result.rollback,'conflict'); assert.equal(result.status,'cancelled');
+  assert.match(result.error,/manual rollback required/);
+});
+
+test('integration rejects a source-root symlink replacement before any source write', async t => {
+  const { work, root, source } = setup(t), external = path.join(root,'external-source');
+  await work.verify('run');
+  const bytes = fs.readFileSync(path.join(source,'sum.js'));
+  fs.cpSync(source,external,{recursive:true});
+  fs.renameSync(source,source+'-moved'); fs.symlinkSync(external,source,'dir');
+  await assert.rejects(work.integrate('run'),/Source checkout path changed/);
+  assert.deepEqual(fs.readFileSync(path.join(external,'sum.js')),bytes);
+  assert.equal(work.read().runs[0].status,'verified');
+  fs.unlinkSync(source);fs.renameSync(source+'-moved',source);
+  assert.equal((await work.integrate('run')).status,'integrated','Restoring the canonical source path permits an explicit retry');
+  assert.deepEqual(fs.readFileSync(path.join(external,'sum.js')),bytes,'Retry must still leave the external tree unchanged');
+});
+
+test('rollback rechecks parent directories before restoring a nested source file', async t => {
+  const slow = "require('node:test')('sum',async()=>{require('node:assert/strict').equal(require('../lib/sum')(2,3),5);if(require('node:path').basename(process.cwd())==='source')await new Promise(r=>setTimeout(r,15000));});\n";
+  const { work, root, source } = setup(t,slow,'lib/sum.js'), external=path.join(root,'outside-lib'), parent=path.join(source,'lib');
+  await work.verify('run');
+  const pending=work.integrate('run'),bytes=fs.readFileSync(path.join(parent,'sum.js'));
+  fs.cpSync(parent,external,{recursive:true});
+  fs.renameSync(parent,parent+'-moved');fs.symlinkSync(external,parent,'dir');
+  work.cancel('run');const result=await pending;
+  assert.deepEqual(fs.readFileSync(path.join(external,'sum.js')),bytes,'Rollback must not traverse the substituted parent');
+  assert(fs.lstatSync(parent).isSymbolicLink());
+  assert.equal(result.rollback,'conflict');assert.equal(result.status,'cancelled');
+  assert.match(result.error,/manual rollback required/);
 });
 
 

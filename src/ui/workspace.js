@@ -63,7 +63,8 @@
       'Unknown or self dependency': 'Task phụ thuộc không tồn tại hoặc trỏ tới chính task này.',
       'Dependency cycle': 'Các task đang phụ thuộc vòng vào nhau.',
       'Server restarted; reconcile the old process before starting a new task.': 'Server đã khởi động lại. Cần đối chiếu và xử lý tiến trình cũ trước khi chạy tiếp; chưa hỗ trợ phục hồi tự động.',
-      'Base revision changed': 'Base revision đã thay đổi. Kiểm tra lại checkout nguồn.'
+      'Base revision changed': 'Base revision đã thay đổi. Kiểm tra lại checkout nguồn.',
+      'Source checkout path changed': 'Đường dẫn checkout nguồn đã đổi. Kiểm tra thư mục thật trước khi tích hợp.'
     };
     return lang === 'vi' && translations[message] || message;
   }

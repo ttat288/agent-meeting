@@ -105,7 +105,7 @@ Verification and integration show progress and **Cancel run** in Results. Cancel
 
 Ctrl+C and SIGTERM wait for managed processes, verification and integration rollback before the CLI exits. Cancellation, timeout or an output limit can add a two-second process-group escalation grace before the run settles. Let shutdown finish; force-killing the process cannot provide this guarantee. A recorded rollback conflict still needs manual reconciliation.
 
-![Current Results view: a local subprocess fixture is integrated and independently tested; live updates share the compact session shell.](docs/evidence/shift-20261022/results-final-en.png)
+![Current Results view: a local subprocess fixture is integrated and independently tested; live updates share the compact session shell.](docs/evidence/shift-20261022/results-toast-final-en.png)
 
 This screenshot uses a deterministic **local fixture, not an AI-generated result**. The [reproducible HTTP benchmark and raw samples](docs/evidence/shift-20261022/ACCEPTANCE.vi.md#benchmark-có-rawscript) include polling overhead, error cases and unknowns. The writer-model pilot failed authentication; a separate [read-only CLI audit](docs/evidence/shift-20261022/readonly-audit/PROTOCOL.vi.md) stopped at a permission denial with unknown model identity. There is no demonstrated model-cost or eight-hour runtime advantage.
 

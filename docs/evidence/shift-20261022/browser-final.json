@@ -2,19 +2,19 @@
   "recordedAt": "2026-10-22T22:36:24.432Z",
   "desktopAfterReload": {
     "focusId": "workTitle",
-    "heading": "Kết quả (2)",
+    "heading": "K\u1ebft qu\u1ea3 (2)",
     "height": 720,
     "overflow": false,
     "recordedAt": "2026-10-22T22:34:21.776Z",
     "taskCards": [
       {
         "detailsOpen": false,
-        "text": "Correct sum and preserve independent tests\n\nViệc #1 · Dev\n\nĐã tích hợp và test\nLần chạy 1\nĐã tích hợp\n\nDeterministic Node subprocess fixture; not a paid AI model.\n\nTệp thay đổi: sum.js\n\nTest đạt: 2/2\n\nBằng chứng và tệp bàn giao\nNguồn hội thoại\nChi tiết task",
+        "text": "Correct sum and preserve independent tests\n\nVi\u1ec7c #1 \u00b7 Dev\n\n\u0110\u00e3 t\u00edch h\u1ee3p v\u00e0 test\nL\u1ea7n ch\u1ea1y 1\n\u0110\u00e3 t\u00edch h\u1ee3p\n\nDeterministic Node subprocess fixture; not a paid AI model.\n\nT\u1ec7p thay \u0111\u1ed5i: sum.js\n\nTest \u0111\u1ea1t: 2/2\n\nB\u1eb1ng ch\u1ee9ng v\u00e0 t\u1ec7p b\u00e0n giao\nNgu\u1ed3n h\u1ed9i tho\u1ea1i\nChi ti\u1ebft task",
         "title": "Correct sum and preserve independent tests"
       },
       {
         "detailsOpen": false,
-        "text": "Final integrated-source fixture: correct sum(2,3) to5 with independent tests; no model claim\n\nViệc #2 · Dev\n\nĐã tích hợp và test\nLần chạy 1\nĐã tích hợp\n\nDeterministic Node subprocess fixture; not a paid AI model.\n\nTệp thay đổi: sum.js\n\nTest đạt: 2/2\n\nBằng chứng và tệp bàn giao\nNguồn hội thoại\nChi tiết task",
+        "text": "Final integrated-source fixture: correct sum(2,3) to5 with independent tests; no model claim\n\nVi\u1ec7c #2 \u00b7 Dev\n\n\u0110\u00e3 t\u00edch h\u1ee3p v\u00e0 test\nL\u1ea7n ch\u1ea1y 1\n\u0110\u00e3 t\u00edch h\u1ee3p\n\nDeterministic Node subprocess fixture; not a paid AI model.\n\nT\u1ec7p thay \u0111\u1ed5i: sum.js\n\nTest \u0111\u1ea1t: 2/2\n\nB\u1eb1ng ch\u1ee9ng v\u00e0 t\u1ec7p b\u00e0n giao\nNgu\u1ed3n h\u1ed9i tho\u1ea1i\nChi ti\u1ebft task",
         "title": "Final integrated-source fixture: correct sum(2,3) to5 with independent tests; no model claim"
       }
     ],
@@ -35,7 +35,7 @@
     {
       "cards": 2,
       "focusedId": "workTitle",
-      "heading": "Kết quả (2)",
+      "heading": "K\u1ebft qu\u1ea3 (2)",
       "height": 812,
       "overflow": false,
       "theme": "dark",
@@ -76,7 +76,7 @@
     "uiHashes": "unchanged, see footprint-drain-final.json",
     "cards": 2,
     "focusId": "workTitle",
-    "heading": "Kết quả (2)",
+    "heading": "K\u1ebft qu\u1ea3 (2)",
     "horizontalOverflow": false,
     "recordedAt": "2026-10-22T22:47:36.052Z",
     "runHandoffs": [
@@ -88,5 +88,98 @@
       "#message-45"
     ],
     "url": "http://127.0.0.1:3150/m/host_consistency_preview_1234?lang=vi#results"
+  },
+  "compactViewportReview": {
+    "sourceCommit": "953225b92604e706d37e49cdb6688bb94a3c4f20",
+    "recordedAt": "2026-10-22T23:03:16.313Z",
+    "results320": {
+      "heading": "K\u1ebft qu\u1ea3 (2)",
+      "height": 568,
+      "nav": [
+        {
+          "bottom": 88,
+          "left": 12,
+          "right": 80,
+          "text": "H\u1ed9i tho\u1ea1i",
+          "top": 44
+        },
+        {
+          "bottom": 88,
+          "left": 88,
+          "right": 156,
+          "text": "K\u1ebf ho\u1ea1ch",
+          "top": 44
+        },
+        {
+          "bottom": 88,
+          "left": 164,
+          "right": 232,
+          "text": "Th\u1ef1c hi\u1ec7n",
+          "top": 44
+        },
+        {
+          "bottom": 88,
+          "left": 240,
+          "right": 308,
+          "text": "K\u1ebft qu\u1ea3",
+          "top": 44
+        }
+      ],
+      "overflow": false,
+      "width": 320
+    },
+    "menu320": {
+      "focus": "K\u1ebft th\u00fac",
+      "focusedControlInsideViewport": true,
+      "height": 568,
+      "panel": {
+        "bottom": 511,
+        "clientHeight": 457,
+        "height": 459,
+        "scrollHeight": 457,
+        "top": 52
+      },
+      "panelHidden": false,
+      "width": 320
+    },
+    "landscape640": {
+      "focus": "K\u1ebft th\u00fac",
+      "focusedControlInsideViewport": true,
+      "height": 360,
+      "overflow": false,
+      "panel": {
+        "bottom": 328,
+        "clientHeight": 278,
+        "height": 280,
+        "scrollHeight": 401,
+        "top": 48
+      },
+      "width": 640
+    },
+    "limits": [
+      "Actual CSS viewport sizes, not physical device/virtual keyboard or200% zoom emulation",
+      "Read-only navigation/menu checks; no End action activated, no native model or new run",
+      "VI/system theme only in this additional compact review; earlier locale/theme matrix has separate scope"
+    ]
+  },
+  "postToastFix": {
+    "sourceCommit": "d4b6208d7d0563982afe520b4040b9dffc0b2e71",
+    "recordedAt": "2026-10-22T23:13:23.765742+00:00",
+    "uiHashes": {
+      "src/ui/workspace.css": "9c5c34ee23cc1e5b04151a3117d6029904ada3182c942951b1ef1d34ff7b9a1a",
+      "src/ui/app.js": "3080aeb9bab5c8912b9f8263c87a27fa28041b2dc62e436779b2df2e9f58e529",
+      "src/ui/i18n.js": "1c84e057d7a9c15561142401c2483b5272cfa32a53358427453f8a1dbc14c78c",
+      "src/ui/index.html": "8c74b07c8bf0a4e4457cfaf72b1c52959b154e83d9ac24a31b263348476d505e",
+      "src/ui/app.css": "5002d18fc97a7a83fb78b827200e83b620c4fcd1b9c3e1fed61057d768820a4e",
+      "src/ui/pm-ui.js": "44e0980d1bf776765eec3a0feb577b28dff3210d8391e822f2c30202f8d6eb3b",
+      "src/ui/workspace.html": "6a1b29c517b844e9467d0c750a1c99b7eb720ffb136cbd3a260ed171bc76ab57",
+      "src/ui/favicon.svg": "f71b583ae1857da282387a372c939b7da9109ed97084452397ec8f75b3ee7319",
+      "src/ui/workspace.js": "466e76c320bfadda9074dc5b3d75e4699085b8a4596408d87c3dca5ba23b5812"
+    },
+    "screenshots": {
+      "results-toast-final-en.png": "e2b1ae8def69fe80d8c65f2c89d5be4c94f513e9fb6b74aed0acb385708aa579",
+      "results-toast-final-vi.png": "1a1ca0237380c703fb0daf2c68f9d1ec431be747921e6bb9f6bd4e5ac820e46a"
+    },
+    "scope": "Restarted preview3150; Results2, two run handoff links, VI/EN1280x812 no horizontal overflow; earlier browser passes retain old source hashes. New burst proof in toast-burst-browser.json."
   }
 }

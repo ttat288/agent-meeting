@@ -93,6 +93,14 @@
     "Auto monitoring adds idle requests compared with a user who does not refresh. A direct CLI can stream its own result without these polling requests.",
     "Body bytes and reconstructed response header bytes are separate; request base headers, TCP/IP framing and browser rendering are excluded. Conditional header overhead is included separately.",
     "No human active time, tokens, billing, semantic quality or 8-hour runtime measured; modelCalls=0 does not make development free.",
-    "Latency samples cover short local requests only. No P95, statistical significance or remote latency claim."
-  ]
+    "Latency samples cover short local requests only. No P95, statistical significance or remote latency claim.",
+    "Both arms use the same current server including ETag computation and response metadata. Unconditional is a full-read policy control, not a timing run of the old binary. No source-before/after CPU, memory or complete wire-cost claim."
+  ],
+  "additionalResponseMetadata": {
+    "etagHeaderBytesPerMeasuredResponse": 74,
+    "measuredResponses": 180,
+    "etagHeaderBytesInMeasuredResponses": 13320,
+    "alreadyIncludedInResponseHeaderBytes": true,
+    "scope": "The current server sends ETag in both arms. This added field was absent in the pre-change full-read route. Other old-binary timing/header totals were not measured here; do not subtract this estimate to invent an old-binary result."
+  }
 }

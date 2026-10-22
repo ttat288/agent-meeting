@@ -113,5 +113,6 @@
     "src/ui/index.html": "8c74b07c8bf0a4e4457cfaf72b1c52959b154e83d9ac24a31b263348476d505e",
     "src/ui/workspace.css": "9c5c34ee23cc1e5b04151a3117d6029904ada3182c942951b1ef1d34ff7b9a1a",
     "src/ui/workspace.js": "466e76c320bfadda9074dc5b3d75e4699085b8a4596408d87c3dca5ba23b5812"
-  }
+  },
+  "sourceCommit": "d4b6208d7d0563982afe520b4040b9dffc0b2e71"
 }

@@ -1,0 +1,84 @@
+{
+  "schema": "agent-meeting/development-shift-clock@1",
+  "startedAtUtc": "2026-10-22T15:24:53+00:00",
+  "deadlineUtc": "2026-10-22T23:24:53+00:00",
+  "closedAtUtc": "2026-10-22T23:24:54.220496+00:00",
+  "closedAtBangkok": "2026-10-23T06:24:54.220496+07:00",
+  "elapsedSeconds": 28801.22,
+  "elapsed": "8h00m01s",
+  "timeSource": "Local UTC clock read at manual closure; original T0 and deadline retained from first shift checkpoint",
+  "sourceCommit": "d4b6208d7d0563982afe520b4040b9dffc0b2e71",
+  "preClosureHead": "e79eeb18541710b1dcef35c72cbe32c306ae200c",
+  "sealedSourceFiles": 113,
+  "allSealedHashesMatch": true,
+  "developmentShiftComplete": true,
+  "nativeModelEightHourAcceptance": false,
+  "limits": [
+    "Wall-clock development shift, not an eight-hour model invocation or semantic-context/billing benchmark.",
+    "The closing documentation commit has a new SHA/CI; prior green CI is not automatically inherited as a claim."
+  ],
+  "packagedFiles": 68,
+  "allPackagedHashesMatch": true,
+  "tarballSha256": "4389d88033c9c2cd8680cfde3096490d86d3bc027ff1e9200f66552f94422632",
+  "preClosureCi": {
+    "verifiedAt": "2026-10-22T23:22:04.499643+00:00",
+    "head": "e79eeb18541710b1dcef35c72cbe32c306ae200c",
+    "successfulLeafJobs": 6,
+    "runs": [
+      {
+        "runId": 39870461049,
+        "headSha": "e79eeb18541710b1dcef35c72cbe32c306ae200c",
+        "url": "https://github.com/ttat288/agent-meeting/actions/runs/39870461049",
+        "status": "completed",
+        "conclusion": "success",
+        "jobs": [
+          {
+            "name": "test (18)",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "2026-10-22T23:17:00Z"
+          },
+          {
+            "name": "test (20)",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "2026-10-22T23:18:50Z"
+          },
+          {
+            "name": "test (22)",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "2026-10-22T23:20:52Z"
+          }
+        ]
+      },
+      {
+        "runId": 39870461038,
+        "headSha": "e79eeb18541710b1dcef35c72cbe32c306ae200c",
+        "url": "https://github.com/ttat288/agent-meeting/actions/runs/39870461038",
+        "status": "completed",
+        "conclusion": "success",
+        "jobs": [
+          {
+            "name": "native-smoke (windows-latest)",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "2026-10-22T23:15:20Z"
+          },
+          {
+            "name": "native-smoke (macos-latest)",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "2026-10-22T23:14:55Z"
+          },
+          {
+            "name": "native-smoke (ubuntu-22.04)",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "2026-10-22T23:14:46Z"
+          }
+        ]
+      }
+    ]
+  }
+}

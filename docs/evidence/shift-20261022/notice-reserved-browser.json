@@ -1,0 +1,1107 @@
+{
+  "at": "2026-10-22T21:13:44.034Z",
+  "source": "CSS working tree after64b7ef4; asset hashes appended after inspection",
+  "firstChecks": [
+    {
+      "at": "2026-10-22T21:10:28.758Z",
+      "bodyHeight": 812,
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 804,
+        "height": 136,
+        "top": 668,
+        "width": 147.2890625
+      },
+      "notice": {
+        "bottom": 145,
+        "height": 56,
+        "position": "static",
+        "top": 89
+      },
+      "overlap": 0,
+      "width": 375
+    },
+    {
+      "at": "2026-10-22T21:10:54.033Z",
+      "bodyHeight": 812,
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 750,
+        "height": 88,
+        "top": 662,
+        "width": 147.2890625
+      },
+      "kind": "send toast matched draft",
+      "overlap": 0,
+      "toast": {
+        "bottom": 812,
+        "height": 54,
+        "position": "relative",
+        "top": 758
+      },
+      "width": 375
+    }
+  ],
+  "matrix": [
+    {
+      "at": "2026-10-22T21:12:05.752Z",
+      "bodyHeight": 812,
+      "draft": "Focused draft should remain fully visible below notices",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 804,
+        "height": 112,
+        "left": 100,
+        "right": 247.2890625,
+        "top": 692,
+        "width": 147.2890625
+      },
+      "kind": "workspace notice",
+      "locale": "vi",
+      "notice": {
+        "bottom": 145,
+        "height": 56,
+        "left": 0,
+        "right": 375,
+        "top": 89,
+        "width": 375
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "light",
+      "toast": {
+        "bottom": 812,
+        "height": 0,
+        "left": 0,
+        "right": 375,
+        "top": 812,
+        "width": 375
+      },
+      "toastCount": 0,
+      "toastOverlap": 0,
+      "width": 375
+    },
+    {
+      "at": "2026-10-22T21:12:06.084Z",
+      "bodyHeight": 812,
+      "draft": "New draft while the send toast is visible",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 750,
+        "height": 88,
+        "left": 100,
+        "right": 247.2890625,
+        "top": 662,
+        "width": 147.2890625
+      },
+      "kind": "send toast and workspace notice",
+      "locale": "vi",
+      "notice": {
+        "bottom": 145,
+        "height": 56,
+        "left": 0,
+        "right": 375,
+        "top": 89,
+        "width": 375
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "light",
+      "toast": {
+        "bottom": 812,
+        "height": 54,
+        "left": 0,
+        "right": 375,
+        "top": 758,
+        "width": 375
+      },
+      "toastCount": 1,
+      "toastOverlap": 0,
+      "width": 375
+    },
+    {
+      "at": "2026-10-22T21:12:07.421Z",
+      "bodyHeight": 812,
+      "draft": "Focused draft should remain fully visible below notices",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 804,
+        "height": 112,
+        "left": 100,
+        "right": 247.2890625,
+        "top": 692,
+        "width": 147.2890625
+      },
+      "kind": "workspace notice",
+      "locale": "vi",
+      "notice": {
+        "bottom": 145,
+        "height": 56,
+        "left": 0,
+        "right": 375,
+        "top": 89,
+        "width": 375
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "dark",
+      "toast": {
+        "bottom": 812,
+        "height": 0,
+        "left": 0,
+        "right": 375,
+        "top": 812,
+        "width": 375
+      },
+      "toastCount": 0,
+      "toastOverlap": 0,
+      "width": 375
+    },
+    {
+      "at": "2026-10-22T21:12:07.747Z",
+      "bodyHeight": 812,
+      "draft": "New draft while the send toast is visible",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 750,
+        "height": 88,
+        "left": 100,
+        "right": 247.2890625,
+        "top": 662,
+        "width": 147.2890625
+      },
+      "kind": "send toast and workspace notice",
+      "locale": "vi",
+      "notice": {
+        "bottom": 145,
+        "height": 56,
+        "left": 0,
+        "right": 375,
+        "top": 89,
+        "width": 375
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "dark",
+      "toast": {
+        "bottom": 812,
+        "height": 54,
+        "left": 0,
+        "right": 375,
+        "top": 758,
+        "width": 375
+      },
+      "toastCount": 1,
+      "toastOverlap": 0,
+      "width": 375
+    },
+    {
+      "at": "2026-10-22T21:12:09.145Z",
+      "bodyHeight": 812,
+      "draft": "Focused draft should remain fully visible below notices",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 804,
+        "height": 36,
+        "left": 95.5,
+        "right": 640.2890625,
+        "top": 768,
+        "width": 544.7890625
+      },
+      "kind": "workspace notice",
+      "locale": "vi",
+      "notice": {
+        "bottom": 125,
+        "height": 36,
+        "left": 0,
+        "right": 768,
+        "top": 89,
+        "width": 768
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "light",
+      "toast": {
+        "bottom": 812,
+        "height": 0,
+        "left": 0,
+        "right": 768,
+        "top": 812,
+        "width": 768
+      },
+      "toastCount": 0,
+      "toastOverlap": 0,
+      "width": 768
+    },
+    {
+      "at": "2026-10-22T21:12:09.463Z",
+      "bodyHeight": 812,
+      "draft": "New draft while the send toast is visible",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 750,
+        "height": 36,
+        "left": 95.5,
+        "right": 640.2890625,
+        "top": 714,
+        "width": 544.7890625
+      },
+      "kind": "send toast and workspace notice",
+      "locale": "vi",
+      "notice": {
+        "bottom": 125,
+        "height": 36,
+        "left": 0,
+        "right": 768,
+        "top": 89,
+        "width": 768
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "light",
+      "toast": {
+        "bottom": 812,
+        "height": 54,
+        "left": 0,
+        "right": 768,
+        "top": 758,
+        "width": 768
+      },
+      "toastCount": 1,
+      "toastOverlap": 0,
+      "width": 768
+    },
+    {
+      "at": "2026-10-22T21:12:10.791Z",
+      "bodyHeight": 812,
+      "draft": "Focused draft should remain fully visible below notices",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 804,
+        "height": 36,
+        "left": 95.5,
+        "right": 640.2890625,
+        "top": 768,
+        "width": 544.7890625
+      },
+      "kind": "workspace notice",
+      "locale": "vi",
+      "notice": {
+        "bottom": 125,
+        "height": 36,
+        "left": 0,
+        "right": 768,
+        "top": 89,
+        "width": 768
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "dark",
+      "toast": {
+        "bottom": 812,
+        "height": 0,
+        "left": 0,
+        "right": 768,
+        "top": 812,
+        "width": 768
+      },
+      "toastCount": 0,
+      "toastOverlap": 0,
+      "width": 768
+    },
+    {
+      "at": "2026-10-22T21:12:11.125Z",
+      "bodyHeight": 812,
+      "draft": "New draft while the send toast is visible",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 750,
+        "height": 36,
+        "left": 95.5,
+        "right": 640.2890625,
+        "top": 714,
+        "width": 544.7890625
+      },
+      "kind": "send toast and workspace notice",
+      "locale": "vi",
+      "notice": {
+        "bottom": 125,
+        "height": 36,
+        "left": 0,
+        "right": 768,
+        "top": 89,
+        "width": 768
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "dark",
+      "toast": {
+        "bottom": 812,
+        "height": 54,
+        "left": 0,
+        "right": 768,
+        "top": 758,
+        "width": 768
+      },
+      "toastCount": 1,
+      "toastOverlap": 0,
+      "width": 768
+    },
+    {
+      "at": "2026-10-22T21:12:12.474Z",
+      "bodyHeight": 812,
+      "draft": "Focused draft should remain fully visible below notices",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 800,
+        "height": 36,
+        "left": 397.5,
+        "right": 1100.2890625,
+        "top": 764,
+        "width": 702.7890625
+      },
+      "kind": "workspace notice",
+      "locale": "vi",
+      "notice": {
+        "bottom": 88,
+        "height": 36,
+        "left": 0,
+        "right": 1280,
+        "top": 52,
+        "width": 1280
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "light",
+      "toast": {
+        "bottom": 812,
+        "height": 0,
+        "left": 0,
+        "right": 1280,
+        "top": 812,
+        "width": 1280
+      },
+      "toastCount": 0,
+      "toastOverlap": 0,
+      "width": 1280
+    },
+    {
+      "at": "2026-10-22T21:12:12.813Z",
+      "bodyHeight": 812,
+      "draft": "New draft while the send toast is visible",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 746,
+        "height": 36,
+        "left": 397.5,
+        "right": 1100.2890625,
+        "top": 710,
+        "width": 702.7890625
+      },
+      "kind": "send toast and workspace notice",
+      "locale": "vi",
+      "notice": {
+        "bottom": 88,
+        "height": 36,
+        "left": 0,
+        "right": 1280,
+        "top": 52,
+        "width": 1280
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "light",
+      "toast": {
+        "bottom": 812,
+        "height": 54,
+        "left": 0,
+        "right": 1280,
+        "top": 758,
+        "width": 1280
+      },
+      "toastCount": 1,
+      "toastOverlap": 0,
+      "width": 1280
+    },
+    {
+      "at": "2026-10-22T21:12:14.147Z",
+      "bodyHeight": 812,
+      "draft": "Focused draft should remain fully visible below notices",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 800,
+        "height": 36,
+        "left": 397.5,
+        "right": 1100.2890625,
+        "top": 764,
+        "width": 702.7890625
+      },
+      "kind": "workspace notice",
+      "locale": "vi",
+      "notice": {
+        "bottom": 88,
+        "height": 36,
+        "left": 0,
+        "right": 1280,
+        "top": 52,
+        "width": 1280
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "dark",
+      "toast": {
+        "bottom": 812,
+        "height": 0,
+        "left": 0,
+        "right": 1280,
+        "top": 812,
+        "width": 1280
+      },
+      "toastCount": 0,
+      "toastOverlap": 0,
+      "width": 1280
+    },
+    {
+      "at": "2026-10-22T21:12:14.477Z",
+      "bodyHeight": 812,
+      "draft": "New draft while the send toast is visible",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 746,
+        "height": 36,
+        "left": 397.5,
+        "right": 1100.2890625,
+        "top": 710,
+        "width": 702.7890625
+      },
+      "kind": "send toast and workspace notice",
+      "locale": "vi",
+      "notice": {
+        "bottom": 88,
+        "height": 36,
+        "left": 0,
+        "right": 1280,
+        "top": 52,
+        "width": 1280
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "dark",
+      "toast": {
+        "bottom": 812,
+        "height": 54,
+        "left": 0,
+        "right": 1280,
+        "top": 758,
+        "width": 1280
+      },
+      "toastCount": 1,
+      "toastOverlap": 0,
+      "width": 1280
+    },
+    {
+      "at": "2026-10-22T21:12:30.303Z",
+      "bodyHeight": 812,
+      "draft": "Focused draft should remain fully visible below notices",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 804,
+        "height": 180,
+        "left": 100,
+        "right": 215.4375,
+        "top": 624,
+        "width": 115.4375
+      },
+      "kind": "workspace notice",
+      "locale": "en",
+      "notice": {
+        "bottom": 145,
+        "height": 56,
+        "left": 0,
+        "right": 375,
+        "top": 89,
+        "width": 375
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "light",
+      "toast": {
+        "bottom": 812,
+        "height": 0,
+        "left": 0,
+        "right": 375,
+        "top": 812,
+        "width": 375
+      },
+      "toastCount": 0,
+      "toastOverlap": 0,
+      "width": 375
+    },
+    {
+      "at": "2026-10-22T21:12:30.629Z",
+      "bodyHeight": 812,
+      "draft": "New draft while the send toast is visible",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 750,
+        "height": 112,
+        "left": 100,
+        "right": 215.4375,
+        "top": 638,
+        "width": 115.4375
+      },
+      "kind": "send toast and workspace notice",
+      "locale": "en",
+      "notice": {
+        "bottom": 145,
+        "height": 56,
+        "left": 0,
+        "right": 375,
+        "top": 89,
+        "width": 375
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "light",
+      "toast": {
+        "bottom": 812,
+        "height": 54,
+        "left": 0,
+        "right": 375,
+        "top": 758,
+        "width": 375
+      },
+      "toastCount": 1,
+      "toastOverlap": 0,
+      "width": 375
+    },
+    {
+      "at": "2026-10-22T21:12:31.963Z",
+      "bodyHeight": 812,
+      "draft": "Focused draft should remain fully visible below notices",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 804,
+        "height": 180,
+        "left": 100,
+        "right": 215.4375,
+        "top": 624,
+        "width": 115.4375
+      },
+      "kind": "workspace notice",
+      "locale": "en",
+      "notice": {
+        "bottom": 145,
+        "height": 56,
+        "left": 0,
+        "right": 375,
+        "top": 89,
+        "width": 375
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "dark",
+      "toast": {
+        "bottom": 812,
+        "height": 0,
+        "left": 0,
+        "right": 375,
+        "top": 812,
+        "width": 375
+      },
+      "toastCount": 0,
+      "toastOverlap": 0,
+      "width": 375
+    },
+    {
+      "at": "2026-10-22T21:12:32.291Z",
+      "bodyHeight": 812,
+      "draft": "New draft while the send toast is visible",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 750,
+        "height": 112,
+        "left": 100,
+        "right": 215.4375,
+        "top": 638,
+        "width": 115.4375
+      },
+      "kind": "send toast and workspace notice",
+      "locale": "en",
+      "notice": {
+        "bottom": 145,
+        "height": 56,
+        "left": 0,
+        "right": 375,
+        "top": 89,
+        "width": 375
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "dark",
+      "toast": {
+        "bottom": 812,
+        "height": 54,
+        "left": 0,
+        "right": 375,
+        "top": 758,
+        "width": 375
+      },
+      "toastCount": 1,
+      "toastOverlap": 0,
+      "width": 375
+    },
+    {
+      "at": "2026-10-22T21:12:33.620Z",
+      "bodyHeight": 812,
+      "draft": "Focused draft should remain fully visible below notices",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 804,
+        "height": 36,
+        "left": 112,
+        "right": 608.4375,
+        "top": 768,
+        "width": 496.4375
+      },
+      "kind": "workspace notice",
+      "locale": "en",
+      "notice": {
+        "bottom": 125,
+        "height": 36,
+        "left": 0,
+        "right": 768,
+        "top": 89,
+        "width": 768
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "light",
+      "toast": {
+        "bottom": 812,
+        "height": 0,
+        "left": 0,
+        "right": 768,
+        "top": 812,
+        "width": 768
+      },
+      "toastCount": 0,
+      "toastOverlap": 0,
+      "width": 768
+    },
+    {
+      "at": "2026-10-22T21:12:33.957Z",
+      "bodyHeight": 812,
+      "draft": "New draft while the send toast is visible",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 750,
+        "height": 36,
+        "left": 112,
+        "right": 608.4375,
+        "top": 714,
+        "width": 496.4375
+      },
+      "kind": "send toast and workspace notice",
+      "locale": "en",
+      "notice": {
+        "bottom": 125,
+        "height": 36,
+        "left": 0,
+        "right": 768,
+        "top": 89,
+        "width": 768
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "light",
+      "toast": {
+        "bottom": 812,
+        "height": 54,
+        "left": 0,
+        "right": 768,
+        "top": 758,
+        "width": 768
+      },
+      "toastCount": 1,
+      "toastOverlap": 0,
+      "width": 768
+    },
+    {
+      "at": "2026-10-22T21:12:35.293Z",
+      "bodyHeight": 812,
+      "draft": "Focused draft should remain fully visible below notices",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 804,
+        "height": 36,
+        "left": 112,
+        "right": 608.4375,
+        "top": 768,
+        "width": 496.4375
+      },
+      "kind": "workspace notice",
+      "locale": "en",
+      "notice": {
+        "bottom": 125,
+        "height": 36,
+        "left": 0,
+        "right": 768,
+        "top": 89,
+        "width": 768
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "dark",
+      "toast": {
+        "bottom": 812,
+        "height": 0,
+        "left": 0,
+        "right": 768,
+        "top": 812,
+        "width": 768
+      },
+      "toastCount": 0,
+      "toastOverlap": 0,
+      "width": 768
+    },
+    {
+      "at": "2026-10-22T21:12:35.616Z",
+      "bodyHeight": 812,
+      "draft": "New draft while the send toast is visible",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 750,
+        "height": 36,
+        "left": 112,
+        "right": 608.4375,
+        "top": 714,
+        "width": 496.4375
+      },
+      "kind": "send toast and workspace notice",
+      "locale": "en",
+      "notice": {
+        "bottom": 125,
+        "height": 36,
+        "left": 0,
+        "right": 768,
+        "top": 89,
+        "width": 768
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "dark",
+      "toast": {
+        "bottom": 812,
+        "height": 54,
+        "left": 0,
+        "right": 768,
+        "top": 758,
+        "width": 768
+      },
+      "toastCount": 1,
+      "toastOverlap": 0,
+      "width": 768
+    },
+    {
+      "at": "2026-10-22T21:12:36.938Z",
+      "bodyHeight": 812,
+      "draft": "Focused draft should remain fully visible below notices",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 800,
+        "height": 36,
+        "left": 418.5,
+        "right": 1068.4375,
+        "top": 764,
+        "width": 649.9375
+      },
+      "kind": "workspace notice",
+      "locale": "en",
+      "notice": {
+        "bottom": 88,
+        "height": 36,
+        "left": 0,
+        "right": 1280,
+        "top": 52,
+        "width": 1280
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "light",
+      "toast": {
+        "bottom": 812,
+        "height": 0,
+        "left": 0,
+        "right": 1280,
+        "top": 812,
+        "width": 1280
+      },
+      "toastCount": 0,
+      "toastOverlap": 0,
+      "width": 1280
+    },
+    {
+      "at": "2026-10-22T21:12:37.267Z",
+      "bodyHeight": 812,
+      "draft": "New draft while the send toast is visible",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 746,
+        "height": 36,
+        "left": 418.5,
+        "right": 1068.4375,
+        "top": 710,
+        "width": 649.9375
+      },
+      "kind": "send toast and workspace notice",
+      "locale": "en",
+      "notice": {
+        "bottom": 88,
+        "height": 36,
+        "left": 0,
+        "right": 1280,
+        "top": 52,
+        "width": 1280
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "light",
+      "toast": {
+        "bottom": 812,
+        "height": 54,
+        "left": 0,
+        "right": 1280,
+        "top": 758,
+        "width": 1280
+      },
+      "toastCount": 1,
+      "toastOverlap": 0,
+      "width": 1280
+    },
+    {
+      "at": "2026-10-22T21:12:38.596Z",
+      "bodyHeight": 812,
+      "draft": "Focused draft should remain fully visible below notices",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 800,
+        "height": 36,
+        "left": 418.5,
+        "right": 1068.4375,
+        "top": 764,
+        "width": 649.9375
+      },
+      "kind": "workspace notice",
+      "locale": "en",
+      "notice": {
+        "bottom": 88,
+        "height": 36,
+        "left": 0,
+        "right": 1280,
+        "top": 52,
+        "width": 1280
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "dark",
+      "toast": {
+        "bottom": 812,
+        "height": 0,
+        "left": 0,
+        "right": 1280,
+        "top": 812,
+        "width": 1280
+      },
+      "toastCount": 0,
+      "toastOverlap": 0,
+      "width": 1280
+    },
+    {
+      "at": "2026-10-22T21:12:38.928Z",
+      "bodyHeight": 812,
+      "draft": "New draft while the send toast is visible",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 746,
+        "height": 36,
+        "left": 418.5,
+        "right": 1068.4375,
+        "top": 710,
+        "width": 649.9375
+      },
+      "kind": "send toast and workspace notice",
+      "locale": "en",
+      "notice": {
+        "bottom": 88,
+        "height": 36,
+        "left": 0,
+        "right": 1280,
+        "top": 52,
+        "width": 1280
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "dark",
+      "toast": {
+        "bottom": 812,
+        "height": 54,
+        "left": 0,
+        "right": 1280,
+        "top": 758,
+        "width": 1280
+      },
+      "toastCount": 1,
+      "toastOverlap": 0,
+      "width": 1280
+    },
+    {
+      "at": "2026-10-22T21:13:43.644Z",
+      "bodyHeight": 812,
+      "draft": "New draft while the send toast is visible",
+      "focus": "hostMsg",
+      "height": 812,
+      "input": {
+        "bottom": 800,
+        "height": 36,
+        "left": 418.5,
+        "right": 1068.4375,
+        "top": 764,
+        "width": 649.9375
+      },
+      "kind": "after notification timers clear",
+      "locale": "en",
+      "notice": {
+        "bottom": 0,
+        "height": 0,
+        "left": 0,
+        "right": 0,
+        "top": 0,
+        "width": 0
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "dark",
+      "toast": {
+        "bottom": 812,
+        "height": 0,
+        "left": 0,
+        "right": 1280,
+        "top": 812,
+        "width": 1280
+      },
+      "toastCount": 0,
+      "toastOverlap": 0,
+      "width": 1280
+    },
+    {
+      "at": "2026-10-22T21:13:44.031Z",
+      "bodyHeight": 812,
+      "draft": "",
+      "focus": "workTitle",
+      "height": 812,
+      "input": {
+        "bottom": 108,
+        "height": 28,
+        "left": 100,
+        "right": 197.765625,
+        "top": 80,
+        "width": 97.765625
+      },
+      "kind": "normal work refresh notice and heading focus",
+      "locale": "en",
+      "notice": {
+        "bottom": 812,
+        "height": 36,
+        "left": 0,
+        "right": 1280,
+        "top": 776,
+        "width": 1280
+      },
+      "noticeOverlap": 0,
+      "overflow": false,
+      "recipient": "",
+      "theme": "dark",
+      "toast": {
+        "bottom": 812,
+        "height": 0,
+        "left": 0,
+        "right": 1280,
+        "top": 812,
+        "width": 1280
+      },
+      "toastCount": 0,
+      "toastOverlap": 0,
+      "width": 1280
+    }
+  ],
+  "scope": "12locale/theme/actual-width configurations \u00d72 notification states plus expiry and work-view checks. Private fixture messages, no new task/native model. Notices reserve vertical space/reflow. First after-attempt used old stylesheet because hash-only goto did not reload; retained separately, not counted.",
+  "sourceHashes": {
+    "src/ui/app.css": "126c32c9879a71c11e74f8a05df3caf67b072c1fa54b9bdae45f7fa8039fa67f",
+    "src/ui/workspace.css": "9c5c34ee23cc1e5b04151a3117d6029904ada3182c942951b1ef1d34ff7b9a1a",
+    "src/ui/app.js": "fd371dbb08e176cb303dee32733c23d227a464986cd78f8505ada17ad7a2426d",
+    "src/ui/workspace.js": "148f822408bac1180ae78b0e7f748a29198f019c19adc65fd075c8e9b79f8c2d"
+  },
+  "baseCommit": "64b7ef479536e487b2c0943f9fd9aa63c823c675",
+  "baselineComparison": {
+    "sameDraftAt375VI": "New draft while the send toast is visible",
+    "beforeToastInputWidth": 147.2890625,
+    "beforeToastInputHeight": 88,
+    "beforeToastOverlapArea": 5338.109375,
+    "afterToastOverlapArea": 0,
+    "newReservedToastHeight": 54,
+    "newReservedWorkspaceNoticeHeight": 56,
+    "limitations": "Transient layout reflow and less content height. Geometry, not human effort, screenreader, universal WCAG or billing proof."
+  }
+}

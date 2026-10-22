@@ -6,6 +6,7 @@
 - Human chair stays the default, with optional PM controls/history in Options. PM connection errors clear on recovery without erasing action errors; terminal invitation words use POSIX quoting.
 - CLI SIGINT/SIGTERM and exit-on-end drain managed work and cancellation/rollback before exiting. Closed managers reject new dispatch instead of starting work during shutdown.
 - Slow verification/integration can be cancelled from Results; late completions preserve drafts opened in another view. PM updates preserve supervision focus and unsent drafts; director stop controls take priority over pending ordinary requests.
+- Session notices and send toasts reserve layout space so the focused message composer stays visible; feedback temporarily reduces content height.
 - Superseded navigation read failures cannot attach alerts to a newer work view or the conversation; current-view failures still surface.
 - Failed actions returning to a hidden work view use the existing notice channel while preserving chat focus; current-view errors retain inline recovery.
 - Manual work refresh preserves edits made while reads are pending and cannot replace a view opened afterward. Fresh refresh restores heading focus.

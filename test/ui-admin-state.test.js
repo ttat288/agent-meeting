@@ -89,3 +89,21 @@ test('normal task save tolerates unavailable browser storage',async()=>{
 test('a task save hidden by the conversation cannot steal chat focus',async()=>{
  const f=taskSaveFixture(),pending=f.context.saveTaskRequirements(f.task,f.form,()=>({acceptance:['submitted']}));f.form.closest=()=>({hidden:true});f.resolvers[0]({});assert.equal(await pending,false);assert.equal(f.calls.length,1);assert.equal(f.renders(),0);assert.equal(f.focuses(),0);assert.deepEqual(f.removed,[]);
 });
+
+function workRefreshFixture(){
+ let release,fail,renders=0,focuses=0;const notices=[],calls=[],aux=new Promise((resolve,reject)=>{release=resolve;fail=reject;});
+ const context=vm.createContext({workEditVersion:0,workReadVersion:0,config:{revision:7},work:{revision:2},api:async endpoint=>{calls.push(endpoint);if(endpoint==='/work'){context.workReadVersion++;return{revision:3};}return{revision:8};},loadAuxiliary:()=>aux,notify:text=>notices.push(text),t:(vi,en)=>en,acceptWork:next=>{context.work=next;},renderDaily:()=>{renders++;},$:()=>({focus:()=>{focuses++;}})});
+ const start=source.indexOf('  async function refreshWork('),end=source.indexOf('  function renderDaily()',start);assert(start>=0&&end>start);vm.runInContext(source.slice(start,end),context);
+ return{context,calls,notices,release,fail,refresh:{isConnected:true,closest:()=>null},renders:()=>renders,focuses:()=>focuses};
+}
+test('fresh manual refresh adopts config and work together with heading focus',async()=>{
+ const f=workRefreshFixture(),pending=f.context.refreshWork(f.refresh);f.release();assert.equal(await pending,true);assert.equal(f.context.config.revision,8);assert.equal(f.context.work.revision,3);assert.equal(f.renders(),1);assert.equal(f.focuses(),1);assert.deepEqual(f.calls,['/work','/config']);
+});
+for(const reason of ['edited','hidden','detached','newer-read'])test('manual refresh retains viewed snapshots when '+reason,async()=>{
+ const f=workRefreshFixture(),pending=f.context.refreshWork(f.refresh);await new Promise(resolve=>setImmediate(resolve));
+ if(reason==='edited')f.context.workEditVersion++;if(reason==='hidden')f.refresh.closest=()=>({hidden:true});if(reason==='detached')f.refresh.isConnected=false;if(reason==='newer-read')f.context.workReadVersion++;
+ f.release();assert.equal(await pending,false);assert.equal(f.context.config.revision,7);assert.equal(f.context.work.revision,2);assert.equal(f.renders(),0);assert.equal(f.focuses(),0);assert.match(f.notices[0],/retained/);
+});
+test('manual refresh failure preserves both viewed snapshots and reports the error',async()=>{
+ const f=workRefreshFixture(),pending=f.context.refreshWork(f.refresh);f.fail(new Error('Controlled read failure'));await assert.rejects(pending,/Controlled read failure/);assert.equal(f.context.config.revision,7);assert.equal(f.context.work.revision,2);assert.equal(f.renders(),0);
+});

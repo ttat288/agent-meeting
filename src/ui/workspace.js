@@ -262,9 +262,21 @@
     window.dispatchEvent(new CustomEvent('am-work-state', { detail: work }));
     if (explicit) $('workTitle').focus({ preventScroll: true });
   }
+  async function refreshWork(refresh) {
+    const version = workEditVersion, read = workReadVersion + 1;
+    const next = await api('/work'), nextConfig = await api('/config');
+    await loadAuxiliary();
+    if (!refresh.isConnected || refresh.closest('[hidden]') || version !== workEditVersion || read !== workReadVersion) {
+      notify(t('Đã đọc cập nhật; giữ nguyên view và phần đang nhập. Làm mới khi sẵn sàng xem dữ liệu hiện tại.', 'Updates read; the current view and input are retained. Refresh when ready to view current data.'));
+      return false;
+    }
+    config = nextConfig; acceptWork(next); renderDaily(); $('workTitle')?.focus();
+    notify(t('Đã cập nhật', 'Updated'));
+    return true;
+  }
   function renderDaily() {
     const page = $('page');
-    const refresh = button(t('Làm mới', 'Refresh'), () => action(refresh, page, async () => { acceptWork(await api('/work')); config = await api('/config'); await loadAuxiliary(); renderDaily(); notify(t('Đã cập nhật', 'Updated')); }));
+    const refresh = button(t('Làm mới', 'Refresh'), () => action(refresh, page, () => refreshWork(refresh)));
     let context = work.session?.context || '';
     if (!context) try { context = JSON.parse(localStorage.getItem('agent-meeting:' + hostKey + ':brief') || '{}').context || ''; } catch {}
     const title = tab === 'plan' ? t('Kế hoạch', 'Plan') : tab === 'results' ? t('Kết quả', 'Results') : t('Thực hiện', 'Execute');

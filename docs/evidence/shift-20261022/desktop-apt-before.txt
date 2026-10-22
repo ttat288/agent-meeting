@@ -1,0 +1,8 @@
+native-smoke (ubuntu-22.04)	Prepare Linux desktop validation tools	﻿2026-10-22T19:27:23.5774829Z ##[group]Run sudo apt-get update -qq
+native-smoke (ubuntu-22.04)	Prepare Linux desktop validation tools	2026-10-22T19:27:23.5775083Z [36;1msudo apt-get update -qq[0m
+native-smoke (ubuntu-22.04)	Prepare Linux desktop validation tools	2026-10-22T19:27:23.5775357Z [36;1msudo apt-get install -y --no-install-recommends desktop-file-utils libglib2.0-bin[0m
+native-smoke (ubuntu-22.04)	Prepare Linux desktop validation tools	2026-10-22T19:27:23.6440792Z shell: /usr/bin/bash -e {0}
+native-smoke (ubuntu-22.04)	Prepare Linux desktop validation tools	2026-10-22T19:27:23.6440980Z ##[endgroup]
+native-smoke (ubuntu-22.04)	Prepare Linux desktop validation tools	2026-10-22T19:27:32.7097634Z E: Failed to fetch https://packages.microsoft.com/ubuntu/22.04/prod/dists/jammy/InRelease  403  Forbidden [IP: 13.107.213.38 443]
+native-smoke (ubuntu-22.04)	Prepare Linux desktop validation tools	2026-10-22T19:27:32.7098691Z E: The repository 'https://packages.microsoft.com/ubuntu/22.04/prod jammy InRelease' is no longer signed.
+native-smoke (ubuntu-22.04)	Prepare Linux desktop validation tools	2026-10-22T19:27:32.7114043Z ##[error]Process completed with exit code 100.

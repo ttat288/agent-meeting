@@ -1,0 +1,100 @@
+{
+  "schema": "agent-meeting/next-strong-writer-contract@1",
+  "createdAt": "2026-10-22T22:11:29.401Z",
+  "status": "prepared-not-executed",
+  "executionAuthorized": false,
+  "nativeModelCalls": 0,
+  "historicalTaskDigest": "a67ebf7000860fa0dba699d543138c0b1173a59be51c2b3ae90b8b5d2b2c0653",
+  "sourceDigest": "491c16573db8a4e1ceb8fd6d5752fea6624f156a06fb0bc023f6bf3128d656c0",
+  "baseRevision": "e292fd3833d65152ebfa6133fc27a67285b6cab9",
+  "acceptanceSha256": "dd3558b1735ac9f11974c3c37a95062cb471be478e55e1c0dc1b3e6220526736",
+  "gitPreparationPolicy": "Reproducer preparationv2: only shallow base commit, no future commit objects; paired source bytes and modes verified",
+  "task": {
+    "id": "runtime-evidence-strong-contract-v2",
+    "goal": "Repair runtime cost and model evidence parsing without changing successful-result behavior or public contracts.",
+    "observed": "Local repro: total_cost_usd=-2 survives as costUsd=-2; modelUsage with two entries plus model=expected returns expected. No production incident established.",
+    "acceptance": [
+      "Finite nonnegative numeric costs, including zero, survive; negative, missing and nonnumeric costs stay unknown (null).",
+      "Multiple modelUsage entries must remain ambiguous (unknown), even when model is set. One usage entry is authoritative; absent usage may use explicit model.",
+      "Existing runtime tests pass, test sources and unrelated files unchanged; report limitations and evidence."
+    ],
+    "writePaths": [
+      "src/runtime.js"
+    ],
+    "testFiles": [
+      "test/runtime.test.js",
+      "test/pm-pilot-acceptance.test.js"
+    ],
+    "baseRevision": "e292fd3833d65152ebfa6133fc27a67285b6cab9",
+    "sources": [
+      "AGENTS.md",
+      "docs/HANDOFF.md",
+      "CONTRIBUTING.md",
+      "SECURITY.md",
+      "docs/SECURITY-DESIGN.md",
+      "src/runtime.js",
+      "test/runtime.test.js",
+      "test/pm-pilot-acceptance.test.js"
+    ],
+    "rules": [
+      "Only change src/runtime.js. No commit/push/install/deploy/global settings/port3000/secrets.",
+      "Use native coding context and tools within the same scope; no paid subagents or extra models.",
+      "Run supplied tests and inspect the diff; give one concise result/evidence/limitations report. No mandatory questions per tool.",
+      "No hidden answer, solution patch or output from the other arm is available. Do not read the other arm.",
+      "Native direct context management and ordinary read/edit/test self-correction remain enabled within the one invocation. Do not stop after an unverified first patch when time remains. Internal edit/test cycles are not additional writer invocations.",
+      "Respect the actual tool permissions of your arm. Direct native Bash is allowed for scoped read/test work. The managed writer currently lacks Bash; its independent checker is outside the writer. Tool rights are intentionally asymmetric and must be disclosed, never counted as an equal-tool model comparison."
+    ],
+    "limits": {
+      "technicalRetries": 0,
+      "writerTimeoutMs": 120000,
+      "testTimeoutMs": 30000,
+      "concurrency": 1,
+      "maxWriterInvocations": 1,
+      "internalEditTestCycles": "Allowed until acceptance passes or invocation timeout; not an external retry",
+      "extraModelsOrPaidSubagents": false
+    }
+  },
+  "taskDigest": "eb69f6197b366ed0118b80f8e3ff20165d3731653a133dd39f1dadf4f1547893",
+  "baseline": {
+    "nativeTools": [
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "Bash"
+    ],
+    "nativeContextManagement": "Keep CLI defaults including compaction; no mandatory full history/log reads",
+    "internalTestEditCyclesAllowed": true
+  },
+  "managed": {
+    "writerTools": [
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep"
+    ],
+    "independentChecks": "Same frozen acceptance and source scope, evaluated outside the writer",
+    "toolRightsMatched": false
+  },
+  "limits": {
+    "writerTimeoutMs": 120000,
+    "testTimeoutMs": 30000,
+    "additionalExternalRetries": 0,
+    "additionalNativeModelsOrSubagents": false,
+    "budgetAuthorization": null
+  },
+  "requiredBeforeInvocation": [
+    "Restore access without changing model silently; record requested/actual identity and CLI version",
+    "Authorize the new trial/call inventory and observed budget; this file grants none",
+    "Use this common task object as the prompt contract for both prepared arms, rather than the historical v1 task",
+    "Record all direct/probe/PM/worker invocations, failures, internal work, setup, independent evaluation and unknown costs"
+  ],
+  "comparisonLimits": [
+    "This is a new task/prompt contract; its digest differs from v1 despite equal source and acceptance",
+    "No completed native-model pair, billing advantage, semantic quality or eight-hour runtime evidence",
+    "Direct and managed tool rights differ; never present the result as an equal-tool model A/B",
+    "Local Git-store checks do not enforce OS/network read isolation"
+  ]
+}

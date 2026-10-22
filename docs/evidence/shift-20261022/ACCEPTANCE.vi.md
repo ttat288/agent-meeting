@@ -1,6 +1,13 @@
 # Evidence ca phát triển — đang thực thi, chưa kết thúc 8 giờ
 
-T0 22:24:53 ngày22/10/2026, deadline06:24:53 ngày23/10/2026 Asia/Bangkok. Trạng thái tại22:57:36:32m43s đã làm,7h27m17s còn lại. Không nhận đã hoàn thành8 giờ hoặc nghiệm thu model8h. HEAD ban đầu `e292fd3833d65152ebfa6133fc27a67285b6cab9`, workspace dirty có sẵn được snapshot private trước sửa; chưa commit/push tại checkpoint này.
+T0 22:24:53 ngày22/10/2026, deadline06:24:53 ngày23/10/2026 Asia/Bangkok. Mốc đọc hiện tại 05:08:54: 6h44m01s đã làm, 1h15m58s còn lại. Chưa nhận đã hoàn thành8 giờ hoặc nghiệm thu model8h. HEAD ban đầu `e292fd3833d65152ebfa6133fc27a67285b6cab9`; workspace có sẵn được snapshot rồi bảo toàn trong foundation `805f638`.
+
+## Điểm đọc hiện tại
+
+- Source chức năng `6d40a8622dceb3cf5d973186421a867ef12d5c00`: local426/37,0 fail/skip/cancel; CI39861079232 và Desktop39861079233 overall success đúng SHA. [Hash source/tool/test](verification-initial-load-tests.json). Các mục dưới giữ phiên bản lịch sử của từng phép kiểm.
+- Web đã kiểm draft/revision, delayed callbacks, live updates, cancel, notice không che composer, keyboard focus và lỗi/khôi phục. [Fresh journey](integrated-journey-input.json) chạy Node fixture thật tới source integration; không là model AI hoặc user UX acceptance.
+- [Contract strong kế tiếp](writer-strong-next-contract.json) đã chuẩn bị với internal edit/test rõ ràng, source/acceptance không đổi nhưng task digest mới; chưa thực thi hoặc cấp quyền model. Native attempts vẫn3, không có cặp model hoàn tất. Writer lỗi OAuth; audit riêng bị từ chối thao tác và thiếu identity. [Git input v2](writer-git-history-final.json) sửa history leak của reproducer, giữ frozen source bytes nhưng đổi Git metadata. Quyền công cụ và field fixLoops v1 được công khai ở [protocol](PROTOCOL.vi.md#cách-tái-lập-và-giới-hạn-baseline-cần-giữ-rõ), không nhận đã có baseline model mạnh hoàn tất.
+- Lượt package/benchmark cuối và bảng footprint sẽ có receipt riêng trên source đã đóng băng. `verify-final-package.cjs` mới kiểm syntax, chưa gán kết quả chạy. Không suy billing từ bytes, fixture hoặc số test.
 
 ## Pain point đã tái hiện và thay đổi tích hợp
 

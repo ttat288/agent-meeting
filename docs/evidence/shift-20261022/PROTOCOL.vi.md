@@ -58,3 +58,21 @@ Preparationrevision2 phải init repo rỗng, fetch local đúngbaseSHA với de
 Unit dùng repo Git disposable2commits (base vàanswer), không phụ thuộc lịch sử clone CI hoặc remote; acceptance thực dùng originalmanifest và reject prepared solved input hiện có. Overhead:newinit+fetch+checkout+cat-file selfcheck so oldclone+checkout tăng2Gitprocess/arm (4/helper), chưa đo setup CPU/time/invoice. Fullmodelblindness chưa được bảo đảm: nativeCLI vẫn theo phạm vi đọc đã giao, có thể có ambient external access; localGitstore isolation không là OS/network sandbox.
 
 Helperv2 tự kiểm mọi commitobject saufetch, không chỉgiảđịnh depth1 hoặc dựa checkoutHEAD. Nếu ambient Gittemplate mang thêm lịch sử, preparation phải fail; unit injects disposable template chỉ trong subprocess/test environment, không sửa Gitsettingsglobal.
+
+## Cách tái lập và giới hạn baseline cần giữ rõ
+
+Chạy từ full clone của nhánh này. Reproducer writer cần các commit base/foundation trong lịch sử; shallow checkout có thể cần `git fetch --unshallow` do người vận hành chạy trước. Helper chỉ fetch từ đường dẫn repo local, không tự lấy mạng hoặc gọi model.
+
+```bash
+node tools/benchmark-work-watch.js 30 /tmp/work-watch-result.json
+node tools/reproduce-writer-input.js
+node docs/evidence/shift-20261022/verify-final-package.cjs
+```
+
+Lệnh package cuối dùng thư mục kết quả mới trong `/tmp` mặc định (hoặc đối số thư mục mới), không ghi đè receipt cũ. Nó yêu cầu package inputs đã commit, kiểm mọi file runtime đã track được ship, hash mọi file tar, CSP/HTTP/assets/304, bundled skill và hai CLI signal tests từ bản giải nén. Test được copy sau pack; không ship test/dev evidence hoặc cài ứng dụng. Đây là chương trình chuẩn bị cho lượt kiểm cuối ca, chỉ có receipt thật sau khi thực thi thành công.
+
+Direct writer được native Read/Edit/Write/Glob/Grep/Bash; adapter managed production hiện chỉ Read/Edit/Write/Glob/Grep. Đây là so workflow có quyền công cụ khác nhau theo hướng direct có thêm khả năng tự chạy test, không là model A/B với tool rights giống hệt. Không nới quyền production để làm đẹp benchmark. Frozen task v1 còn field `fixLoops:0`; nó có thể gây mơ hồ với vòng test/edit nội bộ dù rules cho native tools và test. Vì direct đã lỗi OAuth, không có hành vi model để xác nhận cách hiểu. Một cặp mới phải khóa rõ internal test/edit loops được phép trong timeout, phân biệt với retry invocation, và ghi phiên bản/prompt mới trước khi gọi; không sửa taskDigest hoặc diễn giải lại kết quả v1 để tuyên bố thắng.
+
+Do các giới hạn trên và không có hai arm hoàn tất, ca này chưa cung cấp bằng chứng chất lượng/chi phí tốt hơn một coding CLI trực tiếp mạnh. HTTP benchmark là transport riêng, Git-store check là tính toàn vẹn input riêng, không thay thế phần model còn thiếu.
+
+Contract kế tiếp đã được đóng gói riêng tại [writer-strong-next-contract.json](writer-strong-next-contract.json), không sửa manifest/task v1. Source digest và acceptance giữ nguyên; task digest mới `eb69f6197b366ed0118b80f8e3ff20165d3731653a133dd39f1dadf4f1547893`. Nó bỏ field fixLoops mơ hồ, cho phép internal edit/test trong một invocation, giữ native context/compaction và công khai tool-right asymmetry. Khi mở một trial mới, dùng common task object này làm prompt contract cho cả hai arm trên source đã tái tạo, và ghi digest mới vào mọi receipt. Trạng thái `prepared-not-executed`, `executionAuthorized:false`; không là kết quả model hoặc quyền gọi thêm trong ca đang bị dừng vì auth.

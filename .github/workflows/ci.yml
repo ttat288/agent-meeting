@@ -1,5 +1,10 @@
 name: CI
 on: [push, pull_request]
+# A branch push and its PR update share one validation lane. Keep repository
+# identity in the key so equally named branches from forks stay independent.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
 jobs:
   test:
     # Ubuntu 22.04 supports the unprivileged namespaces required by bubblewrap.

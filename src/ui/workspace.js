@@ -435,15 +435,26 @@
   function renderRuntime(page) {
     const viewedRevision = config.revision;
     const refresh = button(t('Kiểm tra runtime', 'Check runtimes'), () => action(refresh, page, async () => { const result = await api('/runtime'); runtime = Array.isArray(result) ? result : [...(result.observations || []), ...(result.checks || [])]; renderRuntimeObservations(); notify(t('Đã cập nhật quan sát runtime. Có executable không đồng nghĩa có quyền truy cập model.', 'Runtime observations updated. An executable does not establish model access.')); }));
-    page.append(node('div', { class: 'ws-row between' }, node('h2', {}, t('Hồ sơ model / runtime', 'Model / runtime profiles')), refresh), node('p', { class: 'ws-warning' }, t('Catalog mô tả năng lực; quan sát runtime mô tả môi trường. Quyền truy cập chưa được kiểm tra phải giữ là unknown.', 'The catalog describes capabilities; runtime observations describe the environment. Untested access remains unknown.')));
+    const diagnostics = disclosure(t('Dữ liệu chẩn đoán', 'Diagnostic data'), json(runtime)); diagnostics.id = 'runtimeDiagnostics';
+    page.append(node('section', { class: 'ws-panel', id: 'runtimeObservations' },
+      node('div', { class: 'ws-row between' }, node('h2', {}, t('Runtime trên máy', 'Local runtimes')), refresh),
+      node('div', { id: 'runtimeChecks' }), diagnostics),
+      node('h2', { class: 'ws-runtime-heading' }, t('Hồ sơ model / runtime', 'Model / runtime profiles')),
+      node('p', { class: 'ws-subtle' }, t('Probe gọi model thật và có thể phát sinh phí CLI; timeout 60 giây. Quan sát truy cập có hạn 30 phút.', 'Probing invokes the actual model and may use your CLI budget; timeout 60 seconds. Access observations expire after 30 minutes.')));
     for (const profile of config.profiles) {
-      const form = node('form', { class: 'ws-panel', novalidate: true }, node('h3', {}, profile.label), node('p', { class: 'ws-meta' }, profile.id),
+      const model = config.models.find(m => m.id === profile.modelId), adapter = config.runtimes.find(r => r.id === profile.runtimeId);
+      const mapping = disclosure(t('Sửa ánh xạ', 'Edit mapping'), node('p', { class: 'ws-meta' }, profile.id),
         selectField(t('Model', 'Model'), 'model-' + profile.id, config.models.map(m => [m.id, m.label]), profile.modelId),
         selectField(t('Runtime / adapter', 'Runtime / adapter'), 'runtime-' + profile.id, config.runtimes.map(r => [r.id, r.label]), profile.runtimeId),
-        node('label', { class: 'ws-check' }, node('input', { type: 'checkbox', id: 'enabled-' + profile.id, checked: profile.enabled }), t('Bật hồ sơ', 'Enable profile')),
-        node('p', { class: 'ws-subtle' }, t('Trạng thái truy cập: unknown cho tới khi runtime kiểm tra đúng model.', 'Access: unknown until the runtime checks the specific model.')));
-      const save = node('button', { type: 'submit', class: 'btn ghost' }, t('Lưu ánh xạ', 'Save mapping')); form.append(save);
-      form.onsubmit = event => { event.preventDefault(); action(save, form, async () => { const next = structuredClone(config); const p = next.profiles.find(x => x.id === profile.id); p.modelId = val('model-' + profile.id); p.runtimeId = val('runtime-' + profile.id); p.enabled = $('enabled-' + profile.id).checked; await saveConfig(next); }); };
+        node('label', { class: 'ws-check' }, node('input', { type: 'checkbox', id: 'enabled-' + profile.id, checked: profile.enabled }), t('Bật hồ sơ', 'Enable profile')));
+      mapping.firstElementChild.id = 'mapping-toggle-' + profile.id;
+      mapping.firstElementChild.setAttribute('aria-label', t('Sửa ánh xạ: ', 'Edit mapping: ') + profile.label);
+      const form = node('form', { class: 'ws-panel ws-runtime-profile', novalidate: true },
+        node('div', { class: 'ws-row between' }, node('h3', {}, profile.label), node('span', { class: 'ws-pill' }, profile.enabled ? t('Đã bật', 'Enabled') : t('Đã tắt', 'Disabled'))),
+        node('p', { class: 'ws-meta' }, (model?.providerModelId || t('Chưa đặt model ID', 'Model ID not set')) + ' · ' + (adapter?.label || profile.runtimeId)),
+        node('div', { id: 'access-' + profile.id, class: 'ws-access' }));
+      const save = node('button', { type: 'submit', class: 'btn ghost' }, t('Lưu ánh xạ', 'Save mapping')); mapping.append(save);
+      form.onsubmit = event => { event.preventDefault(); action(save, form, async () => { const next = structuredClone(config); const p = next.profiles.find(x => x.id === profile.id); p.modelId = val('model-' + profile.id); p.runtimeId = val('runtime-' + profile.id); p.enabled = $('enabled-' + profile.id).checked; await saveConfig(next); $('mapping-toggle-' + profile.id)?.focus(); }); };
       const probe = button('', async () => {
         renderProbeButton(profile.id); if (probe.disabled) return;
         probingProfiles.add(profile.id); renderProbeButton(profile.id);
@@ -455,22 +466,40 @@
       probe.id = 'probe-' + profile.id;
       probe.dataset.model = profile.modelId; probe.dataset.runtime = profile.runtimeId; probe.dataset.enabled = String(profile.enabled);
       form.onchange = () => renderProbeButton(profile.id);
-      form.append(node('p', { class: 'ws-subtle' }, t('Kiểm tra truy cập gọi model thật, có thể mất tới 120 giây và phát sinh chi phí của tài khoản CLI.', 'Access probing invokes the actual model, may take up to 120 seconds and can use your CLI account budget.')), probe);
-      page.append(form);
-      renderProbeButton(profile.id);
+      form.append(probe, mapping); page.append(form); renderProbeButton(profile.id);
     }
-    page.append(node('section', { class: 'ws-panel', id: 'runtimeObservations' }));
     renderRuntimeObservations();
   }
   function renderProbeButton(profileId) {
     const probe = $('probe-' + profileId); if (!probe) return;
     const pending = probingProfiles.has(profileId), dirty = $('model-' + profileId).value !== probe.dataset.model || $('runtime-' + profileId).value !== probe.dataset.runtime || String($('enabled-' + profileId).checked) !== probe.dataset.enabled;
-    probe.disabled = pending || dirty;
-    probe.textContent = pending ? t('Đang kiểm tra truy cập model…', 'Probing model access…') : dirty ? t('Lưu ánh xạ trước khi kiểm tra truy cập', 'Save mapping before probing') : t('Kiểm tra truy cập model (gọi CLI thật)', 'Probe model access (invokes the CLI)');
+    const profile = config.profiles.find(p => p.id === profileId), model = config.models.find(m => m.id === profile?.modelId);
+    const ready = profile?.enabled && model?.enabled && model.verification === 'verified' && model.providerModelId;
+    probe.disabled = pending || dirty || !ready;
+    probe.textContent = pending ? t('Đang kiểm tra truy cập model…', 'Probing model access…') : dirty ? t('Lưu ánh xạ trước khi kiểm tra truy cập', 'Save mapping before probing') : !ready ? t('Bật và xác minh model trước', 'Enable and verify model first') : t('Kiểm tra truy cập model (gọi CLI thật)', 'Probe model access (invokes the CLI)');
   }
   function renderRuntimeObservations() {
     const panel = $('runtimeObservations'); if (!panel) return;
-    panel.replaceChildren(node('h2', {}, t('Quan sát môi trường', 'Environment observations')), runtime.length ? json(runtime) : node('p', { class: 'ws-empty' }, t('Chưa kiểm tra ở màn hình này. Bấm Kiểm tra runtime để lấy quan sát từ server.', 'No observations loaded here. Choose Check runtimes to read server observations.')));
+    const checks = runtime.filter(o => !o.profileId), list = $('runtimeChecks');
+    list.replaceChildren(...(checks.length ? checks.map(o => node('p', { class: 'ws-runtime-check' }, node('strong', {}, o.adapter),
+      node('span', {}, o.executable ? (o.version || t('Có executable', 'Executable found')) : t('Không tìm thấy executable', 'Executable not found')))) : [node('p', { class: 'ws-subtle' }, t('Chưa kiểm tra executable ở màn hình này.', 'Executable checks have not been loaded here.'))]),
+      node('p', { class: 'ws-subtle' }, t('Có executable chưa chứng minh truy cập model. Xem quan sát trên từng hồ sơ.', 'An executable does not establish model access. See each profile’s observation.')));
+    // Keep the disclosure and its summary mounted across late probe responses.
+    panel.querySelector('pre').textContent = JSON.stringify(runtime, null, 2);
+    for (const profile of config.profiles) {
+      const target = $('access-' + profile.id); if (!target) continue;
+      const model = config.models.find(m => m.id === profile.modelId), observed = runtime.find(o => o.profileId === profile.id);
+      const age = Date.now() - Date.parse(observed?.checkedAt);
+      const current = observed && observed.configRevision === config.revision && observed.runtimeId === profile.runtimeId && observed.providerModelId === model?.providerModelId && age >= 0 && age < 30 * 60000;
+      let label = t('Truy cập chưa kiểm tra', 'Access untested'), status = '';
+      if (observed && !current) { label = t('Quan sát đã cũ; kiểm tra lại', 'Observation stale; check again'); status = 'stale'; }
+      else if (current && observed.available !== true) { label = t('Probe thất bại', 'Probe failed'); status = 'failed'; }
+      else if (current && observed.modelVerified === true && observed.reportedModel === model?.providerModelId) { label = t('Đã đối chiếu model', 'Model matched'); status = 'verified'; }
+      else if (current) { label = t('Model chưa xác nhận', 'Model unconfirmed'); status = 'stale'; }
+      target.replaceChildren(node('span', { class: 'ws-pill', 'data-status': status }, label));
+      if (observed) target.append(node('p', { class: 'ws-meta' }, t('Model báo lại: ', 'Reported model: ') + (observed.reportedModel || 'unknown') + ' · ' + observed.checkedAt));
+      if (observed?.error) target.append(node('p', { class: 'ws-subtle' }, friendlyError(observed.error)));
+    }
   }
   async function loadAuxiliary() {
     const results = await Promise.allSettled([api('/remote'), api('/metrics')]);

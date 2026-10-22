@@ -119,3 +119,11 @@
   .ws-run-controls .ws-field { min-width:0; flex-basis:100%; }
 }
 @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none!important; transition:none!important; scroll-behavior:auto!important; } }
+
+/* Runtime checks stay readable; mapping fields and raw evidence open on demand. */
+.ws-runtime-heading { margin-top:var(--space-6)!important; }
+.ws-runtime-check { display:flex; flex-wrap:wrap; gap:var(--space-2); margin:var(--space-2) 0; }
+.ws-runtime-check strong { min-width:64px; }
+.ws-runtime-profile>p,.ws-access { margin:var(--space-2) 0; overflow-wrap:anywhere; }
+.ws-runtime-profile .ws-access p { margin:var(--space-1) 0; }
+.ws-runtime-profile>.ws-disclosure { margin-top:var(--space-3); }

@@ -99,6 +99,8 @@ Nếu yêu cầu đổi khi đang sửa, **Xem bản nháp trước** trong form
 
 Nút chạy trên web kiểm yêu cầu và cấu hình bạn đã xem. Khi revision đổi, cần xem lại và chọn profile hiện tại trước khi khởi chạy.
 
+Quản trị runtime tách executable/version khỏi quan sát truy cập model có thời điểm. Mở **Sửa ánh xạ** hoặc **Dữ liệu chẩn đoán** khi cần; chưa kiểm tra, thất bại và model báo sai ID có trạng thái riêng.
+
 Kiểm chứng và tích hợp hiển thị tiến trình cùng nút **Hủy phiên chạy** tại Kết quả. Hủy đợi test dừng; nếu source hoặc quyền file đã đổi trong lúc đó, rollback conflict cần được đối chiếu thủ công.
 
 Ctrl+C và SIGTERM chờ tiến trình được quản lý, kiểm chứng và rollback tích hợp trước khi CLI thoát. Hãy đợi tắt hoàn tất; ép dừng tiến trình không có bảo đảm này. Rollback conflict đã ghi vẫn cần đối chiếu thủ công.

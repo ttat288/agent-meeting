@@ -28,3 +28,16 @@ test('unexpected history from an inherited Git template fails the frozen-store c
  try{assert.throws(()=>initializeFrozenGit(path.join(f.root,'arm'),f.base,f.source),/commits beyond the requested base/);}finally{if(previous===undefined)delete process.env.GIT_TEMPLATE_DIR;else process.env.GIT_TEMPLATE_DIR=previous;}
  assert.equal(f.git(['rev-parse','HEAD']),f.future);
 });
+
+const manifest=JSON.parse(fs.readFileSync(path.join(__dirname,'../docs/evidence/shift-20261022/writer-input/manifest.json'),'utf8'));
+const {validateFrozenManifest}=require('../tools/reproduce-writer-input');
+test('the original frozen manifest identity validates',()=>{assert.doesNotThrow(()=>validateFrozenManifest(manifest));});
+for(const [name,mutate] of [
+ ['file hash with unchanged declared source digest',m=>{m.files[0].sha256='0'.repeat(64);}],
+ ['task text with unchanged declared task digest',m=>{m.task.goal='A different task';}],
+ ['new task text and matching new digest under the old case',m=>{m.task.goal='A different task';m.taskDigest=require('node:crypto').createHash('sha256').update(JSON.stringify(m.task)).digest('hex');}],
+ ['acceptance path redirected into source',m=>{m.acceptance.path='src/runtime.js';}],
+ ['changed acceptance digest',m=>{m.acceptance.sha256='0'.repeat(64);}],
+ ['a later base commit',m=>{m.baseRevision='66a4e986d3aedac644b46caa859890741081f152';}],
+ ['a duplicate entry retaining the declared file count',m=>{m.files[1]=m.files[0];}],
+])test('frozen manifest rejects '+name,()=>{const changed=JSON.parse(JSON.stringify(manifest));mutate(changed);assert.throws(()=>validateFrozenManifest(changed),/Frozen manifest identity changed/);});

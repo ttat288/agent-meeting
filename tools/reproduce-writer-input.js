@@ -8,6 +8,16 @@ const { safeFile } = require('../src/work');
 const root = path.resolve(__dirname,'..'), evidence = path.join(root,'docs/evidence/shift-20261022/writer-input');
 const foundation = '805f638bdd68cb08103c8c1ca93b832be54e1a69';
 const sha = x => crypto.createHash('sha256').update(x).digest('hex');
+function validateFrozenManifest(manifest) {
+  const identity = manifest && Array.isArray(manifest.files) && manifest.files.length === 352 && manifest.task && typeof manifest.task === 'object'
+    && manifest.sourceDigest === '491c16573db8a4e1ceb8fd6d5752fea6624f156a06fb0bc023f6bf3128d656c0'
+    && manifest.taskDigest === 'a67ebf7000860fa0dba699d543138c0b1173a59be51c2b3ae90b8b5d2b2c0653'
+    && manifest.baseRevision === 'e292fd3833d65152ebfa6133fc27a67285b6cab9'
+    && manifest.acceptance?.path === 'test/pm-pilot-acceptance.test.js'
+    && manifest.acceptance.sha256 === 'dd3558b1735ac9f11974c3c37a95062cb471be478e55e1c0dc1b3e6220526736';
+  if (!identity || sha(JSON.stringify(manifest.files)) !== manifest.sourceDigest || sha(JSON.stringify(manifest.task)) !== manifest.taskDigest)
+    throw Error('Frozen manifest identity changed; define a new versioned case');
+}
 function initializeFrozenGit(destination, baseRevision, sourceRoot = root) {
   if (!/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/.test(baseRevision)) throw Error('Frozen base must be a full commit hash');
   fs.mkdirSync(destination, { mode: 0o700 });
@@ -21,7 +31,7 @@ function initializeFrozenGit(destination, baseRevision, sourceRoot = root) {
 }
 function reproduce() {
   const manifest = JSON.parse(fs.readFileSync(evidence+'/manifest.json'));
-  if (manifest.sourceDigest !== '491c16573db8a4e1ceb8fd6d5752fea6624f156a06fb0bc023f6bf3128d656c0' || manifest.files.length !== 352) throw Error('Frozen manifest identity changed');
+  validateFrozenManifest(manifest);
   execFileSync('git',['-C',root,'cat-file','-e',foundation+'^{commit}'],{stdio:'pipe'});
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'am-writer-reproduced-'));fs.chmodSync(dir,0o700);
   try {
@@ -40,4 +50,4 @@ function reproduce() {
   }catch(error){fs.rmSync(dir,{recursive:true,force:true});throw error;}
 }
 if(require.main===module){try{console.log(JSON.stringify(reproduce(),null,2));}catch(e){console.error(e.message);process.exitCode=1;}}
-module.exports={reproduce,initializeFrozenGit};
+module.exports={reproduce,initializeFrozenGit,validateFrozenManifest};

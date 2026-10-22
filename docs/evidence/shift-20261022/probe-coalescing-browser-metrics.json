@@ -1,0 +1,15 @@
+{
+  "calls": 6,
+  "active": 0,
+  "modelCalls": 0,
+  "fixture": "deterministic 3-second probe runner",
+  "pid": 131084,
+  "bootedAt": "2026-10-22T18:23:29.905Z",
+  "sourceHashes": {
+    "src/work.js": "511d31a3c34b9834e52a1eee424d8ff0fb4b0da658acd155c9084b96c87670c2",
+    "src/server.js": "fb021ebf152ab76bced7420f30c1bdaa4b90b014a77c222421d0631662a77652",
+    "src/ui/workspace.js": "9a0d3866ddbf82f998a2f4c75e0da35c541cfba42f1cf1805c7cb50f5b76730d"
+  },
+  "scope": "Two overlapping browser probe requests across a full reload; cumulative fixture calls5->6, no native model",
+  "expectedDelta": 1
+}

@@ -306,3 +306,5 @@ Integration từ chối khi đường dẫn source canonical đã bị thay thà
 
 
 Interactive Run gửi expected config/requirement revisions của view. WorkManager kiểm trên cùng config/task snapshot trước tạo run/copy/dispatch, kể cả khi runtime probe khác client đã được cập nhật. Đây là optimistic intent fence, không tự đổi model theo profile đã remap mà view cũ chưa xem. HTTP chỉ chuyển hai expected fields tới managed options, không nhận runner/executable từ client. Fields optional để giữ hợp đồng CLI/API cũ chọn state hiện hành khi gọi; grant PM/team tiếp tục có guards riêng.
+
+Model-access probe nhận expectedConfigRevision tùy chọn từ host UI, kiểm trước gọi runner. Trong cùng WorkManager/profile/config chỉ gom promise đang active; không cache kết quả hoàn tất, không dedupe qua host/process hoặc tạo budget tiền cứng. Mapping chưa lưu trong form không được probe. Kết quả về sau config đổi trả stale nhưng không persist; close abort/drain probe và không lưu cancellation thành access proof. Không mở quyền probe cho PM/team/agent MCP.

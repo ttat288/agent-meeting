@@ -7,7 +7,9 @@ const {wrapExecution}=require('../src/execution-sandbox');
 const root=process.env.AM_PREVIEW_ROOT || fs.mkdtempSync(path.join(require('os').tmpdir(),'am-consistency-preview-'));fs.mkdirSync(root,{recursive:true});const source=path.join(root,'source');
 if(!fs.existsSync(source)){fs.mkdirSync(path.join(source,'test'),{recursive:true});fs.writeFileSync(path.join(source,'sum.js'),'module.exports = (a,b) => a-b;\n');fs.writeFileSync(path.join(source,'test/sum.test.js'),"require('node:test')('sum',()=>require('node:assert/strict').equal(require('../sum')(2,3),5));\n");execFileSync('git',['init','-q',source]);execFileSync('git',['-C',source,'add','.']);execFileSync('git',['-C',source,'-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','fixture']);}
 const app=createApp({configDir:root+'/config',workDir:root+'/work',dataDir:root+'/rooms',runCli:async a=>{
- if(!a.prompt.includes('READY') && Number(process.env.AM_PREVIEW_DELAY_MS)>0) await new Promise(resolve=>{const timer=setTimeout(resolve,Number(process.env.AM_PREVIEW_DELAY_MS));a.signal?.addEventListener('abort',()=>{clearTimeout(timer);resolve();},{once:true});});
+ const delay=Number(a.prompt.includes('READY')?(process.env.AM_PREVIEW_PROBE_DELAY_MS||0):(process.env.AM_PREVIEW_DELAY_MS||0));
+ if(a.prompt.includes('READY')&&(!Number.isFinite(delay)||delay<0||delay>60000))throw Error('Fixture probe delay must be0–60000ms');
+ if(delay>0) await new Promise(resolve=>{const timer=setTimeout(resolve,delay);a.signal?.addEventListener('abort',()=>{clearTimeout(timer);resolve();},{once:true});});
  if(a.signal?.aborted)return{status:'cancelled',reportedModel:'fixture-model',text:'Cancelled fixture',exitCode:null};
  if(!a.prompt.includes('READY')){const w=wrapExecution(process.execPath,['-e',"require('fs').writeFileSync('sum.js','module.exports = (a,b) => a+b;\\n')"],{workspace:a.workspace,write:true});execFileSync(w.bin,w.args,{cwd:a.workspace});}
  return{status:'reported',reportedModel:'fixture-model',text:'Deterministic Node subprocess fixture; not a paid AI model.',exitCode:0};

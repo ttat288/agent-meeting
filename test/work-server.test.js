@@ -221,3 +221,16 @@ test('run HTTP fences the viewed config and requirement before any runtime dispa
   assert.equal(launch.status,202);const run=await launch.json();assert.equal(run.configRevision,current);assert.equal(run.requirementRevision,edited.requirementRevision);
   for(let i=0;i<50&&!starts;i++)await new Promise(r=>setTimeout(r,10));assert.equal(starts,1);
 });
+
+test('concurrent probe HTTP callers share one same-config runner invocation',async t=>{
+  let calls=0,release,started,bodies=0,bothBodies;
+  const gate=new Promise(resolve=>{release=resolve;}),firstStarted=new Promise(resolve=>{started=resolve;}),allBodies=new Promise(resolve=>{bothBodies=resolve;});
+  const{app,url}=await boot(t,{runCli:async options=>{calls++;started();await gate;return{status:'reported',reportedModel:options.modelId};}});
+  const c=app.configStore.read(),m=c.models.find(m=>m.id==='opus');Object.assign(m,{enabled:true,providerModelId:'fixture-model',verification:'verified',source:{...m.source,checkedAt:new Date().toISOString(),confidence:'user-configured'}});c.profiles.find(p=>p.id==='opus-claude').enabled=true;app.configStore.save(c,c.revision);
+  app.server.on('request',req=>{if(req.url.endsWith('/runtime/probe'))req.on('end',()=>{if(++bodies===2)bothBodies();});});
+  const first=post(url('/runtime/probe'),{profileId:'opus-claude'}),second=post(url('/runtime/probe'),{profileId:'opus-claude'});
+  try{await allBodies;await firstStarted;assert.equal(calls,1);}
+  finally{release();await Promise.allSettled([first,second]);}
+  const [a,b]=await Promise.all([first,second]);assert.equal(a.status,200);assert.equal(b.status,200);assert.deepEqual(await a.json(),await b.json());assert.equal(calls,1);
+  const stale=await post(url('/runtime/probe'),{profileId:'opus-claude',expectedConfigRevision:1});assert.equal(stale.status,409);assert.match((await stale.json()).error,/Configuration changed/);assert.equal(calls,1);
+});

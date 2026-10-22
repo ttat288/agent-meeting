@@ -617,7 +617,7 @@ function createApp(cfg = {}) {
           if (req.method !== 'POST') return json(405, { error: 'POST only' });
           const body = JSON.parse(await readBody(req));
           if (action === 'routing/recommend') return json(200, routing.recommend(configStore.read(), body, work.environment()));
-          if (action === 'runtime/probe') return json(200, await work.probe(body.profileId));
+          if (action === 'runtime/probe') return json(200, await work.probe(body.profileId, body.expectedConfigRevision));
           if (action === 'work/tasks') return json(201, work.createTask(body));
           const bits = action.split('/');
           if (bits[1] === 'tasks' && bits[3] === 'configure') return json(200, work.configureTask(bits[2], body));

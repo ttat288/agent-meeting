@@ -1,0 +1,77 @@
+{
+  "checks": [
+    {
+      "kind": "probe_completed_while_editing_models",
+      "at": "2026-10-22T18:19:54.199Z",
+      "draft": "Unsent admin draft survives the completed probe",
+      "focus": "modelLabel"
+    },
+    {
+      "kind": "return_during_pending_probe",
+      "disabled": true
+    },
+    {
+      "kind": "current_source_probe_completed_in_other_view",
+      "at": "2026-10-22T18:24:03.457Z",
+      "draft": "Current-source admin draft survives a late probe",
+      "focus": "modelLabel"
+    },
+    {
+      "kind": "current_source_return_pending",
+      "disabled": true
+    },
+    {
+      "kind": "same_view_mapping_survives_completion",
+      "draft": "astra",
+      "focus": "model-opus-claude",
+      "probeDisabled": true
+    },
+    {
+      "kind": "unsaved_runtime_disables_probe",
+      "disabled": true
+    },
+    {
+      "kind": "unsaved_enable_flag_disables_probe",
+      "disabled": true
+    },
+    {
+      "kind": "reload_and_reattach_same_inflight_probe",
+      "at": "2026-10-22T18:24:52.125Z",
+      "completed": true
+    },
+    {
+      "kind": "gated_stale_result",
+      "draft": "Gated stale probe preserves this unsent draft",
+      "focus": "modelLabel",
+      "notice": "Configuration changed; the old observation was not applied. Review the current mapping before probing again.",
+      "noticeHidden": true
+    },
+    {
+      "kind": "probe_from_stale_config_view_rejected",
+      "visible": true
+    },
+    {
+      "kind": "late_probe_error_preserves_draft_and_focus",
+      "draft": "Draft survives a late failed probe without focus loss",
+      "focus": "modelLabel",
+      "inlineErrors": 0,
+      "notice": "Previous action result unavailable: Controlled fixture probe failure after delay",
+      "noticeHidden": true
+    },
+    {
+      "case": "vi_mobile_mapping_draft_after_completion",
+      "disabled": true,
+      "focus": "model-opus-claude",
+      "model": "astra",
+      "probe": "Lưu ánh xạ trước khi kiểm tra truy cập",
+      "scrollWidth": 360,
+      "width": 375
+    }
+  ],
+  "limits": [
+    "Controlled deterministic probe runner; zero native model calls",
+    "Older entries retain their original source/timing scopes",
+    "One stale timer attempt did not order events and was repeated with a checked file gate",
+    "Not billing, cross-host or process-restart deduplication proof"
+  ]
+}

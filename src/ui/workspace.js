@@ -17,6 +17,7 @@
   let remote = { hosts: [], runs: [] }, remoteError = null, metrics = null, metricsError = null, importDraft = '';
   let workReadVersion = 0, activeWorkReads = 0, pollController, pendingWork = null, syncState = 'live';
   const profileSelections = new Map();
+  const probingProfiles = new Set();
   const node = (tag, attrs = {}, ...children) => {
     const e = document.createElement(tag);
     for (const [k, v] of Object.entries(attrs)) {
@@ -67,7 +68,8 @@
       'Server restarted; reconcile the old process before starting a new task.': 'Server đã khởi động lại. Cần đối chiếu và xử lý tiến trình cũ trước khi chạy tiếp; chưa hỗ trợ phục hồi tự động.',
       'Base revision changed': 'Base revision đã thay đổi. Kiểm tra lại checkout nguồn.',
       'Source checkout path changed': 'Đường dẫn checkout nguồn đã đổi. Kiểm tra thư mục thật trước khi tích hợp.',
-      'Configuration changed; refresh before selecting an execution profile': 'Cấu hình đã đổi. Bấm Làm mới để xem và chọn hồ sơ chạy hiện tại.'
+      'Configuration changed; refresh before selecting an execution profile': 'Cấu hình đã đổi. Bấm Làm mới để xem và chọn hồ sơ chạy hiện tại.',
+      'Configuration changed; reload before probing this profile': 'Cấu hình đã đổi. Giữ lại nội dung cần dùng rồi tải lại trang để xem ánh xạ hiện tại trước khi probe.'
     };
     return lang === 'vi' && translations[message] || message;
   }
@@ -82,7 +84,7 @@
     btn.disabled = true;
     container.setAttribute('aria-busy', 'true');
     renderSyncStatus();
-    try { await fn(); } catch (e) { errorBox(container, e); }
+    try { await fn(); } catch (e) { if (container.isConnected && btn.isConnected) errorBox(container, e); else notify(t('Chưa nhận được kết quả thao tác trước: ', 'Previous action result unavailable: ') + friendlyError(e.message)); }
     finally { btn.disabled = false; container.removeAttribute('aria-busy'); renderSyncStatus(); }
   }
   function checkedAction(btn, container, run, operation) {
@@ -431,7 +433,8 @@
     form.onsubmit = event => { event.preventDefault(); const max = Number(val('maxCandidates')); if (!Number.isInteger(max) || max < 1 || max > 5) { errorBox(form, new Error(t('Số ứng viên phải là số nguyên từ 1 đến 5.', 'Maximum candidates must be an integer from 1 to 5.')), 'maxCandidates'); return; } action(save, form, async () => { const next = structuredClone(config); Object.assign(next.policy, { leadProfileId: val('leadProfileId') || null, maxCandidates: max, reviewRequiredFor: split(val('reviewRequiredFor')), budget: { ...p.budget, maxCostTier: val('maxCostTier') || null } }); await saveConfig(next); }); };
   }
   function renderRuntime(page) {
-    const refresh = button(t('Kiểm tra runtime', 'Check runtimes'), () => action(refresh, page, async () => { const result = await api('/runtime'); runtime = Array.isArray(result) ? result : [...(result.observations || []), ...(result.checks || [])]; renderAdmin(); notify(t('Đã cập nhật quan sát runtime. Có executable không đồng nghĩa có quyền truy cập model.', 'Runtime observations updated. An executable does not establish model access.')); }));
+    const viewedRevision = config.revision;
+    const refresh = button(t('Kiểm tra runtime', 'Check runtimes'), () => action(refresh, page, async () => { const result = await api('/runtime'); runtime = Array.isArray(result) ? result : [...(result.observations || []), ...(result.checks || [])]; renderRuntimeObservations(); notify(t('Đã cập nhật quan sát runtime. Có executable không đồng nghĩa có quyền truy cập model.', 'Runtime observations updated. An executable does not establish model access.')); }));
     page.append(node('div', { class: 'ws-row between' }, node('h2', {}, t('Hồ sơ model / runtime', 'Model / runtime profiles')), refresh), node('p', { class: 'ws-warning' }, t('Catalog mô tả năng lực; quan sát runtime mô tả môi trường. Quyền truy cập chưa được kiểm tra phải giữ là unknown.', 'The catalog describes capabilities; runtime observations describe the environment. Untested access remains unknown.')));
     for (const profile of config.profiles) {
       const form = node('form', { class: 'ws-panel', novalidate: true }, node('h3', {}, profile.label), node('p', { class: 'ws-meta' }, profile.id),
@@ -441,13 +444,33 @@
         node('p', { class: 'ws-subtle' }, t('Trạng thái truy cập: unknown cho tới khi runtime kiểm tra đúng model.', 'Access: unknown until the runtime checks the specific model.')));
       const save = node('button', { type: 'submit', class: 'btn ghost' }, t('Lưu ánh xạ', 'Save mapping')); form.append(save);
       form.onsubmit = event => { event.preventDefault(); action(save, form, async () => { const next = structuredClone(config); const p = next.profiles.find(x => x.id === profile.id); p.modelId = val('model-' + profile.id); p.runtimeId = val('runtime-' + profile.id); p.enabled = $('enabled-' + profile.id).checked; await saveConfig(next); }); };
-      const probe = button(t('Kiểm tra truy cập model (gọi CLI thật)', 'Probe model access (invokes the CLI)'), () => action(probe, form, async () => {
-        await api('/runtime/probe', { profileId: profile.id }); const result = await api('/runtime'); runtime = Array.isArray(result) ? result : [...(result.observations || []), ...(result.checks || [])]; renderAdmin(); notify(t('Đã ghi quan sát truy cập model.', 'Model access observation recorded.'));
-      }));
+      const probe = button('', async () => {
+        renderProbeButton(profile.id); if (probe.disabled) return;
+        probingProfiles.add(profile.id); renderProbeButton(profile.id);
+        try { await action(probe, form, async () => {
+          const observation = await api('/runtime/probe', { profileId: profile.id, expectedConfigRevision: viewedRevision }); const result = await api('/runtime'); runtime = Array.isArray(result) ? result : [...(result.observations || []), ...(result.checks || [])]; renderRuntimeObservations();
+          notify(observation.stale ? t('Cấu hình đã đổi; quan sát cũ chưa được áp dụng. Kiểm tra ánh xạ hiện tại trước khi probe lại.', 'Configuration changed; the old observation was not applied. Review the current mapping before probing again.') : t('Đã ghi quan sát truy cập model.', 'Model access observation recorded.'));
+        }); } finally { probingProfiles.delete(profile.id); renderProbeButton(profile.id); }
+      });
+      probe.id = 'probe-' + profile.id;
+      probe.dataset.model = profile.modelId; probe.dataset.runtime = profile.runtimeId; probe.dataset.enabled = String(profile.enabled);
+      form.onchange = () => renderProbeButton(profile.id);
       form.append(node('p', { class: 'ws-subtle' }, t('Kiểm tra truy cập gọi model thật, có thể mất tới 120 giây và phát sinh chi phí của tài khoản CLI.', 'Access probing invokes the actual model, may take up to 120 seconds and can use your CLI account budget.')), probe);
       page.append(form);
+      renderProbeButton(profile.id);
     }
-    page.append(node('section', { class: 'ws-panel' }, node('h2', {}, t('Quan sát môi trường', 'Environment observations')), runtime.length ? json(runtime) : node('p', { class: 'ws-empty' }, t('Chưa kiểm tra ở màn hình này. Bấm Kiểm tra runtime để lấy quan sát từ server.', 'No observations loaded here. Choose Check runtimes to read server observations.'))));
+    page.append(node('section', { class: 'ws-panel', id: 'runtimeObservations' }));
+    renderRuntimeObservations();
+  }
+  function renderProbeButton(profileId) {
+    const probe = $('probe-' + profileId); if (!probe) return;
+    const pending = probingProfiles.has(profileId), dirty = $('model-' + profileId).value !== probe.dataset.model || $('runtime-' + profileId).value !== probe.dataset.runtime || String($('enabled-' + profileId).checked) !== probe.dataset.enabled;
+    probe.disabled = pending || dirty;
+    probe.textContent = pending ? t('Đang kiểm tra truy cập model…', 'Probing model access…') : dirty ? t('Lưu ánh xạ trước khi kiểm tra truy cập', 'Save mapping before probing') : t('Kiểm tra truy cập model (gọi CLI thật)', 'Probe model access (invokes the CLI)');
+  }
+  function renderRuntimeObservations() {
+    const panel = $('runtimeObservations'); if (!panel) return;
+    panel.replaceChildren(node('h2', {}, t('Quan sát môi trường', 'Environment observations')), runtime.length ? json(runtime) : node('p', { class: 'ws-empty' }, t('Chưa kiểm tra ở màn hình này. Bấm Kiểm tra runtime để lấy quan sát từ server.', 'No observations loaded here. Choose Check runtimes to read server observations.')));
   }
   async function loadAuxiliary() {
     const results = await Promise.allSettled([api('/remote'), api('/metrics')]);

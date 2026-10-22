@@ -23,6 +23,8 @@
   - PM focus/draft/stop-priority, Cancel verification/integration tại Results, Unicode stream, draft cũ chỉ đọc và canonical root/parent rollback guards đã tích hợp/push qua các commit của nhánh. Browser draft8 case + tự chép/lưu đúng revision không thêm run; source hashes/check scope ở evidence.
   - Model attempts vẫn3, không gọi thêm/sửa OAuth; efficacy/billing/model8h unknown. Chỉ preview3150 còn chạy;3151/3153/3154 đã stop, app user3000 và global settings/dữ liệu thật giữ nguyên. Next: kiểm CI đúng HEAD/dedupe, cập nhật PR và chọn pain point có bằng chứng tiếp theo; không kết thúc ca vì đã xong các lát cắt.
 
+- **Checkpoint01:45:57 ngày23/10 (T+3h21m04s, còn4h38m56s):** tiếp tục ca tới06:24:53, giờ cuối05:24:53. HEAD đã push f829eb0, CI39828088723/installer39828088727 success; duplicate push39828082216 cancelled. Source probe mới đạt373 test/33 file và browser admin EN/VI mobile: coalesce active invocation, giữ draft/focus, block mapping chưa lưu/stale config, stale result không ghi đè. Đang commit/push slice; evidence có source hashes và giới hạn0 native model. Preview3150 và3154 riêng còn chạy, không đụng3000. Phát hiện tiếp: CLI signal chỉ flush+exit, verify/integrate chưa được close chờ drain; sẽ tái hiện tối thiểu trước sửa nhằm tránh thoát khi source còn áp dụng/chưa rollback. Model attempts vẫn3, efficacy/billing/model8h unknown.
+
 ### Hợp đồng sử dụng đủ8 giờ
 
 - Ghi `T0`, `T_end=T0+8h`, timezone Asia/Bangkok, thời gian đã dùng và còn lại ngay khi bắt đầu. Đây là **một ca làm đủ8 giờ**, không là “tối đa8 giờ nhưng done sớm ở giờ3”. Hoàn thành một lát cắt thì nghiệm thu nó rồi chọn pain point tiếp theo có bằng chứng trong cùng mục tiêu; không kết thúc toàn phiên vì test xanh, đã push một commit hoặc hết một plan ban đầu.

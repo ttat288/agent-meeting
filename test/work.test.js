@@ -58,6 +58,41 @@ test('a profile remap with a fresh probe cannot silently switch the model chosen
  const run=work.start(job.id,'opus-claude',{expectedConfigRevision:current,expectedRequirementRevision:job.requirementRevision});await wait(work);
  assert.deepEqual(requested,['fixture-remapped-model']);assert.equal(run.requestedModel,'fixture-remapped-model');assert.equal(work.read().runs[0].reportedModel,'fixture-remapped-model');
 });
+test('overlapping probes of one profile and config invoke the runner only once',async t=>{
+ let calls=0,release;const gate=new Promise(resolve=>{release=resolve;});
+ const{work}=setup(t,async args=>{calls++;await gate;return{status:'reported',reportedModel:args.modelId};});
+ const first=work.probe('opus-claude'),second=work.probe('opus-claude');
+ try{await new Promise(setImmediate);assert.equal(calls,1,'Repeated same-input probes must share the in-flight runner');}
+ finally{release();await Promise.allSettled([first,second]);}
+ const [a,b]=await Promise.all([first,second]);assert.deepEqual(a,b);assert.equal(work.read().observations.length,1);
+ await work.probe('opus-claude');assert.equal(calls,2,'A later explicit probe is a fresh invocation');
+});
+test('an older probe cannot overwrite a newer config observation when results arrive out of order',async t=>{
+ const releases=[];const{work,store}=setup(t,args=>new Promise(resolve=>releases.push(()=>resolve({status:'reported',reportedModel:args.modelId}))));
+ const older=work.probe('opus-claude');await new Promise(setImmediate);
+ const config=store.read();config.models[0].label+=' newer config';const current=store.save(config,config.revision).revision;
+ const newer=work.probe('opus-claude');await new Promise(setImmediate);
+ try{assert.equal(releases.length,2,'Different config revisions must not share a probe');releases[1]();await newer;releases[0]();await older;assert(work.environment().some(o=>o.profileId==='opus-claude'&&o.configRevision===current),'Newer access evidence must survive the late older result');}
+ finally{for(const release of releases)release();await Promise.allSettled([older,newer]);}
+});
+test('closing the manager aborts and drains an in-flight access probe',async t=>{
+ let signal,release,ended=false;const{work}=setup(t,args=>new Promise(resolve=>{signal=args.signal;release=()=>resolve({status:'reported',reportedModel:args.modelId});signal?.addEventListener('abort',()=>setTimeout(()=>{ended=true;resolve({status:'cancelled',reportedModel:'unknown'});},20),{once:true});}));
+ const pending=work.probe('opus-claude');await new Promise(setImmediate);
+ try{await work.close();assert.equal(signal?.aborted,true);assert.equal(ended,true,'close must wait until the probe stops');}
+ finally{release?.();await Promise.allSettled([pending]);}
+});
+test('a probe from a stale viewed config cannot invoke a remapped profile',async t=>{
+ let calls=0;const{work,store}=setup(t,async args=>{calls++;return{status:'reported',reportedModel:args.modelId};});
+ const viewed=store.read().revision,c=store.read();c.models.find(m=>m.id==='opus').providerModelId='fixture-probe-remap';const current=store.save(c,c.revision).revision;
+ let error;try{await work.probe('opus-claude',viewed);}catch(e){error=e;}
+ assert.equal(calls,0,'Stale probe intent must not start a provider invocation');assert.match(error?.message||'',/Configuration changed/);
+ const observation=await work.probe('opus-claude',current);assert.equal(calls,1);assert.equal(observation.providerModelId,'fixture-probe-remap');
+});
+test('a failed probe releases its in-flight entry so an explicit retry can run',async t=>{
+ let calls=0;const{work}=setup(t,async args=>{if(++calls===1)throw Error('Controlled fixture failure');return{status:'reported',reportedModel:args.modelId};});
+ await assert.rejects(work.probe('opus-claude'),/Controlled fixture failure/);assert.equal(work.probes.size,0);assert.equal(work.pending.size,0);
+ assert.equal((await work.probe('opus-claude')).modelVerified,true);assert.equal(calls,2);assert.equal(work.probes.size,0);
+});
 test('source dependency changes without HEAD change block integration',async t=>{
  const{source,work}=setup(t);await work.probe('opus-claude');const job=work.createTask(task(source)),run=work.start(job.id,'opus-claude');await wait(work);await work.verify(run.id);
  fs.appendFileSync(path.join(source,'test/sum.test.js'),'// changed\n');await assert.rejects(()=>work.integrate(run.id),/Source snapshot changed/);assert.match(fs.readFileSync(path.join(source,'sum.js'),'utf8'),/a-b/);

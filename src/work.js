@@ -76,7 +76,7 @@ function checkTask(d) {
 const ADAPTER_FOR = { 'claude-code': 'claude', agy: 'agy' };
 class WorkManager {
   constructor({ dir, configStore, runner = runtime.runCli }) {
-    this.dir = path.resolve(dir); this.configStore = configStore; this.runner = runner; this.active = new Map(); this.pending = new Set();
+    this.dir = path.resolve(dir); this.configStore = configStore; this.runner = runner; this.active = new Map(); this.pending = new Set(); this.probes = new Map();
     this.store = new ConfigStore({ dir: this.dir, defaults: () => ({ schema: 'agent-meeting/work@1', revision: 1, tasks: [], runs: [], observations: [] }),
       validate: d => { if (d.schema !== 'agent-meeting/work@1' || !['tasks','runs','observations'].every(k => Array.isArray(d[k]))) throw failure('Invalid work data'); } });
     // A restarted server cannot prove that the old external process stopped. Never automatically reassign it.
@@ -163,16 +163,30 @@ class WorkManager {
     const config = this.configStore.read();
     return [...this.read().observations, ...savedEnvironment(this.configStore, config)].filter(o => { const profile = config.profiles.find(p => p.id === o.profileId); return o.configRevision === config.revision && profile?.runtimeId === o.runtimeId && now - Date.parse(o.checkedAt) >= 0 && now - Date.parse(o.checkedAt) < 30 * 60000; });
   }
-  async probe(profileId) {
-    const config = this.configStore.read(), { p, m, adapter } = this.profile(config, profileId);
+  async probe(profileId, expectedConfigRevision) {
+    const config = this.configStore.read();
+    if (expectedConfigRevision !== undefined && config.revision !== expectedConfigRevision) throw failure('Configuration changed; reload before probing this profile', 409);
+    const { p, m, adapter } = this.profile(config, profileId);
+    const key = JSON.stringify([profileId, config.revision]), existing = this.probes.get(key);
+    if (existing) return copy(await existing.promise);
+    const controller = new AbortController();
     const dir = path.join(this.dir, 'probes', crypto.randomUUID()); fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
-    const result = await this.runner({ adapter, modelId: m.providerModelId, prompt: 'Reply only READY. No tools or file changes.', workspace: dir, timeoutMs: 60000 });
-    const observed = { profileId, runtimeId: p.runtimeId, adapter, configRevision: config.revision, providerModelId: m.providerModelId, requestedModel: m.providerModelId, reportedModel: result.reportedModel,
-      available: result.status === 'reported', modelVerified: result.status === 'reported' && result.reportedModel === m.providerModelId,
-      quotaAvailable: result.status === 'reported', checkedAt: new Date().toISOString(), tools: [], permissions: [], error: result.error || null };
-    this.update(d => { d.observations = d.observations.filter(x => x.profileId !== p.id); d.observations.push(observed); });
-    const observations = observationStore(this.configStore), current = observations.read(); current.observations = current.observations.filter(o => o.profileId !== p.id); current.observations.push(observed); observations.save(current, current.revision);
-    return observed;
+    const pending = Promise.resolve().then(async () => {
+      if (controller.signal.aborted) throw failure('Probe cancelled', 409);
+      const result = await this.runner({ adapter, modelId: m.providerModelId, prompt: 'Reply only READY. No tools or file changes.', workspace: dir, timeoutMs: 60000, signal: controller.signal });
+      if (controller.signal.aborted || result.status === 'cancelled') throw failure('Probe cancelled', 409);
+      const observed = { profileId, runtimeId: p.runtimeId, adapter, configRevision: config.revision, providerModelId: m.providerModelId, requestedModel: m.providerModelId, reportedModel: result.reportedModel,
+        available: result.status === 'reported', modelVerified: result.status === 'reported' && result.reportedModel === m.providerModelId,
+        quotaAvailable: result.status === 'reported', checkedAt: new Date().toISOString(), tools: [], permissions: [], error: result.error || null };
+      // A late result belongs to the config it checked, not a newer mapping.
+      if (this.configStore.read().revision !== config.revision) return { ...observed, stale: true };
+      this.update(d => { d.observations = d.observations.filter(x => x.profileId !== p.id); d.observations.push(observed); });
+      const observations = observationStore(this.configStore), current = observations.read(); current.observations = current.observations.filter(o => o.profileId !== p.id); current.observations.push(observed); observations.save(current, current.revision);
+      return observed;
+    });
+    const entry = { controller, promise: pending }; this.probes.set(key, entry); this.pending.add(pending);
+    try { return copy(await pending); }
+    finally { this.pending.delete(pending); if (this.probes.get(key) === entry) this.probes.delete(key); }
   }
   start(taskId, profileId, managed = {}) {
     if (this.active.size) throw failure('A run is active; finish or cancel it first', 409);
@@ -349,7 +363,7 @@ class WorkManager {
     } finally { if (this.active.get(id) === controller) this.active.delete(id); }
     return this.read().runs.find(r => r.id === id);
   }
-  close() { for (const controller of this.active.values()) controller.abort(); return Promise.allSettled([...this.pending]); }
+  close() { for (const probe of this.probes.values()) probe.controller.abort(); for (const controller of this.active.values()) controller.abort(); return Promise.allSettled([...this.pending]); }
 }
 function atomicReplace(target, bytes, mode = 0o600) {
   const tmp = target + '.' + crypto.randomUUID() + '.tmp';

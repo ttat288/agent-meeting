@@ -25,7 +25,7 @@ function revision(workspace) {
   return execFileSync('git', ['-C', workspace, 'rev-parse', 'HEAD'], { encoding: 'utf8', timeout: 5000, maxBuffer: 1024 }).trim();
 }
 function inventory(root, source = false) {
-  const files = {}; let total = 0;
+  const files = Object.create(null); let total = 0;
   const add = name => {
     // Local CLI settings, credentials and ignored files never enter a copy.
     if (source && protectedPath(name)) return;

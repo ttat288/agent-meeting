@@ -19,7 +19,7 @@ function safeFile(root, name) {
   return target;
 }
 function inventory(root) {
-  const files = {}; let totalBytes = 0;
+  const files = Object.create(null); let totalBytes = 0;
   function walk(dir, prefix = '') {
     for (const item of fs.readdirSync(dir, { withFileTypes: true })) {
       const name = prefix + item.name;
@@ -40,7 +40,7 @@ function inventory(root) {
 }
 function sourceInventory(root) {
   const names = execFileSync('git', ['-C', root, 'ls-files', '-z', '--cached', '--others', '--exclude-standard'], { encoding: 'utf8', timeout: 5000, maxBuffer: 2 * 1024 * 1024 }).split('\0').filter(Boolean);
-  const files = {}; let total = 0;
+  const files = Object.create(null); let total = 0;
   for (const name of names) {
     if (!relative(name)) continue;
     const full = safeFile(root, name); if (!fs.existsSync(full)) continue;
@@ -295,7 +295,7 @@ class WorkManager {
     const controller = new AbortController(), evidence = [];
     const change = run.changes[0], target = change && safeFile(run.source, change.file);
     const original = target && fs.existsSync(target) ? { bytes: fs.readFileSync(target), mode: fs.statSync(target).mode & 0o777 } : null;
-    let applied = false;
+    let applied = false, appliedMode = null;
     this.update(d => { d.runs.find(r => r.id === id).status = 'integrating'; });
     this.active.set(id, controller);
     try {
@@ -304,6 +304,7 @@ class WorkManager {
         if (change.after === null) fs.unlinkSync(target);
         else atomicReplace(target, fs.readFileSync(safeFile(run.workspace, change.file)), original?.mode);
         applied = true;
+        if (change.after !== null) appliedMode = fs.statSync(target).mode & 0o777;
       }
       for (const file of task.testFiles) {
         if (controller.signal.aborted) break;
@@ -323,8 +324,10 @@ class WorkManager {
       if (applied) {
         try {
           // Avoid overwriting unrelated edits made while verification was running.
-          const now = fs.existsSync(target) ? hash(fs.readFileSync(target)) : null;
-          if (now !== change.after) throw failure('Source changed after integration; manual rollback required');
+          let stat = null;
+          try { stat = fs.lstatSync(target); } catch (e) { if (e.code !== 'ENOENT') throw e; }
+          const now = stat?.isFile() ? hash(fs.readFileSync(target)) : null;
+          if (stat && !stat.isFile() || now !== change.after || stat && (stat.mode & 0o777) !== appliedMode) throw failure('Source changed after integration; manual rollback required');
           if (original) atomicReplace(target, original.bytes, original.mode);
           else fs.unlinkSync(target);
         } catch (rollback) { rollbackError = rollback.message; }

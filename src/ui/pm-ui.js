@@ -29,23 +29,30 @@
     const d = await r.json(); if (!r.ok) throw new Error(d.error || String(r.status)); return d;
   }
   async function act(action, body = {}) {
-    if (busy) return;
-    actionVersion++;
+    // Director stop controls remain usable while a slower ordinary request is
+    // pending. Its later response must not replace the newer supervision state.
+    if (busy && !['pause','revoke','takeover'].includes(action)) return false;
+    const version = ++actionVersion;
     busy = true; showError('');
     root.setAttribute('aria-busy', 'true');
     try {
       const data = await request(action, body);
+      if (version !== actionVersion) return false;
       if (action === 'invite') invitation = data;
       if (['takeover','revoke'].includes(action)) invitation = null;
       if (action === 'takeover') historyVisible = false;
-      state = await request('state'); last = ''; render();
+      const next = await request('state');
+      if (version !== actionVersion) return false;
+      state = next; last = ''; render();
       if (action === 'takeover') document.getElementById('btnOptions').focus();
-    } catch (e) { showError(e.message); }
-    finally { busy = false; root.removeAttribute('aria-busy'); }
+      return true;
+    } catch (e) { if (version === actionVersion) showError(e.message); return false; }
+    finally { if (version === actionVersion) { busy = false; root.removeAttribute('aria-busy'); } }
   }
   const runName = value => ({ integrated: tr('Đã tích hợp'), reported: tr('Chờ kiểm chứng'), verified: tr('Chờ tích hợp'), running: tr('Đang chạy'), failed: tr('Thất bại'), cancelled: tr('Đã hủy'), interrupted: tr('Bị gián đoạn'), verifying: tr('Đang kiểm chứng'), integrating: tr('Đang tích hợp') }[value] || value);
   const statusNames = () => ({ human: tr('Tôi làm chủ trì'), invited: tr('Chờ PM vào'), pending: tr('Xác nhận PM'), active: tr('PM đã xác nhận'), paused: tr('Đã dừng PM'), lost: tr('Mất kết nối PM'), suspended: tr('PM cần kết nối lại'), revoked: tr('Đã thu hồi quyền PM') });
   const summary = node('div', { class: 'pm-summary' });
+  let summarySignature = '', pendingSignature = '', progressSignature = '';
   const details = node('details', { class: 'pm-details' });
   const detailSummary = node('summary', {}, tr('Điều hành qua PM'));
   const content = node('div', { class: 'pm-content' });
@@ -80,7 +87,7 @@
       try { const r = await fetch('/api/host/' + key + '/config'); const d = await r.json(); if (!r.ok) throw new Error(d.error); document.getElementById('pmProfiles').replaceChildren(...d.profiles.filter(p => p.enabled).map(p => node('option', { value: p.id }))); }
       catch (e) { showError(e.message); }
     });
-    chatForm = form(tr('Gửi riêng PM'), f => f.append(label(tr('Tin riêng cho PM'), area('text', { required: '', maxlength: '8000' }))), async (d, f) => { await act('message', { text: d.text }); if (!error.textContent) f.reset(); });
+    chatForm = form(tr('Gửi riêng PM'), f => f.append(label(tr('Tin riêng cho PM'), area('text', { required: '', maxlength: '8000' }))), async (d, f) => { const sent = await act('message', { text: d.text }); if (sent && f.elements.text.value === d.text) f.reset(); });
     promptArea = area('pmPrompt', { readonly: '', 'aria-label': tr('Prompt riêng cho PM'), rows: 5 });
     instructions = node('div', { class: 'pm-instructions' }, node('p', { class: 'hint' }, tr('Dán prompt riêng vào CLI của PM trên máy này, rồi đối chiếu mã và xác nhận. PM vào trước các worker.')), promptArea,
       button(tr('Sao chép prompt PM'), async () => { try { await navigator.clipboard.writeText(promptArea.value); } catch (e) { showError(e.message); } }),
@@ -112,32 +119,50 @@
     menu.setAttribute('aria-expanded', String(!root.hidden));
     menu.setAttribute('aria-controls', 'pmControl');
     document.body.classList.toggle('pm-mode', !human);
-    summary.replaceChildren(node('strong', {}, tr('Chủ trì')), node('span', { class: 'badge' }, statusNames()[state.status] || state.status));
-    if (human) summary.append(button(tr('Agent làm chủ trì'), async () => { details.open = true; await act('invite'); }), button(tr('Đóng chi tiết'), () => { historyVisible = false; root.hidden = true; menu.setAttribute('aria-expanded', 'false'); document.getElementById('btnOptions').focus(); }));
-    else {
-      if (state.identity) summary.append(node('span', {class:'muted'}, `${state.identity.name} · ${state.identity.model} (${tr('tự khai báo')})`));
-      summary.append(button(tr('Dừng PM'), () => act('pause')), button(tr('Thu hồi quyền PM'), () => act('revoke')), button(tr('Tôi tiếp quản'), () => act('takeover')));
-      if (['lost','suspended','paused','revoked'].includes(state.status)) summary.append(button(tr('Mời lại PM'), () => act('invite')));
+    // Private messages and run progress must not replace supervision controls
+    // underneath keyboard users. Rebuild only when their own state changes.
+    const nextSummary = JSON.stringify([state.status, state.identity]);
+    if (summarySignature !== nextSummary) {
+      const restoreFocus = summary.contains(document.activeElement) || pending.contains(document.activeElement);
+      summarySignature = nextSummary;
+      summary.replaceChildren(node('strong', {}, tr('Chủ trì')), node('span', { class: 'badge' }, statusNames()[state.status] || state.status));
+      if (human) summary.append(button(tr('Agent làm chủ trì'), async () => { details.open = true; await act('invite'); }), button(tr('Đóng chi tiết'), () => { historyVisible = false; root.hidden = true; menu.setAttribute('aria-expanded', 'false'); document.getElementById('btnOptions').focus(); }));
+      else {
+        if (state.identity) summary.append(node('span', {class:'muted'}, `${state.identity.name} · ${state.identity.model} (${tr('tự khai báo')})`));
+        summary.append(button(tr('Dừng PM'), () => act('pause')), button(tr('Thu hồi quyền PM'), () => act('revoke')), button(tr('Tôi tiếp quản'), () => act('takeover')));
+        if (['lost','suspended','paused','revoked'].includes(state.status)) summary.append(button(tr('Mời lại PM'), () => act('invite')));
+      }
+      if (restoreFocus && !root.hidden) { summary.tabIndex = -1; summary.focus(); }
     }
     details.hidden = human && !state.id;
     instructions.hidden = !['invited','pending'].includes(state.status);
     promptArea.value = prompt(); promptArea.hidden = !promptArea.value;
-    pending.replaceChildren();
-    if (state.status === 'pending') {
-      const code = field('code', { inputmode: 'numeric', maxlength: '4', 'aria-label': tr('Mã PM báo cho bạn') });
-      pending.append(node('p', {}, `${state.identity.name} · ${state.identity.model}`), code, button(tr('Xác nhận PM'), () => act('approve', { code: code.value, generation: state.generation }), true));
+    const nextPending = JSON.stringify([state.status, state.generation, state.identity]);
+    if (pendingSignature !== nextPending) {
+      pendingSignature = nextPending;
+      pending.replaceChildren();
+      if (state.status === 'pending') {
+        const code = field('code', { inputmode: 'numeric', maxlength: '4', 'aria-label': tr('Mã PM báo cho bạn') });
+        pending.append(node('p', {}, `${state.identity.name} · ${state.identity.model}`), code, button(tr('Xác nhận PM'), () => act('approve', { code: code.value, generation: state.generation }), true));
+      }
     }
     for (const f of [goalForm, grantForm, chatForm]) for (const control of f.elements) control.disabled = !active;
     const goalInput = goalForm.elements.goal;
     if (!goalForm.contains(document.activeElement) && goalInput.dataset.revision !== String(state.goalRevision)) { goalInput.value = state.goal || ''; goalForm.elements.acceptance.value = (state.acceptance || []).join('\n'); goalInput.dataset.revision = state.goalRevision; }
     messages.replaceChildren(...(state.messages || []).map(m => node('p', {}, node('strong', {}, (m.actor === 'director' ? tr('Giám đốc') : 'PM') + ': '), m.text)));
     const run = state.runs?.at(-1), report = state.report;
-    progress.replaceChildren(node('p', {}, state.goal || tr('Chưa giao mục tiêu')), node('p', {}, run ? `${runName(run.status)} · ${run.id}` : tr('Chưa có lượt chạy')),
-      node('p', {}, state.grant ? tr('Lượt chạy đã dùng') + `: ${state.grant.usedRuns}/${state.grant.maxRuns}` : tr('Chưa cấp quyền thực hiện')),
-      node('p', { class: 'hint' }, tr('Usage/chi phí PM chưa quan sát được. Chi phí chưa biết không bằng 0.')));
-    if (state.grant) progress.append(node('p', {class:'hint'}, `${state.grant.workspace} · ${state.grant.profileId} (${state.grant.requestedModel}) · ${state.grant.writePaths.join(', ')} · ${tr('Test')}: ${state.grant.testFiles.join(', ')} · ${tr('Hết hạn')}: ${new Date(state.grant.expiresAt).toLocaleTimeString(lang)}`));
-    if (report) progress.append(node('p', {}, (report.status === 'completed' ? tr('Đã tích hợp và test') : tr('Cần xử lý')) + ': ' + report.summary));
-    if (run) progress.append(node('a', { class: 'btn ghost', href: '#results' }, tr('Xem bằng chứng')));
+    const nextProgress = JSON.stringify([state.goal, run, state.grant, report]);
+    if (progressSignature !== nextProgress) {
+      progressSignature = nextProgress;
+      const restoreFocus = progress.contains(document.activeElement);
+      progress.replaceChildren(node('p', {}, state.goal || tr('Chưa giao mục tiêu')), node('p', {}, run ? `${runName(run.status)} · ${run.id}` : tr('Chưa có lượt chạy')),
+        node('p', {}, state.grant ? tr('Lượt chạy đã dùng') + `: ${state.grant.usedRuns}/${state.grant.maxRuns}` : tr('Chưa cấp quyền thực hiện')),
+        node('p', { class: 'hint' }, tr('Usage/chi phí PM chưa quan sát được. Chi phí chưa biết không bằng 0.')));
+      if (state.grant) progress.append(node('p', {class:'hint'}, `${state.grant.workspace} · ${state.grant.profileId} (${state.grant.requestedModel}) · ${state.grant.writePaths.join(', ')} · ${tr('Test')}: ${state.grant.testFiles.join(', ')} · ${tr('Hết hạn')}: ${new Date(state.grant.expiresAt).toLocaleTimeString(lang)}`));
+      if (report) progress.append(node('p', {}, (report.status === 'completed' ? tr('Đã tích hợp và test') : tr('Cần xử lý')) + ': ' + report.summary));
+      if (run) progress.append(node('a', { class: 'btn ghost', href: '#results' }, tr('Xem bằng chứng')));
+      if (restoreFocus) { progress.tabIndex = -1; progress.focus(); }
+    }
   }
   async function refresh() {
     if (busy || refreshing || document.hidden) return;

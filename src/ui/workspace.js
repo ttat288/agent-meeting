@@ -81,6 +81,29 @@
     try { await fn(); } catch (e) { errorBox(container, e); }
     finally { btn.disabled = false; container.removeAttribute('aria-busy'); renderSyncStatus(); }
   }
+  function checkedAction(btn, container, run, operation) {
+    return action(btn, container, async () => {
+      const status = node('span', { role: 'status' }, operation === 'verify'
+        ? t('Đang chạy test độc lập…', 'Running independent tests…')
+        : t('Đang tích hợp và test checkout nguồn…', 'Integrating and testing the source checkout…'));
+      const cancel = button(t('Hủy phiên chạy', 'Cancel run'), async () => {
+        cancel.disabled = true;
+        try { await api('/work/runs/' + encodeURIComponent(run.id) + '/cancel', {}); status.textContent = t('Đã yêu cầu hủy; đang chờ tiến trình dừng…', 'Cancellation requested; waiting for the process to stop…'); }
+        catch (error) { errorBox(container, error); cancel.disabled = false; }
+      });
+      const waiting = node('div', { class: 'ws-actions' }, status, cancel);
+      btn.after(waiting);
+      try {
+        await api('/work/runs/' + encodeURIComponent(run.id) + '/' + operation, {});
+        // Navigation may have opened a different task draft while tests ran.
+        // Its DOM belongs to that view; the normal live read will refresh it.
+        if (container.isConnected) {
+          const next = await api('/work');
+          if (container.isConnected) { acceptWork(next); renderTaskList(); $('workTitle')?.focus({ preventScroll: true }); }
+        }
+      } finally { waiting.remove(); }
+    });
+  }
   const field = (label, id, value = '', hint = '', type = 'input') => {
     const input = node(type === 'textarea' ? 'textarea' : 'input', { id, name: id, value, type: type === 'textarea' ? null : 'text' });
     if (type === 'textarea') input.textContent = value;
@@ -241,14 +264,14 @@
         if (run.error) runView.append(node('p', { class: 'ws-warning' }, friendlyError(run.error)));
         const actions = node('div', { class: 'ws-actions' });
         if (tab === 'results' && ['failed','cancelled','rejected','timeout','output-limit'].includes(run.status) && task.sourceCurrent !== false) actions.append(viewLink('execute', t('Thử lại trong Thực hiện →', 'Retry in Execute →'), true));
-        if (activeRun(run) && tab === 'tasks') {
+        if (activeRun(run)) {
           const cancel = button(t('Hủy phiên chạy', 'Cancel run'), () => action(cancel, runView, async () => { await api('/work/runs/' + encodeURIComponent(run.id) + '/cancel', {}); acceptWork(await api('/work')); renderTaskList(); })); actions.append(cancel);
         }
         if (tab === 'results' && run.status === 'reported' && task.sourceCurrent !== false && run.requirementRevision === task.requirementRevision) {
-          const verify = button(t('Kiểm chứng bằng Node test', 'Verify with Node tests'), () => action(verify, runView, async () => { await api('/work/runs/' + encodeURIComponent(run.id) + '/verify', {}); acceptWork(await api('/work')); renderTaskList(); }), true); actions.append(verify);
+          const verify = button(t('Kiểm chứng bằng Node test', 'Verify with Node tests'), () => checkedAction(verify, runView, run, 'verify'), true); actions.append(verify);
         }
         if (tab === 'results' && run.status === 'verified' && task.sourceCurrent !== false && run.requirementRevision === task.requirementRevision) {
-          const integrate = button(t('Tích hợp kết quả đã kiểm chứng', 'Integrate verified result'), () => action(integrate, runView, async () => { await api('/work/runs/' + encodeURIComponent(run.id) + '/integrate', {}); acceptWork(await api('/work')); renderTaskList(); }), true); actions.append(integrate);
+          const integrate = button(t('Tích hợp kết quả đã kiểm chứng', 'Integrate verified result'), () => checkedAction(integrate, runView, run, 'integrate'), true); actions.append(integrate);
         }
         if (tab === 'tasks' && ['reported', 'verified', 'integrated'].includes(run.status)) actions.append(viewLink('results', t('Xem kết quả →', 'Review results →'), true));
         if (run.requirementRevision !== task.requirementRevision) runView.append(node('p', { class: 'ws-warning' }, t('Kết quả thuộc yêu cầu cũ; không được nghiệm thu cho revision hiện tại.', 'This result belongs to an older requirement and cannot be accepted for the current revision.')));

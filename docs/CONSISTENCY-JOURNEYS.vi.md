@@ -127,3 +127,12 @@ Quan sát trên S06: khối PM mặc định human chiếm thêm một hàng52�
 Flow S01/S03–S06 human → Tùy chọn → Agent làm chủ trì → PM invitation/pending/active; tiếp quản → human gọn → Tùy chọn → lịch sử PM. `#pmControl` mở đúng vùng nguồn cũ. Network error của PM chỉ giữ tới lần state fetch thành công; validation/action error không bị background poll xóa. Human idle không poll PM mỗi3s; room change làm refresh, active giữ polling có timeout/no overlap.
 
 J18: human default không chiếm hàng PM; menu/keyboard/deep link/Back/reload có đường tới PM/history. J19: PM state fetch failure rồi recovery xóa lỗi kết nối; action failure vẫn đọc được; VI/EN/light/dark/responsive và grant/revoke/takeover semantics giữ nguyên.
+
+
+J20 (bổ sung sau tái hiện trên source tích hợp): focus nút Pause/Revoke/Takeover phải giữ nguyên khi PM có tin riêng hoặc run mới nhưng status/identity không đổi. Khi trạng thái đổi thật và control cũ biến mất, chuyển focus tới summary mới; takeover vẫn về Options. Pending code chỉ dựng lại theo status/generation/identity, không giữ mã cho invitation mới. Progress/link evidence không dựng lại vì tin nhắn không liên quan. Kiểm browser fixture có thật API mutation, không là nghiệm thu PM model.
+
+
+J21: Verify/Integrate từ Results phải có trạng thái chờ và nút Hủy ngay tại chỗ; sau reload hoặc thao tác ngoài trang, run verifying/integrating vẫn có nút hủy ở Results và Execute. Hủy giữ đúng task/run, đợi subprocess kết thúc rồi ghi cancelled, integration khôi phục source theo guard backend. Kết quả request cũ không dựng lại DOM của view/draft người dùng đã chuyển tới. Browser test dùng slow independent Node test và API thật; fixture adapter không phải model.
+
+
+J22: PM Send chậm/nhấn lặp không xóa bản nháp chưa gửi, response thành công chỉ xóa đúng nội dung đã gửi. Pause/revoke/takeover vẫn thực thi khi request thường đang chờ; late response không thay supervision state mới. Proxy local trì hoãn response, backend API thật/no-model; giữ cùng private scope. Không nhận việc hủy HTTP là hủy thao tác server đã xử lý.

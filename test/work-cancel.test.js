@@ -90,6 +90,41 @@ test('cancelling integration restores original source and does not publish done'
   assert.notEqual(work.read().tasks[0].status, 'done');
 });
 
+test('integration rollback preserves a concurrent source permission change for manual reconciliation', async t => {
+  const slow = "require('node:test')('sum',async()=>{require('node:assert/strict').equal(require('../sum')(2,3),5);if(require('node:path').basename(process.cwd())==='source')await new Promise(r=>setTimeout(r,15000));});\n";
+  const { work, source } = setup(t, slow), file = path.join(source, 'sum.js');
+  fs.chmodSync(file, 0o640);
+  await work.verify('run');
+  const pending = work.integrate('run');
+  assert.match(fs.readFileSync(file, 'utf8'), /a\+b/);
+  // An external editor/operator changes permissions while source tests run.
+  fs.chmodSync(file, 0o600);
+  work.cancel('run');
+  const result = await pending;
+  assert.equal(fs.statSync(file).mode & 0o777, 0o600, 'Rollback must not undo the external permission edit');
+  assert.equal(result.rollback, 'conflict');
+  assert.equal(result.status, 'cancelled');
+  assert.match(result.error, /manual rollback required/);
+  assert.match(fs.readFileSync(file, 'utf8'), /a\+b/, 'Conflicting source requires explicit manual reconciliation');
+  assert.notEqual(work.read().tasks[0].status, 'done');
+});
+
+test('integration rollback preserves a concurrently installed symlink even when its bytes match', async t => {
+  const slow = "require('node:test')('sum',async()=>{require('node:assert/strict').equal(require('../sum')(2,3),5);if(require('node:path').basename(process.cwd())==='source')await new Promise(r=>setTimeout(r,15000));});\n";
+  const { work, root, source } = setup(t, slow), file = path.join(source, 'sum.js'), external = path.join(root, 'external.js');
+  await work.verify('run');
+  const pending = work.integrate('run'), bytes = fs.readFileSync(file);
+  fs.writeFileSync(external, bytes);
+  fs.unlinkSync(file); fs.symlinkSync(external, file);
+  work.cancel('run');
+  const result = await pending;
+  assert(fs.lstatSync(file).isSymbolicLink(), 'Rollback must preserve the external path replacement');
+  assert.deepEqual(fs.readFileSync(external), bytes);
+  assert.equal(result.rollback, 'conflict');
+  assert.equal(result.status, 'cancelled');
+  assert.match(result.error, /manual rollback required/);
+});
+
 
 test('verification failure records real failing test execution and releases the controller', async t => {
   const { work } = setup(t, "require('node:test')('bad',()=>{throw Error('fixture test failed');});\n");

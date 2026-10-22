@@ -39,6 +39,17 @@ test('source dependency changes without HEAD change block integration',async t=>
 test('worker writes outside scope are rejected and not accepted',async t=>{
  const{source,work}=setup(t,async a=>{if(!a.prompt.includes('READY'))fs.writeFileSync(path.join(a.workspace,'extra.js'),'bad');return{status:'reported',reportedModel:'claude-opus-5-5',text:'done',exitCode:0};});await work.probe('opus-claude');const j=work.createTask(task(source));const r=work.start(j.id,'opus-claude');await wait(work);assert.equal(work.read().runs[0].status,'rejected');await assert.rejects(()=>work.verify(r.id),/no report/);assert.equal(fs.existsSync(path.join(source,'extra.js')),false);
 });
+test('prototype-named source files survive execution copy and snapshot serialization',async t=>{
+ const {source,work}=setup(t,async a=>{if(!a.prompt.includes('READY'))assert.equal(fs.readFileSync(path.join(a.workspace,'__proto__'),'utf8'),'source input must survive');return{status:'reported',reportedModel:'claude-opus-5-5',text:'fixture',exitCode:0};});
+ fs.writeFileSync(path.join(source,'__proto__'),'source input must survive');
+ await work.probe('opus-claude');const job=work.createTask(task(source));work.start(job.id,'opus-claude');await wait(work);
+ const run=work.read().runs[0];assert.equal(run.status,'reported',run.error);assert(Object.hasOwn(run.before,'__proto__'));assert.equal(run.before.__proto__.size,25);
+});
+test('prototype-named output cannot disappear from outside-scope rejection',async t=>{
+ const {source,work}=setup(t,async a=>{if(!a.prompt.includes('READY'))fs.writeFileSync(path.join(a.workspace,'__proto__'),'outside scope');return{status:'reported',reportedModel:'claude-opus-5-5',text:'fixture',exitCode:0};});
+ await work.probe('opus-claude');const job=work.createTask(task(source));work.start(job.id,'opus-claude');await wait(work);
+ const run=work.read().runs[0];assert.equal(run.status,'rejected');assert.match(run.error,/outside assigned scope/);assert(run.changes.some(c=>c.file==='__proto__'));
+});
 test('unknown actual model cannot verify, failures and cancellation stay separate',async t=>{
  const{source,work}=setup(t,async a=>({status:'reported',reportedModel:a.prompt.includes('READY')?'claude-opus-5-5':'unknown',text:'done',exitCode:0}));await work.probe('opus-claude');const j=work.createTask(task(source)),r=work.start(j.id,'opus-claude');await wait(work);await assert.rejects(()=>work.verify(r.id),/identity/);assert.notEqual(work.read().tasks[0].status,'done');
 });

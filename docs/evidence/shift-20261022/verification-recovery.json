@@ -1,0 +1,152 @@
+{
+  "at": "2026-10-22T17:01:38.292Z",
+  "scope": "Real slow Node subprocess/API/browser fixture, no model or user source",
+  "taskId": "a248cc30-7aab-4e8c-b599-8439450e1a2e",
+  "sourceHashes": {
+    "src/ui/workspace.js": "a8191d738a17e555b27f7c861aff2657336b6d4911b9ba661b81aed3f8681e89",
+    "src/ui/pm-ui.js": "fef1d3dca098c0326cff98adedb740f6ae55e787f13edea745e0a2ac07fcea6b",
+    "src/work.js": "3c5f1ee78cd3db1733349c962f4008be36d89231b4a68079bc21b94fcbe4ff45"
+  },
+  "runs": [
+    {
+      "id": "d7bc86a2-4e62-4dc5-800c-5ebfca309529",
+      "requirementRevision": 1,
+      "status": "cancelled",
+      "error": "Verification cancelled",
+      "evidence": [
+        {
+          "command": [
+            "/usr/bin/node",
+            "--max-old-space-size=256",
+            "--test",
+            "--test-timeout=20000",
+            "test/sum.test.js"
+          ],
+          "exitCode": null,
+          "timeout": false,
+          "cancelled": true,
+          "output": "TAP version 13\n",
+          "elapsedMs": 12517,
+          "checkedAt": "2026-10-22T16:58:22.322Z"
+        }
+      ]
+    },
+    {
+      "id": "bea666b9-c094-42a6-b60c-8021210df79e",
+      "requirementRevision": 1,
+      "status": "cancelled",
+      "error": "Verification cancelled",
+      "evidence": [
+        {
+          "command": [
+            "/usr/bin/node",
+            "--max-old-space-size=256",
+            "--test",
+            "--test-timeout=20000",
+            "test/sum.test.js"
+          ],
+          "exitCode": null,
+          "timeout": false,
+          "cancelled": true,
+          "output": "TAP version 13\n",
+          "elapsedMs": 9547,
+          "checkedAt": "2026-10-22T16:59:23.482Z"
+        }
+      ]
+    },
+    {
+      "id": "0cbfb44d-39bd-4f8c-831f-a970af2f71a8",
+      "requirementRevision": 1,
+      "status": "cancelled",
+      "error": "Verification cancelled",
+      "evidence": [
+        {
+          "command": [
+            "/usr/bin/node",
+            "--max-old-space-size=256",
+            "--test",
+            "--test-timeout=20000",
+            "test/sum.test.js"
+          ],
+          "exitCode": null,
+          "timeout": false,
+          "cancelled": true,
+          "output": "TAP version 13\n",
+          "elapsedMs": 5947,
+          "checkedAt": "2026-10-22T16:59:40.005Z"
+        }
+      ]
+    },
+    {
+      "id": "4e85b2a7-03b0-4f85-8886-64da8973a8f9",
+      "requirementRevision": 1,
+      "status": "failed",
+      "error": "Independent verification failed",
+      "evidence": [
+        {
+          "command": [
+            "/usr/bin/node",
+            "--max-old-space-size=256",
+            "--test",
+            "--test-timeout=20000",
+            "test/sum.test.js"
+          ],
+          "exitCode": 1,
+          "timeout": false,
+          "cancelled": false,
+          "output": "TAP version 13\n# Subtest: test/sum.test.js\nnot ok 1 - test/sum.test.js\n  ---\n  duration_ms: 20016.566976\n  type: 'test'\n  location: '/tmp/am-shift-cancel-preview-20261022/work/2d5e615cd3cc624c5b8f5d97a7cc5f410de0108bded4713fcf324e2e7b081657/runs/4e85b2a7-03b0-4f85-8886-64da8973a8f9/workspace/test/sum.test.js:1:1'\n  failureType: 'testTimeoutFailure'\n  error: 'test timed out after 20000ms'\n  code: 'ERR_TEST_FAILURE'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 0\n# cancelled 1\n# skipped 0\n# todo 0\n# duration_ms 20029.346766\n",
+          "elapsedMs": 20168,
+          "checkedAt": "2026-10-22T17:00:23.755Z"
+        }
+      ]
+    },
+    {
+      "id": "60529dcf-ca79-4a60-aacf-a0f6b5f0da57",
+      "requirementRevision": 2,
+      "status": "cancelled",
+      "error": "Integration verification cancelled",
+      "rollback": "restored",
+      "evidence": [
+        {
+          "command": [
+            "/usr/bin/node",
+            "--max-old-space-size=256",
+            "--test",
+            "--test-timeout=20000",
+            "test/sum.test.js"
+          ],
+          "exitCode": 0,
+          "timeout": false,
+          "cancelled": false,
+          "output": "TAP version 13\n# Subtest: slow independent sum\nok 1 - slow independent sum\n  ---\n  duration_ms: 10004.663063\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 10133.778008\n",
+          "elapsedMs": 10250,
+          "checkedAt": "2026-10-22T17:01:19.136Z"
+        }
+      ],
+      "integrationEvidence": [
+        {
+          "command": [
+            "/usr/bin/node",
+            "--max-old-space-size=256",
+            "--test",
+            "--test-timeout=20000",
+            "test/sum.test.js"
+          ],
+          "exitCode": null,
+          "timeout": false,
+          "cancelled": true,
+          "output": "TAP version 13\n",
+          "elapsedMs": 2240,
+          "checkedAt": "2026-10-22T17:01:28.678Z"
+        }
+      ]
+    }
+  ],
+  "source": "module.exports=(a,b)=>a-b;\n",
+  "observations": [
+    "Pre-fix Verify disabled while Reported, cancellation required Results→Execute navigation",
+    "Post-fix verification cancellation from Results stopped test at5947ms",
+    "25s scenario exhausted Node22 internal20s test timeout; draft/focus/details at Plan preserved when old request returned failed",
+    "New10s independent-test scenario passed verification; integration cancelled from Results"
+  ]
+}

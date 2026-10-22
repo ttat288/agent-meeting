@@ -95,6 +95,8 @@ The current source also includes **UI v2 and experimental managed workflows**: v
 
 **Follow work without repeated refreshes.** Plan, Execute and Results check for updates while visible. Edits and open evidence stay in place; when needed, **Show updates** applies the new state. Connection failures keep the last result and retry. “Integrated and tested” describes automated checks, with user acceptance still separate.
 
+Verification and integration show progress and **Cancel run** in Results. Cancellation waits for the test process to stop; if the source was edited or its permissions changed meanwhile, a rollback conflict requires manual reconciliation.
+
 ![Current Results view: a local subprocess fixture is integrated and independently tested; live updates share the compact session shell.](docs/evidence/shift-20261022/results-en-dark.jpg)
 
 This screenshot uses a deterministic **local fixture, not an AI-generated result**. The [reproducible HTTP benchmark and raw samples](docs/evidence/shift-20261022/ACCEPTANCE.vi.md#benchmark-có-rawscript) include polling overhead, error cases and unknowns. The writer-model pilot failed authentication; a separate [read-only CLI audit](docs/evidence/shift-20261022/readonly-audit/PROTOCOL.vi.md) stopped at a permission denial with unknown model identity. There is no demonstrated model-cost or eight-hour runtime advantage.

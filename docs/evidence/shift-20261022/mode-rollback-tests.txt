@@ -1,0 +1,70 @@
+TAP version 13
+# Subtest: already cancelled verification subprocess never starts
+ok 1 - already cancelled verification subprocess never starts
+  ---
+  duration_ms: 5.784132
+  type: 'test'
+  ...
+# Subtest: aborting runTest stops the test and its process group
+ok 2 - aborting runTest stops the test and its process group
+  ---
+  duration_ms: 2625.541164
+  type: 'test'
+  ...
+# Subtest: verify owns a cancellable controller and cannot publish verified after cancel
+ok 3 - verify owns a cancellable controller and cannot publish verified after cancel
+  ---
+  duration_ms: 2068.173978
+  type: 'test'
+  ...
+# Subtest: closing manager aborts verification and exceptions leave terminal failed state
+ok 4 - closing manager aborts verification and exceptions leave terminal failed state
+  ---
+  duration_ms: 2044.926722
+  type: 'test'
+  ...
+# Subtest: source integration reruns the same tests before marking task done
+ok 5 - source integration reruns the same tests before marking task done
+  ---
+  duration_ms: 472.511561
+  type: 'test'
+  ...
+# Subtest: failing integrated-source tests restore original file and record failure evidence
+ok 6 - failing integrated-source tests restore original file and record failure evidence
+  ---
+  duration_ms: 458.848262
+  type: 'test'
+  ...
+# Subtest: cancelling integration restores original source and does not publish done
+ok 7 - cancelling integration restores original source and does not publish done
+  ---
+  duration_ms: 2252.582066
+  type: 'test'
+  ...
+# Subtest: integration rollback preserves a concurrent source permission change for manual reconciliation
+ok 8 - integration rollback preserves a concurrent source permission change for manual reconciliation
+  ---
+  duration_ms: 2259.300886
+  type: 'test'
+  ...
+# Subtest: verification failure records real failing test execution and releases the controller
+ok 9 - verification failure records real failing test execution and releases the controller
+  ---
+  duration_ms: 252.207963
+  type: 'test'
+  ...
+# Subtest: verification sandbox blocks test writes and cannot remain verifying
+ok 10 - verification sandbox blocks test writes and cannot remain verifying
+  ---
+  duration_ms: 280.232093
+  type: 'test'
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 12888.327165

@@ -1,0 +1,32 @@
+TAP version 13
+# Subtest: integration rollback preserves a concurrent source permission change for manual reconciliation
+not ok 1 - integration rollback preserves a concurrent source permission change for manual reconciliation
+  ---
+  duration_ms: 2301.976599
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/work-cancel.test.js:93:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Rollback must not undo the external permission edit
+    
+    416 !== 384
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 384
+  actual: 416
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/work-cancel.test.js:104:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2461.216577

@@ -203,3 +203,7 @@ node --test "$pkg_verify_dir/package/test/cli-shutdown.test.js"
 ```
 
 Test file hash và production hashes nằm trong receipt; test có2 CLI processes thật, không là native model benchmark. Giữ package outputs trong temp để đối chiếu; không dùng receipt cũ thay final package check cuối ca.
+
+[Full integrated admin/navigation regression](integrated-admin-tests.txt)/[source seal](verification-admin-integrated-tests.json):382 test/34 file,0 fail/skip/cancel tại ae17743, source/test frozen. Gồm CLI readiness đã sửa và UI mới; browser matrices riêng, không gộp thành model quality.
+
+[Desktop duplicates](desktop-ci-duplicates-before.json):2ac1713 có push39835043314 và PR39835053353 cùng workflow/SHA, cả hai workflow overall success. Push có đủ3 job success; PR macOS/Windows success, Linux conclusion rỗng trong metadata snapshot (giữ unknown, không tính là3 green jobs). Workflow installer mới dùng concurrency key workflow/repository/branch giống CI đã verified, giữ3OS/max-parallel1/timeout/sandbox/tool steps. Không đổi trigger paths, permissions hoặc branch protection; không nhận money saved từ số run. Actual cancellation/matrix của commit mới còn phải kiểm.

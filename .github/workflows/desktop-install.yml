@@ -5,6 +5,10 @@ on:
     paths: ['src/desktop-install.js', 'bin/cli.js', 'assets/**', 'scripts/install-linux.sh', 'test/desktop-install.test.js', '.github/workflows/desktop-install.yml']
   pull_request:
     paths: ['src/desktop-install.js', 'bin/cli.js', 'assets/**', 'scripts/install-linux.sh', 'test/desktop-install.test.js', '.github/workflows/desktop-install.yml']
+# Share one lane for a branch push and PR update, separate from the CI matrix.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
 jobs:
   native-smoke:
     strategy:

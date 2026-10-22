@@ -1,0 +1,2681 @@
+
+> agent-meeting@3.5.0 test
+> node scripts/test.js
+
+
+brief.test.js
+TAP version 13
+# Subtest: giới hạn trùng với src/meeting.js
+ok 1 - giới hạn trùng với src/meeting.js
+  ---
+  duration_ms: 3.264699
+  type: 'test'
+  ...
+# Subtest: JSON hợp lệ: giữ nguyên, không lỗi, không cảnh báo
+ok 2 - JSON hợp lệ: giữ nguyên, không lỗi, không cảnh báo
+  ---
+  duration_ms: 1.877034
+  type: 'test'
+  ...
+# Subtest: bọc trong ```json và có câu dẫn của AI
+ok 3 - bọc trong ```json và có câu dẫn của AI
+  ---
+  duration_ms: 0.562537
+  type: 'test'
+  ...
+# Subtest: trường thiếu lấy giá trị base (mặc định của server)
+ok 4 - trường thiếu lấy giá trị base (mặc định của server)
+  ---
+  duration_ms: 0.281271
+  type: 'test'
+  ...
+# Subtest: lỗi cú pháp: báo dòng, cột và lý do bằng tiếng Việt
+ok 5 - lỗi cú pháp: báo dòng, cột và lý do bằng tiếng Việt
+  ---
+  duration_ms: 1.155865
+  type: 'test'
+  ...
+# Subtest: sai kiểu từng trường: lỗi theo khoá, có số dòng
+ok 6 - sai kiểu từng trường: lỗi theo khoá, có số dòng
+  ---
+  duration_ms: 0.726756
+  type: 'test'
+  ...
+# Subtest: khoan dung: số ngoài khoảng bị kẹp, chuỗi số, true/false trong ngoặc kép, đánh số mục
+ok 7 - khoan dung: số ngoài khoảng bị kẹp, chuỗi số, true/false trong ngoặc kép, đánh số mục
+  ---
+  duration_ms: 0.4417
+  type: 'test'
+  ...
+# Subtest: quá dài: cắt và cảnh báo; quá nhiều mục: giữ 20
+ok 8 - quá dài: cắt và cảnh báo; quá nhiều mục: giữ 20
+  ---
+  duration_ms: 1.781118
+  type: 'test'
+  ...
+# Subtest: khoá lạ: cảnh báo chứ không lỗi; khoá settings đặt ở ngoài thì chuyển vào
+ok 9 - khoá lạ: cảnh báo chứ không lỗi; khoá settings đặt ở ngoài thì chuyển vào
+  ---
+  duration_ms: 0.496572
+  type: 'test'
+  ...
+# Subtest: còn chỗ trống <…> hoặc chưa có bối cảnh: cảnh báo
+ok 10 - còn chỗ trống <…> hoặc chưa có bối cảnh: cảnh báo
+  ---
+  duration_ms: 0.442119
+  type: 'test'
+  ...
+# Subtest: chuỗi rất lớn hoặc rỗng bị từ chối
+ok 11 - chuỗi rất lớn hoặc rỗng bị từ chối
+  ---
+  duration_ms: 0.365525
+  type: 'test'
+  ...
+# Subtest: vai trò rỗng ở giữa được giữ (bỏ trống vai trò của slot đó), rỗng ở cuối bị bỏ
+ok 12 - vai trò rỗng ở giữa được giữ (bỏ trống vai trò của slot đó), rỗng ở cuối bị bỏ
+  ---
+  duration_ms: 0.130456
+  type: 'test'
+  ...
+# Subtest: toBrief từ form và đi vòng parse(stringify) không đổi
+ok 13 - toBrief từ form và đi vòng parse(stringify) không đổi
+  ---
+  duration_ms: 0.261329
+  type: 'test'
+  ...
+# Subtest: aiPrompt: có mô tả trường, giới hạn, JSON mẫu đúng định dạng và câu chỉ trả JSON
+ok 14 - aiPrompt: có mô tả trường, giới hạn, JSON mẫu đúng định dạng và câu chỉ trả JSON
+  ---
+  duration_ms: 0.327575
+  type: 'test'
+  ...
+# Subtest: roles theo thứ tự slot khi bắt đầu; không đè vai trò chủ trì giao tay
+ok 15 - roles theo thứ tự slot khi bắt đầu; không đè vai trò chủ trì giao tay
+  ---
+  duration_ms: 1.774296
+  type: 'test'
+  ...
+# Subtest: server: /assets/brief.js phục vụ đúng; POST start nhận nguyên bản brief (cả roles)
+ok 16 - server: /assets/brief.js phục vụ đúng; POST start nhận nguyên bản brief (cả roles)
+  ---
+  duration_ms: 30.884337
+  type: 'test'
+  ...
+# Subtest: preset (bản brief từ CLI): chỉ hiện ở phòng chờ, lưu qua --data-dir
+ok 17 - preset (bản brief từ CLI): chỉ hiện ở phòng chờ, lưu qua --data-dir
+  ---
+  duration_ms: 0.936066
+  type: 'test'
+  ...
+# Subtest: rolesNeeded: vai trò trống ở giữa vẫn chiếm chỗ, ở cuối thì không
+ok 18 - rolesNeeded: vai trò trống ở giữa vẫn chiếm chỗ, ở cuối thì không
+  ---
+  duration_ms: 0.118144
+  type: 'test'
+  ...
+1..18
+# tests 18
+# suites 0
+# pass 18
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 175.546515
+
+carry-canonical.test.js
+TAP version 13
+# Subtest: canonical carry on a test-owned store: delta, references, guards, same-writer swap and completion
+    # Subtest: Missing continuation stays unknown; legacy checkpoint API remains compatible
+    ok 1 - Missing continuation stays unknown; legacy checkpoint API remains compatible
+      ---
+      duration_ms: 30.435484
+      type: 'test'
+      ...
+    # Subtest: Delta is validated, secret-scanned and stored atomically without summary model
+    ok 2 - Delta is validated, secret-scanned and stored atomically without summary model
+      ---
+      duration_ms: 100.441685
+      type: 'test'
+      ...
+    # Subtest: Canonical WIP binds identity, source, revisions, caller delta and retrievable evidence
+    ok 3 - Canonical WIP binds identity, source, revisions, caller delta and retrievable evidence
+      ---
+      duration_ms: 16.267327
+      type: 'test'
+      ...
+    # Subtest: Reject goal revision
+    ok 4 - Reject goal revision
+      ---
+      duration_ms: 6.484623
+      type: 'test'
+      ...
+    # Subtest: Reject plan revision
+    ok 5 - Reject plan revision
+      ---
+      duration_ms: 5.364023
+      type: 'test'
+      ...
+    # Subtest: Reject requirement revision
+    ok 6 - Reject requirement revision
+      ---
+      duration_ms: 5.996664
+      type: 'test'
+      ...
+    # Subtest: Reject run generation
+    ok 7 - Reject run generation
+      ---
+      duration_ms: 6.169089
+      type: 'test'
+      ...
+    # Subtest: Reject checkpoint generation
+    ok 8 - Reject checkpoint generation
+      ---
+      duration_ms: 5.58459
+      type: 'test'
+      ...
+    # Subtest: Reject base revision
+    ok 9 - Reject base revision
+      ---
+      duration_ms: 6.031624
+      type: 'test'
+      ...
+    # Subtest: Reject slot
+    ok 10 - Reject slot
+      ---
+      duration_ms: 6.27114
+      type: 'test'
+      ...
+    # Subtest: Reject task/run binding
+    ok 11 - Reject task/run binding
+      ---
+      duration_ms: 5.126262
+      type: 'test'
+      ...
+    # Subtest: Reject goal text conflict
+    ok 12 - Reject goal text conflict
+      ---
+      duration_ms: 5.379776
+      type: 'test'
+      ...
+    # Subtest: Reject acceptance conflict
+    ok 13 - Reject acceptance conflict
+      ---
+      duration_ms: 5.736467
+      type: 'test'
+      ...
+    # Subtest: Reject source no longer current
+    ok 14 - Reject source no longer current
+      ---
+      duration_ms: 4.808243
+      type: 'test'
+      ...
+    # Subtest: Reject grant expired
+    ok 15 - Reject grant expired
+      ---
+      duration_ms: 4.661407
+      type: 'test'
+      ...
+    # Subtest: Reject grant replaced
+    ok 16 - Reject grant replaced
+      ---
+      duration_ms: 4.843185
+      type: 'test'
+      ...
+    # Subtest: Reject missing run
+    ok 17 - Reject missing run
+      ---
+      duration_ms: 3.490522
+      type: 'test'
+      ...
+    # Subtest: Reject missing base snapshot
+    ok 18 - Reject missing base snapshot
+      ---
+      duration_ms: 8.950477
+      type: 'test'
+      ...
+    # Subtest: Reject checkpoint changed without hash
+    ok 19 - Reject checkpoint changed without hash
+      ---
+      duration_ms: 5.243499
+      type: 'test'
+      ...
+    # Subtest: Reject WIP metadata inconsistent
+    ok 20 - Reject WIP metadata inconsistent
+      ---
+      duration_ms: 11.842418
+      type: 'test'
+      ...
+    # Subtest: Reject credential in selected text
+    ok 21 - Reject credential in selected text
+      ---
+      duration_ms: 11.901674
+      type: 'test'
+      ...
+    # Subtest: Reject missing next
+    ok 22 - Reject missing next
+      ---
+      duration_ms: 12.226182
+      type: 'test'
+      ...
+    # Subtest: Reject missing decisions
+    ok 23 - Reject missing decisions
+      ---
+      duration_ms: 13.292206
+      type: 'test'
+      ...
+    # Subtest: Reject missing unknowns
+    ok 24 - Reject missing unknowns
+      ---
+      duration_ms: 14.600259
+      type: 'test'
+      ...
+    # Subtest: Reject missing blocker record
+    ok 25 - Reject missing blocker record
+      ---
+      duration_ms: 15.384242
+      type: 'test'
+      ...
+    # Subtest: Reject missing attempt record
+    ok 26 - Reject missing attempt record
+      ---
+      duration_ms: 11.75777
+      type: 'test'
+      ...
+    # Subtest: Reject missing grant limits
+    ok 27 - Reject missing grant limits
+      ---
+      duration_ms: 5.432825
+      type: 'test'
+      ...
+    # Subtest: Reject stale routing revision
+    ok 28 - Reject stale routing revision
+      ---
+      duration_ms: 5.582605
+      type: 'test'
+      ...
+    # Subtest: Explicit unresolved blocker selects resolution instead of silently continuing
+    ok 29 - Explicit unresolved blocker selects resolution instead of silently continuing
+      ---
+      duration_ms: 12.206202
+      type: 'test'
+      ...
+    # Subtest: Unselected PM messages, capabilities, snapshots, reports and raw output stay private
+    ok 30 - Unselected PM messages, capabilities, snapshots, reports and raw output stay private
+      ---
+      duration_ms: 17.302641
+      type: 'test'
+      ...
+    # Subtest: Reference privacy, tamper, byte/count limits and current revision are enforced
+    ok 31 - Reference privacy, tamper, byte/count limits and current revision are enforced
+      ---
+      duration_ms: 59.769339
+      type: 'test'
+      ...
+    # Subtest: Source dirty change and WIP change invalidate capsule/reference and existing swap fence
+    ok 32 - Source dirty change and WIP change invalidate capsule/reference and existing swap fence
+      ---
+      duration_ms: 65.383555
+      type: 'test'
+      ...
+    # Subtest: Actual Git HEAD change fails even when source bytes are identical
+    ok 33 - Actual Git HEAD change fails even when source bytes are identical
+      ---
+      duration_ms: 15.339631
+      type: 'test'
+      ...
+    # Subtest: Existing ACK/quiesce fence preserves same task/run/WIP and rejects old capability
+    ok 34 - Existing ACK/quiesce fence preserves same task/run/WIP and rejects old capability
+      ---
+      duration_ms: 416.531326
+      type: 'test'
+      ...
+    # Subtest: Reported does not imply verified/integrated; historical next is not replayed
+    ok 35 - Reported does not imply verified/integrated; historical next is not replayed
+      ---
+      duration_ms: 9.204882
+      type: 'test'
+      ...
+    # Subtest: Independent verification and integrated source tests produce distinct canonical evidence
+    ok 36 - Independent verification and integrated source tests produce distinct canonical evidence
+      ---
+      duration_ms: 520.844221
+      type: 'test'
+      ...
+    # Subtest: Reject missing integrated tests
+    ok 37 - Reject missing integrated tests
+      ---
+      duration_ms: 12.128725
+      type: 'test'
+      ...
+    # Subtest: Reject cancelled tests
+    ok 38 - Reject cancelled tests
+      ---
+      duration_ms: 11.861077
+      type: 'test'
+      ...
+    # Subtest: Reject timeout tests
+    ok 39 - Reject timeout tests
+      ---
+      duration_ms: 12.115908
+      type: 'test'
+      ...
+    # Subtest: Reject failed tests
+    ok 40 - Reject failed tests
+      ---
+      duration_ms: 11.878358
+      type: 'test'
+      ...
+    # Subtest: Reject duplicate evidence
+    ok 41 - Reject duplicate evidence
+      ---
+      duration_ms: 11.914185
+      type: 'test'
+      ...
+    # Subtest: Actual production bootstrap/activation transport is counted, including repeated checkpoint
+    ok 42 - Actual production bootstrap/activation transport is counted, including repeated checkpoint
+      ---
+      duration_ms: 0.302928
+      type: 'test'
+      ...
+    1..42
+ok 1 - canonical carry on a test-owned store: delta, references, guards, same-writer swap and completion
+  ---
+  duration_ms: 2225.897707
+  type: 'test'
+  ...
+1..1
+# tests 43
+# suites 0
+# pass 43
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2362.473484
+
+cli-discovery.test.js
+TAP version 13
+# Subtest: discovery: bundled skill and local search/page/show work without room or home writes
+ok 1 - discovery: bundled skill and local search/page/show work without room or home writes
+  ---
+  duration_ms: 539.814098
+  type: 'test'
+  ...
+# Subtest: catalog rejects traversal, links, excessive output and malformed manifests
+ok 2 - catalog rejects traversal, links, excessive output and malformed manifests
+  ---
+  duration_ms: 303.579344
+  type: 'test'
+  ...
+# Subtest: doctor redacts room secrets and does not claim live connection or model permission
+ok 3 - doctor redacts room secrets and does not claim live connection or model permission
+  ---
+  duration_ms: 111.04493
+  type: 'test'
+  ...
+# Subtest: graph searches declared resource paths, reads only selected resources, and refreshes source hash
+ok 4 - graph searches declared resource paths, reads only selected resources, and refreshes source hash
+  ---
+  duration_ms: 227.460025
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1315.564348
+
+cli-shutdown.test.js
+TAP version 13
+# Subtest: CLI SIGINT drains verify before process exit
+ok 1 - CLI SIGINT drains verify before process exit
+  ---
+  duration_ms: 2307.790546
+  type: 'test'
+  ...
+# Subtest: CLI SIGTERM drains integrate before process exit
+ok 2 - CLI SIGTERM drains integrate before process exit
+  ---
+  duration_ms: 2199.806682
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4666.372072
+
+config-store.test.js
+TAP version 13
+# Subtest: defaults remain in memory; successful save survives restart with private files and backup
+ok 1 - defaults remain in memory; successful save survives restart with private files and backup
+  ---
+  duration_ms: 9.187812
+  type: 'test'
+  ...
+# Subtest: two instances compare against disk revision and never overwrite stale edits
+ok 2 - two instances compare against disk revision and never overwrite stale edits
+  ---
+  duration_ms: 1.718948
+  type: 'test'
+  ...
+# Subtest: read and save return independent deep copies, including defaults and old run snapshots
+ok 3 - read and save return independent deep copies, including defaults and old run snapshots
+  ---
+  duration_ms: 1.089049
+  type: 'test'
+  ...
+# Subtest: malformed JSON and invalid persisted schema fail closed without replacing bytes
+ok 4 - malformed JSON and invalid persisted schema fail closed without replacing bytes
+  ---
+  duration_ms: 1.830932
+  type: 'test'
+  ...
+# Subtest: validation and missing expected revision fail before writing any data
+ok 5 - validation and missing expected revision fail before writing any data
+  ---
+  duration_ms: 0.847706
+  type: 'test'
+  ...
+# Subtest: lock held by another process is respected and never deleted automatically
+ok 6 - lock held by another process is respected and never deleted automatically
+  ---
+  duration_ms: 94.274626
+  type: 'test'
+  ...
+# Subtest: write failure before publishing leaves current configuration and no temporary file
+ok 7 - write failure before publishing leaves current configuration and no temporary file
+  ---
+  duration_ms: 2.228223
+  type: 'test'
+  ...
+# Subtest: failed fsync never publishes a partial snapshot
+ok 8 - failed fsync never publishes a partial snapshot
+  ---
+  duration_ms: 1.330972
+  type: 'test'
+  ...
+# Subtest: symlink config and directory cannot redirect writes
+ok 9 - symlink config and directory cannot redirect writes
+  ---
+  duration_ms: 1.367902
+  type: 'test'
+  ...
+# Subtest: directory write obstruction fails without a success result or source write
+ok 10 - directory write obstruction fails without a success result or source write
+  ---
+  duration_ms: 0.673
+  type: 'test'
+  ...
+# Subtest: environment config directory is honored without touching the home directory
+ok 11 - environment config directory is honored without touching the home directory
+  ---
+  duration_ms: 1.119162
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 261.502325
+
+connect.test.js
+TAP version 13
+# Subtest: connect claude: cài cầu nối, đăng ký MCP bằng CLI của Claude, cấp quyền đúng tool hội thoại (không có send_file)
+ok 1 - connect claude: cài cầu nối, đăng ký MCP bằng CLI của Claude, cấp quyền đúng tool hội thoại (không có send_file)
+  ---
+  duration_ms: 354.65706
+  type: 'test'
+  ...
+# Subtest: connect: settings.json hỏng thì không sửa; không có CLI thì in lệnh để người dùng tự chạy
+ok 2 - connect: settings.json hỏng thì không sửa; không có CLI thì in lệnh để người dùng tự chạy
+  ---
+  duration_ms: 139.7652
+  type: 'test'
+  ...
+# Subtest: connect --room: lưu phòng ở máy khác; URL lạ bị từ chối
+ok 3 - connect --room: lưu phòng ở máy khác; URL lạ bị từ chối
+  ---
+  duration_ms: 131.374226
+  type: 'test'
+  ...
+# Subtest: cầu nối: chạy được khi chưa có phòng; vào phòng trên máy này; gửi/nhận tệp trong thư mục làm việc
+ok 4 - cầu nối: chạy được khi chưa có phòng; vào phòng trên máy này; gửi/nhận tệp trong thư mục làm việc
+  ---
+  duration_ms: 362.384783
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1141.085212
+
+consistency.test.js
+TAP version 13
+# Subtest: action adapter is idempotent and preserves provenance, manual reports and carry identity
+ok 1 - action adapter is idempotent and preserves provenance, manual reports and carry identity
+  ---
+  duration_ms: 13.260899
+  type: 'test'
+  ...
+# Subtest: edits invalidate old evidence; configure CAS retains ID and rejects cycles and active-run edits
+ok 2 - edits invalidate old evidence; configure CAS retains ID and rejects cycles and active-run edits
+  ---
+  duration_ms: 8.356937
+  type: 'test'
+  ...
+# Subtest: HTTP room → plan → execution requirements retains one task across restart and legacy deep links
+ok 3 - HTTP room → plan → execution requirements retains one task across restart and legacy deep links
+  ---
+  duration_ms: 92.013442
+  type: 'test'
+  ...
+# Subtest: real Node subprocess fixture follows linked task through report, verification and integration
+ok 4 - real Node subprocess fixture follows linked task through report, verification and integration
+  ---
+  duration_ms: 596.843645
+  type: 'test'
+  ...
+# Subtest: non-fixed continuation shares the plan, rejects old-room writes and invalidates changed context
+ok 5 - non-fixed continuation shares the plan, rejects old-room writes and invalidates changed context
+  ---
+  duration_ms: 14.748006
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 858.767446
+
+context-window.test.js
+TAP version 13
+# Subtest: context uses current input/cache components, not output or ambiguous total fields
+ok 1 - context uses current input/cache components, not output or ambiguous total fields
+  ---
+  duration_ms: 1.551329
+  type: 'test'
+  ...
+# Subtest: missing/null post-compaction telemetry and unsupported runtime remain unknown
+ok 2 - missing/null post-compaction telemetry and unsupported runtime remain unknown
+  ---
+  duration_ms: 0.555314
+  type: 'test'
+  ...
+# Subtest: percentage-only reports stay separate from token counts and inconsistent reports invalidate observations
+ok 3 - percentage-only reports stay separate from token counts and inconsistent reports invalidate observations
+  ---
+  duration_ms: 0.20663
+  type: 'test'
+  ...
+# Subtest: context reset never hides previous peak or proves knowledge retention
+ok 4 - context reset never hides previous peak or proves knowledge retention
+  ---
+  duration_ms: 0.339391
+  type: 'test'
+  ...
+# Subtest: identities, ordering, duplicates, budget and empty traces cannot manufacture a benchmark
+ok 5 - identities, ordering, duplicates, budget and empty traces cannot manufacture a benchmark
+  ---
+  duration_ms: 0.534926
+  type: 'test'
+  ...
+# Subtest: offline trace reading is bounded and output does not expose unrelated statusline data
+ok 6 - offline trace reading is bounded and output does not expose unrelated statusline data
+  ---
+  duration_ms: 11.456871
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 130.950346
+
+desktop-install.test.js
+TAP version 13
+# Subtest: plans use native per-user locations and stable absolute runtime paths on all three platforms
+ok 1 - plans use native per-user locations and stable absolute runtime paths on all three platforms
+  ---
+  duration_ms: 2.739203
+  type: 'test'
+  ...
+# Subtest: rejects unsupported platform, relative paths and newline injection before writing
+ok 2 - rejects unsupported platform, relative paths and newline injection before writing
+  ---
+  duration_ms: 0.502879
+  type: 'test'
+  ...
+# Subtest: native install copies a complete runnable payload and creates its actual platform launcher
+ok 3 - native install copies a complete runnable payload and creates its actual platform launcher
+  ---
+  duration_ms: 227.905806
+  type: 'test'
+  ...
+# Subtest: upgrade keeps the prior app, including local payload edits, in an explicit backup
+ok 4 - upgrade keeps the prior app, including local payload edits, in an explicit backup
+  ---
+  duration_ms: 34.813215
+  type: 'test'
+  ...
+# Subtest: a write failure restores the prior payload and launcher bytes
+ok 5 - a write failure restores the prior payload and launcher bytes
+  ---
+  duration_ms: 31.714506
+  type: 'test'
+  ...
+# Subtest: fresh failure leaves no partial app or launcher
+ok 6 - fresh failure leaves no partial app or launcher
+  ---
+  duration_ms: 14.382764
+  type: 'test'
+  ...
+# Subtest: unrelated destinations and locally edited launchers are preserved
+ok 7 - unrelated destinations and locally edited launchers are preserved
+  ---
+  duration_ms: 17.150357
+  type: 'test'
+  ...
+# Subtest: uninstall removes only managed files and preserves meeting/config/work data
+ok 8 - uninstall removes only managed files and preserves meeting/config/work data
+  ---
+  duration_ms: 19.170845
+  type: 'test'
+  ...
+# Subtest: uninstall preserves app edits and refuses tampered external paths
+ok 9 - uninstall preserves app edits and refuses tampered external paths
+  ---
+  duration_ms: 36.153389
+  type: 'test'
+  ...
+# Subtest: the installer refuses symlink destinations on platforms with ordinary symlink permissions
+ok 10 - the installer refuses symlink destinations on platforms with ordinary symlink permissions
+  ---
+  duration_ms: 1.316519
+  type: 'test'
+  ...
+# Subtest: CLI dry-run and foreign-platform preview never launch a server or install files
+ok 11 - CLI dry-run and foreign-platform preview never launch a server or install files
+  ---
+  duration_ms: 641.058913
+  type: 'test'
+  ...
+# Subtest: an existing install lock blocks both writers without changing the app
+ok 12 - an existing install lock blocks both writers without changing the app
+  ---
+  duration_ms: 18.254382
+  type: 'test'
+  ...
+# Subtest: Linux desktop execution preserves reserved filename characters instead of evaluating them
+ok 13 - Linux desktop execution preserves reserved filename characters instead of evaluating them
+  ---
+  duration_ms: 146.309286
+  type: 'test'
+  ...
+# Subtest: dangling symlink launchers and roots cannot redirect installation writes
+ok 14 - dangling symlink launchers and roots cannot redirect installation writes
+  ---
+  duration_ms: 1.380226
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1319.679693
+
+evaluation.test.js
+TAP version 13
+# Subtest: statuses remain distinct and agent claims do not create accepted work
+ok 1 - statuses remain distinct and agent claims do not create accepted work
+  ---
+  duration_ms: 10.322775
+  type: 'test'
+  ...
+# Subtest: acceptance requires integrated engine status and successful evidence at both stages
+ok 2 - acceptance requires integrated engine status and successful evidence at both stages
+  ---
+  duration_ms: 0.949196
+  type: 'test'
+  ...
+# Subtest: partial and unknown cost never become a claimed complete actual total
+ok 3 - partial and unknown cost never become a claimed complete actual total
+  ---
+  duration_ms: 0.897423
+  type: 'test'
+  ...
+# Subtest: token fields normalize Claude, OpenAI and Gemini usage without double counting cache
+ok 4 - token fields normalize Claude, OpenAI and Gemini usage without double counting cache
+  ---
+  duration_ms: 0.609682
+  type: 'test'
+  ...
+# Subtest: attempts and retries aggregate by task while actual/requested models and runtimes stay separate
+ok 5 - attempts and retries aggregate by task while actual/requested models and runtimes stay separate
+  ---
+  duration_ms: 0.454166
+  type: 'test'
+  ...
+# Subtest: bounded pages preserve complete summary counts and input data stays immutable
+ok 6 - bounded pages preserve complete summary counts and input data stays immutable
+  ---
+  duration_ms: 160.392212
+  type: 'test'
+  ...
+# Subtest: empty summaries and missing durations retain unknown rather than invented zero
+ok 7 - empty summaries and missing durations retain unknown rather than invented zero
+  ---
+  duration_ms: 0.581399
+  type: 'test'
+  ...
+# Subtest: baseline comparison refuses task-set and budget mismatch, missing declarations and empty cohorts
+ok 8 - baseline comparison refuses task-set and budget mismatch, missing declarations and empty cohorts
+  ---
+  duration_ms: 0.761319
+  type: 'test'
+  ...
+# Subtest: matching declared cohorts yield measured deltas and no causal or model ranking claims
+ok 9 - matching declared cohorts yield measured deltas and no causal or model ranking claims
+  ---
+  duration_ms: 0.719378
+  type: 'test'
+  ...
+# Subtest: comparable cohorts may have unknown costs without converting missing prices to savings
+ok 10 - comparable cohorts may have unknown costs without converting missing prices to savings
+  ---
+  duration_ms: 0.570811
+  type: 'test'
+  ...
+# Subtest: remote coordinator records retain model identity, telemetry and prior generation attempts
+ok 11 - remote coordinator records retain model identity, telemetry and prior generation attempts
+  ---
+  duration_ms: 0.467993
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 313.138111
+
+execution-sandbox.test.js
+TAP version 13
+# Subtest: bubblewrap write boundary available or fails closed with explicit error
+ok 1 - bubblewrap write boundary available or fails closed with explicit error
+  ---
+  duration_ms: 9.599067
+  type: 'test'
+  ...
+# Subtest: writes inside workspace succeed; outside and symlink escapes fail; scratch cleans up
+ok 2 - writes inside workspace succeed; outside and symlink escapes fail; scratch cleans up
+  ---
+  duration_ms: 92.341208
+  type: 'test'
+  ...
+# Subtest: read-only execution rejects workspace writes; logs are isolated and settings/auth readonly
+ok 3 - read-only execution rejects workspace writes; logs are isolated and settings/auth readonly
+  ---
+  duration_ms: 89.517843
+  type: 'test'
+  ...
+# Subtest: refuses broad workspace and malformed command options
+ok 4 - refuses broad workspace and malformed command options
+  ---
+  duration_ms: 23.772026
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 334.252729
+
+files.test.js
+TAP version 13
+# Subtest: tên tệp được làm sạch: chỉ basename, không ký tự shell/HTML, không tệp ẩn hay cờ dòng lệnh
+ok 1 - tên tệp được làm sạch: chỉ basename, không ký tự shell/HTML, không tệp ẩn hay cờ dòng lệnh
+  ---
+  duration_ms: 2.993658
+  type: 'test'
+  ...
+# Subtest: gửi riêng: chỉ người nhận được báo kèm lệnh tải, người khác không tải được; tải về đúng từng byte, an toàn
+ok 2 - gửi riêng: chỉ người nhận được báo kèm lệnh tải, người khác không tải được; tải về đúng từng byte, an toàn
+  ---
+  duration_ms: 538.954819
+  type: 'test'
+  ...
+# Subtest: gửi cả phòng, tool files (curl và MCP), chờ tệp bằng wait=1
+ok 3 - gửi cả phòng, tool files (curl và MCP), chờ tệp bằng wait=1
+  ---
+  duration_ms: 934.138375
+  type: 'test'
+  ...
+# Subtest: gửi tệp: từ chối rõ ràng khi chưa họp, sai tên, sai người nhận, tệp trống, đã kết thúc
+ok 4 - gửi tệp: từ chối rõ ràng khi chưa họp, sai tên, sai người nhận, tệp trống, đã kết thúc
+  ---
+  duration_ms: 22.277727
+  type: 'test'
+  ...
+# Subtest: giới hạn dung lượng: content-length, chunked, Expect 100-continue, tổng phòng, số tệp
+ok 5 - giới hạn dung lượng: content-length, chunked, Expect 100-continue, tổng phòng, số tệp
+  ---
+  duration_ms: 19.876198
+  type: 'test'
+  ...
+# Subtest: giai đoạn thực hiện: agent đã rời vẫn gửi/nhận tệp; chỉ dẫn WORK có lệnh gửi và chờ tệp
+ok 6 - giai đoạn thực hiện: agent đã rời vẫn gửi/nhận tệp; chỉ dẫn WORK có lệnh gửi và chờ tệp
+  ---
+  duration_ms: 17.357176
+  type: 'test'
+  ...
+# Subtest: --data-dir: tệp ghi ra đĩa (quyền 600), khởi động lại vẫn tải được; "Cuộc họp mới" xoá, "Họp tiếp" mang theo
+ok 7 - --data-dir: tệp ghi ra đĩa (quyền 600), khởi động lại vẫn tải được; "Cuộc họp mới" xoá, "Họp tiếp" mang theo
+  ---
+  duration_ms: 22.487748
+  type: 'test'
+  ...
+# Subtest: không có --data-dir: tệp trong bộ nhớ; "Họp tiếp" mang theo, "Cuộc họp mới" thì xoá
+ok 8 - không có --data-dir: tệp trong bộ nhớ; "Họp tiếp" mang theo, "Cuộc họp mới" thì xoá
+  ---
+  duration_ms: 18.324407
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1706.481061
+
+history-page.test.js
+TAP version 13
+# Subtest: pages reconstruct exactly the visible history without changing wait cursor or leaking private messages
+ok 1 - pages reconstruct exactly the visible history without changing wait cursor or leaking private messages
+  ---
+  duration_ms: 6.937962
+  type: 'test'
+  ...
+# Subtest: page budgets keep oversized messages whole; bad bounds rejected and empty/end offsets terminate
+ok 2 - page budgets keep oversized messages whole; bad bounds rejected and empty/end offsets terminate
+  ---
+  duration_ms: 0.601837
+  type: 'test'
+  ...
+# Subtest: HTTP and MCP history pages enforce authenticated identity despite spoofed name; join admission remains intact
+ok 3 - HTTP and MCP history pages enforce authenticated identity despite spoofed name; join admission remains intact
+  ---
+  duration_ms: 82.201292
+  type: 'test'
+  ...
+1..3
+# tests 3
+# suites 0
+# pass 3
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 253.664179
+
+i18n.test.js
+TAP version 13
+# Subtest: mọi chuỗi tr() trong app.js có bản tiếng Anh
+ok 1 - mọi chuỗi tr() trong app.js có bản tiếng Anh
+  ---
+  duration_ms: 8.65779
+  type: 'test'
+  ...
+# Subtest: mọi đoạn chữ / thuộc tính trong index.html có bản tiếng Anh
+ok 2 - mọi đoạn chữ / thuộc tính trong index.html có bản tiếng Anh
+  ---
+  duration_ms: 1.40801
+  type: 'test'
+  ...
+# Subtest: tr: tiếng Việt giữ nguyên, tiếng Anh dịch, template đổi được tham số
+ok 3 - tr: tiếng Việt giữ nguyên, tiếng Anh dịch, template đổi được tham số
+  ---
+  duration_ms: 2.711143
+  type: 'test'
+  ...
+# Subtest: parseBrief / aiPrompt tiếng Anh
+ok 4 - parseBrief / aiPrompt tiếng Anh
+  ---
+  duration_ms: 3.036982
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 129.897497
+
+meeting.test.js
+TAP version 13
+# Subtest: slot tăng dần khi agent vào; tên và model được ghi nhận
+ok 1 - slot tăng dần khi agent vào; tên và model được ghi nhận
+  ---
+  duration_ms: 4.664451
+  type: 'test'
+  ...
+# Subtest: trùng tên thì bị từ chối và phải đặt tên khác (không phân biệt hoa thường)
+ok 2 - trùng tên thì bị từ chối và phải đặt tên khác (không phân biệt hoa thường)
+  ---
+  duration_ms: 0.40022
+  type: 'test'
+  ...
+# Subtest: bắt buộc tự đặt tên và khai báo model
+ok 3 - bắt buộc tự đặt tên và khai báo model
+  ---
+  duration_ms: 0.24836
+  type: 'test'
+  ...
+# Subtest: tên của agent đã rời: cùng model thì vào lại được, khác model thì bị coi là trùng
+ok 4 - tên của agent đã rời: cùng model thì vào lại được, khác model thì bị coi là trùng
+  ---
+  duration_ms: 0.449521
+  type: 'test'
+  ...
+# Subtest: agent đã rời có thể vào lại với tên cũ
+ok 5 - agent đã rời có thể vào lại với tên cũ
+  ---
+  duration_ms: 0.509352
+  type: 'test'
+  ...
+# Subtest: agent chờ ở sảnh rồi nhận bối cảnh khi chủ trì bắt đầu
+ok 6 - agent chờ ở sảnh rồi nhận bối cảnh khi chủ trì bắt đầu
+  ---
+  duration_ms: 54.120595
+  type: 'test'
+  ...
+# Subtest: A nói, B nghe được; người nói không nhận lại tin của mình
+ok 7 - A nói, B nghe được; người nói không nhận lại tin của mình
+  ---
+  duration_ms: 405.37091
+  type: 'test'
+  ...
+# Subtest: im lặng: chỉ agent slot nhỏ nhất bị hỏi, agent kia không
+ok 8 - im lặng: chỉ agent slot nhỏ nhất bị hỏi, agent kia không
+  ---
+  duration_ms: 602.411829
+  type: 'test'
+  ...
+# Subtest: không kiểm tra im lặng khi có agent đang soạn tin (typing)
+ok 9 - không kiểm tra im lặng khi có agent đang soạn tin (typing)
+  ---
+  duration_ms: 604.000319
+  type: 'test'
+  ...
+# Subtest: leave thông báo cho người còn lại, người cuối cùng được nhắc rời
+ok 10 - leave thông báo cho người còn lại, người cuối cùng được nhắc rời
+  ---
+  duration_ms: 1.848905
+  type: 'test'
+  ...
+# Subtest: tất cả rời thì cuộc họp tự kết thúc
+ok 11 - tất cả rời thì cuộc họp tự kết thúc
+  ---
+  duration_ms: 0.53444
+  type: 'test'
+  ...
+# Subtest: chủ trì dừng thì mọi tool báo kết thúc
+ok 12 - chủ trì dừng thì mọi tool báo kết thúc
+  ---
+  duration_ms: 0.343968
+  type: 'test'
+  ...
+# Subtest: agent im quá lâu chỉ bị đánh dấu vắng, gọi wait lại thì đọc tiếp phần đã lỡ và giữ vai trò
+ok 13 - agent im quá lâu chỉ bị đánh dấu vắng, gọi wait lại thì đọc tiếp phần đã lỡ và giữ vai trò
+  ---
+  duration_ms: 205.982316
+  type: 'test'
+  ...
+# Subtest: vắng mà không có tin mới: wait báo ngay rồi bảo gọi lại
+ok 14 - vắng mà không có tin mới: wait báo ngay rồi bảo gọi lại
+  ---
+  duration_ms: 202.411956
+  type: 'test'
+  ...
+# Subtest: lần lượt: agent vắng bị bỏ qua lượt, không làm kẹt phòng; quay lại thì có lượt như cũ
+ok 15 - lần lượt: agent vắng bị bỏ qua lượt, không làm kẹt phòng; quay lại thì có lượt như cũ
+  ---
+  duration_ms: 203.760189
+  type: 'test'
+  ...
+# Subtest: người cuối cùng rời phòng khi còn agent vắng: phòng chưa đóng; vắng quá awayMs mới tính mất kết nối
+ok 16 - người cuối cùng rời phòng khi còn agent vắng: phòng chưa đóng; vắng quá awayMs mới tính mất kết nối
+  ---
+  duration_ms: 651.457852
+  type: 'test'
+  ...
+# Subtest: agent bị tính mất kết nối quay lại khi phòng còn mở thì tự vào lại
+ok 17 - agent bị tính mất kết nối quay lại khi phòng còn mở thì tự vào lại
+  ---
+  duration_ms: 653.982724
+  type: 'test'
+  ...
+# Subtest: agent tự rời (leave) thì không tự vào lại
+ok 18 - agent tự rời (leave) thì không tự vào lại
+  ---
+  duration_ms: 0.913824
+  type: 'test'
+  ...
+# Subtest: agent vắng gọi join lại với cùng tên và model thì vào lại, không bị báo trùng tên
+ok 19 - agent vắng gọi join lại với cùng tên và model thì vào lại, không bị báo trùng tên
+  ---
+  duration_ms: 200.646267
+  type: 'test'
+  ...
+# Subtest: trạng thái vắng được lưu và nạp lại (--data-dir)
+ok 20 - trạng thái vắng được lưu và nạp lại (--data-dir)
+  ---
+  duration_ms: 201.957905
+  type: 'test'
+  ...
+# Subtest: giao thức dặn: cần người dùng duyệt thì nói vào phòng rồi wait tiếp; tách lệnh đọc tệp với lệnh gửi
+ok 21 - giao thức dặn: cần người dùng duyệt thì nói vào phòng rồi wait tiếp; tách lệnh đọc tệp với lệnh gửi
+  ---
+  duration_ms: 0.817554
+  type: 'test'
+  ...
+# Subtest: đạt giới hạn tin nhắn thì kết thúc
+ok 22 - đạt giới hạn tin nhắn thì kết thúc
+  ---
+  duration_ms: 0.481259
+  type: 'test'
+  ...
+# Subtest: long-poll trả về ngay khi có thay đổi và treo khi không có
+ok 23 - long-poll trả về ngay khi có thay đổi và treo khi không có
+  ---
+  duration_ms: 152.1042
+  type: 'test'
+  ...
+# Subtest: lần lượt: chỉ người có lượt được nói, lượt chuyển theo slot
+ok 24 - lần lượt: chỉ người có lượt được nói, lượt chuyển theo slot
+  ---
+  duration_ms: 0.811111
+  type: 'test'
+  ...
+# Subtest: lần lượt: cả vòng đều bỏ lượt thì kết thúc
+ok 25 - lần lượt: cả vòng đều bỏ lượt thì kết thúc
+  ---
+  duration_ms: 0.274011
+  type: 'test'
+  ...
+# Subtest: lần lượt: người giữ lượt rời phòng thì lượt chuyển cho người kế
+ok 26 - lần lượt: người giữ lượt rời phòng thì lượt chuyển cho người kế
+  ---
+  duration_ms: 0.18601
+  type: 'test'
+  ...
+# Subtest: lần lượt: giữ lượt quá lâu thì tự bỏ lượt
+ok 27 - lần lượt: giữ lượt quá lâu thì tự bỏ lượt
+  ---
+  duration_ms: 201.152099
+  type: 'test'
+  ...
+# Subtest: chủ trì nhắn giữa cuộc họp: agent nhận được [CHỦ TRÌ]
+ok 28 - chủ trì nhắn giữa cuộc họp: agent nhận được [CHỦ TRÌ]
+  ---
+  duration_ms: 1.601973
+  type: 'test'
+  ...
+# Subtest: kick: agent bị mời ra nhận thông báo và không vào lại được
+ok 29 - kick: agent bị mời ra nhận thông báo và không vào lại được
+  ---
+  duration_ms: 0.95982
+  type: 'test'
+  ...
+# Subtest: giới hạn thời gian: hết giờ thì kết thúc
+ok 30 - giới hạn thời gian: hết giờ thì kết thúc
+  ---
+  duration_ms: 351.630387
+  type: 'test'
+  ...
+# Subtest: cấu hình từ chủ trì bị giới hạn trong khoảng hợp lệ
+ok 31 - cấu hình từ chủ trì bị giới hạn trong khoảng hợp lệ
+  ---
+  duration_ms: 1.176739
+  type: 'test'
+  ...
+# Subtest: tin quá dài bị cắt và agent được báo
+ok 32 - tin quá dài bị cắt và agent được báo
+  ---
+  duration_ms: 0.72649
+  type: 'test'
+  ...
+# Subtest: tin KẾT LUẬN được đánh dấu
+ok 33 - tin KẾT LUẬN được đánh dấu
+  ---
+  duration_ms: 0.910685
+  type: 'test'
+  ...
+# Subtest: tên có dấu cách được mã hoá trong lệnh curl của giao thức
+ok 34 - tên có dấu cách được mã hoá trong lệnh curl của giao thức
+  ---
+  duration_ms: 0.458768
+  type: 'test'
+  ...
+# Subtest: snapshot chỉ gửi phần log mới
+ok 35 - snapshot chỉ gửi phần log mới
+  ---
+  duration_ms: 0.149393
+  type: 'test'
+  ...
+# Subtest: ở phòng chờ, nhận thông báo hệ thống không bị coi là đang soạn tin
+ok 36 - ở phòng chờ, nhận thông báo hệ thống không bị coi là đang soạn tin
+  ---
+  duration_ms: 0.224164
+  type: 'test'
+  ...
+# Subtest: chủ trì mời agent ra ngay từ phòng chờ
+ok 37 - chủ trì mời agent ra ngay từ phòng chờ
+  ---
+  duration_ms: 0.169344
+  type: 'test'
+  ...
+# Subtest: bỏ tiền tố tên của chính người nói ([Tên], **Tên**:, Tên:)
+ok 38 - bỏ tiền tố tên của chính người nói ([Tên], **Tên**:, Tên:)
+  ---
+  duration_ms: 0.556278
+  type: 'test'
+  ...
+# Subtest: việc cần làm: đọc dòng VIỆC trong tin, gộp việc trùng
+ok 39 - việc cần làm: đọc dòng VIỆC trong tin, gộp việc trùng
+  ---
+  duration_ms: 0.482692
+  type: 'test'
+  ...
+# Subtest: chương trình họp: XONG MỤC chuyển mục, hết mục thì nhắc kết luận tổng hợp
+ok 40 - chương trình họp: XONG MỤC chuyển mục, hết mục thì nhắc kết luận tổng hợp
+  ---
+  duration_ms: 1.102362
+  type: 'test'
+  ...
+# Subtest: không nhận nhầm câu chỉ nhắc tới XONG MỤC (dữ liệu từ agent thật)
+ok 41 - không nhận nhầm câu chỉ nhắc tới XONG MỤC (dữ liệu từ agent thật)
+  ---
+  duration_ms: 0.489426
+  type: 'test'
+  ...
+# Subtest: nhận diện theo cách agent thật hay viết (XONG MỤC giữa đoạn, KẾT LUẬN ở dòng 2, nhảy mục)
+ok 42 - nhận diện theo cách agent thật hay viết (XONG MỤC giữa đoạn, KẾT LUẬN ở dòng 2, nhảy mục)
+  ---
+  duration_ms: 0.576076
+  type: 'test'
+  ...
+# Subtest: việc nhắc lại với câu chữ hơi khác được gộp (dữ liệu từ agent thật); việc khác nhau thì giữ
+ok 43 - việc nhắc lại với câu chữ hơi khác được gộp (dữ liệu từ agent thật); việc khác nhau thì giữ
+  ---
+  duration_ms: 1.8504
+  type: 'test'
+  ...
+# Subtest: vai trò: có trong tin mở đầu; đổi khi đang họp thì chỉ agent đó nhận
+ok 44 - vai trò: có trong tin mở đầu; đổi khi đang họp thì chỉ agent đó nhận
+  ---
+  duration_ms: 400.45332
+  type: 'test'
+  ...
+# Subtest: nhắn riêng: chỉ người nhận thấy, history không lộ cho người khác
+ok 45 - nhắn riêng: chỉ người nhận thấy, history không lộ cho người khác
+  ---
+  duration_ms: 402.199252
+  type: 'test'
+  ...
+# Subtest: sự kiện ended phát đúng một lần
+ok 46 - sự kiện ended phát đúng một lần
+  ---
+  duration_ms: 1.20132
+  type: 'test'
+  ...
+# Subtest: Việc có số và trạng thái: TIẾN ĐỘ VIỆC trong tin, tool progress, chủ trì đổi trạng thái
+ok 47 - Việc có số và trạng thái: TIẾN ĐỘ VIỆC trong tin, tool progress, chủ trì đổi trạng thái
+  ---
+  duration_ms: 9.312262
+  type: 'test'
+  ...
+# Subtest: Giữ phòng báo tiến độ: chốt xong thì sang WORK, agent rời đi làm, báo xong hết thì đóng phòng
+ok 48 - Giữ phòng báo tiến độ: chốt xong thì sang WORK, agent rời đi làm, báo xong hết thì đóng phòng
+  ---
+  duration_ms: 7.362367
+  type: 'test'
+  ...
+# Subtest: chủ trì gộp/xoá việc trùng: agent nhắc lại không tạo lại việc, báo tiến độ số cũ được chỉ sang số giữ lại
+ok 49 - chủ trì gộp/xoá việc trùng: agent nhắc lại không tạo lại việc, báo tiến độ số cũ được chỉ sang số giữ lại
+  ---
+  duration_ms: 2.430451
+  type: 'test'
+  ...
+# Subtest: Giữ phòng báo tiến độ: không có việc thì kết thúc như thường; chủ trì đóng phòng; hết giờ cũng sang WORK
+ok 50 - Giữ phòng báo tiến độ: không có việc thì kết thúc như thường; chủ trì đóng phòng; hết giờ cũng sang WORK
+  ---
+  duration_ms: 23.702354
+  type: 'test'
+  ...
+# Subtest: Giữ phòng báo tiến độ: tên agent có dấu gạch, dấu chấm vẫn nhận đúng việc của mình
+ok 51 - Giữ phòng báo tiến độ: tên agent có dấu gạch, dấu chấm vẫn nhận đúng việc của mình
+  ---
+  duration_ms: 5.772071
+  type: 'test'
+  ...
+1..51
+# tests 51
+# suites 0
+# pass 51
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5694.585019
+
+minutes.test.js
+TAP version 13
+# Subtest: JSON biên bản: đủ phần, không chứa mã bí mật
+ok 1 - JSON biên bản: đủ phần, không chứa mã bí mật
+  ---
+  duration_ms: 7.725028
+  type: 'test'
+  ...
+# Subtest: Quyết định không dính các dòng VIỆC (kể cả định dạng Markdown, XONG MỤC)
+ok 2 - Quyết định không dính các dòng VIỆC (kể cả định dạng Markdown, XONG MỤC)
+  ---
+  duration_ms: 12.772392
+  type: 'test'
+  ...
+# Subtest: agent gửi lại KẾT LUẬN nhiều lần: mỗi mục chỉ giữ bản mới nhất
+ok 3 - agent gửi lại KẾT LUẬN nhiều lần: mỗi mục chỉ giữ bản mới nhất
+  ---
+  duration_ms: 0.807954
+  type: 'test'
+  ...
+# Subtest: Markdown biên bản và tóm tắt webhook
+ok 4 - Markdown biên bản và tóm tắt webhook
+  ---
+  duration_ms: 1.358044
+  type: 'test'
+  ...
+# Subtest: Kết thúc: tự lưu biên bản ra thư mục và gửi webhook đúng định dạng
+ok 5 - Kết thúc: tự lưu biên bản ra thư mục và gửi webhook đúng định dạng
+  ---
+  duration_ms: 70.370475
+  type: 'test'
+  ...
+# Subtest: phòng chờ chưa họp mà bị dừng: không lưu biên bản, không gửi webhook
+ok 6 - phòng chờ chưa họp mà bị dừng: không lưu biên bản, không gửi webhook
+  ---
+  duration_ms: 3.419691
+  type: 'test'
+  ...
+# Subtest: Webhook: Slack/Google Chat nhận {text}, Discord nhận {content}, dịch vụ khác nhận bản đầy đủ
+ok 7 - Webhook: Slack/Google Chat nhận {text}, Discord nhận {content}, dịch vụ khác nhận bản đầy đủ
+  ---
+  duration_ms: 2.742419
+  type: 'test'
+  ...
+# Subtest: Việc có trạng thái: biên bản, JSON và tóm tắt ghi trạng thái + bằng chứng
+ok 8 - Việc có trạng thái: biên bản, JSON và tóm tắt ghi trạng thái + bằng chứng
+  ---
+  duration_ms: 2.024093
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 279.365921
+
+pm-pilot.test.js
+TAP version 13
+# Subtest: preparation refuses to label an already repaired parser as the unresolved writer pilot
+ok 1 - preparation refuses to label an already repaired parser as the unresolved writer pilot
+  ---
+  duration_ms: 9.803615
+  type: 'test'
+  ...
+# Subtest: pilot preserves PM losing rather than forcing a win
+ok 2 - pilot preserves PM losing rather than forcing a win
+  ---
+  duration_ms: 0.593302
+  type: 'test'
+  ...
+# Subtest: pilot unknown billing, missing PM calls or quality cannot become a win
+ok 3 - pilot unknown billing, missing PM calls or quality cannot become a win
+  ---
+  duration_ms: 0.63693
+  type: 'test'
+  ...
+# Subtest: pilot includes setup, never claims general savings, and requires replication of an observed candidate
+ok 4 - pilot includes setup, never claims general savings, and requires replication of an observed candidate
+  ---
+  duration_ms: 0.151414
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 128.408131
+
+pm.test.js
+TAP version 13
+# Subtest: PM CLI journey creates one canonical task, runs subprocess, verifies and integrates with evidence; private channel stays private
+ok 1 - PM CLI journey creates one canonical task, runs subprocess, verifies and integrates with evidence; private channel stays private
+  ---
+  duration_ms: 854.073911
+  type: 'test'
+  ...
+# Subtest: PM joins before workers, confirmation is explicit, pending capability cannot read private history; spoof and remote/CSRF blocked
+ok 2 - PM joins before workers, confirmation is explicit, pending capability cannot read private history; spoof and remote/CSRF blocked
+  ---
+  duration_ms: 45.703996
+  type: 'test'
+  ...
+# Subtest: PM cursor suppresses unchanged snapshots but delivers pre-wait changes and lease/auth transitions
+ok 3 - PM cursor suppresses unchanged snapshots but delivers pre-wait changes and lease/auth transitions
+  ---
+  duration_ms: 63.378217
+  type: 'test'
+  ...
+# Subtest: no execution without goal/grant, explicit unknown cost consent, safe paths and immutable tests; no paid probe via PM
+ok 4 - no execution without goal/grant, explicit unknown cost consent, safe paths and immutable tests; no paid probe via PM
+  ---
+  duration_ms: 81.138878
+  type: 'test'
+  ...
+# Subtest: scope/profile/requirement changes cannot escape director grant; run attempts are capped
+ok 5 - scope/profile/requirement changes cannot escape director grant; run attempts are capped
+  ---
+  duration_ms: 338.270679
+  type: 'test'
+  ...
+# Subtest: pause during a run requests cancellation, blocks stale operations and preserves actual outcome
+ok 6 - pause during a run requests cancellation, blocks stale operations and preserves actual outcome
+  ---
+  duration_ms: 95.390835
+  type: 'test'
+  ...
+# Subtest: revoke during a run requests cancellation, blocks stale operations and preserves actual outcome
+ok 7 - revoke during a run requests cancellation, blocks stale operations and preserves actual outcome
+  ---
+  duration_ms: 100.804061
+  type: 'test'
+  ...
+# Subtest: takeover during a run requests cancellation, blocks stale operations and preserves actual outcome
+ok 8 - takeover during a run requests cancellation, blocks stale operations and preserves actual outcome
+  ---
+  duration_ms: 98.313952
+  type: 'test'
+  ...
+# Subtest: goal during a run requests cancellation, blocks stale operations and preserves actual outcome
+ok 9 - goal during a run requests cancellation, blocks stale operations and preserves actual outcome
+  ---
+  duration_ms: 103.478507
+  type: 'test'
+  ...
+# Subtest: lease loss, restart and old meeting cannot silently resume or dispatch duplicate work
+ok 10 - lease loss, restart and old meeting cannot silently resume or dispatch duplicate work
+  ---
+  duration_ms: 40.534485
+  type: 'test'
+  ...
+# Subtest: expert review requirement cannot be bypassed by a successful PM report or passed tests
+ok 11 - expert review requirement cannot be bypassed by a successful PM report or passed tests
+  ---
+  duration_ms: 397.302475
+  type: 'test'
+  ...
+# Subtest: takeover keeps private goal history across actual room persistence and server restart
+ok 12 - takeover keeps private goal history across actual room persistence and server restart
+  ---
+  duration_ms: 37.628891
+  type: 'test'
+  ...
+# Subtest: new grant cannot authorize an old reported run; replan reuses task ID with a new requirement revision
+ok 13 - new grant cannot authorize an old reported run; replan reuses task ID with a new requirement revision
+  ---
+  duration_ms: 190.764186
+  type: 'test'
+  ...
+# Subtest: profile/model catalog revision is pinned by the grant; a config change requires new director authorization
+ok 14 - profile/model catalog revision is pinned by the grant; a config change requires new director authorization
+  ---
+  duration_ms: 41.783688
+  type: 'test'
+  ...
+# Subtest: packaged Node PM client reaches a localhost room without changing settings or launching a model
+ok 15 - packaged Node PM client reaches a localhost room without changing settings or launching a model
+  ---
+  duration_ms: 164.185306
+  type: 'test'
+  ...
+# Subtest: same-byte source HEAD movement after integration cannot receive a current PM completion report
+ok 16 - same-byte source HEAD movement after integration cannot receive a current PM completion report
+  ---
+  duration_ms: 644.931453
+  type: 'test'
+  ...
+1..16
+# tests 16
+# suites 0
+# pass 16
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3430.26833
+
+remote-server.test.js
+TAP version 13
+# Subtest: authenticated worker pulls a remote task, sends bound artifact, and cannot replay or gain host rights
+ok 1 - authenticated worker pulls a remote task, sends bound artifact, and cannot replay or gain host rights
+  ---
+  duration_ms: 189.18156
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 317.021774
+
+remote.test.js
+TAP version 13
+# Subtest: enrollment persists only token hashes; summary and restart preserve host authentication
+ok 1 - enrollment persists only token hashes; summary and restart preserve host authentication
+  ---
+  duration_ms: 9.415759
+  type: 'test'
+  ...
+# Subtest: claim is at most once per active lease, bound to authenticated host and advertised workspace/base
+ok 2 - claim is at most once per active lease, bound to authenticated host and advertised workspace/base
+  ---
+  duration_ms: 5.829994
+  type: 'test'
+  ...
+# Subtest: heartbeat renews current lease; wrong generation, lease ID, base and requirements are rejected
+ok 3 - heartbeat renews current lease; wrong generation, lease ID, base and requirements are rejected
+  ---
+  duration_ms: 3.524043
+  type: 'test'
+  ...
+# Subtest: lost connection never redispatches; explicit reassignment increments generation and rejects old results after restart
+ok 4 - lost connection never redispatches; explicit reassignment increments generation and rejects old results after restart
+  ---
+  duration_ms: 6.615619
+  type: 'test'
+  ...
+# Subtest: artifacts require safe unique names and exact content hashes and remain attached to run/task/revisions
+ok 5 - artifacts require safe unique names and exact content hashes and remain attached to run/task/revisions
+  ---
+  duration_ms: 3.911763
+  type: 'test'
+  ...
+# Subtest: aggregate artifact payload is capped at 1 MiB and malformed assignment scopes cannot queue
+ok 6 - aggregate artifact payload is capped at 1 MiB and malformed assignment scopes cannot queue
+  ---
+  duration_ms: 49.274828
+  type: 'test'
+  ...
+# Subtest: queued assignment refuses stale registration and active leases survive restart without duplicate claims
+ok 7 - queued assignment refuses stale registration and active leases survive restart without duplicate claims
+  ---
+  duration_ms: 6.737202
+  type: 'test'
+  ...
+# Subtest: source snapshot identity binds registration, lease, result and artifact even with unchanged Git HEAD
+ok 8 - source snapshot identity binds registration, lease, result and artifact even with unchanged Git HEAD
+  ---
+  duration_ms: 4.327193
+  type: 'test'
+  ...
+# Subtest: legacy absent source snapshots remain unknown; reassignment requires exact known snapshot
+ok 9 - legacy absent source snapshots remain unknown; reassignment requires exact known snapshot
+  ---
+  duration_ms: 4.576418
+  type: 'test'
+  ...
+# Subtest: legacy queued unknown snapshot can be claimed after a modern worker registers without inventing an expected source
+ok 10 - legacy queued unknown snapshot can be claimed after a modern worker registers without inventing an expected source
+  ---
+  duration_ms: 2.425829
+  type: 'test'
+  ...
+# Subtest: claim limits worker context and heartbeat cannot extend the hard deadline indefinitely
+ok 11 - claim limits worker context and heartbeat cannot extend the hard deadline indefinitely
+  ---
+  duration_ms: 13.317357
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 234.223471
+
+routing-tools.test.js
+TAP version 13
+# Subtest: routing tool registry stays separate from room tools and auto-allow permissions
+ok 1 - routing tool registry stays separate from room tools and auto-allow permissions
+  ---
+  duration_ms: 2.650936
+  type: 'test'
+  ...
+# Subtest: queries read the same persisted configuration and revision on each call
+ok 2 - queries read the same persisted configuration and revision on each call
+  ---
+  duration_ms: 13.552565
+  type: 'test'
+  ...
+# Subtest: unknown access yields no candidate; task-supplied environment cannot self-authorize
+ok 3 - unknown access yields no candidate; task-supplied environment cannot self-authorize
+  ---
+  duration_ms: 2.997693
+  type: 'test'
+  ...
+# Subtest: standalone CLI works without a room and never creates config/default home files on lookup
+ok 4 - standalone CLI works without a room and never creates config/default home files on lookup
+  ---
+  duration_ms: 207.977348
+  type: 'test'
+  ...
+# Subtest: standalone CLI reports invalid operations without success JSON
+ok 5 - standalone CLI reports invalid operations without success JSON
+  ---
+  duration_ms: 302.705585
+  type: 'test'
+  ...
+# Subtest: stdio lookup initializes, lists bounded tools, and recommends without joining a room
+ok 6 - stdio lookup initializes, lists bounded tools, and recommends without joining a room
+  ---
+  duration_ms: 94.503771
+  type: 'test'
+  ...
+# Subtest: stdio invalid JSON and unknown tools return errors while later requests remain usable
+ok 7 - stdio invalid JSON and unknown tools return errors while later requests remain usable
+  ---
+  duration_ms: 93.733234
+  type: 'test'
+  ...
+# Subtest: saved runtime probes are shared with standalone lookup and expire on configuration revision
+ok 8 - saved runtime probes are shared with standalone lookup and expire on configuration revision
+  ---
+  duration_ms: 4.992447
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 857.509564
+
+routing.test.js
+TAP version 13
+# Subtest: source preserved exactly; unverified preferred model names cannot execute
+ok 1 - source preserved exactly; unverified preferred model names cannot execute
+  ---
+  duration_ms: 3.730731
+  type: 'test'
+  ...
+# Subtest: validation rejects unsafe activation, duplicate refs and malformed complete profiles
+ok 2 - validation rejects unsafe activation, duplicate refs and malformed complete profiles
+  ---
+  duration_ms: 1.460994
+  type: 'test'
+  ...
+# Subtest: bounded pagination and profile provenance; defaults do not mutate
+ok 3 - bounded pagination and profile provenance; defaults do not mutate
+  ---
+  duration_ms: 1.949697
+  type: 'test'
+  ...
+# Subtest: hard runtime access checks precede capability preferences
+ok 4 - hard runtime access checks precede capability preferences
+  ---
+  duration_ms: 0.975207
+  type: 'test'
+  ...
+# Subtest: required tools, permissions, budget, revision and shared write locks reject candidates
+ok 5 - required tools, permissions, budget, revision and shared write locks reject candidates
+  ---
+  duration_ms: 1.823407
+  type: 'test'
+  ...
+# Subtest: retain context and lock conflicts never silently fallback; unknown classification does not exclude
+ok 6 - retain context and lock conflicts never silently fallback; unknown classification does not exclude
+  ---
+  duration_ms: 0.793934
+  type: 'test'
+  ...
+# Subtest: review rules and evidence contract are explicit without claiming acceptance
+ok 7 - review rules and evidence contract are explicit without claiming acceptance
+  ---
+  duration_ms: 6.994599
+  type: 'test'
+  ...
+# Subtest: modality, host and workspace identity are hard constraints; parent traversal rejected
+ok 8 - modality, host and workspace identity are hard constraints; parent traversal rejected
+  ---
+  duration_ms: 0.766049
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 139.957474
+
+runtime-denial.test.js
+TAP version 13
+# Subtest: explicit runtime errors override a success marker and plausible prose
+ok 1 - explicit runtime errors override a success marker and plausible prose
+  ---
+  duration_ms: 1.470164
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 113.167452
+
+runtime.test.js
+TAP version 13
+# Subtest: adapter arguments require an explicit safe provider ID and bounded nonempty prompt
+ok 1 - adapter arguments require an explicit safe provider ID and bounded nonempty prompt
+  ---
+  duration_ms: 2.261698
+  type: 'test'
+  ...
+# Subtest: agy receives the entire prompt as one literal argv value and rejects writes
+ok 2 - agy receives the entire prompt as one literal argv value and rejects writes
+  ---
+  duration_ms: 0.261824
+  type: 'test'
+  ...
+# Subtest: Claude keeps prompt out of flags, isolates MCP, and limits write tool scope
+ok 3 - Claude keeps prompt out of flags, isolates MCP, and limits write tool scope
+  ---
+  duration_ms: 0.138531
+  type: 'test'
+  ...
+# Subtest: malformed JSON and nonobject JSON always fail without throwing
+ok 4 - malformed JSON and nonobject JSON always fail without throwing
+  ---
+  duration_ms: 0.412433
+  type: 'test'
+  ...
+# Subtest: runtime error variants and missing output cannot become successful reports
+ok 5 - runtime error variants and missing output cannot become successful reports
+  ---
+  duration_ms: 0.344325
+  type: 'test'
+  ...
+# Subtest: Claude envelope preserves machine model, usage, cost and a permission-denial diagnostic
+ok 6 - Claude envelope preserves machine model, usage, cost and a permission-denial diagnostic
+  ---
+  duration_ms: 0.168383
+  type: 'test'
+  ...
+# Subtest: runtime billing and model evidence stay unknown when inconsistent
+ok 7 - runtime billing and model evidence stay unknown when inconsistent
+  ---
+  duration_ms: 0.396056
+  type: 'test'
+  ...
+# Subtest: agy success keeps self-identified prose model unknown and bounds model output
+ok 8 - agy success keeps self-identified prose model unknown and bounds model output
+  ---
+  duration_ms: 0.813927
+  type: 'test'
+  ...
+# Subtest: runCli sends Claude prompt verbatim on stdin, uses shell false and never claims verified
+ok 9 - runCli sends Claude prompt verbatim on stdin, uses shell false and never claims verified
+  ---
+  duration_ms: 3.470257
+  type: 'test'
+  ...
+# Subtest: runtime reports preserve Vietnamese and emoji across arbitrary UTF-8 stream boundaries
+ok 10 - runtime reports preserve Vietnamese and emoji across arbitrary UTF-8 stream boundaries
+  ---
+  duration_ms: 2.189906
+  type: 'test'
+  ...
+# Subtest: UTF-8 stream decoding retains the one-MiB output byte cap
+ok 11 - UTF-8 stream decoding retains the one-MiB output byte cap
+  ---
+  duration_ms: 7.18263
+  type: 'test'
+  ...
+# Subtest: runCli rejects nonzero exit, malformed result, and permission denial despite positive success JSON
+ok 12 - runCli rejects nonzero exit, malformed result, and permission denial despite positive success JSON
+  ---
+  duration_ms: 1.386921
+  type: 'test'
+  ...
+# Subtest: agy SUCCESS with denied_actions is a permission failure, not a completed report
+ok 13 - agy SUCCESS with denied_actions is a permission failure, not a completed report
+  ---
+  duration_ms: 0.471397
+  type: 'test'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 138.220011
+
+security.test.js
+TAP version 13
+# Subtest: tên dành riêng: không ai đặt được tên giống chủ trì / hệ thống
+ok 1 - tên dành riêng: không ai đặt được tên giống chủ trì / hệ thống
+  ---
+  duration_ms: 3.550054
+  type: 'test'
+  ...
+# Subtest: tin của agent được trích dẫn: không giả được dòng [CHỦ TRÌ] hay (hệ thống)
+ok 2 - tin của agent được trích dẫn: không giả được dòng [CHỦ TRÌ] hay (hệ thống)
+  ---
+  duration_ms: 4.194869
+  type: 'test'
+  ...
+# Subtest: chặn bí mật: tin, ghi chú tiến độ, ghi chú tệp; chủ trì thấy cảnh báo, không thấy giá trị
+ok 3 - chặn bí mật: tin, ghi chú tiến độ, ghi chú tệp; chủ trì thấy cảnh báo, không thấy giá trị
+  ---
+  duration_ms: 2.254059
+  type: 'test'
+  ...
+# Subtest: chủ trì duyệt: agent chờ với mã đối chiếu, được cho vào thì nhận giao thức, bị từ chối thì dừng
+ok 4 - chủ trì duyệt: agent chờ với mã đối chiếu, được cho vào thì nhận giao thức, bị từ chối thì dừng
+  ---
+  duration_ms: 335.0117
+  type: 'test'
+  ...
+# Subtest: vào lại tên cũ: có đúng mã thì vào ngay; chỉ có tên thì phải chờ duyệt (hoặc vào và đổi mã khi phòng không duyệt)
+ok 5 - vào lại tên cũ: có đúng mã thì vào ngay; chỉ có tên thì phải chờ duyệt (hoặc vào và đổi mã khi phòng không duyệt)
+  ---
+  duration_ms: 3.045264
+  type: 'test'
+  ...
+# Subtest: HTTP: mọi lệnh trừ join cần mã riêng; mã của A không nói được dưới tên B
+ok 6 - HTTP: mọi lệnh trừ join cần mã riêng; mã của A không nói được dưới tên B
+  ---
+  duration_ms: 89.838582
+  type: 'test'
+  ...
+# Subtest: MCP: danh tính gắn với Mcp-Session-Id; phiên khác không dùng được tên đó; thiếu phiên thì báo lỗi
+ok 7 - MCP: danh tính gắn với Mcp-Session-Id; phiên khác không dùng được tên đó; thiếu phiên thì báo lỗi
+  ---
+  duration_ms: 16.39172
+  type: 'test'
+  ...
+# Subtest: HTTP: phòng có duyệt — chủ trì thấy mã đối chiếu, bấm cho vào thì wait đang chờ nhận giao thức
+ok 8 - HTTP: phòng có duyệt — chủ trì thấy mã đối chiếu, bấm cho vào thì wait đang chờ nhận giao thức
+  ---
+  duration_ms: 65.904747
+  type: 'test'
+  ...
+# Subtest: cục bộ trước: trang chủ trì không mở qua tunnel; Host lạ bị từ chối; POST khác origin bị chặn; tunnel bật theo yêu cầu
+ok 9 - cục bộ trước: trang chủ trì không mở qua tunnel; Host lạ bị từ chối; POST khác origin bị chặn; tunnel bật theo yêu cầu
+  ---
+  duration_ms: 44.564478
+  type: 'test'
+  ...
+# Subtest: --local: không có tunnel, API báo rõ
+ok 10 - --local: không có tunnel, API báo rõ
+  ---
+  duration_ms: 6.122034
+  type: 'test'
+  ...
+# Subtest: nút Kết nối trên trang chủ trì: chỉ chạy khi trang mở trên chính máy chạy server
+ok 11 - nút Kết nối trên trang chủ trì: chỉ chạy khi trang mở trên chính máy chạy server
+  ---
+  duration_ms: 5.471177
+  type: 'test'
+  ...
+# Subtest: nhật ký kiểm toán: vào/duyệt/gửi/tải tệp/chặn bí mật; không có nội dung tin, tệp hay mã
+ok 12 - nhật ký kiểm toán: vào/duyệt/gửi/tải tệp/chặn bí mật; không có nội dung tin, tệp hay mã
+  ---
+  duration_ms: 18.942016
+  type: 'test'
+  ...
+# Subtest: giới hạn tốc độ: dò mã sai bị chặn tạm (429); agent gửi dồn dập bị báo chậm lại
+ok 13 - giới hạn tốc độ: dò mã sai bị chặn tạm (429); agent gửi dồn dập bị báo chậm lại
+  ---
+  duration_ms: 37.273653
+  type: 'test'
+  ...
+# Subtest: --retention: xoá biên bản và trạng thái phòng cũ, giữ phòng đang chạy
+ok 14 - --retention: xoá biên bản và trạng thái phòng cũ, giữ phòng đang chạy
+  ---
+  duration_ms: 1.992111
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 766.767299
+
+server.test.js
+TAP version 13
+# Subtest: MCP: initialize, tools/list, tools/call, notification
+ok 1 - MCP: initialize, tools/list, tools/call, notification
+  ---
+  duration_ms: 98.626876
+  type: 'test'
+  ...
+# Subtest: --public-url: lệnh trong giao thức luôn dùng địa chỉ đã khai báo (proxy có thể đổi Host)
+ok 2 - --public-url: lệnh trong giao thức luôn dùng địa chỉ đã khai báo (proxy có thể đổi Host)
+  ---
+  duration_ms: 10.777014
+  type: 'test'
+  ...
+# Subtest: mã chủ trì cố định: "Cuộc họp mới" dùng lại đúng link, mã agent giữ nguyên
+ok 3 - mã chủ trì cố định: "Cuộc họp mới" dùng lại đúng link, mã agent giữ nguyên
+  ---
+  duration_ms: 11.979374
+  type: 'test'
+  ...
+# Subtest: API curl: join/say/wait dạng văn bản, kèm hướng dẫn curl đúng địa chỉ
+ok 4 - API curl: join/say/wait dạng văn bản, kèm hướng dẫn curl đúng địa chỉ
+  ---
+  duration_ms: 16.885012
+  type: 'test'
+  ...
+# Subtest: Chủ trì: long-poll nhận thay đổi, bắt đầu và kết thúc; token agent không điều khiển được
+ok 5 - Chủ trì: long-poll nhận thay đổi, bắt đầu và kết thúc; token agent không điều khiển được
+  ---
+  duration_ms: 324.591928
+  type: 'test'
+  ...
+# Subtest: Phòng không tồn tại: MCP và curl trả lời rõ ràng để agent dừng
+ok 6 - Phòng không tồn tại: MCP và curl trả lời rõ ràng để agent dừng
+  ---
+  duration_ms: 10.891966
+  type: 'test'
+  ...
+# Subtest: Chủ trì: nhắn, kick, cấu hình khi bắt đầu, tạo cuộc họp mới
+ok 7 - Chủ trì: nhắn, kick, cấu hình khi bắt đầu, tạo cuộc họp mới
+  ---
+  duration_ms: 15.560058
+  type: 'test'
+  ...
+# Subtest: Long-poll gửi phần log tăng dần theo from
+ok 8 - Long-poll gửi phần log tăng dần theo from
+  ---
+  duration_ms: 4.085888
+  type: 'test'
+  ...
+# Subtest: Header bảo mật và tài nguyên giao diện
+ok 9 - Header bảo mật và tài nguyên giao diện
+  ---
+  duration_ms: 6.1662
+  type: 'test'
+  ...
+# Subtest: Chủ trì: nhắn riêng, chuyển mục, gán vai trò, tải biên bản
+ok 10 - Chủ trì: nhắn riêng, chuyển mục, gán vai trò, tải biên bản
+  ---
+  duration_ms: 10.641594
+  type: 'test'
+  ...
+# Subtest: --data-dir: tắt server giữa cuộc họp, bật lại thì họp tiếp, biên bản đủ
+ok 11 - --data-dir: tắt server giữa cuộc họp, bật lại thì họp tiếp, biên bản đủ
+  ---
+  duration_ms: 22.99187
+  type: 'test'
+  ...
+# Subtest: --data-dir: hết giờ trong lúc server tắt thì kết thúc khi nạp lại
+ok 12 - --data-dir: hết giờ trong lúc server tắt thì kết thúc khi nạp lại
+  ---
+  duration_ms: 2.609871
+  type: 'test'
+  ...
+# Subtest: Giữ phòng báo tiến độ: webhook khi chốt, khi từng việc xong, khi đóng; biên bản ghi vào cùng một file
+ok 13 - Giữ phòng báo tiến độ: webhook khi chốt, khi từng việc xong, khi đóng; biên bản ghi vào cùng một file
+  ---
+  duration_ms: 53.400661
+  type: 'test'
+  ...
+# Subtest: Họp tiếp: mang việc chưa xong (giữ số, trạng thái, bằng chứng) và quyết định sang cuộc sau
+ok 14 - Họp tiếp: mang việc chưa xong (giữ số, trạng thái, bằng chứng) và quyết định sang cuộc sau
+  ---
+  duration_ms: 12.574981
+  type: 'test'
+  ...
+# Subtest: MCP: giữ phòng báo tiến độ, agent MCP được hướng dẫn gọi tool progress
+ok 15 - MCP: giữ phòng báo tiến độ, agent MCP được hướng dẫn gọi tool progress
+  ---
+  duration_ms: 6.943179
+  type: 'test'
+  ...
+# Subtest: chủ trì đổi trạng thái, gộp và xoá việc qua API
+ok 16 - chủ trì đổi trạng thái, gộp và xoá việc qua API
+  ---
+  duration_ms: 8.236784
+  type: 'test'
+  ...
+# Subtest: bắt đầu bị từ chối (409) khi brief có N vai trò mà chưa đủ N agent, trừ khi force
+ok 17 - bắt đầu bị từ chối (409) khi brief có N vai trò mà chưa đủ N agent, trừ khi force
+  ---
+  duration_ms: 6.240938
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 776.182734
+
+team.test.js
+TAP version 13
+# Subtest: event-driven team end to end: same slot swap, one writer, WIP, independent verification, integrated evidence and PM report
+ok 1 - event-driven team end to end: same slot swap, one writer, WIP, independent verification, integrated evidence and PM report
+  ---
+  duration_ms: 1905.67625
+  type: 'test'
+  ...
+# Subtest: team requires revision approval; unknown cost, stale scopes, spoof and replay cannot dispatch or promote
+ok 2 - team requires revision approval; unknown cost, stale scopes, spoof and replay cannot dispatch or promote
+  ---
+  duration_ms: 1011.765874
+  type: 'test'
+  ...
+# Subtest: team pause cancels managed process, invalidates capability and prevents stale swap/result
+ok 3 - team pause cancels managed process, invalidates capability and prevents stale swap/result
+  ---
+  duration_ms: 554.645352
+  type: 'test'
+  ...
+# Subtest: team revoke cancels managed process, invalidates capability and prevents stale swap/result
+ok 4 - team revoke cancels managed process, invalidates capability and prevents stale swap/result
+  ---
+  duration_ms: 557.601274
+  type: 'test'
+  ...
+# Subtest: team goal cancels managed process, invalidates capability and prevents stale swap/result
+ok 5 - team goal cancels managed process, invalidates capability and prevents stale swap/result
+  ---
+  duration_ms: 559.837345
+  type: 'test'
+  ...
+# Subtest: team takeover cancels managed process, invalidates capability and prevents stale swap/result
+ok 6 - team takeover cancels managed process, invalidates capability and prevents stale swap/result
+  ---
+  duration_ms: 549.579519
+  type: 'test'
+  ...
+# Subtest: blocking events coalesce, persist unacknowledged while PM disconnected, enforce wake cap and remain private
+ok 7 - blocking events coalesce, persist unacknowledged while PM disconnected, enforce wake cap and remain private
+  ---
+  duration_ms: 311.172866
+  type: 'test'
+  ...
+# Subtest: successor bad-ack keeps old writer, consumes bounded reservation and never promotes
+ok 8 - successor bad-ack keeps old writer, consumes bounded reservation and never promotes
+  ---
+  duration_ms: 844.949031
+  type: 'test'
+  ...
+# Subtest: successor timeout keeps old writer, consumes bounded reservation and never promotes
+ok 9 - successor timeout keeps old writer, consumes bounded reservation and never promotes
+  ---
+  duration_ms: 1839.580466
+  type: 'test'
+  ...
+# Subtest: source/WIP changes make checkpoint stale and cannot be promoted or integrated
+ok 10 - source/WIP changes make checkpoint stale and cannot be promoted or integrated
+  ---
+  duration_ms: 612.846653
+  type: 'test'
+  ...
+# Subtest: PM lease can lapse during delegated work; grant/time expiry instead cancels and retains a guard event
+ok 11 - PM lease can lapse during delegated work; grant/time expiry instead cancels and retains a guard event
+  ---
+  duration_ms: 558.002953
+  type: 'test'
+  ...
+# Subtest: restart preserves pending events/checkpoint but revokes capabilities and cannot silently resume or duplicate run
+ok 12 - restart preserves pending events/checkpoint but revokes capabilities and cannot silently resume or duplicate run
+  ---
+  duration_ms: 300.748668
+  type: 'test'
+  ...
+# Subtest: packaged watch blocks in code and returns actionable data once, without snapshots or automatic ack
+ok 13 - packaged watch blocks in code and returns actionable data once, without snapshots or automatic ack
+  ---
+  duration_ms: 749.92794
+  type: 'test'
+  ...
+# Subtest: runtime requests its own bounded same-slot swap via structured protocol; PM performs no progress calls
+ok 14 - runtime requests its own bounded same-slot swap via structured protocol; PM performs no progress calls
+  ---
+  duration_ms: 1494.917857
+  type: 'test'
+  ...
+# Subtest: pending successor readiness + goal never promotes a stale writer
+ok 15 - pending successor readiness + goal never promotes a stale writer
+  ---
+  duration_ms: 668.581378
+  type: 'test'
+  ...
+# Subtest: pending successor readiness + revoke never promotes a stale writer
+ok 16 - pending successor readiness + revoke never promotes a stale writer
+  ---
+  duration_ms: 656.93312
+  type: 'test'
+  ...
+# Subtest: pending successor readiness + source never promotes a stale writer
+ok 17 - pending successor readiness + source never promotes a stale writer
+  ---
+  duration_ms: 1124.572237
+  type: 'test'
+  ...
+# Subtest: unknown cost and invocation budget are independent guards, neither implies a spending cap
+ok 18 - unknown cost and invocation budget are independent guards, neither implies a spending cap
+  ---
+  duration_ms: 894.397012
+  type: 'test'
+  ...
+# Subtest: allowlisted model change preserves task/slot/WIP and records actual runtime identity per generation
+ok 19 - allowlisted model change preserves task/slot/WIP and records actual runtime identity per generation
+  ---
+  duration_ms: 1524.390705
+  type: 'test'
+  ...
+# Subtest: same-byte Git HEAD change blocks team checkpoint without promoting a stale generation
+ok 20 - same-byte Git HEAD change blocks team checkpoint without promoting a stale generation
+  ---
+  duration_ms: 590.466499
+  type: 'test'
+  ...
+# Subtest: same-byte Git HEAD change blocks team swap without promoting a stale generation
+ok 21 - same-byte Git HEAD change blocks team swap without promoting a stale generation
+  ---
+  duration_ms: 576.608096
+  type: 'test'
+  ...
+# Subtest: same-byte Git HEAD change blocks team pending-readiness without promoting a stale generation
+ok 22 - same-byte Git HEAD change blocks team pending-readiness without promoting a stale generation
+  ---
+  duration_ms: 1078.08973
+  type: 'test'
+  ...
+# Subtest: same-byte HEAD movement after integration blocks a team result event
+ok 23 - same-byte HEAD movement after integration blocks a team result event
+  ---
+  duration_ms: 1485.685135
+  type: 'test'
+  ...
+1..23
+# tests 23
+# suites 0
+# pass 23
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 20606.465154
+
+ui-command.test.js
+TAP version 13
+# Subtest: PM terminal words round-trip through a POSIX shell without interpolation
+ok 1 - PM terminal words round-trip through a POSIX shell without interpolation
+  ---
+  duration_ms: 25.084489
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 151.668934
+
+ui-drafts.test.js
+TAP version 13
+# Subtest: previous draft lookup stays in the host/task scope and selects the latest older valid revision
+ok 1 - previous draft lookup stays in the host/task scope and selects the latest older valid revision
+  ---
+  duration_ms: 3.058735
+  type: 'test'
+  ...
+# Subtest: malformed draft fields cannot break the form or introduce fields outside the editable contract
+ok 2 - malformed draft fields cannot break the form or introduce fields outside the editable contract
+  ---
+  duration_ms: 0.703356
+  type: 'test'
+  ...
+# Subtest: disabled local storage leaves current server requirements usable without recovery writes
+ok 3 - disabled local storage leaves current server requirements usable without recovery writes
+  ---
+  duration_ms: 0.624849
+  type: 'test'
+  ...
+1..3
+# tests 3
+# suites 0
+# pass 3
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 115.964017
+
+ui-evidence.test.js
+TAP version 13
+# Subtest: UI evidence labels agree with independent acceptance on cancellation, timeout, error and missing data
+ok 1 - UI evidence labels agree with independent acceptance on cancellation, timeout, error and missing data
+  ---
+  duration_ms: 3.826237
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 120.8333
+
+work-cancel.test.js
+TAP version 13
+# Subtest: already cancelled verification subprocess never starts
+ok 1 - already cancelled verification subprocess never starts
+  ---
+  duration_ms: 3.391701
+  type: 'test'
+  ...
+# Subtest: long Unicode test evidence retains complete characters within its tail budget
+ok 2 - long Unicode test evidence retains complete characters within its tail budget
+  ---
+  duration_ms: 206.667515
+  type: 'test'
+  ...
+# Subtest: aborting runTest stops the test and its process group
+ok 3 - aborting runTest stops the test and its process group
+  ---
+  duration_ms: 2524.105095
+  type: 'test'
+  ...
+# Subtest: verify owns a cancellable controller and cannot publish verified after cancel
+ok 4 - verify owns a cancellable controller and cannot publish verified after cancel
+  ---
+  duration_ms: 2057.814484
+  type: 'test'
+  ...
+# Subtest: closing manager aborts verification and exceptions leave terminal failed state
+ok 5 - closing manager aborts verification and exceptions leave terminal failed state
+  ---
+  duration_ms: 2036.610317
+  type: 'test'
+  ...
+# Subtest: close waits for verification evidence and terminal state before resolving
+ok 6 - close waits for verification evidence and terminal state before resolving
+  ---
+  duration_ms: 2042.766173
+  type: 'test'
+  ...
+# Subtest: close waits for integration rollback before resolving
+ok 7 - close waits for integration rollback before resolving
+  ---
+  duration_ms: 2275.054278
+  type: 'test'
+  ...
+# Subtest: source integration reruns the same tests before marking task done
+ok 8 - source integration reruns the same tests before marking task done
+  ---
+  duration_ms: 470.730342
+  type: 'test'
+  ...
+# Subtest: failing integrated-source tests restore original file and record failure evidence
+ok 9 - failing integrated-source tests restore original file and record failure evidence
+  ---
+  duration_ms: 598.209984
+  type: 'test'
+  ...
+# Subtest: cancelling integration restores original source and does not publish done
+ok 10 - cancelling integration restores original source and does not publish done
+  ---
+  duration_ms: 2262.20666
+  type: 'test'
+  ...
+# Subtest: integration rollback preserves a concurrent source permission change for manual reconciliation
+ok 11 - integration rollback preserves a concurrent source permission change for manual reconciliation
+  ---
+  duration_ms: 2258.696097
+  type: 'test'
+  ...
+# Subtest: integration rollback preserves a concurrently installed symlink even when its bytes match
+ok 12 - integration rollback preserves a concurrently installed symlink even when its bytes match
+  ---
+  duration_ms: 2275.085442
+  type: 'test'
+  ...
+# Subtest: rollback never follows a source-root symlink installed while verification runs
+ok 13 - rollback never follows a source-root symlink installed while verification runs
+  ---
+  duration_ms: 2305.236221
+  type: 'test'
+  ...
+# Subtest: integration rejects a source-root symlink replacement before any source write
+ok 14 - integration rejects a source-root symlink replacement before any source write
+  ---
+  duration_ms: 474.211507
+  type: 'test'
+  ...
+# Subtest: rollback rechecks parent directories before restoring a nested source file
+ok 15 - rollback rechecks parent directories before restoring a nested source file
+  ---
+  duration_ms: 2257.217183
+  type: 'test'
+  ...
+# Subtest: verification failure records real failing test execution and releases the controller
+ok 16 - verification failure records real failing test execution and releases the controller
+  ---
+  duration_ms: 243.769881
+  type: 'test'
+  ...
+# Subtest: verification sandbox blocks test writes and cannot remain verifying
+ok 17 - verification sandbox blocks test writes and cannot remain verifying
+  ---
+  duration_ms: 235.456773
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 24649.480082
+
+work-server.test.js
+TAP version 13
+# Subtest: host config shares catalog revision with routing and persists a model across app restart
+ok 1 - host config shares catalog revision with routing and persists a model across app restart
+  ---
+  duration_ms: 98.835481
+  type: 'test'
+  ...
+# Subtest: config CAS and invalid updates preserve the last complete snapshot
+ok 2 - config CAS and invalid updates preserve the last complete snapshot
+  ---
+  duration_ms: 24.714394
+  type: 'test'
+  ...
+# Subtest: invitation and unknown capabilities cannot read or change config, tasks, or workspace pages
+ok 3 - invitation and unknown capabilities cannot read or change config, tasks, or workspace pages
+  ---
+  duration_ms: 13.967101
+  type: 'test'
+  ...
+# Subtest: host mutations reject cross-origin browser requests before config or task writes
+ok 4 - host mutations reject cross-origin browser requests before config or task writes
+  ---
+  duration_ms: 14.218872
+  type: 'test'
+  ...
+# Subtest: tunnel and forwarded remote requests cannot access machine controls even with remoteHost enabled
+ok 5 - tunnel and forwarded remote requests cannot access machine controls even with remoteHost enabled
+  ---
+  duration_ms: 15.182885
+  type: 'test'
+  ...
+# Subtest: workspace/admin and self-hosted assets keep CSP while the existing room API still works
+ok 6 - workspace/admin and self-hosted assets keep CSP while the existing room API still works
+  ---
+  duration_ms: 15.790108
+  type: 'test'
+  ...
+# Subtest: work endpoints save actual plans without launching a process and reject malformed tasks
+ok 7 - work endpoints save actual plans without launching a process and reject malformed tasks
+  ---
+  duration_ms: 11.932451
+  type: 'test'
+  ...
+# Subtest: admin accepts the full documented config size and reset/history preserve revisions
+ok 8 - admin accepts the full documented config size and reset/history preserve revisions
+  ---
+  duration_ms: 42.471757
+  type: 'test'
+  ...
+# Subtest: conditional work reads track work, room and remote state without bypassing capability checks
+ok 9 - conditional work reads track work, room and remote state without bypassing capability checks
+  ---
+  duration_ms: 15.919929
+  type: 'test'
+  ...
+# Subtest: run HTTP fences the viewed config and requirement before any runtime dispatch
+ok 10 - run HTTP fences the viewed config and requirement before any runtime dispatch
+  ---
+  duration_ms: 51.173351
+  type: 'test'
+  ...
+# Subtest: concurrent probe HTTP callers share one same-config runner invocation
+ok 11 - concurrent probe HTTP callers share one same-config runner invocation
+  ---
+  duration_ms: 11.746864
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 447.104573
+
+work.test.js
+TAP version 13
+# Subtest: local run snapshots config, reports then independently tests and integrates one scoped file
+ok 1 - local run snapshots config, reports then independently tests and integrates one scoped file
+  ---
+  duration_ms: 507.765638
+  type: 'test'
+  ...
+# Subtest: unverified access and remote modes cannot launch; stale probe revision rejected
+ok 2 - unverified access and remote modes cannot launch; stale probe revision rejected
+  ---
+  duration_ms: 27.657417
+  type: 'test'
+  ...
+# Subtest: a stale viewed config revision cannot dispatch even after another client refreshes the probe
+ok 3 - a stale viewed config revision cannot dispatch even after another client refreshes the probe
+  ---
+  duration_ms: 34.820821
+  type: 'test'
+  ...
+# Subtest: a stale viewed requirement revision cannot dispatch a changed task
+ok 4 - a stale viewed requirement revision cannot dispatch a changed task
+  ---
+  duration_ms: 17.021704
+  type: 'test'
+  ...
+# Subtest: a profile remap with a fresh probe cannot silently switch the model chosen in an older view
+ok 5 - a profile remap with a fresh probe cannot silently switch the model chosen in an older view
+  ---
+  duration_ms: 34.446809
+  type: 'test'
+  ...
+# Subtest: overlapping probes of one profile and config invoke the runner only once
+ok 6 - overlapping probes of one profile and config invoke the runner only once
+  ---
+  duration_ms: 18.385287
+  type: 'test'
+  ...
+# Subtest: an older probe cannot overwrite a newer config observation when results arrive out of order
+ok 7 - an older probe cannot overwrite a newer config observation when results arrive out of order
+  ---
+  duration_ms: 18.763169
+  type: 'test'
+  ...
+# Subtest: closing the manager aborts and drains an in-flight access probe
+ok 8 - closing the manager aborts and drains an in-flight access probe
+  ---
+  duration_ms: 38.267976
+  type: 'test'
+  ...
+# Subtest: a probe from a stale viewed config cannot invoke a remapped profile
+ok 9 - a probe from a stale viewed config cannot invoke a remapped profile
+  ---
+  duration_ms: 29.012143
+  type: 'test'
+  ...
+# Subtest: a failed probe releases its in-flight entry so an explicit retry can run
+ok 10 - a failed probe releases its in-flight entry so an explicit retry can run
+  ---
+  duration_ms: 16.0842
+  type: 'test'
+  ...
+# Subtest: source dependency changes without HEAD change block integration
+ok 11 - source dependency changes without HEAD change block integration
+  ---
+  duration_ms: 255.998004
+  type: 'test'
+  ...
+# Subtest: worker writes outside scope are rejected and not accepted
+ok 12 - worker writes outside scope are rejected and not accepted
+  ---
+  duration_ms: 29.661942
+  type: 'test'
+  ...
+# Subtest: prototype-named source files survive execution copy and snapshot serialization
+ok 13 - prototype-named source files survive execution copy and snapshot serialization
+  ---
+  duration_ms: 29.820935
+  type: 'test'
+  ...
+# Subtest: prototype-named output cannot disappear from outside-scope rejection
+ok 14 - prototype-named output cannot disappear from outside-scope rejection
+  ---
+  duration_ms: 28.640317
+  type: 'test'
+  ...
+# Subtest: unknown actual model cannot verify, failures and cancellation stay separate
+ok 15 - unknown actual model cannot verify, failures and cancellation stay separate
+  ---
+  duration_ms: 30.91457
+  type: 'test'
+  ...
+# Subtest: validation rejects traversal, symlinks and mutable verification source
+ok 16 - validation rejects traversal, symlinks and mutable verification source
+  ---
+  duration_ms: 14.826616
+  type: 'test'
+  ...
+# Subtest: task budget and independent-review policy cannot be bypassed at dispatch/integration
+ok 17 - task budget and independent-review policy cannot be bypassed at dispatch/integration
+  ---
+  duration_ms: 255.481177
+  type: 'test'
+  ...
+# Subtest: explicit refresh invalidates verification and preserves original config while rebasing unchanged paths
+ok 18 - explicit refresh invalidates verification and preserves original config while rebasing unchanged paths
+  ---
+  duration_ms: 758.239402
+  type: 'test'
+  ...
+# Subtest: protected output files are rejected instead of disappearing from scope checks
+ok 19 - protected output files are rejected instead of disappearing from scope checks
+  ---
+  duration_ms: 31.888811
+  type: 'test'
+  ...
+# Subtest: a closed manager rejects new dispatch, probes and tests instead of restarting work during shutdown
+ok 20 - a closed manager rejects new dispatch, probes and tests instead of restarting work during shutdown
+  ---
+  duration_ms: 17.900504
+  type: 'test'
+  ...
+1..20
+# tests 20
+# suites 0
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2319.320095
+
+worker.test.js
+TAP version 13
+# Subtest: worker preserves prototype-named source input and rejects prototype-named out-of-scope output
+ok 1 - worker preserves prototype-named source input and rejects prototype-named out-of-scope output
+  ---
+  duration_ms: 84.365157
+  type: 'test'
+  ...
+# Subtest: worker registers actual HEAD, executes only in a separate copy, preserves source and submits hashed provenance
+ok 2 - worker registers actual HEAD, executes only in a separate copy, preserves source and submits hashed provenance
+  ---
+  duration_ms: 35.063235
+  type: 'test'
+  ...
+# Subtest: duplicate generation receipt prevents automatic reexecution after worker restart
+ok 3 - duplicate generation receipt prevents automatic reexecution after worker restart
+  ---
+  duration_ms: 58.0375
+  type: 'test'
+  ...
+# Subtest: model, adapter, host, workspace, base and protected scope mismatches never invoke a runner
+ok 4 - model, adapter, host, workspace, base and protected scope mismatches never invoke a runner
+  ---
+  duration_ms: 78.988447
+  type: 'test'
+  ...
+# Subtest: heartbeat failure aborts runtime and withholds completion without reclaiming
+ok 5 - heartbeat failure aborts runtime and withholds completion without reclaiming
+  ---
+  duration_ms: 36.912425
+  type: 'test'
+  ...
+# Subtest: out-of-scope writes, output symlinks and oversized artifacts never submit completion
+ok 6 - out-of-scope writes, output symlinks and oversized artifacts never submit completion
+  ---
+  duration_ms: 74.494442
+  type: 'test'
+  ...
+# Subtest: source symlinks are rejected before execution; protected and ignored source files are omitted
+ok 7 - source symlinks are rejected before execution; protected and ignored source files are omitted
+  ---
+  duration_ms: 25.228182
+  type: 'test'
+  ...
+# Subtest: explicit server policy blocks insecure remote URL, embedded credentials, unsupported adapters and in-source workDir
+ok 8 - explicit server policy blocks insecure remote URL, embedded credentials, unsupported adapters and in-source workDir
+  ---
+  duration_ms: 18.517496
+  type: 'test'
+  ...
+# Subtest: empty queue is idle and oversized or invalid endpoint responses stop before execution
+ok 9 - empty queue is idle and oversized or invalid endpoint responses stop before execution
+  ---
+  duration_ms: 51.693673
+  type: 'test'
+  ...
+# Subtest: stale completion rejection leaves a receipt requiring reconciliation and cannot silently rerun
+ok 10 - stale completion rejection leaves a receipt requiring reconciliation and cannot silently rerun
+  ---
+  duration_ms: 40.529313
+  type: 'test'
+  ...
+# Subtest: CLI requires a private config file and never prints credential contents
+ok 11 - CLI requires a private config file and never prints credential contents
+  ---
+  duration_ms: 99.881051
+  type: 'test'
+  ...
+# Subtest: worker snapshot covers dirty/untracked source and is propagated to report manifest and receipt
+ok 12 - worker snapshot covers dirty/untracked source and is propagated to report manifest and receipt
+  ---
+  duration_ms: 33.049469
+  type: 'test'
+  ...
+# Subtest: changed source snapshot with same HEAD or lease snapshot mismatch never starts runtime
+ok 13 - changed source snapshot with same HEAD or lease snapshot mismatch never starts runtime
+  ---
+  duration_ms: 34.053685
+  type: 'test'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 796.042246

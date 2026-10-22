@@ -212,7 +212,15 @@ function listen(server, port, host) {
     const run = () => prune({ minutesDir: cfg.minutesDir, dataDir, days: cfg.retentionDays, keep: [...app.meetings.keys()] }, cfg.log);
     run(); setInterval(run, 6 * 3600 * 1000).unref();
   }
-  ['SIGINT', 'SIGTERM'].forEach(s => process.on(s, () => { app.flush(); console.log('\nĐã tắt Agent Meeting.'); process.exit(0); }));
+  let shuttingDown = false;
+  const shutdown = async () => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    console.log('\nĐang dừng tiến trình được quản lý và lưu kết quả…');
+    try { await app.close(); app.flush(); console.log('Đã tắt Agent Meeting.'); process.exit(0); }
+    catch (e) { console.error('Không thể hoàn tất tắt an toàn:', e.message); process.exit(1); }
+  };
+  ['SIGINT', 'SIGTERM'].forEach(s => process.on(s, shutdown));
 
   // trang chủ trì luôn mở trên máy này (trừ --public-url: công ty tự bảo vệ bằng proxy)
   const host = `${publicUrl || local}/m/${meeting.hostKey}`;
@@ -248,6 +256,6 @@ ${cfg.auditLog ? `\n  Nhật ký kiểm toán: ${path.resolve(cfg.auditLog)}` : 
     };
     meeting.ev.on('change', check);
   }
-  if (flag('--exit-on-end')) app.ev.on('ended', () => { console.log('Cuộc họp đã kết thúc, thoát.'); app.flush(); setTimeout(() => process.exit(0), 200); });
+  if (flag('--exit-on-end')) app.ev.on('ended', () => { console.log('Cuộc họp đã kết thúc, thoát.'); setTimeout(shutdown, 200); });
   if (!flag('--no-open') && !autoStart) open(host);
 })().catch(e => { console.error('Lỗi:', e.message); process.exit(1); });

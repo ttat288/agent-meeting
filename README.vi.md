@@ -101,6 +101,8 @@ Nút chạy trên web kiểm yêu cầu và cấu hình bạn đã xem. Khi revi
 
 Kiểm chứng và tích hợp hiển thị tiến trình cùng nút **Hủy phiên chạy** tại Kết quả. Hủy đợi test dừng; nếu source hoặc quyền file đã đổi trong lúc đó, rollback conflict cần được đối chiếu thủ công.
 
+Ctrl+C và SIGTERM chờ tiến trình được quản lý, kiểm chứng và rollback tích hợp trước khi CLI thoát. Hãy đợi tắt hoàn tất; ép dừng tiến trình không có bảo đảm này. Rollback conflict đã ghi vẫn cần đối chiếu thủ công.
+
 ![Kết quả hiện tại: fixture subprocess local đã tích hợp và test độc lập, trạng thái tự cập nhật trong shell gọn.](docs/evidence/shift-20261022/results-vi-dark.jpg)
 
 Ảnh dùng **fixture local xác định, không phải đầu ra AI**. [Benchmark HTTP tái lập và raw samples](docs/evidence/shift-20261022/ACCEPTANCE.vi.md#benchmark-có-rawscript) công khai overhead polling, ca lỗi và phần chưa biết. Pilot writer-model lỗi xác thực; [audit CLI read-only riêng](docs/evidence/shift-20261022/readonly-audit/PROTOCOL.vi.md) dừng ở thao tác bị từ chối quyền và model identity chưa biết. Chưa chứng minh tiết kiệm chi phí model hoặc lợi thế runtime8 giờ.

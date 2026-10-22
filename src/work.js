@@ -76,7 +76,7 @@ function checkTask(d) {
 const ADAPTER_FOR = { 'claude-code': 'claude', agy: 'agy' };
 class WorkManager {
   constructor({ dir, configStore, runner = runtime.runCli }) {
-    this.dir = path.resolve(dir); this.configStore = configStore; this.runner = runner; this.active = new Map(); this.pending = new Set(); this.probes = new Map();
+    this.dir = path.resolve(dir); this.configStore = configStore; this.runner = runner; this.active = new Map(); this.pending = new Set(); this.probes = new Map(); this.closed = false;
     this.store = new ConfigStore({ dir: this.dir, defaults: () => ({ schema: 'agent-meeting/work@1', revision: 1, tasks: [], runs: [], observations: [] }),
       validate: d => { if (d.schema !== 'agent-meeting/work@1' || !['tasks','runs','observations'].every(k => Array.isArray(d[k]))) throw failure('Invalid work data'); } });
     // A restarted server cannot prove that the old external process stopped. Never automatically reassign it.
@@ -163,7 +163,9 @@ class WorkManager {
     const config = this.configStore.read();
     return [...this.read().observations, ...savedEnvironment(this.configStore, config)].filter(o => { const profile = config.profiles.find(p => p.id === o.profileId); return o.configRevision === config.revision && profile?.runtimeId === o.runtimeId && now - Date.parse(o.checkedAt) >= 0 && now - Date.parse(o.checkedAt) < 30 * 60000; });
   }
+  assertOpen() { if (this.closed) throw failure('Work manager is shutting down', 409); }
   async probe(profileId, expectedConfigRevision) {
+    this.assertOpen();
     const config = this.configStore.read();
     if (expectedConfigRevision !== undefined && config.revision !== expectedConfigRevision) throw failure('Configuration changed; reload before probing this profile', 409);
     const { p, m, adapter } = this.profile(config, profileId);
@@ -189,6 +191,7 @@ class WorkManager {
     finally { this.pending.delete(pending); if (this.probes.get(key) === entry) this.probes.delete(key); }
   }
   start(taskId, profileId, managed = {}) {
+    this.assertOpen();
     if (this.active.size) throw failure('A run is active; finish or cancel it first', 409);
     this.assertCurrent(taskId);
     const state = this.read(), task = state.tasks.find(t => t.id === taskId);
@@ -252,7 +255,14 @@ class WorkManager {
     return this.read().runs.find(r => r.id === id);
   }
   cancel(id) { const c = this.active.get(id); if (!c) throw failure('No managed live process for this run', 409); c.abort(); return { requested: true }; }
-  async verify(id) {
+  track(promise) {
+    this.pending.add(promise);
+    promise.then(() => this.pending.delete(promise), () => this.pending.delete(promise));
+    return promise;
+  }
+  verify(id) { return this.track(this.verifyRun(id)); }
+  async verifyRun(id) {
+    this.assertOpen();
     if (this.active.size) throw failure('A run is active; finish or cancel it first', 409);
     const state = this.read(), run = state.runs.find(r => r.id === id), task = run && state.tasks.find(t => t.id === run.taskId);
     if (!run || run.status !== 'reported') throw failure('Run has no report ready for verification', 409);
@@ -292,7 +302,9 @@ class WorkManager {
     } finally { if (this.active.get(id) === controller) this.active.delete(id); }
     return this.read().runs.find(r => r.id === id);
   }
-  async integrate(id) {
+  integrate(id) { return this.track(this.integrateRun(id)); }
+  async integrateRun(id) {
+    this.assertOpen();
     if (this.active.size) throw failure('A run is active; finish or cancel it first', 409);
     const state = this.read(), run = state.runs.find(r => r.id === id), task = run && state.tasks.find(t => t.id === run.taskId);
     if (!run || run.status !== 'verified') throw failure('Run must pass verification before integration', 409);
@@ -363,7 +375,7 @@ class WorkManager {
     } finally { if (this.active.get(id) === controller) this.active.delete(id); }
     return this.read().runs.find(r => r.id === id);
   }
-  close() { for (const probe of this.probes.values()) probe.controller.abort(); for (const controller of this.active.values()) controller.abort(); return Promise.allSettled([...this.pending]); }
+  close() { this.closed = true; for (const probe of this.probes.values()) probe.controller.abort(); for (const controller of this.active.values()) controller.abort(); return Promise.allSettled([...this.pending]); }
 }
 function atomicReplace(target, bytes, mode = 0o600) {
   const tmp = target + '.' + crypto.randomUUID() + '.tmp';

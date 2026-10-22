@@ -1,0 +1,24 @@
+{
+  "recordedAt": "2026-10-22T18:51:29.156185+00:00",
+  "counts": {
+    "tests": 378,
+    "pass": 378,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "testFiles": 34,
+  "sourceSha256": {
+    "bin/cli.js": "96b328fee14a0270b50142dc721ccc3c7517a37a7d18ccc0f7372e788be80e93",
+    "src/work.js": "b0da5ed7f1fff28e7dccceee7cf51294a7928be14e54b61af571ca2447999b76",
+    "src/server.js": "fb021ebf152ab76bced7420f30c1bdaa4b90b014a77c222421d0631662a77652",
+    "test/cli-shutdown.test.js": "90ba03ab0f44dea05c642a1fdca8bc88e0ffef17e38aa92a0b0f032a0d37b9ed",
+    "test/work-cancel.test.js": "53487f0e2538cfd3e8e5f608fe72da8380753222471f95dbae9d6d0864cac878",
+    "test/work.test.js": "e5961060889bdf5ccc6c4a5a405914e756b0c81bc135b8482b0ee8550ed89e32"
+  },
+  "command": "systemd-run --user --scope -q -p MemoryMax=1200M -p MemorySwapMax=0 timeout 900 npm test",
+  "limits": [
+    "Deterministic adapter fixtures and real Node subprocess/CLI lifecycle; zero native AI invocations",
+    "Graceful signals only; not SIGKILL, crash durability, model efficacy or billing proof"
+  ]
+}

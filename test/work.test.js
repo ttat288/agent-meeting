@@ -128,3 +128,13 @@ test('explicit refresh invalidates verification and preserves original config wh
 test('protected output files are rejected instead of disappearing from scope checks',async t=>{
  const{source,work}=setup(t,async a=>{if(!a.prompt.includes('READY')){fs.mkdirSync(path.join(a.workspace,'.claude'));fs.writeFileSync(path.join(a.workspace,'.claude/settings.json'),'{}');}return{status:'reported',reportedModel:'claude-opus-5-5',text:'done',exitCode:0};});await work.probe('opus-claude');const taskId=work.createTask(task(source)).id;work.start(taskId,'opus-claude');await wait(work);assert.equal(work.read().runs[0].status,'failed');assert.match(work.read().runs[0].error,/protected/);
 });
+
+test('a closed manager rejects new dispatch, probes and tests instead of restarting work during shutdown',async t=>{
+ let calls=0;const{work}=setup(t,async()=>{calls++;return{status:'reported'};});
+ await work.close();
+ assert.throws(()=>work.start('missing','opus-claude'),/shutting down/);
+ await assert.rejects(work.probe('opus-claude'),/shutting down/);
+ await assert.rejects(work.verify('missing'),/shutting down/);
+ await assert.rejects(work.integrate('missing'),/shutting down/);
+ assert.equal(calls,0);await work.close();assert.equal(work.pending.size,0);
+});

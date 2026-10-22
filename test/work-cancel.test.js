@@ -73,6 +73,31 @@ test('closing manager aborts verification and exceptions leave terminal failed s
   assert.equal((await pending).status, 'cancelled'); assert.equal(work.active.size, 0);
 });
 
+test('close waits for verification evidence and terminal state before resolving', async t => {
+  const { work } = setup(t, "require('node:test')('slow',async()=>{await new Promise(r=>setTimeout(r,15000));});\n");
+  const pending = work.verify('run');
+  try {
+    await work.close();
+    assert.equal(work.active.size, 0, 'close must drain the test process, not just signal it');
+    assert.equal(work.read().runs[0].status, 'cancelled');
+    assert.equal(work.pending.size, 0);
+  } finally { await pending; }
+});
+
+test('close waits for integration rollback before resolving', async t => {
+  const { work, source } = setup(t, "require('node:test')('sum',async()=>{if(require('node:path').basename(process.cwd())==='source')await new Promise(r=>setTimeout(r,15000));});\n");
+  assert.equal((await work.verify('run')).status, 'verified');
+  const pending = work.integrate('run');
+  assert.match(fs.readFileSync(path.join(source, 'sum.js'), 'utf8'), /a\+b/);
+  try {
+    await work.close();
+    assert.equal(work.read().runs[0].rollback, 'restored', 'shutdown must wait for rollback');
+    assert.equal(work.read().runs[0].status, 'cancelled');
+    assert.match(fs.readFileSync(path.join(source, 'sum.js'), 'utf8'), /a-b/);
+    assert.equal(work.active.size, 0);
+  } finally { await pending; }
+});
+
 test('source integration reruns the same tests before marking task done', async t => {
   const { work, source } = setup(t); const checked = await work.verify('run'); assert.equal(checked.status, 'verified');
   const pending = work.integrate('run'); assert.equal(work.read().tasks[0].status, 'integrating'); assert(work.active.has('run'));

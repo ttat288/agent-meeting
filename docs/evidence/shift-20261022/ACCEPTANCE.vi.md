@@ -182,3 +182,24 @@ Reload Runtime trước đọc /runtime ghi Observations not loaded; Check runti
 Tradeoff: pointer/touch đổi nhóm thêm thao tác mở chooser so5 button trực tiếp; không đo human time hoặc tuyên bố net-win thay người dùng. Initial CSS rule trước generic field style bị override; đã chuyển đúng thứ tự, final matrix kiểm mobile/desktop visibility. First nav attempt đọc DOM trước async config render fail, repeated với expectNavigation/selector-visible, không sửa source để ép test.
 
 Browser viewport override áp dụng tab đang selected. Sau mở TTL tab3, một ảnh navigation tên mobile thực ra1280; đã đổi tên [desktop](admin-navigation-runtime-vi-desktop.jpg), tạo tab4selected và chụp [mobile375 thật](admin-navigation-runtime-vi-mobile.jpg). Matrix12 runtime cũ chạy trước tab3, đã ghi actual widths đúng; không gán lỗi ảnh này ngược cho mọi số đo. Source hashes của từng report giữ riêng.
+
+## CI Node20: readiness của test CLI
+
+[Run39838489515](https://github.com/ttat288/agent-meeting/actions/runs/39838489515) commit5c9e519:Node18/22 success, Node20 fail ở test integrate trước signal:status integrating đã được persist nhưng parent process đọc source a-b trước bước apply synchronous tiếp theo trong child. [Raw excerpt](ci-shutdown-readiness-before.txt) giữ lỗi/stack/timestamps. Đây là readiness race của test, không bỏ assertion rollback hoặc coi status là proof applied.
+
+Predicate mới đợi cả status lẫn sourcea+b rồi mới gửi SIGTERM; terminal failure trước readiness báo nguyên nhân. Không tăng timeout, skip, retry hoặc sửa production để ép xanh. [Local2 tests](ci-shutdown-readiness-tests.txt) đạt; actual matrix của commit fix còn phải kiểm.
+
+[Package source65476da](package-runtime-smoke.json):68 file,7 HTTP/conditional/CSP/asset checks, bundled skill và hash mọi file đóng gói khớp checkout. Không ship .agents/.local-tools/docs/test. [Real packaged CLI2 tests](package-runtime-cli-tests.txt) dùng test readiness mới được copy **sau giải nén**, không có trong tarball, config/work/data riêng/public-url loopback; không cài app user hoặc native model. Tarball SHA cca0d3cdc7486e2de143b508614bfd6eca0ea27a2377eb0341d3a2a37610964b thuộc source+README/CHANGELOG tại654, không tự bao phủ source về sau.
+
+Tái lập CLI package check từ checkout được ghi trong report:
+
+```bash
+pkg_verify_dir="$(mktemp -d)"
+npm pack --json --cache "$pkg_verify_dir/cache" --pack-destination "$pkg_verify_dir"
+tar -xzf "$pkg_verify_dir/agent-meeting-3.5.0.tgz" -C "$pkg_verify_dir"
+mkdir "$pkg_verify_dir/package/test"
+cp test/cli-shutdown.test.js "$pkg_verify_dir/package/test/"
+node --test "$pkg_verify_dir/package/test/cli-shutdown.test.js"
+```
+
+Test file hash và production hashes nằm trong receipt; test có2 CLI processes thật, không là native model benchmark. Giữ package outputs trong temp để đối chiếu; không dùng receipt cũ thay final package check cuối ca.

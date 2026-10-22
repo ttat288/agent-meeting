@@ -32,7 +32,13 @@ async function fixture(t, operation) {
   exited=new Promise(resolve=>child.once('exit',(code,signal)=>resolve({code,signal})));
   await until(()=>output.includes('đã sẵn sàng'));
   const request=fetch(base+'/api/host/'+hostKey+'/work/runs/run/'+operation,{method:'POST',headers:{'content-type':'application/json'},body:'{}'}).then(r=>r.json()).catch(e=>({connectionClosed:e.message}));
-  await until(()=>JSON.parse(fs.readFileSync(path.join(workDir,'config.json'),'utf8')).runs[0].status===(operation==='verify'?'verifying':'integrating'));
+  await until(()=>{
+    const run=JSON.parse(fs.readFileSync(path.join(workDir,'config.json'),'utf8')).runs[0];
+    if(['failed','cancelled','interrupted'].includes(run.status))throw Error('Fixture stopped before shutdown signal: '+run.error);
+    // The status write precedes applying bytes in another OS process. Wait for
+    // the actual source transition so cancellation really exercises rollback.
+    return run.status===(operation==='verify'?'verifying':'integrating') && (operation!=='integrate'||fs.readFileSync(path.join(source,'sum.js'),'utf8').includes('a+b'));
+  });
   return {root,source,workDir,child,exited,request,output:()=>output};
 }
 for(const [operation,signal] of [['verify','SIGINT'],['integrate','SIGTERM']]) test('CLI '+signal+' drains '+operation+' before process exit',{skip:process.platform!=='linux'},async t=>{

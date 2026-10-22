@@ -44,6 +44,7 @@
 .ws-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--space-3); margin-bottom:var(--space-3); }
 .ws-grid.two { grid-template-columns:repeat(2,minmax(0,1fr)); }
 .ws-grid .ws-field { margin:0; }
+.ws-mobile-sections { display:none; margin:0; }
 .ws-check { display:flex; align-items:center; gap:var(--space-2); margin:var(--space-3) 0; }
 .ws-check input { width:20px; min-height:20px; }
 .ws-tabs { display:flex; gap:var(--space-2); flex-wrap:wrap; margin:var(--space-4) 0; border-bottom:1px solid var(--line); }
@@ -109,7 +110,8 @@
   .session-work,.workspace-app main { padding:var(--space-4) var(--gutter) 40px; }
   .ws-shell.admin { display:block; }
   .ws-sidebar { border-right:0; border-bottom:1px solid var(--line); padding:var(--space-2); }
-  .ws-sidebar nav { display:flex; flex-wrap:wrap; }
+  .ws-sidebar nav { display:none; }
+  .ws-mobile-sections { display:block; }
   .ws-sidebar button { width:auto; }
   .ws-models,.ws-grid.two { grid-template-columns:1fr; }
   .ws-task,.ws-panel { padding:var(--space-3); }

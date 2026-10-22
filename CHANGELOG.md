@@ -8,6 +8,7 @@
 - Slow verification/integration can be cancelled from Results; late completions preserve drafts opened in another view. PM updates preserve supervision focus and unsent drafts; director stop controls take priority over pending ordinary requests.
 - Task forms expose saved differences from the latest older draft for read-only recovery after a requirement change; no automatic replay or merge. Malformed or unavailable browser storage falls back to current server requirements.
 - Routing and execution use the freshest valid access observation across rooms sharing a catalog; a newer failed probe cannot be masked by an older room-local success. Duplicate local/shared copies appear once.
+- Small-screen administration uses one native section chooser; desktop keeps its sidebar. Both share the same section URLs and keyboard focus behavior.
 - Administration retains the selected section across reload and language changes. Runtime views distinguish observations not loaded from access not tested, allowing a read-only check before a new paid probe.
 - Runtime administration separates executable checks from dated model observations. Mapping fields and raw diagnostics open on demand; unavailable prerequisites are visible, and mapping saves retain keyboard context.
 - Pending model-access probes share one active invocation per host/profile/config revision, survive admin navigation, preserve edited forms and reject stale viewed mappings. Late observations cannot replace newer configuration evidence; shutdown aborts and drains probes.

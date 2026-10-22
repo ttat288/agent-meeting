@@ -364,7 +364,11 @@
   function renderAdmin() {
     const url = new URL(location.href); url.searchParams.set('section', adminTab); history.replaceState(null, '', url);
     $('shell').classList.add('admin'); $('sidebar').hidden = false;
-    $('sidebar').replaceChildren(node('nav', { 'aria-label': t('Nhóm quản trị', 'Administration sections') }, adminSections.map(([id, label]) => node('button', { type: 'button', class: 'btn ghost', 'aria-current': adminTab === id ? 'page' : null, onclick: () => { adminTab = id; renderAdmin(); $('main').focus(); } }, label))));
+    const selectSection = id => { adminTab = id; renderAdmin(); $('main').focus(); };
+    const mobileSections = selectField(t('Nhóm quản trị', 'Administration section'), 'adminSection', adminSections, adminTab);
+    mobileSections.classList.add('ws-mobile-sections');
+    mobileSections.querySelector('select').onchange = event => selectSection(event.target.value);
+    $('sidebar').replaceChildren(mobileSections, node('nav', { 'aria-label': t('Nhóm quản trị', 'Administration sections') }, adminSections.map(([id, label]) => node('button', { type: 'button', class: 'btn ghost', 'aria-current': adminTab === id ? 'page' : null, onclick: () => selectSection(id) }, label))));
     const page = $('page');
     const titles = Object.fromEntries(adminSections);
     page.replaceChildren(node('header', { class: 'ws-view-heading ws-row between' }, node('div', {}, node('p', { class: 'ws-eyebrow' }, t('Quản trị', 'Administration')), node('h1', {}, titles[adminTab])), node('span', { class: 'ws-pill' }, t('Cấu hình v', 'Configuration v') + config.revision)));

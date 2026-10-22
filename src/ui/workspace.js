@@ -255,12 +255,12 @@
     // or steal keyboard focus. The explicit button leaves saved drafts intact.
     if (page.querySelector('[aria-busy=true]') || page.getAttribute('aria-busy') === 'true') return;
     if (!explicit && (list?.contains(document.activeElement) || list?.querySelector('details[open]'))) return;
-    const scroll = $('workView').scrollTop;
+    const scroll = $('workView').scrollTop, titleFocused = document.activeElement === $('workTitle');
     work = pendingWork.work; remote = pendingWork.remote; pendingWork = null;
     metrics = work.metrics; metricsError = null; remoteError = null;
     renderDaily(); $('workView').scrollTop = scroll;
     window.dispatchEvent(new CustomEvent('am-work-state', { detail: work }));
-    if (explicit) $('workTitle').focus({ preventScroll: true });
+    if (explicit || titleFocused) $('workTitle').focus({ preventScroll: true });
   }
   async function refreshWork(refresh) {
     const version = workEditVersion, read = workReadVersion + 1;
@@ -774,8 +774,8 @@
       document.body.dataset.sessionView = view;
       if (!active) return;
       tab = hash === '#execute' ? 'tasks' : hash.slice(1);
-      if (!loaded) { await load(); if (request === navigationVersion) $('workView').scrollTop = 0; }
-      else { try { const next = await api('/work'); if (request !== navigationVersion || location.hash !== hash) return; acceptWork(next); renderDaily(); $('workView').scrollTop = 0; } catch (error) { if (request === navigationVersion && location.hash === hash) errorBox($('page'), error); } }
+      if (!loaded) { await load(); if (request === navigationVersion && location.hash === hash) { $('workView').scrollTop = 0; $('workTitle')?.focus(); } }
+      else { try { const next = await api('/work'); if (request !== navigationVersion || location.hash !== hash) return; acceptWork(next); renderDaily(); $('workView').scrollTop = 0; $('workTitle')?.focus(); } catch (error) { if (request === navigationVersion && location.hash === hash) errorBox($('page'), error); } }
     };
     let summaryVersion = null, summaryBusy = false;
     window.addEventListener('am-meeting-state', async event => {

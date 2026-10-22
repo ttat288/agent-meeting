@@ -1,0 +1,92 @@
+TAP version 13
+# Subtest: a superseded navigation error cannot attach to the newer Results view
+ok 1 - a superseded navigation error cannot attach to the newer Results view
+  ---
+  duration_ms: 4.199969
+  type: 'test'
+  ...
+# Subtest: a navigation error after returning to conversation cannot create a hidden alert
+ok 2 - a navigation error after returning to conversation cannot create a hidden alert
+  ---
+  duration_ms: 0.782779
+  type: 'test'
+  ...
+# Subtest: the active navigation failure remains visible and never renders success
+ok 3 - the active navigation failure remains visible and never renders success
+  ---
+  duration_ms: 0.842798
+  type: 'test'
+  ...
+# Subtest: a superseded success cannot rewind current work or focus
+ok 4 - a superseded success cannot rewind current work or focus
+  ---
+  duration_ms: 0.762119
+  type: 'test'
+  ...
+# Subtest: current navigation moves focus to its newly rendered heading
+not ok 5 - current navigation moves focus to its newly rendered heading
+  ---
+  duration_ms: 2.36094
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/ui-work-navigation.test.js:25:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    0 !== 1
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/ui-work-navigation.test.js:26:89)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: background work updates restore focus only when replacing the focused heading
+not ok 6 - background work updates restore focus only when replacing the focused heading
+  ---
+  duration_ms: 3.882277
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/ui-work-navigation.test.js:36:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected "actual" to be reference-equal to "expected":
+    + actual - expected
+    
+    + {}
+    - {
+    -   focus: [Function: focus]
+    - }
+    
+  code: 'ERR_TEST_FAILURE'
+  ...
+# Subtest: background work updates never pull focus from an outside navigation control
+ok 7 - background work updates never pull focus from an outside navigation control
+  ---
+  duration_ms: 1.299151
+  type: 'test'
+  ...
+# Subtest: an active edit still defers background updates instead of replacing its heading or input
+ok 8 - an active edit still defers background updates instead of replacing its heading or input
+  ---
+  duration_ms: 0.870123
+  type: 'test'
+  ...
+# Subtest: explicitly showing updates focuses the new heading once
+ok 9 - explicitly showing updates focuses the new heading once
+  ---
+  duration_ms: 1.001658
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 7
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 179.386412

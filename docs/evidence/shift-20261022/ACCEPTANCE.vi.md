@@ -283,3 +283,11 @@ Run265ce1c9… reported, source/test vẫn hash đầu vào; Verifycandidate1/1,
 [Matrix](notice-reserved-browser.json):12locale/theme/actualwidthconfig ×2notificationstates (24) đều0overlap, focus/draft/recipient giữ, input trong812px/nohorizontaloverflow. Cùng draftVI375dark input147.289×88:toastoverlap5338.109→0, dành54px mới; workspace notice dành56px ở case đó. Timers hết, toastcontainer cao0/focusgiữ; workRefreshnotice dướiworkview không che headingfocus. [Ảnh cùng notice+toast](notice-and-toast-after-vi375.jpg). Source hashes của CSS/JS ở matrix; Node411/36 thuộc477c6b7 với JS giống hệt, không gán test đó là visual proof cho CSS mới. CI và fullfreeze cuốica sẽ kiểm source cuối.
 
 [After-attempt dùng CSS cũ](notice-old-css-attempt.jpg) vẫn overlap:goto chỉ đổihash, chưa reloadstylesheet. HTTPservedhash khớp nhưng browserCSSOM chỉ oldrule. Đã reloadthật, kiểm CSSOM static/relative rồi mới chạy24states; ảnh attempt không tính pass. Khuyến nghị skillfocus-not-obscured được dùng ở đúng mức componentgeometry; không nhận screenreader/human-time/netperformance/billing hoặc fullWCAG acceptance.
+
+## Keyboard routes và heading focus qua cập nhật nền
+
+[Baseline keyboard](work-navigation-focus-before.json):EnterPlan giữ navfocus,4Tab tớiRefresh. [Backgroundred](work-heading-background-focus-before.json):Refresh focush1, taskAPI thêm1no-dispatchfixture→pollPlan3→4 thayheading/focusBODY. Guard focus mới áp sau active route/load, restore headingfocus khi chính heading bị thay, không kéo focusnav/edit/evidence khác; stale callbacks khôngfocus.
+
+[11actual-source unit](heading-focus-unit-after.txt) sau [2red/9](heading-focus-unit-before.txt); [full418/36](integrated-heading-focus-tests.txt),0fail/skip/cancel, [hash seal](verification-heading-focus-tests.json) bao gồm CSSnotice mới. [Browser](work-heading-focus-browser.json):12routesVI/EN375/1280, Enter→heading→1TabRefresh, initial/Back/reload đúngfocus; pollPlan4→5 giữh1. HaiAPI-createdtaskkhôngrun/model, không sửa requirement/run đang có. [Ảnh375](work-heading-focus-after-vi375.jpg).4→1chỉ sốkeypress ở headerkhôngpendingupdate, không human-time/screenreader/modelwin.
+
+Lầnmatrixđầu chồnggoto+reload và Enterkhôngnavigate; đã kiểm href/focus/load, dùngdocumentổnđịnh, không tính lượt timeoutpass. CI23bd7e8 Node/desktop overallsuccess đúngSHA, sourceheadingmới chưa gán vào run đó.

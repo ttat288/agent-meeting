@@ -99,7 +99,7 @@ Nếu yêu cầu đổi khi đang sửa, **Xem bản nháp trước** trong form
 
 Nút chạy trên web kiểm yêu cầu và cấu hình bạn đã xem. Khi revision đổi, cần xem lại và chọn profile hiện tại trước khi khởi chạy.
 
-Nhóm Quản trị đang chọn được giữ khi tải lại hoặc đổi ngôn ngữ. Quản trị runtime tách executable/version khỏi quan sát truy cập model có thời điểm. Mở **Sửa ánh xạ** hoặc **Dữ liệu chẩn đoán** khi cần; chưa kiểm tra, thất bại và model báo sai ID có trạng thái riêng.
+Nhóm Quản trị đang chọn được giữ khi tải lại hoặc đổi ngôn ngữ. Save cấu hình trả muộn giữ phần nhập mới; sao chép phần cần giữ trước khi tải lại cấu hình đã cũ. Quản trị runtime tách executable/version khỏi quan sát truy cập model có thời điểm. Mở **Sửa ánh xạ** hoặc **Dữ liệu chẩn đoán** khi cần; chưa kiểm tra, thất bại và model báo sai ID có trạng thái riêng.
 
 Kiểm chứng và tích hợp hiển thị tiến trình cùng nút **Hủy phiên chạy** tại Kết quả. Hủy đợi test dừng; nếu source hoặc quyền file đã đổi trong lúc đó, rollback conflict cần được đối chiếu thủ công.
 

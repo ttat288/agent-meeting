@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: unchanged connected admin save adopts the exact server revision
+ok 1 - unchanged connected admin save adopts the exact server revision
+  ---
+  duration_ms: 2.421972
+  type: 'test'
+  ...
+# Subtest: admin fields edited while saving keep the viewed snapshot until explicit recovery
+ok 2 - admin fields edited while saving keep the viewed snapshot until explicit recovery
+  ---
+  duration_ms: 1.201877
+  type: 'test'
+  ...
+# Subtest: replaced admin form cannot redraw a newer view after its save returns
+ok 3 - replaced admin form cannot redraw a newer view after its save returns
+  ---
+  duration_ms: 0.597306
+  type: 'test'
+  ...
+# Subtest: older saved response cannot rewind a newer config already loaded
+ok 4 - older saved response cannot rewind a newer config already loaded
+  ---
+  duration_ms: 0.576656
+  type: 'test'
+  ...
+# Subtest: out-of-order deferred saves retain the newest acknowledged snapshot
+ok 5 - out-of-order deferred saves retain the newest acknowledged snapshot
+  ---
+  duration_ms: 0.720226
+  type: 'test'
+  ...
+# Subtest: latest notice receives its full lifetime instead of an older hide timer
+ok 6 - latest notice receives its full lifetime instead of an older hide timer
+  ---
+  duration_ms: 0.750908
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 134.851416

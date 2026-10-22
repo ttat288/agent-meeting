@@ -21,8 +21,9 @@
   const profileSelections = new Map();
   const probingProfiles = new Set();
   const runtimeObservationLifetime = 30 * 60000;
-  let runtimeExpiryTimer;
+  let runtimeExpiryTimer, noticeTimer, pendingConfig = null, adminEditVersion = 0;
   if (admin) {
+    for (const event of ['input', 'change']) $('page').addEventListener(event, () => { adminEditVersion++; });
     document.addEventListener('visibilitychange', () => { clearTimeout(runtimeExpiryTimer); if (!document.hidden) renderProfileObservations(); });
     window.addEventListener('pagehide', () => clearTimeout(runtimeExpiryTimer));
     window.addEventListener('pageshow', () => renderProfileObservations());
@@ -41,7 +42,7 @@
   };
   const button = (label, click, primary = false) => node('button', { type: 'button', class: 'btn ' + (primary ? 'primary' : 'ghost'), onclick: click }, label);
   const heading = (title, intro) => [node('p', { class: 'ws-eyebrow' }, admin ? t('Quản trị', 'Administration') : t('Không gian làm việc', 'Workspace')), node('h1', {}, title), node('p', { class: 'ws-intro' }, intro)];
-  function notify(message) { $('notice').textContent = message; $('notice').hidden = false; setTimeout(() => { $('notice').hidden = true; }, 6000); }
+  function notify(message) { clearTimeout(noticeTimer); $('notice').textContent = message; $('notice').hidden = false; noticeTimer = setTimeout(() => { $('notice').hidden = true; }, 6000); }
   async function api(endpoint, data) {
     const readingWork = endpoint === '/work' && data === undefined;
     if (readingWork) { workReadVersion++; activeWorkReads++; pollController?.abort(); }
@@ -86,7 +87,7 @@
     container.querySelector('.ws-error')?.remove();
     const box = node('div', { class: 'ws-error', role: 'alert', tabindex: '-1' }, node('strong', {}, t('Chưa thể hoàn thành thao tác', 'Unable to complete this action')), node('p', {}, friendlyError(error.message)));
     if (fieldId) { const input = $(fieldId); for (let parent = input?.parentElement; parent; parent = parent.parentElement) if (parent.tagName === 'DETAILS') parent.open = true; input?.setAttribute('aria-invalid', 'true'); box.append(button(t('Kiểm tra trường nhập', 'Check this field'), () => input?.focus())); }
-    if (error.configConflict) box.append(button(t('Tải lại cấu hình', 'Reload configuration'), async () => { try { config = await api('/config'); renderAdmin(); } catch (e) { errorBox(container, e); } }));
+    if (error.configConflict) box.append(button(t('Tải lại cấu hình', 'Reload configuration'), load));
     container.prepend(box); box.focus();
   }
   async function action(btn, container, fn) {
@@ -363,12 +364,24 @@
     if (!renderedTasks) list.append(node('div', { class: 'ws-empty' }, node('h2', {}, t('Chưa có kết quả', 'No results yet')), node('p', {}, t('Kết quả xuất hiện sau khi một phiên chạy báo cáo.', 'Results appear when a run reports back.')), viewLink('execute', t('Mở Thực hiện →', 'Open Execute →'), true)));
     if (tab === 'results') { const measurements = disclosure(t('Số liệu phiên chạy', 'Run measurements')); renderMetrics(measurements); list.append(measurements); }
   }
-  async function saveConfig(next) {
-    config = await api('/config', { config: next, expectedRevision: config.revision });
-    notify(t('Đã lưu cấu hình xuống kho ứng dụng. Quyết định mới dùng revision ', 'Configuration saved to application storage. New decisions use revision ') + config.revision);
-    renderAdmin();
+  async function saveConfig(next, form) {
+    const edits = adminEditVersion;
+    const saved = await api('/config', { config: next, expectedRevision: config.revision });
+    return acceptSavedConfig(saved, form, edits, t('Đã lưu cấu hình xuống kho ứng dụng. Quyết định mới dùng revision ', 'Configuration saved to application storage. New decisions use revision ') + saved.revision);
+  }
+  function acceptSavedConfig(saved, form, edits, message) {
+    if (!form.isConnected || edits !== adminEditVersion || saved.revision < config.revision) {
+      if (saved.revision > config.revision && (!pendingConfig || saved.revision > pendingConfig.revision)) pendingConfig = saved;
+      notify(t('Đã lưu v', 'Saved revision ') + saved.revision + t('. Giữ phần đang sửa; hãy sao chép trước khi tải lại cấu hình.', '. New edits kept. Copy them before reloading configuration.'));
+      return false;
+    }
+    config = saved; pendingConfig = null;
+    renderAdmin(); $('main').focus(); notify(message);
+    return true;
   }
   function renderAdmin() {
+    if (pendingConfig && pendingConfig.revision > config.revision) config = pendingConfig;
+    pendingConfig = null;
     clearTimeout(runtimeExpiryTimer);
     const url = new URL(location.href); url.searchParams.set('section', adminTab); history.replaceState(null, '', url);
     $('shell').classList.add('admin'); $('sidebar').hidden = false;
@@ -430,7 +443,7 @@
         const changed = { ...m, id: val('modelId'), label: val('modelLabel'), provider: val('provider'), providerModelId: val('providerModelId') || null, enabled: $('modelEnabled').checked, verification: $('modelVerified').checked ? 'verified' : 'unverified', capabilities: csv(val('capabilities')), strengths: split(val('strengths')), limitations: split(val('limitations')), costTier: val('costTier'), source: { ...m.source, kind: 'user-supplied', confidence: 'user-configured', checkedAt: $('modelVerified').checked ? new Date().toISOString() : null, references: val('modelSource') ? [val('modelSource'), ...(m.source.references || []).slice(1)] : [] } };
         if (!model && next.models.some(x => x.id === changed.id)) throw new Error(t('ID model đã tồn tại.', 'This model ID already exists.'));
         if (model) next.models[next.models.findIndex(x => x.id === model.id)] = changed; else next.models.push(changed);
-        selectedModel = changed.id; await saveConfig(next);
+        selectedModel = changed.id; await saveConfig(next, form);
       });
     };
     detail.replaceChildren(form);
@@ -445,7 +458,7 @@
       node('p', { class: 'ws-subtle' }, t('Các quy tắc bảo toàn bằng chứng, context, fallback và chống sửa đè vẫn được giữ khi lưu.', 'Evidence, context retention, fallback and write isolation rules are preserved when saving.')));
     $('page').append(form); $('maxCandidates').type = 'number'; $('maxCandidates').min = '1'; $('maxCandidates').max = '5';
     const save = node('button', { type: 'submit', class: 'btn primary' }, t('Lưu quy tắc', 'Save policy')); form.append(save);
-    form.onsubmit = event => { event.preventDefault(); const max = Number(val('maxCandidates')); if (!Number.isInteger(max) || max < 1 || max > 5) { errorBox(form, new Error(t('Số ứng viên phải là số nguyên từ 1 đến 5.', 'Maximum candidates must be an integer from 1 to 5.')), 'maxCandidates'); return; } action(save, form, async () => { const next = structuredClone(config); Object.assign(next.policy, { leadProfileId: val('leadProfileId') || null, maxCandidates: max, reviewRequiredFor: split(val('reviewRequiredFor')), budget: { ...p.budget, maxCostTier: val('maxCostTier') || null } }); await saveConfig(next); }); };
+    form.onsubmit = event => { event.preventDefault(); const max = Number(val('maxCandidates')); if (!Number.isInteger(max) || max < 1 || max > 5) { errorBox(form, new Error(t('Số ứng viên phải là số nguyên từ 1 đến 5.', 'Maximum candidates must be an integer from 1 to 5.')), 'maxCandidates'); return; } action(save, form, async () => { const next = structuredClone(config); Object.assign(next.policy, { leadProfileId: val('leadProfileId') || null, maxCandidates: max, reviewRequiredFor: split(val('reviewRequiredFor')), budget: { ...p.budget, maxCostTier: val('maxCostTier') || null } }); await saveConfig(next, form); }); };
   }
   function renderRuntime(page) {
     const viewedRevision = config.revision;
@@ -469,7 +482,7 @@
         node('p', { class: 'ws-meta' }, (model?.providerModelId || t('Chưa đặt model ID', 'Model ID not set')) + ' · ' + (adapter?.label || profile.runtimeId)),
         node('div', { id: 'access-' + profile.id, class: 'ws-access' }));
       const save = node('button', { type: 'submit', class: 'btn ghost' }, t('Lưu ánh xạ', 'Save mapping')); mapping.append(save);
-      form.onsubmit = event => { event.preventDefault(); action(save, form, async () => { const next = structuredClone(config); const p = next.profiles.find(x => x.id === profile.id); p.modelId = val('model-' + profile.id); p.runtimeId = val('runtime-' + profile.id); p.enabled = $('enabled-' + profile.id).checked; await saveConfig(next); $('mapping-toggle-' + profile.id)?.focus(); }); };
+      form.onsubmit = event => { event.preventDefault(); action(save, form, async () => { const next = structuredClone(config); const p = next.profiles.find(x => x.id === profile.id); p.modelId = val('model-' + profile.id); p.runtimeId = val('runtime-' + profile.id); p.enabled = $('enabled-' + profile.id).checked; if (await saveConfig(next, form)) $('mapping-toggle-' + profile.id)?.focus(); }); };
       const probe = button('', async () => {
         renderProbeButton(profile.id); if (probe.disabled) return;
         probingProfiles.add(profile.id); renderProbeButton(profile.id);
@@ -606,13 +619,13 @@
       if (new Blob([importDraft]).size > 512 * 1024) throw new Error(t('Cấu hình vượt quá 512 KiB.', 'Configuration exceeds 512 KiB.'));
       let imported; try { imported = JSON.parse(importDraft); } catch { throw new Error(t('JSON chưa hợp lệ. Bản đang nhập được giữ lại.', 'Invalid JSON. Your import draft is retained.')); }
       if (!imported || imported.schema !== config.schema) throw new Error(t('Schema cấu hình không được hỗ trợ.', 'Unsupported configuration schema.'));
-      await saveConfig(imported); importDraft = ''; $('configImportDraft').value = '';
+      if (await saveConfig(imported, form)) { importDraft = ''; $('configImportDraft').value = ''; }
     }); };
     const reset = node('form', { class: 'ws-panel', novalidate: true }, node('h2', {}, t('Khôi phục mặc định theo nhóm', 'Restore group defaults')),
       node('p', { class: 'ws-warning' }, t('Nhóm được chọn sẽ được thay bằng mặc định đóng gói. Bản lưu trước có backup; các run đang chạy giữ snapshot cũ.', 'The selected group is replaced with packaged defaults. The previous save is backed up; active runs retain their existing snapshot.')),
       selectField(t('Nhóm cần khôi phục', 'Group to restore'), 'resetGroup', [['models', t('Model & năng lực', 'Models & capabilities')], ['policy', t('Quy tắc chia việc', 'Routing policy')], ['runtimes', t('Runtime', 'Runtimes')]], 'policy'));
     const restore = node('button', { type: 'submit', class: 'btn ghost' }, t('Khôi phục nhóm đã chọn', 'Restore selected group')); reset.append(restore);
-    reset.onsubmit = event => { event.preventDefault(); action(restore, reset, async () => { config = await api('/config/reset', { group: val('resetGroup'), expectedRevision: config.revision }); renderAdmin(); notify(t('Đã khôi phục nhóm mặc định.', 'Group defaults restored.')); }); };
+    reset.onsubmit = event => { event.preventDefault(); action(restore, reset, async () => { const edits = adminEditVersion, saved = await api('/config/reset', { group: val('resetGroup'), expectedRevision: config.revision }); acceptSavedConfig(saved, reset, edits, t('Đã khôi phục nhóm mặc định.', 'Group defaults restored.')); }); };
     page.append(reset);
   }
   function renderHosts(page) {

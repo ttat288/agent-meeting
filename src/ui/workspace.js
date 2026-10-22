@@ -15,6 +15,7 @@
   const embedded = !!$('workView');
   let config, work = { tasks: [], runs: [] }, tab = 'tasks', adminTab = 'models', selectedModel, runtime = [];
   let remote = { hosts: [], runs: [] }, remoteError = null, metrics = null, metricsError = null, importDraft = '';
+  let workReadVersion = 0, activeWorkReads = 0, pollController, pendingWork = null, syncState = 'live';
   const node = (tag, attrs = {}, ...children) => {
     const e = document.createElement(tag);
     for (const [k, v] of Object.entries(attrs)) {
@@ -31,20 +32,26 @@
   const heading = (title, intro) => [node('p', { class: 'ws-eyebrow' }, admin ? t('Quản trị', 'Administration') : t('Không gian làm việc', 'Workspace')), node('h1', {}, title), node('p', { class: 'ws-intro' }, intro)];
   function notify(message) { $('notice').textContent = message; $('notice').hidden = false; setTimeout(() => { $('notice').hidden = true; }, 6000); }
   async function api(endpoint, data) {
-    const response = await fetch(base + endpoint, { method: data === undefined ? 'GET' : 'POST', headers: data === undefined ? {} : { 'Content-Type': 'application/json' }, body: data === undefined ? undefined : JSON.stringify(data) });
-    let result;
-    try { result = await response.json(); } catch { result = {}; }
-    if (!response.ok) {
-      const error = new Error(response.status === 409 && endpoint.startsWith('/config') ? t('Cấu hình đã thay đổi ở nơi khác. Bản đang sửa được giữ lại. Tải lại cấu hình để lấy revision mới; thao tác này bỏ bản đang sửa.', 'Configuration changed elsewhere. Your draft is retained. Reload configuration to get the new revision; this discards your draft.') : result.error || result.message || t('Yêu cầu thất bại', 'Request failed') + ' (' + response.status + ')');
-      error.status = response.status; error.configConflict = response.status === 409 && endpoint.startsWith('/config');
-      throw error;
-    }
-    if (endpoint === '/work' && data === undefined) { metrics = result.metrics; metricsError = null; window.dispatchEvent(new CustomEvent('am-work-state', { detail: result })); }
-    return result;
+    const readingWork = endpoint === '/work' && data === undefined;
+    if (readingWork) { workReadVersion++; activeWorkReads++; pollController?.abort(); }
+    try {
+      const response = await fetch(base + endpoint, { method: data === undefined ? 'GET' : 'POST', headers: data === undefined ? {} : { 'Content-Type': 'application/json' }, body: data === undefined ? undefined : JSON.stringify(data) });
+      let result;
+      try { result = await response.json(); } catch { result = {}; }
+      if (!response.ok) {
+        const error = new Error(response.status === 409 && endpoint.startsWith('/config') ? t('Cấu hình đã thay đổi ở nơi khác. Bản đang sửa được giữ lại. Tải lại cấu hình để lấy revision mới; thao tác này bỏ bản đang sửa.', 'Configuration changed elsewhere. Your draft is retained. Reload configuration to get the new revision; this discards your draft.') : result.error || result.message || t('Yêu cầu thất bại', 'Request failed') + ' (' + response.status + ')');
+        error.status = response.status; error.configConflict = response.status === 409 && endpoint.startsWith('/config');
+        throw error;
+      }
+      if (endpoint === '/work' && data === undefined) { metrics = result.metrics; metricsError = null; window.dispatchEvent(new CustomEvent('am-work-state', { detail: result })); }
+      return result;
+    } finally { if (readingWork) activeWorkReads--; }
   }
+  function acceptWork(next) { work = next; pendingWork = null; }
   function friendlyError(message) {
     const translations = {
       'Independent verification failed': 'Test độc lập thất bại. Xem bằng chứng, sửa yêu cầu hoặc checkout rồi chạy lại.',
+      'Runtime reported permission denials': 'CLI đã từ chối một thao tác. Kiểm tra quyền CLI và phạm vi task trước khi thử lại.',
       'Acceptance criteria required': 'Cần ít nhất một tiêu chí nghiệm thu.',
       'Runtime access is unverified or routing constraints reject this task; probe the profile first': 'Chưa xác nhận quyền truy cập runtime hoặc task không đáp ứng quy tắc chia việc. Vào Quản trị → Agent & runtime để kiểm tra hồ sơ.',
       'Task changed; reload before saving this draft': 'Task đã thay đổi. Bản nháp được giữ theo revision cũ; làm mới để xem yêu cầu hiện tại.',
@@ -70,8 +77,9 @@
   async function action(btn, container, fn) {
     btn.disabled = true;
     container.setAttribute('aria-busy', 'true');
+    renderSyncStatus();
     try { await fn(); } catch (e) { errorBox(container, e); }
-    finally { btn.disabled = false; container.removeAttribute('aria-busy'); }
+    finally { btn.disabled = false; container.removeAttribute('aria-busy'); renderSyncStatus(); }
   }
   const field = (label, id, value = '', hint = '', type = 'input') => {
     const input = node(type === 'textarea' ? 'textarea' : 'input', { id, name: id, value, type: type === 'textarea' ? null : 'text' });
@@ -81,7 +89,7 @@
   const selectField = (label, id, options, value) => node('label', { class: 'ws-field', for: id }, node('span', {}, label), node('select', { id, name: id }, options.map(([v, text]) => node('option', { value: v, selected: v === value }, text))));
   const split = value => value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
   const csv = value => value.split(',').map(s => s.trim()).filter(Boolean);
-  const statusText = value => ({ planned: t('Đã lên kế hoạch', 'Planned'), ready: t('Chờ kiểm tra điều kiện', 'Awaiting readiness checks'), queued: t('Đang chờ', 'Queued'), running: t('Đang chạy', 'Running'), reported: t('Agent đã báo cáo', 'Agent reported'), verifying: t('Đang kiểm chứng', 'Verifying'), verified: t('Đã kiểm chứng', 'Verified'), integrating: t('Chờ tích hợp', 'Awaiting integration'), done: t('Đã nghiệm thu', 'Accepted'), failed: t('Thất bại', 'Failed'), cancelled: t('Đã hủy', 'Cancelled'), rejected: t('Bị từ chối', 'Rejected'), interrupted: t('Bị gián đoạn', 'Interrupted'), timeout: t('Hết thời gian', 'Timed out'), 'output-limit': t('Vượt giới hạn đầu ra', 'Output limit exceeded'), lost: t('Mất kết nối / lease hết hạn', 'Connection lost / lease expired'), leased: t('Worker đã nhận lease', 'Worker holds lease'), integrated: t('Đã tích hợp', 'Integrated'), stale: t('Yêu cầu đã thay đổi', 'Requirements changed'), retired: t('Lịch sử', 'History'), unknown: t('Chưa biết', 'Unknown') })[value] || value;
+  const statusText = value => ({ planned: t('Đã lên kế hoạch', 'Planned'), ready: t('Chờ kiểm tra điều kiện', 'Awaiting readiness checks'), queued: t('Đang chờ', 'Queued'), running: t('Đang chạy', 'Running'), reported: t('Agent đã báo cáo', 'Agent reported'), verifying: t('Đang kiểm chứng', 'Verifying'), verified: t('Đã kiểm chứng', 'Verified'), integrating: t('Chờ tích hợp', 'Awaiting integration'), done: t('Đã tích hợp và test', 'Integrated and tested'), failed: t('Thất bại', 'Failed'), cancelled: t('Đã hủy', 'Cancelled'), rejected: t('Bị từ chối', 'Rejected'), interrupted: t('Bị gián đoạn', 'Interrupted'), timeout: t('Hết thời gian', 'Timed out'), 'output-limit': t('Vượt giới hạn đầu ra', 'Output limit exceeded'), lost: t('Mất kết nối / lease hết hạn', 'Connection lost / lease expired'), leased: t('Worker đã nhận lease', 'Worker holds lease'), integrated: t('Đã tích hợp', 'Integrated'), stale: t('Yêu cầu đã thay đổi', 'Requirements changed'), retired: t('Lịch sử', 'History'), unknown: t('Chưa biết', 'Unknown') })[value] || value;
   const modeText = value => ({ discuss: t('Trao đổi', 'Discuss'), plan: t('Lập kế hoạch', 'Plan'), execute: t('Thực hiện', 'Execute'), local: t('Cùng máy', 'Local'), remote: t('Nhiều máy', 'Remote'), mixed: t('Kết hợp', 'Mixed'), invited: t('Mời bên ngoài', 'Invited'), managed: t('Tool quản lý', 'Managed') })[value] || value;
   const json = value => node('pre', { class: 'ws-code' }, JSON.stringify(value, null, 2));
   const val = id => $(id).value.trim();
@@ -127,7 +135,7 @@
     form.onsubmit = event => { event.preventDefault(); if (!split(val(id('acceptance'))).length) { errorBox(form, new Error(t('Cần ít nhất một tiêu chí nghiệm thu.', 'At least one acceptance criterion is required.')), id('acceptance')); return; } action(save, form, async () => {
       await api('/work/tasks/' + encodeURIComponent(task.id) + '/configure', { ...readDraft(), expectedRevision: task.requirementRevision });
       try { localStorage.removeItem(taskDraftKey(task)); } catch {}
-      work = await api('/work'); renderTaskList(); notify(t('Đã lưu; task ID được giữ nguyên. Chưa khởi chạy agent.', 'Saved with the same task ID. No agent has been launched.'));
+      acceptWork(await api('/work')); renderTaskList(); notify(t('Đã lưu; task ID được giữ nguyên. Chưa khởi chạy agent.', 'Saved with the same task ID. No agent has been launched.'));
     }); };
     return node('details', { class: 'ws-configure' }, node('summary', {}, t('Chuẩn bị thực hiện / sửa yêu cầu', 'Prepare execution / edit requirements')), form);
   }
@@ -135,17 +143,43 @@
   const disclosure = (label, ...content) => node('details', { class: 'ws-disclosure' }, node('summary', {}, label), ...content);
   const viewLink = (hash, label, primary = false) => node('a', { class: 'btn ' + (primary ? 'primary' : 'ghost'), href: '#' + hash }, label);
   const activeRun = run => ['queued', 'starting', 'running', 'verifying', 'integrating'].includes(run.status);
+  function evidencePassed(entry) { return !!entry && typeof entry === 'object' && entry.exitCode === 0 && !entry.error && !entry.timeout && !entry.cancelled; }
+  function renderSyncStatus() {
+    const status = $('workSync'); if (!status) return;
+    const page = $('page'), busy = page.getAttribute('aria-busy') === 'true' || !!page.querySelector('[aria-busy=true]');
+    const signature = syncState + ':' + !!pendingWork + ':' + busy;
+    if (status.dataset.state === signature) return;
+    status.dataset.state = signature;
+    status.replaceChildren(node('span', { role: 'status' }, syncState === 'offline'
+      ? t('Mất kết nối · đang thử lại', 'Connection lost · retrying')
+      : pendingWork ? t('Có cập nhật', 'Updates available') : t('Tự cập nhật', 'Live updates')));
+    if (pendingWork) { const apply = button(t('Xem cập nhật', 'Show updates'), () => applyWorkUpdate(true)); apply.disabled = busy; status.append(apply); }
+  }
+  function applyWorkUpdate(explicit = false) {
+    if (!pendingWork) return;
+    const page = $('page'), list = $('taskList');
+    // A background update must not discard an edit, close evidence being read,
+    // or steal keyboard focus. The explicit button leaves saved drafts intact.
+    if (page.querySelector('[aria-busy=true]') || page.getAttribute('aria-busy') === 'true') return;
+    if (!explicit && (list?.contains(document.activeElement) || list?.querySelector('details[open]'))) return;
+    const scroll = $('workView').scrollTop;
+    work = pendingWork.work; remote = pendingWork.remote; pendingWork = null;
+    metrics = work.metrics; metricsError = null; remoteError = null;
+    renderDaily(); $('workView').scrollTop = scroll;
+    window.dispatchEvent(new CustomEvent('am-work-state', { detail: work }));
+    if (explicit) $('workTitle').focus({ preventScroll: true });
+  }
   function renderDaily() {
     const page = $('page');
-    const refresh = button(t('Làm mới', 'Refresh'), () => action(refresh, page, async () => { work = await api('/work'); config = await api('/config'); await loadAuxiliary(); renderDaily(); notify(t('Đã cập nhật', 'Updated')); }));
+    const refresh = button(t('Làm mới', 'Refresh'), () => action(refresh, page, async () => { acceptWork(await api('/work')); config = await api('/config'); await loadAuxiliary(); renderDaily(); notify(t('Đã cập nhật', 'Updated')); }));
     let context = work.session?.context || '';
     if (!context) try { context = JSON.parse(localStorage.getItem('agent-meeting:' + hostKey + ':brief') || '{}').context || ''; } catch {}
     const title = tab === 'plan' ? t('Kế hoạch', 'Plan') : tab === 'results' ? t('Kết quả', 'Results') : t('Thực hiện', 'Execute');
-    const purpose = tab === 'plan' ? t('Chốt yêu cầu và tiêu chí cho từng việc.', 'Set requirements and acceptance criteria for each task.') : tab === 'results' ? t('Kiểm chứng báo cáo trước khi tích hợp.', 'Verify reported work before integration.') : t('Chọn hồ sơ và theo dõi phiên chạy.', 'Choose a profile and follow the run.');
-    page.replaceChildren(node('header', { class: 'ws-view-heading ws-row between' }, node('div', {}, node('h1', { tabindex: '-1', id: 'workTitle' }, title + ' (' + (work.tasks || []).filter(task => tab !== 'results' || [...(work.runs || []), ...(remote.runs || [])].some(run => run.taskId === task.id)).length + ')')), refresh),
+    page.replaceChildren(node('header', { class: 'ws-view-heading ws-row between' }, node('div', {}, node('h1', { tabindex: '-1', id: 'workTitle' }, title + ' (' + (work.tasks || []).filter(task => tab !== 'results' || [...(work.runs || []), ...(remote.runs || [])].some(run => run.taskId === task.id)).length + ')')), node('div', { class: 'ws-row' }, node('div', { id: 'workSync', class: 'ws-sync' }), refresh)),
       node('section', { id: 'taskList', 'aria-label': t('Danh sách công việc', 'Task list') }),
       disclosure(t('Bối cảnh phiên', 'Session context'), node('p', { class: 'session-context' }, context || t('Chưa có bối cảnh.', 'No context yet.')), viewLink('conversation', t('Về hội thoại', 'Go to conversation'))));
     renderTaskList();
+    renderSyncStatus();
   }
   function renderTaskList() {
     const list = $('taskList'); if (!list) return;
@@ -184,7 +218,7 @@
           const controls = node('div', { class: 'ws-run-controls' });
           const run = button(t('Chạy trong workspace riêng', 'Run in isolated workspace'), () => action(run, card, async () => {
             if (!val(profileId)) { errorBox(card, new Error(t('Chọn hồ sơ chạy trước.', 'Select an execution profile first.')), profileId); return; }
-            await api('/work/tasks/' + encodeURIComponent(task.id) + '/run', { profileId: val(profileId) }); work = await api('/work'); renderTaskList(); notify(t('Đã gửi yêu cầu chạy.', 'Run requested.'));
+            await api('/work/tasks/' + encodeURIComponent(task.id) + '/run', { profileId: val(profileId) }); acceptWork(await api('/work')); renderTaskList(); notify(t('Đã gửi yêu cầu chạy.', 'Run requested.'));
           }), true);
           const existingResult = runs.some(r => r.requirementRevision === task.requirementRevision && !['failed','cancelled','timeout','output-limit','rejected'].includes(r.status));
           run.disabled = !profiles.length || runs.some(activeRun) || existingResult;
@@ -203,18 +237,18 @@
         if (tab === 'results' && run.report) runView.append(node('p', { class: 'ws-report' }, run.report));
         if (tab === 'results' && run.changes?.length) runView.append(node('p', { class: 'ws-meta' }, t('Tệp thay đổi: ', 'Changed files: ') + run.changes.map(c => c.file).join(', ')));
         const evidence = [...(run.evidence || []), ...(run.integrationEvidence || [])];
-        if (evidence.length) runView.append(node('p', { class: 'ws-meta' }, t('Test đạt: ', 'Tests passed: ') + evidence.filter(e => e.exitCode === 0).length + '/' + evidence.length));
+        if (evidence.length) runView.append(node('p', { class: 'ws-meta' }, t('Test đạt: ', 'Tests passed: ') + evidence.filter(evidencePassed).length + '/' + evidence.length));
         if (run.error) runView.append(node('p', { class: 'ws-warning' }, friendlyError(run.error)));
         const actions = node('div', { class: 'ws-actions' });
         if (tab === 'results' && ['failed','cancelled','rejected','timeout','output-limit'].includes(run.status) && task.sourceCurrent !== false) actions.append(viewLink('execute', t('Thử lại trong Thực hiện →', 'Retry in Execute →'), true));
         if (activeRun(run) && tab === 'tasks') {
-          const cancel = button(t('Hủy phiên chạy', 'Cancel run'), () => action(cancel, runView, async () => { await api('/work/runs/' + encodeURIComponent(run.id) + '/cancel', {}); work = await api('/work'); renderTaskList(); })); actions.append(cancel);
+          const cancel = button(t('Hủy phiên chạy', 'Cancel run'), () => action(cancel, runView, async () => { await api('/work/runs/' + encodeURIComponent(run.id) + '/cancel', {}); acceptWork(await api('/work')); renderTaskList(); })); actions.append(cancel);
         }
         if (tab === 'results' && run.status === 'reported' && task.sourceCurrent !== false && run.requirementRevision === task.requirementRevision) {
-          const verify = button(t('Kiểm chứng bằng Node test', 'Verify with Node tests'), () => action(verify, runView, async () => { await api('/work/runs/' + encodeURIComponent(run.id) + '/verify', {}); work = await api('/work'); renderTaskList(); }), true); actions.append(verify);
+          const verify = button(t('Kiểm chứng bằng Node test', 'Verify with Node tests'), () => action(verify, runView, async () => { await api('/work/runs/' + encodeURIComponent(run.id) + '/verify', {}); acceptWork(await api('/work')); renderTaskList(); }), true); actions.append(verify);
         }
         if (tab === 'results' && run.status === 'verified' && task.sourceCurrent !== false && run.requirementRevision === task.requirementRevision) {
-          const integrate = button(t('Tích hợp kết quả đã kiểm chứng', 'Integrate verified result'), () => action(integrate, runView, async () => { await api('/work/runs/' + encodeURIComponent(run.id) + '/integrate', {}); work = await api('/work'); renderTaskList(); }), true); actions.append(integrate);
+          const integrate = button(t('Tích hợp kết quả đã kiểm chứng', 'Integrate verified result'), () => action(integrate, runView, async () => { await api('/work/runs/' + encodeURIComponent(run.id) + '/integrate', {}); acceptWork(await api('/work')); renderTaskList(); }), true); actions.append(integrate);
         }
         if (tab === 'tasks' && ['reported', 'verified', 'integrated'].includes(run.status)) actions.append(viewLink('results', t('Xem kết quả →', 'Review results →'), true));
         if (run.requirementRevision !== task.requirementRevision) runView.append(node('p', { class: 'ws-warning' }, t('Kết quả thuộc yêu cầu cũ; không được nghiệm thu cho revision hiện tại.', 'This result belongs to an older requirement and cannot be accepted for the current revision.')));
@@ -222,10 +256,10 @@
         for (const change of run.changes || []) if (change.after) downloads.append(node('a', { class: 'btn ghost', href: base + '/work/runs/' + encodeURIComponent(run.id) + '/artifact?path=' + encodeURIComponent(change.file) }, t('Tải kết quả: ', 'Download result: ') + change.file));
         const details = disclosure(t('Bằng chứng và tệp bàn giao', 'Evidence and handoff files'), node('p', { class: 'ws-meta' }, run.id + ' · ' + (run.profileId || '') + ' · ' + (run.reportedModel || run.actualModel || t('Model chưa biết', 'Model unknown'))), downloads);
         if (['reported', 'verified'].includes(run.status)) {
-          const rebase = button(t('Cập nhật nguồn và kiểm chứng lại', 'Refresh source and verify again'), () => action(rebase, runView, async () => { await api('/work/runs/' + encodeURIComponent(run.id) + '/rebase', {}); work = await api('/work'); renderTaskList(); })); details.append(rebase);
+          const rebase = button(t('Cập nhật nguồn và kiểm chứng lại', 'Refresh source and verify again'), () => action(rebase, runView, async () => { await api('/work/runs/' + encodeURIComponent(run.id) + '/rebase', {}); acceptWork(await api('/work')); renderTaskList(); })); details.append(rebase);
         }
 
-        for (const [i, entry] of evidence.entries()) details.append(disclosure(t('Test ', 'Test ') + (i + 1) + ' · ' + (entry.exitCode === 0 ? t('Đạt', 'Passed') : t('Không đạt', 'Failed')), node('pre', { class: 'ws-code' }, entry.output || entry.error || t('Không có đầu ra', 'No output'))));
+        for (const [i, entry] of evidence.entries()) details.append(disclosure(t('Test ', 'Test ') + (i + 1) + ' · ' + (evidencePassed(entry) ? t('Đạt', 'Passed') : t('Không đạt', 'Failed')), node('pre', { class: 'ws-code' }, entry?.output || entry?.error || t('Không có đầu ra', 'No output'))));
         details.append(disclosure(t('Nhật ký và snapshot đầy đủ', 'Full logs and snapshot'), json(run)));
         runView.append(actions, details); card.append(index === 0 ? runView : disclosure(t('Lần chạy trước · ', 'Earlier attempt · ') + statusText(run.status), runView));
       }
@@ -492,15 +526,47 @@
     if (loading) return;
     loading = true;
     const page = $('page'); page.replaceChildren(node('p', { role: 'status' }, t('Đang tải dữ liệu phiên…', 'Loading session data…')));
-    try { config = await api('/config'); if (admin) { await loadAuxiliary(); renderAdmin(); } else { await Promise.all([api('/work').then(value => { work = value; }), loadAuxiliary()]); renderDaily(); } loaded = true; if (!admin) try { localStorage.setItem(workVisitedKey, '1'); } catch {} }
+    try { config = await api('/config'); if (admin) { await loadAuxiliary(); renderAdmin(); } else { await Promise.all([api('/work').then(acceptWork), loadAuxiliary()]); renderDaily(); } loaded = true; if (!admin) try { localStorage.setItem(workVisitedKey, '1'); } catch {} }
     catch (error) { page.replaceChildren(...heading(t('Không tải được dữ liệu', 'Could not load data'), t('Kiểm tra kết nối và quyền chủ trì local. Bản nháp task đã lưu trong trình duyệt được giữ lại.', 'Check the connection and local host capability. Saved task drafts are retained in this browser.'))); errorBox(page, error); page.append(button(t('Thử lại', 'Retry'), load)); }
     finally { loading = false; }
   }
   if (embedded) {
     document.querySelector('.skip-link').onclick = event => { event.preventDefault(); $('sessionNav').querySelector('a')?.focus(); };
     let navigationVersion = 0;
+    let pollTimer, pollEtag = '', pollBusy = false, pollFailures = 0;
+    const workVisible = () => !document.hidden && ['#plan', '#execute', '#results'].includes(location.hash);
+    const signature = (data, workers) => JSON.stringify([data.tasks, data.runs, data.session, data.metrics, workers]);
+    function schedulePoll(delay = 3000) { clearTimeout(pollTimer); pollTimer = setTimeout(pollWork, delay); }
+    async function pollWork() {
+      if (pollBusy) return;
+      if (!loaded || loading || activeWorkReads || !workVisible()) { schedulePoll(); return; }
+      const nav = navigationVersion, read = workReadVersion;
+      pollBusy = true; pollController = new AbortController();
+      const deadline = setTimeout(() => pollController?.abort(), 10000);
+      try {
+        const response = await fetch(base + '/work', { headers: pollEtag ? { 'If-None-Match': pollEtag } : {}, signal: pollController.signal });
+        if (response.status !== 304 && !response.ok) throw new Error('Work update failed');
+        if (response.status !== 304) {
+          const next = await response.json();
+          const workersResponse = await fetch(base + '/remote', { signal: pollController.signal });
+          if (!workersResponse.ok) throw new Error('Worker update failed');
+          const workers = await workersResponse.json();
+          if (nav !== navigationVersion || read !== workReadVersion || !workVisible()) return;
+          pollEtag = response.headers.get('etag') || '';
+          pendingWork = signature(next, workers) === signature(work, remote) ? null : { work: next, remote: workers };
+        }
+        if (nav !== navigationVersion || read !== workReadVersion || !workVisible()) return;
+        pollFailures = 0; syncState = 'live'; applyWorkUpdate(); renderSyncStatus();
+      } catch {
+        if (nav === navigationVersion && read === workReadVersion && workVisible()) { syncState = 'offline'; pollFailures++; renderSyncStatus(); }
+      } finally {
+        clearTimeout(deadline); pollController = null; pollBusy = false;
+        schedulePoll(Math.min(30000, 3000 * 2 ** Math.min(pollFailures, 4)));
+      }
+    }
     const navigate = async () => {
       const request = ++navigationVersion;
+      pendingWork = null; pollEtag = '';
       const hash = location.hash, active = ['#plan','#execute','#results'].includes(hash);
       $('workView').hidden = !active;
       for (const a of $('sessionNav').querySelectorAll('a[href^="#"]')) { if (a.hash === hash || a.hash === '#conversation' && !active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); }
@@ -510,7 +576,7 @@
       if (!active) return;
       tab = hash === '#execute' ? 'tasks' : hash.slice(1);
       if (!loaded) { await load(); if (request === navigationVersion) $('workView').scrollTop = 0; }
-      else { try { const next = await api('/work'); if (request !== navigationVersion || location.hash !== hash) return; work = next; renderDaily(); $('workView').scrollTop = 0; } catch (error) { errorBox($('page'), error); } }
+      else { try { const next = await api('/work'); if (request !== navigationVersion || location.hash !== hash) return; acceptWork(next); renderDaily(); $('workView').scrollTop = 0; } catch (error) { errorBox($('page'), error); } }
     };
     let summaryVersion = null, summaryBusy = false;
     window.addEventListener('am-meeting-state', async event => {
@@ -519,6 +585,10 @@
       try { await api('/work'); summaryVersion = event.detail.version; } catch {} finally { summaryBusy = false; }
     });
     window.addEventListener('hashchange', navigate);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) pollController?.abort(); else schedulePoll(0); });
+    window.addEventListener('pagehide', () => { clearTimeout(pollTimer); pollController?.abort(); });
+    window.addEventListener('pageshow', () => schedulePoll(0));
     navigate();
+    schedulePoll();
   } else load();
 })();

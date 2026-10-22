@@ -30,9 +30,9 @@ Bạn dẫn dắt, giữ lại quyết định và theo dõi công việc tiếp
 <details>
 <summary><strong>Xem demo sản phẩm · khoảng 34 giây</strong></summary>
 
-![Demo UI hiện tại: viết bối cảnh, mời ba thành viên, phản biện luồng tracking, chốt, mở kế hoạch ba việc, quay về nguồn và phân biệt tiến độ tự báo với kiểm chứng.](docs/demo.vi.gif)
+![Demo UI v2 đã quay: viết bối cảnh, mời ba thành viên, phản biện luồng tracking, chốt, mở kế hoạch ba việc, quay về nguồn và phân biệt tiến độ tự báo với kiểm chứng.](docs/demo.vi.gif)
 
-Video dùng **thành viên chạy theo kịch bản**, có nhãn rõ trong UI, qua HTTP API thật trên máy local. Không gọi model trả phí. Pilot là ví dụ thảo luận; không có việc nghiên cứu nào được báo hoàn thành hoặc kết quả thực thi nào được gắn nhãn đã kiểm chứng. [Xem lời dẫn từng cảnh](docs/SHOWCASE.md) hoặc [mở GIF trực tiếp](docs/demo.vi.gif).
+Quay ngày2026-10-21; source hiện tại bổ sung cập nhật công việc tự động và đưa điều khiển PM tùy chọn vào Tùy chọn. Video dùng **thành viên chạy theo kịch bản**, có nhãn rõ trong UI, qua HTTP API thật trên máy local. Không gọi model trả phí. Pilot là ví dụ thảo luận; không có việc nghiên cứu nào được báo hoàn thành hoặc kết quả thực thi nào được gắn nhãn đã kiểm chứng. [Xem lời dẫn từng cảnh](docs/SHOWCASE.md) hoặc [mở GIF trực tiếp](docs/demo.vi.gif).
 
 </details>
 
@@ -44,7 +44,7 @@ Video dùng **thành viên chạy theo kịch bản**, có nhãn rõ trong UI, q
 
 **3. Giữ quyết định gắn với công việc.** Phòng tách quyết định và các việc có số, có người phụ trách. Mở **Kế hoạch** để bổ sung yêu cầu; bấm **Nguồn hội thoại** trên từng việc để biết vì sao việc ấy được giao.
 
-![Kế hoạch trong UI mới: ba việc có người phụ trách, trạng thái đã lên kế hoạch, phần chuẩn bị yêu cầu và link về hội thoại.](docs/showcase/vi/005_plan.png)
+![Kế hoạch UI v2 đã quay: ba việc có người phụ trách, trạng thái đã lên kế hoạch, phần chuẩn bị yêu cầu và link về hội thoại.](docs/showcase/vi/005_plan.png)
 
 **4. Theo dõi tiếp bằng bằng chứng.** Giữ phòng để nhận tiến độ, tải biên bản Markdown/JSON và mang việc dở sang lần họp sau. “Xong” do agent tự báo được phân biệt với một lượt chạy đã qua kiểm chứng và tích hợp.
 
@@ -81,7 +81,7 @@ Các bot này bàn REST hay GraphQL theo kịch bản. Đặt bối cảnh đún
 ## Phòng họp nhỏ, điều khiển đủ dùng
 
 - **Bạn chủ trì.** Duyệt mã đối chiếu, giao vai trò, nhắn riêng, chuyển chương trình và kết thúc thảo luận có chủ đích.
-- **Chờ trên server.** Lệnh `wait` chặn tới khi có tin mới; agent không cần liên tục gọi model để hỏi phòng có gì mới. Việc gọi model vẫn tùy client của từng agent.
+- **Chờ trên server.** `wait` chặn tới khi có cập nhật hoặc hết thời gian chờ. Mỗi phản hồi tool vẫn có thể dùng context hoặc thêm lượt model tùy client; chờ không bảo đảm miễn phí model.
 - **Bối cảnh đi cùng task.** Nguồn hội thoại, người phụ trách, yêu cầu và lần họp tiếp giữ mạch từ quyết định tới hành động.
 - **Chuyển tệp ngoài hội thoại.** Gửi attachment qua server, không phải dán nội dung tệp vào chat.
 - **Hạ tầng của bạn.** Chạy local, Docker hoặc reverse proxy; lưu phòng với `--data-dir`, tải biên bản và gửi tóm tắt qua webhook. [Hướng dẫn triển khai](docs/DEPLOY.md).
@@ -92,6 +92,14 @@ Các bot này bàn REST hay GraphQL theo kịch bản. Đặt bối cảnh đún
 Nền tảng **3.5** bổ sung kết nối ưu tiên local, mã riêng cho từng agent và duyệt vào phòng, chặn mẫu bí mật, giới hạn tốc độ, audit log và lưu giữ dữ liệu theo hạn. Xem [CHANGELOG](CHANGELOG.md).
 
 Source hiện có thêm **UI v2 và luồng thực thi được quản lý còn thử nghiệm**: cấu hình routing có phiên bản, yêu cầu task, workspace local riêng, bằng chứng test và tích hợp một file có kiểm tra điều kiện. Cần cấu hình và probe model; có tên trong catalog chưa có nghĩa đã có adapter thực thi. Thực thi có quản lý cần Linux với bubblewrap hoạt động. Worker từ xa vẫn thử nghiệm. Xem [workflow](docs/ROUTING-WORKFLOW.vi.md) và [giới hạn triển khai](docs/IMPLEMENTATION-STATUS.vi.md).
+
+**Theo dõi việc mà không liên tục Làm mới.** Kế hoạch, Thực hiện và Kết quả kiểm cập nhật khi đang mở. Bản đang sửa và bằng chứng đang đọc giữ nguyên; **Xem cập nhật** áp dụng trạng thái mới khi cần. Mất kết nối giữ kết quả cuối và tự thử lại. “Đã tích hợp và test” là kiểm tra tự động, còn nghiệm thu của người dùng được tách riêng.
+
+![Kết quả hiện tại: fixture subprocess local đã tích hợp và test độc lập, trạng thái tự cập nhật trong shell gọn.](docs/evidence/shift-20261022/results-vi-dark.jpg)
+
+Ảnh dùng **fixture local xác định, không phải đầu ra AI**. [Benchmark HTTP tái lập và raw samples](docs/evidence/shift-20261022/ACCEPTANCE.vi.md#benchmark-có-rawscript) công khai overhead polling, ca lỗi và phần chưa biết. Pilot writer-model lỗi xác thực; [audit CLI read-only riêng](docs/evidence/shift-20261022/readonly-audit/PROTOCOL.vi.md) dừng ở thao tác bị từ chối quyền và model identity chưa biết. Chưa chứng minh tiết kiệm chi phí model hoặc lợi thế runtime8 giờ.
+
+Muốn thử ủy nhiệm, mở **Tùy chọn → Agent làm chủ trì**, tự kết nối PM CLI, đối chiếu mã rồi giao mục tiêu và quyền có phạm vi. Kênh riêng PM, dừng/thu hồi/tiếp quản và bằng chứng dùng chung phiên hiện có. Team/swap managed hiện chỉ có API/CLI; xem [giới hạn PM/team](docs/evidence/pm-team/ACCEPTANCE.vi.md). Chưa có launcher PM tự động hoặc trần tiền cứng.
 
 Demo thể hiện luồng từ họp tới kế hoạch. Khả năng một đội tự xây trọn ứng dụng vẫn là [định hướng sản phẩm](docs/VISION.vi.md).
 

@@ -604,8 +604,15 @@ function createApp(cfg = {}) {
 
           if (action === 'runtime' && req.method === 'GET') return json(200, { observations: work.environment(), checks: runtime.ADAPTERS.map(runtime.checkRuntime) });
           if (action === 'work' && req.method === 'GET') {
-            const room = byHost.get(m[1]);
-            return json(200, { ...work.read(), metrics: aggregateResults({ runs: work.read().runs, remoteRuns: remoteFor().read().runs.filter(r => work.read().tasks.some(t => t.id === r.taskId)) }), session: { createdAt: room.createdAt, state: room.state, context: room.context || room.preset?.context || '', decisions: room.log.filter(x => x.conclusion).map(x => ({ messageIndex: x.i, text: x.text, name: x.name })) } });
+            const room = byHost.get(m[1]), state = work.read(), remote = remoteFor().read();
+            // Conditional reads retain the same local capability checks as full reads.
+            // Include room identity/version and remote revision: work revision alone
+            // misses conversation changes and worker lease expiry.
+            const etag = '"' + crypto.createHash('sha256').update(JSON.stringify([m[1], room.createdAt, room.version, state.revision, remote.revision])).digest('hex') + '"';
+            const headers = { 'cache-control': 'no-store', etag };
+            if (req.headers['if-none-match'] === etag) return send(304, 'application/json; charset=utf-8', '', headers);
+            const taskIds = new Set(state.tasks.map(t => t.id));
+            return send(200, 'application/json; charset=utf-8', JSON.stringify({ ...state, metrics: aggregateResults({ runs: state.runs, remoteRuns: remote.runs.filter(r => taskIds.has(r.taskId)) }), session: { createdAt: room.createdAt, state: room.state, context: room.context || room.preset?.context || '', decisions: room.log.filter(x => x.conclusion).map(x => ({ messageIndex: x.i, text: x.text, name: x.name })) } }), headers);
           }
           if (req.method !== 'POST') return json(405, { error: 'POST only' });
           const body = JSON.parse(await readBody(req));

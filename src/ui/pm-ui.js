@@ -4,6 +4,7 @@
   const root = document.getElementById('pmControl'), key = location.pathname.split('/').pop();
   const base = '/api/host/' + key + '/pm/';
   let state = { status: 'human' }, room, invitation, busy = false, last = '', mounted = false;
+  let historyVisible = location.hash === '#pmControl', refreshing = false, errorSource = null, roomVersion, actionVersion = 0;
   const node = (tag, attrs = {}, ...children) => {
     const e = document.createElement(tag);
     for (const [k, value] of Object.entries(attrs)) {
@@ -19,21 +20,27 @@
   const area = (name, attrs = {}) => node('textarea', { name, rows: 2, ...attrs });
   const button = (title, fn, primary = false) => node('button', { type: 'button', class: 'btn ' + (primary ? 'primary' : 'ghost'), onclick: fn }, title);
   const lines = s => s.split('\n').map(s => s.trim()).filter(Boolean);
-  const error = node('p', { class: 'err', role: 'alert' });
+  // This is a POSIX terminal command, not JSON or a JavaScript string literal.
+  function shellWord(value) { return "'" + String(value).replace(/'/g, "'\\''") + "'"; }
+  const error = node('p', { class: 'err', role: 'alert', tabindex: '-1', hidden: '' });
+  function showError(message, source = 'action') { error.textContent = message; error.hidden = !message; errorSource = message ? source : null; if (message && source === 'action') error.focus(); }
   async function request(action, body) {
-    const r = await fetch(base + action, body === undefined ? {} : { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+    const r = await fetch(base + action, { signal: AbortSignal.timeout(10000), ...(body === undefined ? {} : { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }) });
     const d = await r.json(); if (!r.ok) throw new Error(d.error || String(r.status)); return d;
   }
   async function act(action, body = {}) {
     if (busy) return;
-    busy = true; error.textContent = '';
+    actionVersion++;
+    busy = true; showError('');
     root.setAttribute('aria-busy', 'true');
     try {
       const data = await request(action, body);
       if (action === 'invite') invitation = data;
       if (['takeover','revoke'].includes(action)) invitation = null;
+      if (action === 'takeover') historyVisible = false;
       state = await request('state'); last = ''; render();
-    } catch (e) { error.textContent = e.message; }
+      if (action === 'takeover') document.getElementById('btnOptions').focus();
+    } catch (e) { showError(e.message); }
     finally { busy = false; root.removeAttribute('aria-busy'); }
   }
   const runName = value => ({ integrated: tr('Đã tích hợp'), reported: tr('Chờ kiểm chứng'), verified: tr('Chờ tích hợp'), running: tr('Đang chạy'), failed: tr('Thất bại'), cancelled: tr('Đã hủy'), interrupted: tr('Bị gián đoạn'), verifying: tr('Đang kiểm chứng'), integrating: tr('Đang tích hợp') }[value] || value);
@@ -71,12 +78,12 @@
     grantDetails.addEventListener('toggle', async () => {
       if (!grantDetails.open) return;
       try { const r = await fetch('/api/host/' + key + '/config'); const d = await r.json(); if (!r.ok) throw new Error(d.error); document.getElementById('pmProfiles').replaceChildren(...d.profiles.filter(p => p.enabled).map(p => node('option', { value: p.id }))); }
-      catch (e) { error.textContent = e.message; }
+      catch (e) { showError(e.message); }
     });
     chatForm = form(tr('Gửi riêng PM'), f => f.append(label(tr('Tin riêng cho PM'), area('text', { required: '', maxlength: '8000' }))), async (d, f) => { await act('message', { text: d.text }); if (!error.textContent) f.reset(); });
     promptArea = area('pmPrompt', { readonly: '', 'aria-label': tr('Prompt riêng cho PM'), rows: 5 });
     instructions = node('div', { class: 'pm-instructions' }, node('p', { class: 'hint' }, tr('Dán prompt riêng vào CLI của PM trên máy này, rồi đối chiếu mã và xác nhận. PM vào trước các worker.')), promptArea,
-      button(tr('Sao chép prompt PM'), async () => { try { await navigator.clipboard.writeText(promptArea.value); } catch (e) { error.textContent = e.message; } }),
+      button(tr('Sao chép prompt PM'), async () => { try { await navigator.clipboard.writeText(promptArea.value); } catch (e) { showError(e.message); } }),
       button(tr('Tạo lại lời mời PM'), () => act('invite')));
     pending = node('div', { class: 'pm-pending' });
     content.append(instructions, pending, progress, goalDetails, grantDetails, messages, chatForm);
@@ -85,8 +92,8 @@
   function prompt() {
     if (!invitation || !room) return '';
     const endpoint = location.origin + '/api/pm/' + room.agentId;
-    const cli = JSON.stringify(invitation.clientPath);
-    const connection = `AGENT_MEETING_PM_URL=${JSON.stringify(endpoint)} AGENT_MEETING_PM_TOKEN=${JSON.stringify(invitation.token)} node ${cli}`;
+    const cli = shellWord(invitation.clientPath);
+    const connection = `AGENT_MEETING_PM_URL=${shellWord(endpoint)} AGENT_MEETING_PM_TOKEN=${shellWord(invitation.token)} node ${cli}`;
     const en = lang === 'en';
     return (en ? 'You are the delegated PM; the user is the director. This invitation grants no host or execution rights. Respect repository and CLI permissions. Do not edit the source directly, launch paid CLIs, commit/push/deploy, change settings, or share secrets. Use only this local scoped API.\n' : 'Bạn là PM được ủy nhiệm; người dùng là giám đốc. Lời mời chưa cấp quyền host/thực thi. Tuân thủ quy tắc repo và quyền CLI. Không sửa source trực tiếp, gọi CLI trả phí, commit/push/deploy, đổi settings hoặc chia sẻ bí mật. Chỉ dùng API local có phạm vi này.\n') +
       `${connection} join '{"name":"PM","model":"ACTUAL_MODEL"}'\n` +
@@ -99,9 +106,14 @@
   function render() {
     if (!mounted) { mount(); if (state.status !== 'human' || location.hash === '#pmControl') details.open = true; }
     const human = state.status === 'human', active = state.status === 'active';
+    root.hidden = human && !historyVisible;
+    const menu = document.getElementById('btnPmMode');
+    menu.textContent = human && !state.id ? tr('Agent làm chủ trì') : tr('Điều hành qua PM');
+    menu.setAttribute('aria-expanded', String(!root.hidden));
+    menu.setAttribute('aria-controls', 'pmControl');
     document.body.classList.toggle('pm-mode', !human);
     summary.replaceChildren(node('strong', {}, tr('Chủ trì')), node('span', { class: 'badge' }, statusNames()[state.status] || state.status));
-    if (human) summary.append(button(tr('Agent làm chủ trì'), async () => { details.open = true; await act('invite'); }));
+    if (human) summary.append(button(tr('Agent làm chủ trì'), async () => { details.open = true; await act('invite'); }), button(tr('Đóng chi tiết'), () => { historyVisible = false; root.hidden = true; menu.setAttribute('aria-expanded', 'false'); document.getElementById('btnOptions').focus(); }));
     else {
       if (state.identity) summary.append(node('span', {class:'muted'}, `${state.identity.name} · ${state.identity.model} (${tr('tự khai báo')})`));
       summary.append(button(tr('Dừng PM'), () => act('pause')), button(tr('Thu hồi quyền PM'), () => act('revoke')), button(tr('Tôi tiếp quản'), () => act('takeover')));
@@ -128,11 +140,19 @@
     if (run) progress.append(node('a', { class: 'btn ghost', href: '#results' }, tr('Xem bằng chứng')));
   }
   async function refresh() {
-    if (busy || document.hidden) return;
-    try { const next = await request('state'); const signature = JSON.stringify({ ...next, leaseUntil: undefined }); state = next; if (signature !== last) { last = signature; render(); } }
-    catch (e) { error.textContent = e.message; if (!mounted) mount(); }
+    if (busy || refreshing || document.hidden) return;
+    refreshing = true; const version = actionVersion;
+    try { const next = await request('state'); if (busy || version !== actionVersion) return; if (errorSource === 'state') showError(''); const signature = JSON.stringify({ ...next, leaseUntil: undefined }); state = next; if (signature !== last) { last = signature; render(); } }
+    catch (e) { if (version === actionVersion && errorSource !== 'action') showError(e.message, 'state'); if (!mounted) mount(); }
+    finally { refreshing = false; }
   }
-  window.addEventListener('am-meeting-state', e => { room = e.detail; document.body.classList.toggle('pm-lobby', room.state === 'LOBBY'); if (!mounted) refresh(); });
-  window.addEventListener('hashchange', () => { if (location.hash === '#pmControl') { details.open = true; root.scrollTop = 0; detailSummary.focus(); } });
-  refresh(); setInterval(refresh, 3000);
+  document.getElementById('btnPmMode').onclick = async () => {
+    historyVisible = true; root.hidden = false; details.open = true;
+    if (state.status === 'human' && !state.id) await act('invite');
+    else { render(); detailSummary.focus(); }
+  };
+  window.addEventListener('am-meeting-state', e => { room = e.detail; document.body.classList.toggle('pm-lobby', room.state === 'LOBBY'); if (!mounted || roomVersion !== room.version) { roomVersion = room.version; refresh(); } });
+  window.addEventListener('hashchange', () => { if (location.hash === '#pmControl') { historyVisible = true; root.hidden = false; details.open = true; root.scrollTop = 0; detailSummary.focus(); } });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+  refresh(); setInterval(() => { if (state.status !== 'human' || !mounted) refresh(); }, 3000);
 })();

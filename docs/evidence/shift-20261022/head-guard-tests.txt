@@ -1,0 +1,503 @@
+TAP version 13
+# Subtest: canonical carry on a test-owned store: delta, references, guards, same-writer swap and completion
+    # Subtest: Missing continuation stays unknown; legacy checkpoint API remains compatible
+    ok 1 - Missing continuation stays unknown; legacy checkpoint API remains compatible
+      ---
+      duration_ms: 41.337247
+      type: 'test'
+      ...
+    # Subtest: Delta is validated, secret-scanned and stored atomically without summary model
+    ok 2 - Delta is validated, secret-scanned and stored atomically without summary model
+      ---
+      duration_ms: 138.605146
+      type: 'test'
+      ...
+    # Subtest: Canonical WIP binds identity, source, revisions, caller delta and retrievable evidence
+    ok 3 - Canonical WIP binds identity, source, revisions, caller delta and retrievable evidence
+      ---
+      duration_ms: 21.815583
+      type: 'test'
+      ...
+    # Subtest: Reject goal revision
+    ok 4 - Reject goal revision
+      ---
+      duration_ms: 7.856144
+      type: 'test'
+      ...
+    # Subtest: Reject plan revision
+    ok 5 - Reject plan revision
+      ---
+      duration_ms: 7.31121
+      type: 'test'
+      ...
+    # Subtest: Reject requirement revision
+    ok 6 - Reject requirement revision
+      ---
+      duration_ms: 5.75412
+      type: 'test'
+      ...
+    # Subtest: Reject run generation
+    ok 7 - Reject run generation
+      ---
+      duration_ms: 7.382145
+      type: 'test'
+      ...
+    # Subtest: Reject checkpoint generation
+    ok 8 - Reject checkpoint generation
+      ---
+      duration_ms: 6.022856
+      type: 'test'
+      ...
+    # Subtest: Reject base revision
+    ok 9 - Reject base revision
+      ---
+      duration_ms: 5.227261
+      type: 'test'
+      ...
+    # Subtest: Reject slot
+    ok 10 - Reject slot
+      ---
+      duration_ms: 7.153668
+      type: 'test'
+      ...
+    # Subtest: Reject task/run binding
+    ok 11 - Reject task/run binding
+      ---
+      duration_ms: 5.335
+      type: 'test'
+      ...
+    # Subtest: Reject goal text conflict
+    ok 12 - Reject goal text conflict
+      ---
+      duration_ms: 6.161712
+      type: 'test'
+      ...
+    # Subtest: Reject acceptance conflict
+    ok 13 - Reject acceptance conflict
+      ---
+      duration_ms: 6.91337
+      type: 'test'
+      ...
+    # Subtest: Reject source no longer current
+    ok 14 - Reject source no longer current
+      ---
+      duration_ms: 4.984127
+      type: 'test'
+      ...
+    # Subtest: Reject grant expired
+    ok 15 - Reject grant expired
+      ---
+      duration_ms: 5.633684
+      type: 'test'
+      ...
+    # Subtest: Reject grant replaced
+    ok 16 - Reject grant replaced
+      ---
+      duration_ms: 6.933757
+      type: 'test'
+      ...
+    # Subtest: Reject missing run
+    ok 17 - Reject missing run
+      ---
+      duration_ms: 3.45237
+      type: 'test'
+      ...
+    # Subtest: Reject missing base snapshot
+    ok 18 - Reject missing base snapshot
+      ---
+      duration_ms: 10.796733
+      type: 'test'
+      ...
+    # Subtest: Reject checkpoint changed without hash
+    ok 19 - Reject checkpoint changed without hash
+      ---
+      duration_ms: 6.173697
+      type: 'test'
+      ...
+    # Subtest: Reject WIP metadata inconsistent
+    ok 20 - Reject WIP metadata inconsistent
+      ---
+      duration_ms: 13.664714
+      type: 'test'
+      ...
+    # Subtest: Reject credential in selected text
+    ok 21 - Reject credential in selected text
+      ---
+      duration_ms: 15.082909
+      type: 'test'
+      ...
+    # Subtest: Reject missing next
+    ok 22 - Reject missing next
+      ---
+      duration_ms: 15.750546
+      type: 'test'
+      ...
+    # Subtest: Reject missing decisions
+    ok 23 - Reject missing decisions
+      ---
+      duration_ms: 14.717258
+      type: 'test'
+      ...
+    # Subtest: Reject missing unknowns
+    ok 24 - Reject missing unknowns
+      ---
+      duration_ms: 14.156523
+      type: 'test'
+      ...
+    # Subtest: Reject missing blocker record
+    ok 25 - Reject missing blocker record
+      ---
+      duration_ms: 14.085575
+      type: 'test'
+      ...
+    # Subtest: Reject missing attempt record
+    ok 26 - Reject missing attempt record
+      ---
+      duration_ms: 12.488709
+      type: 'test'
+      ...
+    # Subtest: Reject missing grant limits
+    ok 27 - Reject missing grant limits
+      ---
+      duration_ms: 7.967489
+      type: 'test'
+      ...
+    # Subtest: Reject stale routing revision
+    ok 28 - Reject stale routing revision
+      ---
+      duration_ms: 5.481048
+      type: 'test'
+      ...
+    # Subtest: Explicit unresolved blocker selects resolution instead of silently continuing
+    ok 29 - Explicit unresolved blocker selects resolution instead of silently continuing
+      ---
+      duration_ms: 15.348249
+      type: 'test'
+      ...
+    # Subtest: Unselected PM messages, capabilities, snapshots, reports and raw output stay private
+    ok 30 - Unselected PM messages, capabilities, snapshots, reports and raw output stay private
+      ---
+      duration_ms: 20.920918
+      type: 'test'
+      ...
+    # Subtest: Reference privacy, tamper, byte/count limits and current revision are enforced
+    ok 31 - Reference privacy, tamper, byte/count limits and current revision are enforced
+      ---
+      duration_ms: 74.613375
+      type: 'test'
+      ...
+    # Subtest: Source dirty change and WIP change invalidate capsule/reference and existing swap fence
+    ok 32 - Source dirty change and WIP change invalidate capsule/reference and existing swap fence
+      ---
+      duration_ms: 73.459815
+      type: 'test'
+      ...
+    # Subtest: Actual Git HEAD change fails even when source bytes are identical
+    ok 33 - Actual Git HEAD change fails even when source bytes are identical
+      ---
+      duration_ms: 18.540547
+      type: 'test'
+      ...
+    # Subtest: Existing ACK/quiesce fence preserves same task/run/WIP and rejects old capability
+    ok 34 - Existing ACK/quiesce fence preserves same task/run/WIP and rejects old capability
+      ---
+      duration_ms: 487.943739
+      type: 'test'
+      ...
+    # Subtest: Reported does not imply verified/integrated; historical next is not replayed
+    ok 35 - Reported does not imply verified/integrated; historical next is not replayed
+      ---
+      duration_ms: 9.444755
+      type: 'test'
+      ...
+    # Subtest: Independent verification and integrated source tests produce distinct canonical evidence
+    ok 36 - Independent verification and integrated source tests produce distinct canonical evidence
+      ---
+      duration_ms: 622.430041
+      type: 'test'
+      ...
+    # Subtest: Reject missing integrated tests
+    ok 37 - Reject missing integrated tests
+      ---
+      duration_ms: 13.198404
+      type: 'test'
+      ...
+    # Subtest: Reject cancelled tests
+    ok 38 - Reject cancelled tests
+      ---
+      duration_ms: 14.224873
+      type: 'test'
+      ...
+    # Subtest: Reject timeout tests
+    ok 39 - Reject timeout tests
+      ---
+      duration_ms: 14.677875
+      type: 'test'
+      ...
+    # Subtest: Reject failed tests
+    ok 40 - Reject failed tests
+      ---
+      duration_ms: 15.081235
+      type: 'test'
+      ...
+    # Subtest: Reject duplicate evidence
+    ok 41 - Reject duplicate evidence
+      ---
+      duration_ms: 15.152225
+      type: 'test'
+      ...
+    # Subtest: Actual production bootstrap/activation transport is counted, including repeated checkpoint
+    ok 42 - Actual production bootstrap/activation transport is counted, including repeated checkpoint
+      ---
+      duration_ms: 0.303437
+      type: 'test'
+      ...
+    1..42
+ok 1 - canonical carry on a test-owned store: delta, references, guards, same-writer swap and completion
+  ---
+  duration_ms: 2637.914395
+  type: 'test'
+  ...
+# Subtest: PM CLI journey creates one canonical task, runs subprocess, verifies and integrates with evidence; private channel stays private
+ok 2 - PM CLI journey creates one canonical task, runs subprocess, verifies and integrates with evidence; private channel stays private
+  ---
+  duration_ms: 964.859686
+  type: 'test'
+  ...
+# Subtest: PM joins before workers, confirmation is explicit, pending capability cannot read private history; spoof and remote/CSRF blocked
+ok 3 - PM joins before workers, confirmation is explicit, pending capability cannot read private history; spoof and remote/CSRF blocked
+  ---
+  duration_ms: 57.044717
+  type: 'test'
+  ...
+# Subtest: PM cursor suppresses unchanged snapshots but delivers pre-wait changes and lease/auth transitions
+ok 4 - PM cursor suppresses unchanged snapshots but delivers pre-wait changes and lease/auth transitions
+  ---
+  duration_ms: 75.852535
+  type: 'test'
+  ...
+# Subtest: no execution without goal/grant, explicit unknown cost consent, safe paths and immutable tests; no paid probe via PM
+ok 5 - no execution without goal/grant, explicit unknown cost consent, safe paths and immutable tests; no paid probe via PM
+  ---
+  duration_ms: 108.205401
+  type: 'test'
+  ...
+# Subtest: scope/profile/requirement changes cannot escape director grant; run attempts are capped
+ok 6 - scope/profile/requirement changes cannot escape director grant; run attempts are capped
+  ---
+  duration_ms: 404.839595
+  type: 'test'
+  ...
+# Subtest: pause during a run requests cancellation, blocks stale operations and preserves actual outcome
+ok 7 - pause during a run requests cancellation, blocks stale operations and preserves actual outcome
+  ---
+  duration_ms: 115.126282
+  type: 'test'
+  ...
+# Subtest: revoke during a run requests cancellation, blocks stale operations and preserves actual outcome
+ok 8 - revoke during a run requests cancellation, blocks stale operations and preserves actual outcome
+  ---
+  duration_ms: 115.888809
+  type: 'test'
+  ...
+# Subtest: takeover during a run requests cancellation, blocks stale operations and preserves actual outcome
+ok 9 - takeover during a run requests cancellation, blocks stale operations and preserves actual outcome
+  ---
+  duration_ms: 108.063929
+  type: 'test'
+  ...
+# Subtest: goal during a run requests cancellation, blocks stale operations and preserves actual outcome
+ok 10 - goal during a run requests cancellation, blocks stale operations and preserves actual outcome
+  ---
+  duration_ms: 115.771451
+  type: 'test'
+  ...
+# Subtest: lease loss, restart and old meeting cannot silently resume or dispatch duplicate work
+ok 11 - lease loss, restart and old meeting cannot silently resume or dispatch duplicate work
+  ---
+  duration_ms: 49.361862
+  type: 'test'
+  ...
+# Subtest: expert review requirement cannot be bypassed by a successful PM report or passed tests
+ok 12 - expert review requirement cannot be bypassed by a successful PM report or passed tests
+  ---
+  duration_ms: 491.113006
+  type: 'test'
+  ...
+# Subtest: takeover keeps private goal history across actual room persistence and server restart
+ok 13 - takeover keeps private goal history across actual room persistence and server restart
+  ---
+  duration_ms: 50.444033
+  type: 'test'
+  ...
+# Subtest: new grant cannot authorize an old reported run; replan reuses task ID with a new requirement revision
+ok 14 - new grant cannot authorize an old reported run; replan reuses task ID with a new requirement revision
+  ---
+  duration_ms: 235.98787
+  type: 'test'
+  ...
+# Subtest: profile/model catalog revision is pinned by the grant; a config change requires new director authorization
+ok 15 - profile/model catalog revision is pinned by the grant; a config change requires new director authorization
+  ---
+  duration_ms: 53.026315
+  type: 'test'
+  ...
+# Subtest: packaged Node PM client reaches a localhost room without changing settings or launching a model
+ok 16 - packaged Node PM client reaches a localhost room without changing settings or launching a model
+  ---
+  duration_ms: 196.93763
+  type: 'test'
+  ...
+# Subtest: same-byte source HEAD movement after integration cannot receive a current PM completion report
+ok 17 - same-byte source HEAD movement after integration cannot receive a current PM completion report
+  ---
+  duration_ms: 797.889378
+  type: 'test'
+  ...
+# Subtest: event-driven team end to end: same slot swap, one writer, WIP, independent verification, integrated evidence and PM report
+ok 18 - event-driven team end to end: same slot swap, one writer, WIP, independent verification, integrated evidence and PM report
+  ---
+  duration_ms: 2050.578332
+  type: 'test'
+  ...
+# Subtest: team requires revision approval; unknown cost, stale scopes, spoof and replay cannot dispatch or promote
+ok 19 - team requires revision approval; unknown cost, stale scopes, spoof and replay cannot dispatch or promote
+  ---
+  duration_ms: 1122.50119
+  type: 'test'
+  ...
+# Subtest: team pause cancels managed process, invalidates capability and prevents stale swap/result
+ok 20 - team pause cancels managed process, invalidates capability and prevents stale swap/result
+  ---
+  duration_ms: 766.667583
+  type: 'test'
+  ...
+# Subtest: team revoke cancels managed process, invalidates capability and prevents stale swap/result
+ok 21 - team revoke cancels managed process, invalidates capability and prevents stale swap/result
+  ---
+  duration_ms: 743.681236
+  type: 'test'
+  ...
+# Subtest: team goal cancels managed process, invalidates capability and prevents stale swap/result
+ok 22 - team goal cancels managed process, invalidates capability and prevents stale swap/result
+  ---
+  duration_ms: 666.385124
+  type: 'test'
+  ...
+# Subtest: team takeover cancels managed process, invalidates capability and prevents stale swap/result
+ok 23 - team takeover cancels managed process, invalidates capability and prevents stale swap/result
+  ---
+  duration_ms: 673.729106
+  type: 'test'
+  ...
+# Subtest: blocking events coalesce, persist unacknowledged while PM disconnected, enforce wake cap and remain private
+ok 24 - blocking events coalesce, persist unacknowledged while PM disconnected, enforce wake cap and remain private
+  ---
+  duration_ms: 378.936276
+  type: 'test'
+  ...
+# Subtest: successor bad-ack keeps old writer, consumes bounded reservation and never promotes
+ok 25 - successor bad-ack keeps old writer, consumes bounded reservation and never promotes
+  ---
+  duration_ms: 934.674162
+  type: 'test'
+  ...
+# Subtest: successor timeout keeps old writer, consumes bounded reservation and never promotes
+ok 26 - successor timeout keeps old writer, consumes bounded reservation and never promotes
+  ---
+  duration_ms: 1952.981878
+  type: 'test'
+  ...
+# Subtest: source/WIP changes make checkpoint stale and cannot be promoted or integrated
+ok 27 - source/WIP changes make checkpoint stale and cannot be promoted or integrated
+  ---
+  duration_ms: 729.167928
+  type: 'test'
+  ...
+# Subtest: PM lease can lapse during delegated work; grant/time expiry instead cancels and retains a guard event
+ok 28 - PM lease can lapse during delegated work; grant/time expiry instead cancels and retains a guard event
+  ---
+  duration_ms: 658.840799
+  type: 'test'
+  ...
+# Subtest: restart preserves pending events/checkpoint but revokes capabilities and cannot silently resume or duplicate run
+ok 29 - restart preserves pending events/checkpoint but revokes capabilities and cannot silently resume or duplicate run
+  ---
+  duration_ms: 370.675432
+  type: 'test'
+  ...
+# Subtest: packaged watch blocks in code and returns actionable data once, without snapshots or automatic ack
+ok 30 - packaged watch blocks in code and returns actionable data once, without snapshots or automatic ack
+  ---
+  duration_ms: 800.659534
+  type: 'test'
+  ...
+# Subtest: runtime requests its own bounded same-slot swap via structured protocol; PM performs no progress calls
+ok 31 - runtime requests its own bounded same-slot swap via structured protocol; PM performs no progress calls
+  ---
+  duration_ms: 1764.578014
+  type: 'test'
+  ...
+# Subtest: pending successor readiness + goal never promotes a stale writer
+ok 32 - pending successor readiness + goal never promotes a stale writer
+  ---
+  duration_ms: 707.92379
+  type: 'test'
+  ...
+# Subtest: pending successor readiness + revoke never promotes a stale writer
+ok 33 - pending successor readiness + revoke never promotes a stale writer
+  ---
+  duration_ms: 707.946078
+  type: 'test'
+  ...
+# Subtest: pending successor readiness + source never promotes a stale writer
+ok 34 - pending successor readiness + source never promotes a stale writer
+  ---
+  duration_ms: 1245.723407
+  type: 'test'
+  ...
+# Subtest: unknown cost and invocation budget are independent guards, neither implies a spending cap
+ok 35 - unknown cost and invocation budget are independent guards, neither implies a spending cap
+  ---
+  duration_ms: 1081.89562
+  type: 'test'
+  ...
+# Subtest: allowlisted model change preserves task/slot/WIP and records actual runtime identity per generation
+ok 36 - allowlisted model change preserves task/slot/WIP and records actual runtime identity per generation
+  ---
+  duration_ms: 1687.577859
+  type: 'test'
+  ...
+# Subtest: same-byte Git HEAD change blocks team checkpoint without promoting a stale generation
+ok 37 - same-byte Git HEAD change blocks team checkpoint without promoting a stale generation
+  ---
+  duration_ms: 670.514954
+  type: 'test'
+  ...
+# Subtest: same-byte Git HEAD change blocks team swap without promoting a stale generation
+ok 38 - same-byte Git HEAD change blocks team swap without promoting a stale generation
+  ---
+  duration_ms: 679.435619
+  type: 'test'
+  ...
+# Subtest: same-byte Git HEAD change blocks team pending-readiness without promoting a stale generation
+ok 39 - same-byte Git HEAD change blocks team pending-readiness without promoting a stale generation
+  ---
+  duration_ms: 1253.008833
+  type: 'test'
+  ...
+# Subtest: same-byte HEAD movement after integration blocks a team result event
+ok 40 - same-byte HEAD movement after integration blocks a team result event
+  ---
+  duration_ms: 1740.307906
+  type: 'test'
+  ...
+1..40
+# tests 82
+# suites 0
+# pass 82
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 30462.407668

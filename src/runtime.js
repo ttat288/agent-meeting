@@ -37,13 +37,15 @@ function parseOutput(adapter, stdout) {
   const hasError = obj.error != null && obj.error !== false && String(obj.error).trim().length > 0;
   const success = !hasError && (adapter === 'agy' ? obj.status === 'SUCCESS' && text.trim().length > 0 : obj.type === 'result' && obj.subtype === 'success' && !obj.is_error && text.trim().length > 0);
   const models = obj.modelUsage && typeof obj.modelUsage === 'object' ? Object.keys(obj.modelUsage) : [];
+  const permissionDenials = (Array.isArray(obj.permission_denials) ? obj.permission_denials.length : 0)
+    + (adapter === 'agy' && Array.isArray(obj.denied_actions) ? obj.denied_actions.length : 0);
   // agy response contracts vary. Only machine fields count; prose self-identification is not evidence.
-  const reportedModel = models.length === 1 ? models[0] : typeof obj.model === 'string' ? obj.model : 'unknown';
+  const reportedModel = models.length === 1 ? models[0] : models.length > 1 ? 'unknown' : typeof obj.model === 'string' ? obj.model : 'unknown';
   return { valid: success, reportedModel,
     text: String(obj.result ?? obj.response ?? obj.text ?? '').slice(0, 65536), usage: obj.usage || null,
-    costUsd: Number.isFinite(obj.total_cost_usd) ? obj.total_cost_usd : null,
-    permissionDenials: Array.isArray(obj.permission_denials) ? obj.permission_denials.length : 0,
-    error: !success ? String(obj.error || obj.result || obj.subtype || obj.status || 'Missing positive success result').slice(0, 1000) : null };
+    costUsd: Number.isFinite(obj.total_cost_usd) && obj.total_cost_usd >= 0 ? obj.total_cost_usd : null,
+    permissionDenials,
+    error: !success ? String(obj.error || obj.result || obj.subtype || obj.status || 'Missing positive success result').slice(0, 1000) : permissionDenials ? 'Runtime reported permission denials' : null };
 }
 function runCli(options) {
   const { adapter, workspace, timeoutMs = 120000, signal } = options;

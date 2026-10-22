@@ -3,7 +3,7 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const { execFileSync } = require('child_process');
-const { checkTask } = require('./work');
+const { checkTask, gitRevision } = require('./work');
 const { findSecret } = require('./meeting');
 const fail = (message, status = 409) => { throw Object.assign(new Error(message), { status }); };
 const hash = value => crypto.createHash('sha256').update(String(value)).digest('hex');
@@ -206,7 +206,7 @@ class PmOperator {
       }
       if (p.grant?.team && !p.team?.events.some(e => e.kind === 'result' && e.runId === run.id && e.acked)) fail('Acknowledge the team result event before PM acceptance');
       const complete = run.status === 'integrated';
-      if (complete && require('./work').changes(run.verifiedSnapshot, require('./work').sourceInventory(run.source)).length) fail('Integrated source changed before PM acceptance');
+      if (complete && (gitRevision(run.source) !== run.baseRevision || require('./work').changes(run.verifiedSnapshot, require('./work').sourceInventory(run.source)).length)) fail('Integrated source changed before PM acceptance');
       const report = { runId: run.id, taskId: run.taskId, goalRevision: p.goalRevision, status: complete ? 'completed' : 'blocked', summary: text(input.text), acceptance: p.acceptance, runtimeSessions: run.sessions || [], elapsedMs: run.elapsedMs ?? null, evidence: evidenceSummary(run.evidence), integrationEvidence: evidenceSummary(run.integrationEvidence), requestedModel: run.requestedModel, actualModel: run.reportedModel, usage: run.usage ?? null, costUsd: run.costUsd ?? null, pmUsage: null, pmCostUsd: null, externalLeadUsage: null, externalLeadCostUsd: null, totalCostUsd: null, limitations: this.state().limits };
       this.update(p => { p.report = report; if (p.team && complete) p.team.status = 'completed'; this.message(p, 'pm', report.summary); this.event(p, 'report', 'pm', { runId: run.id, status: report.status }); }); return report;
     }

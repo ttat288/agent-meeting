@@ -381,4 +381,4 @@ function runTest(workspace, file, signal, isolate = false) {
     child.on('error', e => done(null, e)); child.on('close', code => done(code));
   });
 }
-module.exports = { WorkManager, checkTask, inventory, sourceInventory, changes, safeFile, runTest };
+module.exports = { WorkManager, checkTask, inventory, sourceInventory, changes, safeFile, runTest, gitRevision };

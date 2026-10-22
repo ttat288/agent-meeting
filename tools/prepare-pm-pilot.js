@@ -26,6 +26,10 @@ test('multiple machine model usage entries cannot be hidden by a single model la
 });
 `;
 function prepare() {
+  const { parseOutput } = require('../src/runtime');
+  const sample = extra => JSON.stringify({ type: 'result', subtype: 'success', result: 'Done', ...extra });
+  if (parseOutput('claude', sample({ total_cost_usd: -2 })).costUsd !== -2 || parseOutput('claude', sample({ model: 'expected', modelUsage: { expected: {}, other: {} } })).reportedModel !== 'expected')
+    throw Error('The runtime-evidence pilot no longer matches this parser. Use tools/reproduce-writer-input.js for its frozen input, or define a new unresolved case.');
   const started = Date.now(), baseRevision = git('rev-parse', 'HEAD').trim();
   // Match managed source inputs, including untracked and dirty files, excluding protected paths.
   const names = git('ls-files', '-z', '--cached', '--others', '--exclude-standard').split('\0').filter(Boolean).sort();

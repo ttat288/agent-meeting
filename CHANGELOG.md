@@ -1,10 +1,17 @@
 # Changelog
 
+## Unreleased — live work monitoring and revision guards
+
+- Plan/Execute/Results follow external run updates using conditional reads. Active edits, evidence and keyboard focus defer replacement; offline results remain visible with bounded retry.
+- Human chair stays the default, with optional PM controls/history in Options. PM connection errors clear on recovery without erasing action errors; terminal invitation words use POSIX quoting.
+- Runtime evidence keeps negative costs and ambiguous multiple-model identity unknown; agy SUCCESS with denied_actions is a permission failure with an actionable diagnostic. Team checkpoint/swap/activation and completion reports check Git HEAD as well as file snapshots.
+- Reproducible local HTTP benchmark publishes raw samples, polling overhead and failure cases. Direct model pilot failed OAuth authentication; model efficacy, billing and eight-hour runtime remain unverified.
+
 ## Unreleased — PM operator
 
 - Checkpoints accept an optional structured continuation delta for failed attempts and blockers. Omitted records remain unknown; the local canonical carry experiment checks revisions/source/WIP and measures transport overhead without enabling a controller or making model-cost claims.
 
-- Workspace chưa release: PM chờ sự kiện bằng client code; lead capability riêng, plan/readiness approval và same-slot managed swap có checkpoint/ACK/process lifecycle. Một task/slot A, Linux/bwrap, tích hợp một file; fixture có evidence, chưa nghiệm thu model thật/UI team hoặc chi phí. Giữ mọi thay đổi chưa commit.
+- Workspace chưa release: PM chờ sự kiện bằng client code; lead capability riêng, plan/readiness approval và same-slot managed swap có checkpoint/ACK/process lifecycle. Một task/slot A, Linux/bwrap, tích hợp một file; fixture có evidence, chưa nghiệm thu model thật/UI team hoặc chi phí.
 
 - Choose human or agent chair; dedicated local PM invitation/confirmation and private director channel.
 - Scoped goal/grant and canonical task/run lifecycle through independent verification, single-file integration and evidence report; pause/revoke/takeover and stale goal/lease guards.

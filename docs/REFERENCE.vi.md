@@ -412,7 +412,7 @@ Dùng wait để nhận tin chưa đọc. Khi cần tìm lại một đoạn: `h
 
 ## Chủ trì qua PM CLI (thử nghiệm local)
 
-Trong trang phiên chọn **Agent làm chủ trì**, dán prompt riêng vào CLI đang mở trên cùng máy. PM dùng `bin/pm.js` join, báo mã4 số; bạn đối chiếu và xác nhận trên web. Bạn là giám đốc: giao mục tiêu/acceptance, cấp grant workspace/path/tests/profile đã cấu hình và probe, số lượt và expiry; sau đó PM tự gọi plan/run/verify/integrate/report. Không có model launcher: tạo lời mời hoặc grant không tự chạy model. Profile cần probe bằng quyền host và có thể tốn phí khi dùng model thật.
+Trong trang phiên mở **Tùy chọn → Agent làm chủ trì**, dán prompt riêng vào CLI đang mở trên cùng máy. PM dùng `bin/pm.js` join, báo mã4 số; bạn đối chiếu và xác nhận trên web. Bạn là giám đốc: giao mục tiêu/acceptance, cấp grant workspace/path/tests/profile đã cấu hình và probe, số lượt và expiry; sau đó PM tự gọi plan/run/verify/integrate/report. Không có model launcher: tạo lời mời hoặc grant không tự chạy model. Profile cần probe bằng quyền host và có thể tốn phí khi dùng model thật.
 
 **Dừng PM**, **Thu hồi quyền PM**, **Tôi tiếp quản** luôn có trên thanh Chủ trì. Xem task/run/evidence trong Kế hoạch/Thực hiện/Kết quả; nguồn task PM quay về mục tiêu riêng. Sửa mục tiêu vô hiệu grant/kết quả cũ và yêu cầu cancel run. Reload giữ dữ liệu; restart/mất lease cần mời/xác nhận/grant lại, không chứng minh CLI cũ tiếp tục chạy. Nếu request timeout, PM đọc state trước khi thử lại.
 
@@ -429,3 +429,7 @@ Hành trình/JSON contract và quyền: [prompt PM](prompts/pm-operator.vi.md#kh
 Ở mốc checkpoint, giữ `decisions` (quyết định đã chọn và lý do ngắn), `unknowns`, `next` hiện có; có thể ghi thêm `continuation: {failedAttempts: [{attempt, outcome, avoid}], blockers: [{issue, resolution}]}` ngay trong output đó. Hai mảng phải hiện diện rõ, tối đa10 mục/mảng, mỗi field text không rỗng và tối đa1000 ký tự; áp dụng kiểm mẫu credential. `resolution` là điều kiện cần để gỡ blocker. Mảng rỗng nghĩa caller ghi rõ chưa có tại mốc này; không gửi record thì vẫn unknown. Không ghi suy nghĩ nội bộ, không cấp quyền hoặc gọi model riêng để summary.
 
 `tools/carry-canonical.js` là experiment local gọi tường minh với store canonical được truyền vào, có reference evidence công khai giới hạn và kiểm nguồn/revision hiện hành; chưa có default store, CLI, runtime hook hoặc controller. Journey tự động chỉ dùng kho do test tạo và executable fixture. [Assessment và cách tái lập](evidence/context-window/carry-review/ASSESSMENT.vi.md#lát-cắt-canonical-local-trong60-phút-2026-10-22) phân biệt overhead byte với chất lượng/token/billing model chưa đo.
+
+## Cập nhật công việc trực tiếp
+
+Kế hoạch/Thực hiện/Kết quả kiểm thay đổi task/run ngoài trang khi đang hiển thị. Dữ liệu không đổi dùng `If-None-Match`/HTTP304. Khi đang sửa, focus bàn phím hoặc mở bằng chứng, DOM được giữ lại; **Xem cập nhật** áp dụng trạng thái đang chờ. Lượt đọc foreground hủy background cũ; đổi view xóa tag cache. Offline giữ kết quả cuối và thử lại, khoảng chờ tối đa30 giây, mỗi request nền tối đa10 giây. Đây là transport polling, không bảo đảm model/billing. Lịch sử PM ở chế độ human mở qua Tùy chọn hoặc link nguồn; tiếp quản đóng vùng giám sát nhưng không xóa lịch sử.

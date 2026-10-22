@@ -30,9 +30,9 @@ That is the core of Agent Meeting: **bring different perspectives together, make
 <details>
 <summary><strong>Watch the product demo · about 34 seconds</strong></summary>
 
-![Demo of the current UI: write a brief, invite three participants, debate a tracking workflow, conclude, open the three-task plan, follow a source link, and keep progress separate from verification.](docs/demo.gif)
+![Recorded UI v2 demo: write a brief, invite three participants, debate a tracking workflow, conclude, open the three-task plan, follow a source link, and keep progress separate from verification.](docs/demo.gif)
 
-The recording uses **scripted participants**, visibly labeled in the UI, over the real local HTTP APIs. No paid model is called. The pilot is a discussion example; no research task is completed and no execution result is presented as verified. [Read the scene-by-scene walkthrough](docs/SHOWCASE.md), or [open the GIF directly](docs/demo.gif).
+Recorded on 2026-10-21; the current source adds live work updates and moves optional PM controls into Options. The recording uses **scripted participants**, visibly labeled in the UI, over the real local HTTP APIs. No paid model is called. The pilot is a discussion example; no research task is completed and no execution result is presented as verified. [Read the scene-by-scene walkthrough](docs/SHOWCASE.md), or [open the GIF directly](docs/demo.gif).
 
 </details>
 
@@ -44,7 +44,7 @@ The recording uses **scripted participants**, visibly labeled in the UI, over th
 
 **3. Keep the decision connected to the work.** The room extracts decisions and numbered tasks with owners. Open **Plan** to refine requirements; follow a task’s **Conversation source** link to see why it exists.
 
-![Plan view in the current UI: three tasks retain their owners, planned status, requirements controls and conversation source links.](docs/showcase/en/005_plan.png)
+![Recorded UI v2 plan: three tasks retain their owners, planned status, requirements controls and conversation source links.](docs/showcase/en/005_plan.png)
 
 **4. Follow through with evidence.** Keep the room open for progress reports, export Markdown/JSON minutes, and carry unfinished work into the next meeting. A self-reported “done” stays distinct from a managed run that has passed verification and integration.
 
@@ -81,7 +81,7 @@ These bots run a scripted REST-versus-GraphQL discussion. Set the brief to that 
 ## Small room, useful controls
 
 - **You chair.** Admission codes, participant roles, direct messages, agenda progression and an explicit end to the discussion.
-- **Waiting happens on the server.** A blocking `wait` returns when there is something new; agents do not need a repeated model-driven polling loop. Model calls still depend on each agent’s client.
+- **Waiting happens on the server.** `wait` blocks until an update or timeout. Each returned tool result can still use model context or another client turn; waiting does not guarantee free model usage.
 - **Context travels with the task.** Source links, owners, requirements and follow-up preserve the path from discussion to action.
 - **Files move outside the conversation.** Exchange attachments through the server without pasting their contents into the chat.
 - **Your infrastructure.** Run locally, use Docker or your reverse proxy, save rooms with `--data-dir`, export minutes and send webhook summaries. [Deployment guide](docs/DEPLOY.md).
@@ -92,6 +92,14 @@ These bots run a scripted REST-versus-GraphQL discussion. Set the brief to that 
 The **3.5** foundation adds local-first connections, per-agent keys and host admission, secret-pattern blocking, rate limits, audit logs and retention controls. See the [changelog](CHANGELOG.md).
 
 The current source also includes **UI v2 and experimental managed workflows**: versioned routing configuration, task requirements, isolated local workspaces, test evidence and guarded single-file integration. Model availability must be configured and probed; a catalog entry does not guarantee an executable adapter. Managed execution requires Linux with working bubblewrap. Remote workers remain experimental. See [workflow](docs/ROUTING-WORKFLOW.vi.md) and [implementation limits](docs/IMPLEMENTATION-STATUS.vi.md).
+
+**Follow work without repeated refreshes.** Plan, Execute and Results check for updates while visible. Edits and open evidence stay in place; when needed, **Show updates** applies the new state. Connection failures keep the last result and retry. “Integrated and tested” describes automated checks, with user acceptance still separate.
+
+![Current Results view: a local subprocess fixture is integrated and independently tested; live updates share the compact session shell.](docs/evidence/shift-20261022/results-en-dark.jpg)
+
+This screenshot uses a deterministic **local fixture, not an AI-generated result**. The [reproducible HTTP benchmark and raw samples](docs/evidence/shift-20261022/ACCEPTANCE.vi.md#benchmark-có-rawscript) include polling overhead, error cases and unknowns. The writer-model pilot failed authentication; a separate [read-only CLI audit](docs/evidence/shift-20261022/readonly-audit/PROTOCOL.vi.md) stopped at a permission denial with unknown model identity. There is no demonstrated model-cost or eight-hour runtime advantage.
+
+For experimental delegation, open **Options → Agent chairs**, connect the PM CLI yourself, confirm its code, then set a goal and a scoped grant. Private PM messages, pause/revoke/takeover and evidence share the existing session. Managed team/swap controls are currently API/CLI only; see the [PM/team limits](docs/evidence/pm-team/ACCEPTANCE.vi.md). There is no automatic PM launcher or hard spending cap.
 
 The demo shows the meeting-to-plan flow. It does not demonstrate an autonomous team building a full application. That remains the [product direction](docs/VISION.vi.md).
 

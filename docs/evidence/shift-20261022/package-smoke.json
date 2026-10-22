@@ -1,0 +1,35 @@
+{
+  "schema": "agent-meeting/package-smoke@1",
+  "at": "2026-10-22T16:09:47.870Z",
+  "node": "v22.22.1",
+  "tarballSha256": "ba16a42f379720096e97759445344116b1574db6d8acb7f40f7ef05203923c18",
+  "files": 68,
+  "unpackedSize": 954006,
+  "bundledSkill": [
+    "agent-meeting"
+  ],
+  "checks": [
+    {
+      "url": "/m/<fixture-host>",
+      "status": 200,
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+    },
+    {
+      "url": "/assets/pm-ui.js",
+      "status": 200,
+      "csp": null
+    },
+    {
+      "url": "/assets/workspace.js",
+      "status": 200,
+      "csp": null
+    },
+    {
+      "url": "/api/host/<fixture-host>/work",
+      "status": 200,
+      "csp": null
+    }
+  ],
+  "modelCalls": 0,
+  "installedUserApp": false
+}

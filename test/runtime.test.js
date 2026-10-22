@@ -66,7 +66,7 @@ test('runtime error variants and missing output cannot become successful reports
   }
 });
 
-test('Claude success preserves machine model, usage, permission denials and cost evidence', () => {
+test('Claude envelope preserves machine model, usage, cost and a permission-denial diagnostic', () => {
   const parsed = parseOutput('claude', JSON.stringify({ type: 'result', subtype: 'success', is_error: false,
     result: 'Review report', modelUsage: { 'actual-provider-id': { inputTokens: 12 } }, usage: { input_tokens: 12 },
     total_cost_usd: 0.02, permission_denials: [{ tool_name: 'Write' }] }));
@@ -75,7 +75,20 @@ test('Claude success preserves machine model, usage, permission denials and cost
   assert.equal(parsed.permissionDenials, 1);
   assert.equal(parsed.costUsd, 0.02);
   assert.equal(parsed.usage.input_tokens, 12);
-  assert.equal(parsed.error, null);
+  assert.equal(parsed.error, 'Runtime reported permission denials');
+  assert.equal(parseOutput('claude', JSON.stringify({ type: 'result', subtype: 'success', result: 'Done' })).error, null);
+});
+
+test('runtime billing and model evidence stay unknown when inconsistent', () => {
+  for (const adapter of ['claude', 'agy']) {
+    const result = extra => JSON.stringify({ type: 'result', subtype: 'success', result: 'Done', status: 'SUCCESS', ...extra });
+    for (const cost of [-1, -0.01, '0.2', null, {}, true]) assert.equal(parseOutput(adapter, result({ total_cost_usd: cost })).costUsd, null);
+    for (const cost of [0, 0.02, 123]) assert.equal(parseOutput(adapter, result({ total_cost_usd: cost })).costUsd, cost);
+    assert.equal(parseOutput(adapter, result({})).costUsd, null);
+    assert.equal(parseOutput(adapter, result({ model: 'expected', modelUsage: { expected: {}, other: {} } })).reportedModel, 'unknown');
+    assert.equal(parseOutput(adapter, result({ model: 'fallback', modelUsage: { actual: {} } })).reportedModel, 'actual');
+    assert.equal(parseOutput(adapter, result({ model: 'fallback' })).reportedModel, 'fallback');
+  }
 });
 
 test('agy success keeps self-identified prose model unknown and bounds model output', () => {
@@ -132,4 +145,18 @@ test('runCli rejects nonzero exit, malformed result, and permission denial despi
     assert.equal(result.status, 'failed');
     assert.equal(result.exitCode, code);
   }
+});
+
+test('agy SUCCESS with denied_actions is a permission failure, not a completed report', async () => {
+  // Shape observed with agy1.4.5 in the read-only audit, no model call here.
+  const output = JSON.stringify({ status: 'SUCCESS', response: 'Partial response before the requested tool was denied.', denied_actions: [{ action: 'command', display_name: 'RunCommand' }] });
+  const parsed = parseOutput('agy', output);
+  assert.equal(parsed.permissionDenials, 1);
+  assert.equal(parsed.error, 'Runtime reported permission denials');
+  assert.equal(parsed.reportedModel, 'unknown');
+  const { runtime } = fakeRuntime(output);
+  const result = await runtime.runCli({ adapter: 'agy', modelId: 'test-id', prompt: 'Read-only audit', workspace: __dirname, timeoutMs: 1000 });
+  assert.equal(result.status, 'failed'); assert.equal(result.permissionDenials, 1);
+  assert.equal(result.error, 'Runtime reported permission denials');
+  assert.equal(parseOutput('agy', JSON.stringify({ status: 'SUCCESS', response: 'Complete response', denied_actions: [] })).permissionDenials, 0);
 });

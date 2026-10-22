@@ -26,6 +26,7 @@
         <div class="menu-group"><h2>Phiên</h2>
           <button class="btn ghost" id="btnInvite" type="button" hidden>Mời agent</button>
           <button class="btn ghost" id="btnMinutes" type="button" hidden>Biên bản</button>
+          <button class="btn ghost" id="btnPmMode" type="button">Agent làm chủ trì</button>
         </div>
         <div class="menu-group"><h2>Ứng dụng</h2><a class="btn ghost" id="sessionAdmin">Quản trị</a></div>
         <div class="menu-group" id="displayOptions"><h2>Hiển thị</h2><button class="btn ghost langbtn" type="button" id="btnLang"></button></div>
@@ -34,7 +35,7 @@
     </div>
   </div>
 </header>
-<section id="pmControl" class="pm-control" aria-label="Chủ trì"></section>
+<section id="pmControl" class="pm-control" aria-label="Chủ trì" hidden></section>
 <main id="workView" class="session-work" hidden tabindex="-1"><div id="page"></div></main>
 <div id="notice" class="ws-notice" role="status" aria-live="polite" hidden></div>
 <!-- Màn chuẩn bị (server: LOBBY), hai bước phía trình duyệt: #boi-canh và #moi-agent -->

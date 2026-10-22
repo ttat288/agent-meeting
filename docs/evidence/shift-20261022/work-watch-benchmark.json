@@ -1,0 +1,1933 @@
+{
+  "schema": "agent-meeting/work-watch-benchmark@1",
+  "createdAt": "2026-10-22T15:39:56.735Z",
+  "environment": {
+    "node": "v22.22.1",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "sourceHashes": {
+    "src/server.js": "c68a80cf28dabb998d30d3a6c2e9cadfd1b736bd303cf4516a00d1ce056eb48f",
+    "src/work.js": "f5e81e3708a05cede28623850947d4e748924fb12cc8a0345e9f3d45765089fd",
+    "src/remote.js": "6c53052fd7131429b86d2c200eecad8099557b9359aa2201abe0837385e5111a",
+    "src/ui/workspace.js": "e640494d788ee05c4b593c25faf2578570756359982e4a600546e6954040bf0d",
+    "tools/benchmark-work-watch.js": "7d5a7aad3ceeace6d77986e2a9f7b0a6422d771e464207acfc358d828817f2ac"
+  },
+  "elapsedMs": 696.885173,
+  "protocol": {
+    "samplesPerArmPerWorkload": 30,
+    "order": "alternating AB/BA per sample, sequential, loopback HTTP keep-alive",
+    "timeoutMs": 5000,
+    "retries": 0,
+    "acceptance": "Same current facts on mutation, unchanged body hash stable, 304 empty, local/host/method failures preserved"
+  },
+  "cases": [
+    {
+      "taskCount": 1,
+      "workload": "Synthetic canonical tasks via host task API, no run/report/model output",
+      "initial": {
+        "status": 200,
+        "elapsedMs": 8.55120199999999,
+        "bodyBytes": 2744,
+        "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+        "responseHeaderBytes": 363,
+        "conditionalRequestHeaderBytes": 0,
+        "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+      },
+      "warmupRequests": 6,
+      "unchanged": {
+        "unconditional": {
+          "summary": {
+            "samples": 30,
+            "medianMs": 0.5320980000000191,
+            "maxMs": 1.1767250000000047,
+            "bodyBytes": 82320,
+            "responseHeaderBytes": 10890,
+            "conditionalRequestHeaderBytes": 0
+          },
+          "raw": [
+            {
+              "status": 200,
+              "elapsedMs": 1.1373450000000105,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.6448000000000036,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.5862659999999948,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.1767250000000047,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.7283749999999998,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.5666669999999954,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.4970830000000035,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.5104209999999796,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.5219859999999983,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.5613140000000101,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.5419330000000002,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.5150659999999903,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.5365350000000149,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.5066740000000038,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.5276610000000233,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.8405009999999891,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.5212009999999907,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.47624299999998243,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.5135060000000067,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.4742829999999856,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.4768839999999841,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.5269800000000089,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.48416299999999524,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.48897600000000807,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.5049930000000131,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.583596,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.7690389999999923,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.5833360000000027,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.5594859999999926,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.5568800000000067,
+              "bodyBytes": 2744,
+              "bodySha256": "32d19ca0fef01bf9a483b60dafec5803d7e84db4bdb423296259cb0b8d1712fe",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            }
+          ]
+        },
+        "conditional": {
+          "summary": {
+            "samples": 30,
+            "medianMs": 0.4713445000000007,
+            "maxMs": 0.9453699999999969,
+            "bodyBytes": 0,
+            "responseHeaderBytes": 10350,
+            "conditionalRequestHeaderBytes": 2490
+          },
+          "raw": [
+            {
+              "status": 304,
+              "elapsedMs": 0.9453699999999969,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.6015060000000005,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.4995710000000031,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.4551150000000064,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.4875560000000121,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.4606509999999844,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.4606019999999944,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.4271359999999902,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.46844099999998434,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.45732699999999227,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.56117500000002,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.5577380000000005,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.4688030000000083,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.4553589999999872,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.47611100000000306,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.47012300000000096,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.4531520000000171,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.44436199999998394,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.46695199999999204,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.5043500000000165,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.44162000000000035,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.4725660000000005,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.44561400000000617,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.4274369999999976,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.49353600000000597,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.5251250000000027,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.48065699999997946,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.4737090000000137,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.5259000000000071,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.4868400000000008,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"eeee6d7bfb1e0b96587ae87ce763db19281aa0bbcf3fbb04ffa7d2bfa4ccdc7c\""
+            }
+          ]
+        }
+      },
+      "mutation": {
+        "equalFacts": true,
+        "baseline": {
+          "status": 200,
+          "elapsedMs": 0.6149079999999856,
+          "bodyBytes": 2863,
+          "bodySha256": "c2779d9e79ebe9ca89d6179f6b5e6bdd56df95c8ba09b23a1f04a6b13d3a65d0",
+          "responseHeaderBytes": 363,
+          "conditionalRequestHeaderBytes": 0,
+          "etag": "\"6037cb7358323966c5aafe7d0bfb74c768122034b199adc205a45412d1dba981\""
+        },
+        "conditional": {
+          "status": 200,
+          "elapsedMs": 0.6800350000000037,
+          "bodyBytes": 2863,
+          "bodySha256": "c2779d9e79ebe9ca89d6179f6b5e6bdd56df95c8ba09b23a1f04a6b13d3a65d0",
+          "responseHeaderBytes": 363,
+          "conditionalRequestHeaderBytes": 83,
+          "etag": "\"6037cb7358323966c5aafe7d0bfb74c768122034b199adc205a45412d1dba981\""
+        }
+      },
+      "errorChecks": [
+        {
+          "name": "forwarded-denied",
+          "status": 403,
+          "elapsedMs": 0.3947769999999764,
+          "bodyBytes": 71,
+          "bodySha256": "23bff997ae2ef862f2131a575d1389bc4fbd0d56406f64b9846bbcd800746f6b",
+          "responseHeaderBytes": 296,
+          "conditionalRequestHeaderBytes": 83,
+          "etag": null
+        },
+        {
+          "name": "invite-is-not-host",
+          "status": 404,
+          "elapsedMs": 0.38086000000001263,
+          "bodyBytes": 37,
+          "bodySha256": "2f915d4207ecc3fa1ab9587a64aa01179df52b182f0e0e44c86658ba16fa799d",
+          "responseHeaderBytes": 296,
+          "conditionalRequestHeaderBytes": 83,
+          "etag": null
+        },
+        {
+          "name": "unsupported-method",
+          "status": 405,
+          "elapsedMs": 0.3647229999999979,
+          "bodyBytes": 28,
+          "bodySha256": "81437b975f8b9eb8ecb6943c06271b0e55d6a47a33281e1241e5842be4b94608",
+          "responseHeaderBytes": 305,
+          "conditionalRequestHeaderBytes": 83,
+          "etag": null
+        }
+      ]
+    },
+    {
+      "taskCount": 25,
+      "workload": "Synthetic canonical tasks via host task API, no run/report/model output",
+      "initial": {
+        "status": 200,
+        "elapsedMs": 1.7360720000000356,
+        "bodyBytes": 14512,
+        "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+        "responseHeaderBytes": 363,
+        "conditionalRequestHeaderBytes": 0,
+        "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+      },
+      "warmupRequests": 6,
+      "unchanged": {
+        "unconditional": {
+          "summary": {
+            "samples": 30,
+            "medianMs": 0.8907364999999743,
+            "maxMs": 1.6654320000000098,
+            "bodyBytes": 435360,
+            "responseHeaderBytes": 10890,
+            "conditionalRequestHeaderBytes": 0
+          },
+          "raw": [
+            {
+              "status": 200,
+              "elapsedMs": 0.9017789999999763,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.8626970000000256,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.9523669999999811,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.8718920000000026,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.9174079999999663,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.8926669999999604,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.8684359999999742,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.8666970000000447,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.9499519999999961,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.2443059999999946,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.9259670000000142,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.8629440000000272,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.9103069999999889,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.1554230000000416,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.5396709999999985,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.3152900000000045,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.8888059999999882,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.8363740000000348,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.0621519999999691,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.9217649999999935,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.6654320000000098,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.9285239999999817,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.8593349999999873,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.8757940000000417,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.8170900000000074,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.8017169999999965,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.7993809999999826,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.8310020000000122,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.815213999999969,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 0.8126200000000381,
+              "bodyBytes": 14512,
+              "bodySha256": "cd5ef404e9865e7439477db117fe171d20c904849cbbfe4a1173b1f0fd88ca91",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            }
+          ]
+        },
+        "conditional": {
+          "summary": {
+            "samples": 30,
+            "medianMs": 0.8007335000000069,
+            "maxMs": 1.7942850000000021,
+            "bodyBytes": 0,
+            "responseHeaderBytes": 10350,
+            "conditionalRequestHeaderBytes": 2490
+          },
+          "raw": [
+            {
+              "status": 304,
+              "elapsedMs": 1.2418199999999615,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.7935329999999681,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.8011769999999956,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.8002900000000182,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.1043750000000045,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.8772890000000189,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.7965829999999983,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.7922479999999723,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.9734719999999584,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.2264600000000314,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.8712110000000166,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.8017990000000168,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.7797380000000089,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.7831259999999816,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.7942850000000021,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.539400999999998,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.7913890000000379,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.7781839999999534,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.7817210000000046,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.7633289999999988,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.6264980000000264,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.2516019999999912,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.9968319999999835,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.833834999999965,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.7841579999999908,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.7834819999999922,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.7132719999999608,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.9393010000000004,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.713643999999988,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 0.705223999999987,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"670f4de5f655fa4d16e2de3d11675f2ad2f577e1674e6096d85a81bab9cff0b9\""
+            }
+          ]
+        }
+      },
+      "mutation": {
+        "equalFacts": true,
+        "baseline": {
+          "status": 200,
+          "elapsedMs": 0.8398969999999508,
+          "bodyBytes": 14631,
+          "bodySha256": "7b7e3f379ca8b89498671852897cb9b9ee2d39d039a33a2b27e60b1dc4632489",
+          "responseHeaderBytes": 363,
+          "conditionalRequestHeaderBytes": 0,
+          "etag": "\"6948e646fdf49600b0d03aeed871819144cee5df4218738b3e7f5ac7d67a8b4b\""
+        },
+        "conditional": {
+          "status": 200,
+          "elapsedMs": 0.8751659999999788,
+          "bodyBytes": 14631,
+          "bodySha256": "7b7e3f379ca8b89498671852897cb9b9ee2d39d039a33a2b27e60b1dc4632489",
+          "responseHeaderBytes": 363,
+          "conditionalRequestHeaderBytes": 83,
+          "etag": "\"6948e646fdf49600b0d03aeed871819144cee5df4218738b3e7f5ac7d67a8b4b\""
+        }
+      },
+      "errorChecks": [
+        {
+          "name": "forwarded-denied",
+          "status": 403,
+          "elapsedMs": 0.28015199999998686,
+          "bodyBytes": 71,
+          "bodySha256": "23bff997ae2ef862f2131a575d1389bc4fbd0d56406f64b9846bbcd800746f6b",
+          "responseHeaderBytes": 296,
+          "conditionalRequestHeaderBytes": 83,
+          "etag": null
+        },
+        {
+          "name": "invite-is-not-host",
+          "status": 404,
+          "elapsedMs": 0.2511700000000019,
+          "bodyBytes": 37,
+          "bodySha256": "2f915d4207ecc3fa1ab9587a64aa01179df52b182f0e0e44c86658ba16fa799d",
+          "responseHeaderBytes": 296,
+          "conditionalRequestHeaderBytes": 83,
+          "etag": null
+        },
+        {
+          "name": "unsupported-method",
+          "status": 405,
+          "elapsedMs": 0.23662500000000364,
+          "bodyBytes": 28,
+          "bodySha256": "81437b975f8b9eb8ecb6943c06271b0e55d6a47a33281e1241e5842be4b94608",
+          "responseHeaderBytes": 305,
+          "conditionalRequestHeaderBytes": 83,
+          "etag": null
+        }
+      ]
+    },
+    {
+      "taskCount": 100,
+      "workload": "Synthetic canonical tasks via host task API, no run/report/model output",
+      "initial": {
+        "status": 200,
+        "elapsedMs": 2.695703999999978,
+        "bodyBytes": 51339,
+        "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+        "responseHeaderBytes": 363,
+        "conditionalRequestHeaderBytes": 0,
+        "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+      },
+      "warmupRequests": 6,
+      "unchanged": {
+        "unconditional": {
+          "summary": {
+            "samples": 30,
+            "medianMs": 1.9448550000000182,
+            "maxMs": 4.228201000000013,
+            "bodyBytes": 1540170,
+            "responseHeaderBytes": 10890,
+            "conditionalRequestHeaderBytes": 0
+          },
+          "raw": [
+            {
+              "status": 200,
+              "elapsedMs": 1.912770999999907,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 2.0137990000000627,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.9493049999999812,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 2.04758599999991,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.8801180000000386,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.9264960000000428,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 2.1513569999999618,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.958174999999983,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 2.0885580000000346,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.913381999999956,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.9404050000000552,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 2.082787000000053,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 2.09823300000005,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 4.228201000000013,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 2.0755960000000186,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.9275949999999966,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 2.28444300000001,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 2.0252949999999146,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.8698819999999614,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.9139049999999997,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.8934729999999718,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.9102900000000318,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.9819350000000213,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 2.091899000000012,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.903367000000003,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.8768760000000384,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 2.077955999999972,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.9057510000000093,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.9009689999999182,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 200,
+              "elapsedMs": 1.8829370000000836,
+              "bodyBytes": 51339,
+              "bodySha256": "390b309ae623a36d61757985126c1e28131df6940c3a5540176c8407c1725fed",
+              "responseHeaderBytes": 363,
+              "conditionalRequestHeaderBytes": 0,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            }
+          ]
+        },
+        "conditional": {
+          "summary": {
+            "samples": 30,
+            "medianMs": 1.7953024999999911,
+            "maxMs": 2.1239060000000336,
+            "bodyBytes": 0,
+            "responseHeaderBytes": 10350,
+            "conditionalRequestHeaderBytes": 2490
+          },
+          "raw": [
+            {
+              "status": 304,
+              "elapsedMs": 1.7379019999999628,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 2.0660219999999754,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.8331099999999196,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.7955739999999878,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.7603039999999055,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.7798930000000155,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.996028000000024,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.90458000000001,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 2.00644699999998,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.7711170000000038,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.8962850000000344,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 2.1239060000000336,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.7825579999999945,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.7890939999999773,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.81230400000004,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.7755779999999959,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.8037929999999278,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.7440540000000055,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 2.0531120000000556,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.860070999999948,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.7950309999999945,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.9764979999999923,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.8653719999999794,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.7334399999999732,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.7232510000000048,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.7301899999999932,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.7248129999999264,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.7599119999999857,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.8784309999999778,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            },
+            {
+              "status": 304,
+              "elapsedMs": 1.7562659999999823,
+              "bodyBytes": 0,
+              "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseHeaderBytes": 345,
+              "conditionalRequestHeaderBytes": 83,
+              "etag": "\"edd1e4907c2913d2ef555b288dc93eaa08aff8403f6f9fc3b90b272f6905a86d\""
+            }
+          ]
+        }
+      },
+      "mutation": {
+        "equalFacts": true,
+        "baseline": {
+          "status": 200,
+          "elapsedMs": 2.008297999999968,
+          "bodyBytes": 51458,
+          "bodySha256": "f9889c0c7e5c346814edae7878af9ce675be1b1a5590b3c83c57c948a49719f3",
+          "responseHeaderBytes": 363,
+          "conditionalRequestHeaderBytes": 0,
+          "etag": "\"2c38f1208751e3c7de1d0495bc669cf25874bb095bf9b30aaf096ebd73bc1ca9\""
+        },
+        "conditional": {
+          "status": 200,
+          "elapsedMs": 2.2271380000000818,
+          "bodyBytes": 51458,
+          "bodySha256": "f9889c0c7e5c346814edae7878af9ce675be1b1a5590b3c83c57c948a49719f3",
+          "responseHeaderBytes": 363,
+          "conditionalRequestHeaderBytes": 83,
+          "etag": "\"2c38f1208751e3c7de1d0495bc669cf25874bb095bf9b30aaf096ebd73bc1ca9\""
+        }
+      },
+      "errorChecks": [
+        {
+          "name": "forwarded-denied",
+          "status": 403,
+          "elapsedMs": 0.29641400000002704,
+          "bodyBytes": 71,
+          "bodySha256": "23bff997ae2ef862f2131a575d1389bc4fbd0d56406f64b9846bbcd800746f6b",
+          "responseHeaderBytes": 296,
+          "conditionalRequestHeaderBytes": 83,
+          "etag": null
+        },
+        {
+          "name": "invite-is-not-host",
+          "status": 404,
+          "elapsedMs": 0.2444510000000264,
+          "bodyBytes": 37,
+          "bodySha256": "2f915d4207ecc3fa1ab9587a64aa01179df52b182f0e0e44c86658ba16fa799d",
+          "responseHeaderBytes": 296,
+          "conditionalRequestHeaderBytes": 83,
+          "etag": null
+        },
+        {
+          "name": "unsupported-method",
+          "status": 405,
+          "elapsedMs": 0.22814599999992424,
+          "bodyBytes": 28,
+          "bodySha256": "81437b975f8b9eb8ecb6943c06271b0e55d6a47a33281e1241e5842be4b94608",
+          "responseHeaderBytes": 305,
+          "conditionalRequestHeaderBytes": 83,
+          "etag": null
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "HTTP transport only, not a model A/B or native direct CLI measurement. Strong native direct model attempt failed authentication; see model-ledger.json.",
+    "Unconditional full read is the prior web policy when explicitly refreshed; this benchmark scripts equal request counts, not human refresh behavior.",
+    "Auto monitoring adds idle requests compared with a user who does not refresh. A direct CLI can stream its own result without these polling requests.",
+    "Body bytes and reconstructed response header bytes are separate; request base headers, TCP/IP framing and browser rendering are excluded. Conditional header overhead is included separately.",
+    "No human active time, tokens, billing, semantic quality or 8-hour runtime measured; modelCalls=0 does not make development free.",
+    "Latency samples cover short local requests only. No P95, statistical significance or remote latency claim."
+  ]
+}

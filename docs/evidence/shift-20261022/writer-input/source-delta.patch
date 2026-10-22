@@ -1,0 +1,159 @@
+--- a/docs/CONSISTENCY-JOURNEYS.vi.md
++++ b/docs/CONSISTENCY-JOURNEYS.vi.md
+@@ -104,0 +105,17 @@
++
++## UC11 — Theo dõi kết quả ngoài trang (ca 8 giờ, 2026-10-22)
++
++Quan sát baseline trên preview3150: API verify trả `verified`, S06 vẫn hiện `reported` và nút verify cho tới khi Làm mới/đổi view. Backend PM/CLI và web không có cùng nhịp cập nhật; người dùng phải vận hành refresh. Đây là lỗi theo dõi trạng thái đã tái hiện bằng fixture, không là bằng chứng chất lượng model.
++
++Đích trong screen pool hiện có: S04/S05/S06 đọc có điều kiện mỗi3 giây khi view hiện; HTTP304 khi revision không đổi, không tự dispatch. Đang nhập/chọn/đọc details hoặc có action đang chạy thì giữ DOM/focus/scroll, báo Có cập nhật và cho áp dụng có chủ ý. Mất kết nối giữ dữ liệu cuối, báo đang thử lại; backoff tối đa30 giây, mỗi request tối đa10 giây. Quay lại tab thử ngay. Hội thoại/admin không polling work mới. Bản nháp vẫn theo task/revision; revision cũ không được ghi đè yêu cầu mới.
++
++Flow: API/CLI đổi run → conditional read đổi → hiển thị trạng thái mới; nếu đang tương tác → pending → Xem cập nhật hoặc kết thúc tương tác → cập nhật. Offline → stale có nhãn → retry → live. Back/reload/deep link giữ luồng cũ và không chạy task.
++
++| Ca | Kết quả cần kiểm |
++| --- | --- |
++| J14 | Run ngoài trang reported→verified→integrated cập nhật không cần Làm mới; task/run ID giữ nguyên |
++| J15 | Đang nhập draft/chọn profile/mở evidence: DOM và focus giữ nguyên, có pending; áp dụng không dispatch |
++| J16 | Offline giữ dữ liệu + nhãn, phục hồi trạng thái mới; 304 không có body; local/host boundary giữ nguyên |
++| J17 | VI/EN, sáng/tối,375/768/1280, keyboard/Back/reload/deep link không tràn hoặc mất context |
++
++Kiểm kỹ thuật không thay sự chấp nhận thiết kế của người dùng; kết quả thực tế và source hash ghi trong evidence của ca.
+--- a/docs/HANDOFF.md
++++ b/docs/HANDOFF.md
+@@ -9,0 +10,6 @@
++
++### Ca đang thực thi — 2026-10-22/23 (Asia/Bangkok)
++
++- **T0:** 2026-10-22 22:24:53 +07:00; **deadline:** 2026-10-23 06:24:53 +07:00; giờ cuối bắt đầu 05:24:53. Chưa kết thúc ca; không suy thời gian phát triển thành runtime/model8h.
++- Workspace ban đầu: `main`, HEAD `e292fd3833d65152ebfa6133fc27a67285b6cab9`, nhiều thay đổi CLI/PM/team/carry/UI/docs chưa commit. Snapshot riêng tại `/tmp/am-shift-start-hq4gnkv8` (352 file + SHA-256/status), không đưa dữ liệu snapshot vào repo public.
++- Checkpoint T+2 phút: đang kiểm journey web tích hợp, baseline runtime/parser và protocol tái lập; chưa gọi model, chưa sửa settings hoặc app người dùng. Giữ các thay đổi sẵn có; quyền commit/push áp dụng theo yêu cầu hiện hành.
+--- a/src/server.js
++++ b/src/server.js
+@@ -607,2 +607,9 @@
+-            const room = byHost.get(m[1]);
+-            return json(200, { ...work.read(), metrics: aggregateResults({ runs: work.read().runs, remoteRuns: remoteFor().read().runs.filter(r => work.read().tasks.some(t => t.id === r.taskId)) }), session: { createdAt: room.createdAt, state: room.state, context: room.context || room.preset?.context || '', decisions: room.log.filter(x => x.conclusion).map(x => ({ messageIndex: x.i, text: x.text, name: x.name })) } });
++            const room = byHost.get(m[1]), state = work.read(), remote = remoteFor().read();
++            // Conditional reads retain the same local capability checks as full reads.
++            // Include room identity/version and remote revision: work revision alone
++            // misses conversation changes and worker lease expiry.
++            const etag = '"' + crypto.createHash('sha256').update(JSON.stringify([m[1], room.createdAt, room.version, state.revision, remote.revision])).digest('hex') + '"';
++            const headers = { 'cache-control': 'no-store', etag };
++            if (req.headers['if-none-match'] === etag) return send(304, 'application/json; charset=utf-8', '', headers);
++            const taskIds = new Set(state.tasks.map(t => t.id));
++            return send(200, 'application/json; charset=utf-8', JSON.stringify({ ...state, metrics: aggregateResults({ runs: state.runs, remoteRuns: remote.runs.filter(r => taskIds.has(r.taskId)) }), session: { createdAt: room.createdAt, state: room.state, context: room.context || room.preset?.context || '', decisions: room.log.filter(x => x.conclusion).map(x => ({ messageIndex: x.i, text: x.text, name: x.name })) } }), headers);
+--- a/src/ui/workspace.css
++++ b/src/ui/workspace.css
+@@ -29,0 +30 @@
++.ws-sync { display:flex; align-items:center; flex-wrap:wrap; gap:var(--space-2); color:var(--ink-2); font-size:var(--text-meta); }
+--- a/src/ui/workspace.js
++++ b/src/ui/workspace.js
+@@ -17,0 +18 @@
++  let workReadVersion = 0, pendingWork = null, syncState = 'live';
+@@ -33,0 +35 @@
++    if (endpoint === '/work' && data === undefined) { workReadVersion++; pendingWork = null; }
+@@ -137,0 +140,23 @@
++  function renderSyncStatus() {
++    const status = $('workSync'); if (!status) return;
++    const signature = syncState + ':' + !!pendingWork;
++    if (status.dataset.state === signature) return;
++    status.dataset.state = signature;
++    status.replaceChildren(node('span', { role: 'status' }, syncState === 'offline'
++      ? t('Mất kết nối · đang thử lại', 'Connection lost · retrying')
++      : pendingWork ? t('Có cập nhật', 'Updates available') : t('Tự cập nhật', 'Live updates')));
++    if (pendingWork) status.append(button(t('Xem cập nhật', 'Show updates'), () => applyWorkUpdate(true)));
++  }
++  function applyWorkUpdate(explicit = false) {
++    if (!pendingWork) return;
++    const page = $('page'), list = $('taskList');
++    // A background update must not discard an edit, close evidence being read,
++    // or steal keyboard focus. The explicit button leaves saved drafts intact.
++    if (!explicit && (page.querySelector('[aria-busy=true]') || page.getAttribute('aria-busy') === 'true' || list?.contains(document.activeElement) || list?.querySelector('details[open]'))) return;
++    const scroll = $('workView').scrollTop;
++    work = pendingWork.work; remote = pendingWork.remote; pendingWork = null;
++    metrics = work.metrics; metricsError = null; remoteError = null;
++    renderDaily(); $('workView').scrollTop = scroll;
++    window.dispatchEvent(new CustomEvent('am-work-state', { detail: work }));
++    if (explicit) $('workTitle').focus({ preventScroll: true });
++  }
+@@ -144,2 +169 @@
+-    const purpose = tab === 'plan' ? t('Chốt yêu cầu và tiêu chí cho từng việc.', 'Set requirements and acceptance criteria for each task.') : tab === 'results' ? t('Kiểm chứng báo cáo trước khi tích hợp.', 'Verify reported work before integration.') : t('Chọn hồ sơ và theo dõi phiên chạy.', 'Choose a profile and follow the run.');
+-    page.replaceChildren(node('header', { class: 'ws-view-heading ws-row between' }, node('div', {}, node('h1', { tabindex: '-1', id: 'workTitle' }, title + ' (' + (work.tasks || []).filter(task => tab !== 'results' || [...(work.runs || []), ...(remote.runs || [])].some(run => run.taskId === task.id)).length + ')')), refresh),
++    page.replaceChildren(node('header', { class: 'ws-view-heading ws-row between' }, node('div', {}, node('h1', { tabindex: '-1', id: 'workTitle' }, title + ' (' + (work.tasks || []).filter(task => tab !== 'results' || [...(work.runs || []), ...(remote.runs || [])].some(run => run.taskId === task.id)).length + ')')), node('div', { class: 'ws-row' }, node('div', { id: 'workSync', class: 'ws-sync' }), refresh)),
+@@ -148,0 +173 @@
++    renderSyncStatus();
+@@ -501,0 +527,31 @@
++    let pollTimer, pollController, pollEtag = '', pollBusy = false, pollFailures = 0;
++    const workVisible = () => !document.hidden && ['#plan', '#execute', '#results'].includes(location.hash);
++    const signature = (data, workers) => JSON.stringify([data.tasks, data.runs, data.session, data.metrics, workers]);
++    function schedulePoll(delay = 3000) { clearTimeout(pollTimer); pollTimer = setTimeout(pollWork, delay); }
++    async function pollWork() {
++      if (pollBusy) return;
++      if (!loaded || loading || !workVisible()) { schedulePoll(); return; }
++      const nav = navigationVersion, read = workReadVersion;
++      pollBusy = true; pollController = new AbortController();
++      const deadline = setTimeout(() => pollController?.abort(), 10000);
++      try {
++        const response = await fetch(base + '/work', { headers: pollEtag ? { 'If-None-Match': pollEtag } : {}, signal: pollController.signal });
++        if (response.status !== 304 && !response.ok) throw new Error('Work update failed');
++        if (response.status !== 304) {
++          const next = await response.json();
++          const workersResponse = await fetch(base + '/remote', { signal: pollController.signal });
++          if (!workersResponse.ok) throw new Error('Worker update failed');
++          const workers = await workersResponse.json();
++          if (nav !== navigationVersion || read !== workReadVersion || !workVisible()) return;
++          pollEtag = response.headers.get('etag') || '';
++          pendingWork = signature(next, workers) === signature(work, remote) ? null : { work: next, remote: workers };
++        }
++        if (nav !== navigationVersion || read !== workReadVersion || !workVisible()) return;
++        pollFailures = 0; syncState = 'live'; applyWorkUpdate(); renderSyncStatus();
++      } catch {
++        if (nav === navigationVersion && workVisible()) { syncState = 'offline'; pollFailures++; renderSyncStatus(); }
++      } finally {
++        clearTimeout(deadline); pollController = null; pollBusy = false;
++        schedulePoll(Math.min(30000, 3000 * 2 ** Math.min(pollFailures, 4)));
++      }
++    }
+@@ -503,0 +560 @@
++      pendingWork = null;
+@@ -521,0 +579,3 @@
++    document.addEventListener('visibilitychange', () => { if (document.hidden) pollController?.abort(); else schedulePoll(0); });
++    window.addEventListener('pagehide', () => { clearTimeout(pollTimer); pollController?.abort(); });
++    window.addEventListener('pageshow', () => schedulePoll(0));
+@@ -522,0 +583 @@
++    schedulePoll();
+--- a/test/work-server.test.js
++++ b/test/work-server.test.js
+@@ -166,0 +167,33 @@
++
++test('conditional work reads track work, room and remote state without bypassing capability checks', async t => {
++  const { app, room, base, url } = await boot(t);
++  const first = await fetch(url('/work'));
++  assert.equal(first.status, 200);
++  const etag = first.headers.get('etag'); assert.match(etag, /^"[a-f0-9]{64}"$/);
++  assert.equal(first.headers.get('cache-control'), 'no-store');
++  const original = await first.json();
++  const unchanged = await fetch(url('/work'), { headers: { 'if-none-match': etag } });
++  assert.equal(unchanged.status, 304); assert.equal(await unchanged.text(), '');
++  assert.equal(unchanged.headers.get('etag'), etag);
++  // Ordinary callers still receive the complete compatible representation.
++  assert.deepEqual(await (await fetch(url('/work'))).json(), original);
++  room.start('Changed objective', '', { agenda: [] });
++  const changed = await fetch(url('/work'), { headers: { 'if-none-match': etag } });
++  assert.equal(changed.status, 200); assert.notEqual(changed.headers.get('etag'), etag);
++  assert.equal((await changed.json()).session.context, 'Changed objective');
++  const nextTag = changed.headers.get('etag');
++  await post(url('/work/tasks'), { goal: 'A task', acceptance: ['Works'] });
++  const taskChange = await fetch(url('/work'), { headers: { 'if-none-match': nextTag } });
++  assert.equal(taskChange.status, 200); assert.equal((await taskChange.json()).tasks.length, 1);
++  const taskTag = taskChange.headers.get('etag');
++  const enrolled = await post(url('/remote/enroll'), { label: 'Fixture host', workspaceId: 'w1', baseRevision: 'base', capabilities: ['claude'] });
++  assert.equal(enrolled.status, 201);
++  const remoteChange = await fetch(url('/work'), { headers: { 'if-none-match': taskTag } });
++  assert.equal(remoteChange.status, 200); assert.notEqual(remoteChange.headers.get('etag'), taskTag);
++  const latest = remoteChange.headers.get('etag');
++  for (const headers of [{ 'x-forwarded-for': '192.0.2.3' }, { 'cf-connecting-ip': '192.0.2.3', 'cf-ray': 'fixture' }])
++    assert.equal((await fetch(url('/work'), { headers: { ...headers, 'if-none-match': latest } })).status, 403);
++  assert.equal((await fetch(base + '/api/host/' + room.id + '/work', { headers: { 'if-none-match': latest } })).status, 404);
++  const other = app.create({ hostKey: 'other_host_work_0123456789', id: 'other_agent_work_0123456789', fixed: true });
++  assert.equal((await fetch(base + '/api/host/' + other.hostKey + '/work', { headers: { 'if-none-match': latest } })).status, 200);
++});

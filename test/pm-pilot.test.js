@@ -1,6 +1,9 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict');
 const {summarize}=require('../tools/summarize-pm-pilot');
+test('preparation refuses to label an already repaired parser as the unresolved writer pilot',()=>{
+  assert.throws(()=>require('../tools/prepare-pm-pilot').prepare(),/no longer matches this parser/);
+});
 function ledger(){return {schema:'agent-meeting/pm-pilot-ledger@1',inputDigest:'input',taskDigest:'task',authorization:{granted:true},
   sharedSetup:{humanActiveMs:10,elapsedMs:10,costUsd:0,provenance:'operator log'},
   runs:['direct','pm'].map(arm=>({id:arm,arm,status:'completed',inputDigest:'input',taskDigest:'task',requestedModel:'same',actualModels:['same'],cliVersion:'same-version',

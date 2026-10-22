@@ -1,7 +1,7 @@
 'use strict';
 // One delegated local execution lane, on the existing canonical task/run store.
 const crypto = require('crypto');
-const { inventory, changes } = require('./work');
+const { inventory, changes, gitRevision } = require('./work');
 const { SessionSupervisor } = require('./session-supervisor');
 const digest = v => crypto.createHash('sha256').update(typeof v === 'string' ? v : JSON.stringify(v)).digest('hex');
 const fail = message => { throw Object.assign(Error(message), { status: 409 }); };
@@ -65,6 +65,7 @@ class TeamController {
     if (input.planRevision !== t.planRevision || !t.plan || t.status !== 'plan-proposed' || input.grantId !== g.id) fail('Plan or grant changed');
     const task = this.work.assertCurrent(t.plan.taskId, t.plan.requirementRevision);
     this.assertScope(task, p, g);
+    if (gitRevision(task.workspace) !== g.baseRevision) fail('Readiness base revision changed; new grant required');
     // Local deterministic readiness. This does not probe a model or invent access.
     const before = require('./work').sourceInventory(task.workspace);
     for (const file of task.testFiles) if (!before[file]) fail('Readiness: independent test missing');
@@ -82,7 +83,7 @@ class TeamController {
         if (result.timeout || result.error || result.cancelled || !Number.isInteger(result.exitCode) || result.exitCode > 1 || /MODULE_NOT_FOUND|ERR_MODULE_NOT_FOUND|SyntaxError:/.test(result.output)) fail('Readiness test runner/dependency failed; resolve environment before dispatch');
       }
       this.valid();
-      if (this.get().planRevision !== t.planRevision || this.get().grantId !== g.id || digest(require('./work').sourceInventory(task.workspace)) !== digest(before)) fail('Readiness plan/source changed');
+      if (this.get().planRevision !== t.planRevision || this.get().grantId !== g.id || gitRevision(task.workspace) !== g.baseRevision || digest(require('./work').sourceInventory(task.workspace)) !== digest(before)) fail('Readiness plan/source changed');
     } finally {
       this.readiness = null;
       this.pm.update(p => { if (p.team?.id === t.id) p.team.readinessEvidence = evidence; });
@@ -134,6 +135,7 @@ class TeamController {
   async execute(options) {
     const startedAt = Date.now();
     const team = this.get(), run = this.work.read().runs.find(r => r.id === team.runId);
+    const assertSource = () => { if (gitRevision(run.source) !== run.baseRevision || changes(run.before, require('./work').sourceInventory(run.source)).length) fail('Source base or snapshot changed before runtime activation'); };
     const runtimeControl = { schema: 'agent-meeting/runtime-request@1', action: 'swap', taskId: run.taskId, requirementRevision: run.requirementRevision, planRevision: team.planRevision, baseRevision: run.baseRevision,
       profileId: this.pm.read().grant.profileId, decisions: 'Required: exact decisions/constraints to preserve', unknowns: 'Required: remaining unknowns', next: 'Required: next scoped action' };
     options = { ...options, prompt: JSON.stringify({ ...JSON.parse(options.prompt), runtimeControl, runtimeInstruction: 'If a fresh context/model is needed before completing, checkpoint WIP and return only the runtimeControl JSON with actual decisions, unknowns and next. This asks the supervisor for a bounded same-slot swap, never shell commands. Otherwise report the result normally.' }) };
@@ -144,6 +146,7 @@ class TeamController {
       // through its own swap call; runtime-driven swaps never put it in model text.
       await this.swap({ checkpointHash: checkpoint.hash, profileId: request.profileId }, { internal: true });
     };
+    assertSource();
     let session = this.supervisor.open(options); this.live = { session, options };
     const abort = () => { this.supervisor.stop(session).catch(() => {}); if (this.pending) this.supervisor.stop(this.pending).catch(() => {}); };
     options.signal?.addEventListener('abort', abort, { once: true });
@@ -154,6 +157,7 @@ class TeamController {
         if (ready.model !== this.live.options.modelId) fail('Managed runtime readiness identity mismatch');
         if (options.signal?.aborted || this.closed) { await this.supervisor.stop(session); return { status: 'cancelled', reportedModel: 'unknown' }; }
         this.valid();
+        assertSource();
         const runtimeGeneration = this.get().generation;
         const result = await this.supervisor.activate(session);
         const t = this.get();
@@ -179,7 +183,7 @@ class TeamController {
     const retry = t.status === 'working' && previousRun && ['failed','timeout','output-limit'].includes(previousRun.status) && !this.work.active.size;
     if ((!retry && t.status !== 'ready') || !t.approval || t.approval.planRevision !== t.planRevision) fail('PM must approve this plan revision');
     const task = this.work.assertCurrent(t.plan.taskId, t.plan.requirementRevision); this.assertScope(task, p, g);
-    if (digest(require('./work').sourceInventory(task.workspace)) !== t.approval.snapshotHash) fail('Readiness source changed; propose and approve again');
+    if (gitRevision(task.workspace) !== g.baseRevision || digest(require('./work').sourceInventory(task.workspace)) !== t.approval.snapshotHash) fail('Readiness source changed; propose and approve again');
     if (g.usedRuns >= g.maxRuns) fail('Run cap reached');
     this.reserve(1);
     this.pm.update(p => { p.grant.usedRuns++; p.attempts++; if (!p.team.startedAt) { p.team.startedAt = this.pm.now(); p.team.endsAt = g.team.durationMinutes === null ? null : this.pm.now() + g.team.durationMinutes * 60000; } p.team.status = 'working'; });
@@ -199,7 +203,7 @@ class TeamController {
     if (!run || run.status !== 'running' || !this.live || t.swap && !['completed','failed'].includes(t.swap.status)) fail('A live managed writer and no pending swap are required');
     this.work.assertCurrent(run.taskId, run.requirementRevision);
     if (input.taskId !== run.taskId || input.requirementRevision !== run.requirementRevision || input.planRevision !== t.planRevision || input.baseRevision !== run.baseRevision) fail('Checkpoint revisions do not match');
-    if (changes(run.before, require('./work').sourceInventory(run.source)).length) fail('Source changed before checkpoint');
+    if (gitRevision(run.source) !== run.baseRevision || changes(run.before, require('./work').sourceInventory(run.source)).length) fail('Source base or snapshot changed before checkpoint');
     const snapshot = inventory(run.workspace);
     if (changes(run.before, snapshot).some(c => !g.writePaths.some(w => c.file === w || c.file.startsWith(w + '/')))) fail('Checkpoint contains changes outside scope');
     const wip = changes(run.before, snapshot);
@@ -234,7 +238,7 @@ class TeamController {
     const decision = require('./routing').recommend(this.work.configStore.read(), { ...task, taskId: task.id, lockedProfileId: input.profileId, revision: originalRun.baseRevision }, [{ ...observation, tools: [], permissions: [], workspace: { revision: originalRun.baseRevision, writePaths: task.writePaths }, locks: [] }]);
     if (!decision.candidates.some(c => c.profileId === input.profileId)) fail('Routing constraints reject successor profile');
     if (originalRun.decision?.review?.required) decision.review.required = true;
-    const sourceCurrent = () => !changes(originalRun.before, require('./work').sourceInventory(originalRun.source)).length;
+    const sourceCurrent = () => gitRevision(originalRun.source) === originalRun.baseRevision && !changes(originalRun.before, require('./work').sourceInventory(originalRun.source)).length;
     if (!sourceCurrent() || digest(inventory(c.workspace)) !== digest(c.snapshot)) fail('Source or workspace changed since checkpoint');
     this.reserve(2); // bootstrap and continuation, including failed bootstrap
     const token = crypto.randomBytes(32).toString('base64url');
@@ -293,7 +297,7 @@ class TeamController {
         if (['failed','cancelled'].includes(current.status)) this.signal('blocker', action + ':' + run.id, { runId: run.id });
         return this.view();
       }
-      if (run.status === 'integrated' && changes(run.verifiedSnapshot, require('./work').sourceInventory(run.source)).length) fail('Integrated source changed before result submission');
+      if (run.status === 'integrated' && (gitRevision(run.source) !== run.baseRevision || changes(run.verifiedSnapshot, require('./work').sourceInventory(run.source)).length)) fail('Integrated source changed before result submission');
       if (run.status !== 'integrated' || !run.integrationEvidence?.length || run.integrationEvidence.some(e => e.exitCode !== 0)) fail('Result requires independent tests on integrated source');
       return this.signal('result', run.id, { runId: run.id, taskId: run.taskId, evidence: run.integrationEvidence.map(e => ({ command: e.command, exitCode: e.exitCode, checkedAt: e.checkedAt })) });
     }

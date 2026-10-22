@@ -209,3 +209,18 @@ test('packaged Node PM client reaches a localhost room without changing settings
   const {stdout}=await require('node:util').promisify(require('node:child_process').execFile)(process.execPath,[path.join(__dirname,'../bin/pm.js'),'state','{}'],{encoding:'utf8',timeout:15000,env:{...process.env,AGENT_MEETING_PM_URL:f.origin.replace('127.0.0.1','localhost')+'/api/pm/'+f.room.id,AGENT_MEETING_PM_TOKEN:f.token}});
   assert.equal(JSON.parse(stdout).status,'active');assert.equal(f.calls,0);
 });
+
+test('same-byte source HEAD movement after integration cannot receive a current PM completion report', async t => {
+  const f = await setup(t); await f.ready();
+  const task = (await f.pm('plan', { goalRevision: 1 })).data;
+  const run = (await f.pm('run', { goalRevision: 1, taskId: task.id })).data;
+  await f.settled(run.id);
+  assert.equal((await f.pm('verify', { goalRevision: 1, runId: run.id })).data.status, 'verified');
+  assert.equal((await f.pm('integrate', { goalRevision: 1, runId: run.id })).data.status, 'integrated');
+  const bytes = fs.readFileSync(path.join(f.source, 'sum.js'));
+  require('child_process').execFileSync('git', ['-C', f.source, '-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '--allow-empty', '-qm', 'Move HEAD after verified integration']);
+  assert.deepEqual(fs.readFileSync(path.join(f.source, 'sum.js')), bytes);
+  const result = await f.pm('report', { goalRevision: 1, runId: run.id, text: 'Claim current completion under old base' });
+  assert.equal(result.status, 409);
+  assert.match(result.data.error, /source.*changed/i);
+});

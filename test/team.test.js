@@ -219,3 +219,45 @@ test('allowlisted model change preserves task/slot/WIP and records actual runtim
   const state=(await s.f.host('work')).data;
   assert.equal(state.tasks.length,1);assert.equal(state.runs[0].logicalSlot,'A');assert.equal(state.runs[0].sessions[0].model,'fixture-model');assert.equal(state.runs[0].sessions[2].reportedModel,'fixture-model-other');
 });
+
+for (const stage of ['checkpoint', 'swap', 'pending-readiness']) test('same-byte Git HEAD change blocks team ' + stage + ' without promoting a stale generation', async t => {
+  const { execFileSync } = require('child_process');
+  const s = await teamFixture(t), run = await s.start();
+  if (stage === 'pending-readiness') fs.appendFileSync(path.join(run.workspace, 'sum.js'), '// fixture-mode:delay\n');
+  const checkpointInput = { taskId: run.taskId, requirementRevision: run.requirementRevision, planRevision: 1, baseRevision: run.baseRevision, decisions: 'Retain source revision and scope', unknowns: 'Billing unknown', next: 'Continue only at approved base' };
+  const c = stage === 'checkpoint' ? null : await s.checkpoint(run);
+  let swapping;
+  if (stage === 'pending-readiness') {
+    swapping = s.call('swap', { checkpointHash: c.hash, profileId: 'opus-claude' });
+    let preparing = false;
+    for (let i = 0; i < 60; i++) {
+      if ((await s.f.host('pm/state')).data.team.swap?.status === 'preparing') { preparing = true; break; }
+      await new Promise(r => setTimeout(r, 10));
+    }
+    assert(preparing, 'Must observe pending bootstrap before moving HEAD');
+  }
+  const bytesBefore = fs.readFileSync(path.join(s.f.source, 'sum.js'));
+  execFileSync('git', ['-C', s.f.source, '-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '--allow-empty', '-qm', 'Advance source identity without changing files']);
+  assert.deepEqual(fs.readFileSync(path.join(s.f.source, 'sum.js')), bytesBefore);
+  assert.notEqual(execFileSync('git', ['-C', s.f.source, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), run.baseRevision);
+  const response = stage === 'checkpoint' ? await s.call('checkpoint', checkpointInput) : stage === 'swap' ? await s.call('swap', { checkpointHash: c.hash, profileId: 'opus-claude' }) : await swapping;
+  assert.equal(response.status, 409, response.data?.error || 'Stale source was accepted');
+  const state = (await s.f.host('work')).data;
+  assert.equal(state.pm.team.generation, 1);
+  assert.notEqual(state.tasks[0].status, 'done');
+  assert.equal(state.pm.grant.usedInvocations, stage === 'pending-readiness' ? 3 : 1);
+});
+
+test('same-byte HEAD movement after integration blocks a team result event', async t => {
+  const s = await teamFixture(t), run = await s.start(), c = await s.checkpoint(run);
+  const swapped = await s.call('swap', { checkpointHash: c.hash, profileId: 'opus-claude' });
+  assert.equal(swapped.status, 200); s.rotate(swapped.data); await s.f.settled(run.id);
+  assert.equal((await s.call('verify', { runId: run.id })).data.run.status, 'verified');
+  assert.equal((await s.call('integrate', { runId: run.id })).data.run.status, 'integrated');
+  const bytes = fs.readFileSync(path.join(s.f.source, 'sum.js'));
+  require('child_process').execFileSync('git', ['-C', s.f.source, '-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '--allow-empty', '-qm', 'Move HEAD after integrated team result']);
+  assert.deepEqual(fs.readFileSync(path.join(s.f.source, 'sum.js')), bytes);
+  const result = await s.call('submit', { runId: run.id });
+  assert.equal(result.status, 409); assert.match(result.data.error, /source.*changed/i);
+  assert.equal((await s.f.host('pm/state')).data.team.events.length, 0);
+});

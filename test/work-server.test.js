@@ -164,3 +164,36 @@ test('admin accepts the full documented config size and reset/history preserve r
  const reset=await post(url('/config/reset'),{group:'models',expectedRevision:2});assert.equal(reset.status,200);assert.deepEqual((await reset.json()).models,routing.defaults().models);
  assert.equal((await post(url('/config/reset'),{group:'policy',expectedRevision:2})).status,409);
 });
+
+test('conditional work reads track work, room and remote state without bypassing capability checks', async t => {
+  const { app, room, base, url } = await boot(t);
+  const first = await fetch(url('/work'));
+  assert.equal(first.status, 200);
+  const etag = first.headers.get('etag'); assert.match(etag, /^"[a-f0-9]{64}"$/);
+  assert.equal(first.headers.get('cache-control'), 'no-store');
+  const original = await first.json();
+  const unchanged = await fetch(url('/work'), { headers: { 'if-none-match': etag } });
+  assert.equal(unchanged.status, 304); assert.equal(await unchanged.text(), '');
+  assert.equal(unchanged.headers.get('etag'), etag);
+  // Ordinary callers still receive the complete compatible representation.
+  assert.deepEqual(await (await fetch(url('/work'))).json(), original);
+  room.start('Changed objective', '', { agenda: [] });
+  const changed = await fetch(url('/work'), { headers: { 'if-none-match': etag } });
+  assert.equal(changed.status, 200); assert.notEqual(changed.headers.get('etag'), etag);
+  assert.equal((await changed.json()).session.context, 'Changed objective');
+  const nextTag = changed.headers.get('etag');
+  await post(url('/work/tasks'), { goal: 'A task', acceptance: ['Works'] });
+  const taskChange = await fetch(url('/work'), { headers: { 'if-none-match': nextTag } });
+  assert.equal(taskChange.status, 200); assert.equal((await taskChange.json()).tasks.length, 1);
+  const taskTag = taskChange.headers.get('etag');
+  const enrolled = await post(url('/remote/enroll'), { label: 'Fixture host', workspaceId: 'w1', baseRevision: 'base', capabilities: ['claude'] });
+  assert.equal(enrolled.status, 201);
+  const remoteChange = await fetch(url('/work'), { headers: { 'if-none-match': taskTag } });
+  assert.equal(remoteChange.status, 200); assert.notEqual(remoteChange.headers.get('etag'), taskTag);
+  const latest = remoteChange.headers.get('etag');
+  for (const headers of [{ 'x-forwarded-for': '192.0.2.3' }, { 'cf-connecting-ip': '192.0.2.3', 'cf-ray': 'fixture' }])
+    assert.equal((await fetch(url('/work'), { headers: { ...headers, 'if-none-match': latest } })).status, 403);
+  assert.equal((await fetch(base + '/api/host/' + room.id + '/work', { headers: { 'if-none-match': latest } })).status, 404);
+  const other = app.create({ hostKey: 'other_host_work_0123456789', id: 'other_agent_work_0123456789', fixed: true });
+  assert.equal((await fetch(base + '/api/host/' + other.hostKey + '/work', { headers: { 'if-none-match': latest } })).status, 200);
+});

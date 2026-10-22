@@ -1,0 +1,25 @@
+{
+  "schema": "agent-meeting/readonly-audit-input@1",
+  "createdAt": "2026-10-22T16:23:27.323Z",
+  "model": "claude-opus-4-6-thinking",
+  "cliVersion": "1.4.5",
+  "revision": "c323eb7281a2e8880246004846aa95aec6fc880e",
+  "files": {
+    "AGENTS.md": {
+      "sha256": "bf46097e23aca8605a9e2f5107b7655935cbb11de74b31fd1888aeb1bbe6ed4e",
+      "size": 246
+    },
+    "src/runtime.js": {
+      "sha256": "1647a1ee676f0f4dec24839aad5e0189f4c6646210847f1c23db05d6b41ae236",
+      "size": 6722
+    },
+    "task.json": {
+      "sha256": "98c3e1da75d01527a813c38eba6cc26c6942e830e6e329888b09ffad29a282c0",
+      "size": 2890
+    }
+  },
+  "taskDigest": "da53d44dbd2c7bd1f94299045e2d64280b5b0c24ff76c842f655a7ff8b3407c7",
+  "preparationMs": 208.561099,
+  "modelCalls": 0,
+  "sourceDigest": "bf9cf300130836d65bdbd87de486c54b7544a86af9c581310f3aac09e3476de1"
+}

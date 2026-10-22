@@ -102,3 +102,28 @@ Nguồn chuẩn vẫn `work@1`: `pm.team` chỉ giữ delegation/plan revision/a
 Flow hiện có: team-invite → lead join/propose → PM approve-plan → team run → checkpoint/swap trong cùng task/run → team verify/integrate/submit → PM watch/events → ack-event → report. Model driver có structured runtime request cho swap ở biên phản hồi; không tự compact theo telemetry. Bootstrap chỉ đọc, ACK exact hash/generation/model, supervisor drain process group trước promotion. Scope/source/config/grant/goal stale, deadline, cap và kết quả chưa integrated đều bị chặn. Pending event giữ khi client tắt; restart suspend/reconcile, không tự trả event cũ thành completion của goal mới.
 
 Ma trận kỹ thuật nằm trong `test/team.test.js`: một writer, WIP/slot/task liên tục; same/different allowlisted model; readonly bootstrap; stale/ACK/timeout/replay/spoof; revoke/goal/source giữa bootstrap; PM lease vs session expiry; event cap/dedupe/ack/restart và executable watch client. [Evidence](evidence/pm-team/ACCEPTANCE.vi.md). Không sửa screen pool/UI: screen pool đích UC10 phía trên vẫn chưa nghiệm thu. Cửa browser VI/EN/theme/Back/reload mới chưa mở vì chưa triển khai UI team/swap; UI UC09 cũ chỉ giữ khả năng của nó, không giả là đã phủ UC10.
+
+## UC11 — Theo dõi kết quả ngoài trang (ca 8 giờ, 2026-10-22)
+
+Quan sát baseline trên preview3150: API verify trả `verified`, S06 vẫn hiện `reported` và nút verify cho tới khi Làm mới/đổi view. Backend PM/CLI và web không có cùng nhịp cập nhật; người dùng phải vận hành refresh. Đây là lỗi theo dõi trạng thái đã tái hiện bằng fixture, không là bằng chứng chất lượng model.
+
+Đích trong screen pool hiện có: S04/S05/S06 đọc có điều kiện mỗi3 giây khi view hiện; HTTP304 khi revision không đổi, không tự dispatch. Đang nhập/chọn/đọc details hoặc có action đang chạy thì giữ DOM/focus/scroll, báo Có cập nhật và cho áp dụng có chủ ý. Mất kết nối giữ dữ liệu cuối, báo đang thử lại; backoff tối đa30 giây, mỗi request tối đa10 giây. Quay lại tab thử ngay. Hội thoại/admin không polling work mới. Bản nháp vẫn theo task/revision; revision cũ không được ghi đè yêu cầu mới.
+
+Flow: API/CLI đổi run → conditional read đổi → hiển thị trạng thái mới; nếu đang tương tác → pending → Xem cập nhật hoặc kết thúc tương tác → cập nhật. Offline → stale có nhãn → retry → live. Back/reload/deep link giữ luồng cũ và không chạy task.
+
+| Ca | Kết quả cần kiểm |
+| --- | --- |
+| J14 | Run ngoài trang reported→verified→integrated cập nhật không cần Làm mới; task/run ID giữ nguyên |
+| J15 | Đang nhập draft/chọn profile/mở evidence: DOM và focus giữ nguyên, có pending; áp dụng không dispatch |
+| J16 | Offline giữ dữ liệu + nhãn, phục hồi trạng thái mới; 304 không có body; local/host boundary giữ nguyên |
+| J17 | VI/EN, sáng/tối,375/768/1280, keyboard/Back/reload/deep link không tràn hoặc mất context |
+
+Kiểm kỹ thuật không thay sự chấp nhận thiết kế của người dùng; kết quả thực tế và source hash ghi trong evidence của ca.
+
+## UC12 — Chủ trì mặc định gọn và PM recovery (ca 8 giờ)
+
+Quan sát trên S06: khối PM mặc định human chiếm thêm một hàng52–82px (cần đo lại cùng viewport trước/sau); network error `Failed to fetch` vẫn hiện sau server restart thành công. Human mode không cần điều hành PM thường trực. Đích: lựa chọn Agent làm chủ trì trong Tùy chọn hiện có; active/pending PM vẫn có vùng giám sát; human có lịch sử mở lại từ menu hoặc deep link nguồn; không mất private history hoặc tự tạo invitation khi chỉ xem lịch sử. Không thêm screen/task store.
+
+Flow S01/S03–S06 human → Tùy chọn → Agent làm chủ trì → PM invitation/pending/active; tiếp quản → human gọn → Tùy chọn → lịch sử PM. `#pmControl` mở đúng vùng nguồn cũ. Network error của PM chỉ giữ tới lần state fetch thành công; validation/action error không bị background poll xóa. Human idle không poll PM mỗi3s; room change làm refresh, active giữ polling có timeout/no overlap.
+
+J18: human default không chiếm hàng PM; menu/keyboard/deep link/Back/reload có đường tới PM/history. J19: PM state fetch failure rồi recovery xóa lỗi kết nối; action failure vẫn đọc được; VI/EN/light/dark/responsive và grant/revoke/takeover semantics giữ nguyên.

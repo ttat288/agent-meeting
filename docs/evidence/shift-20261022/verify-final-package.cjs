@@ -11,7 +11,7 @@ const expectedCsp = "default-src 'self'; script-src 'self'; style-src 'self'; im
   process.chdir(repo);
   const output = process.argv[2] ? path.resolve(process.argv[2]) : fs.mkdtempSync(path.join(os.tmpdir(), 'am-package-report-'));
   fs.mkdirSync(output, { recursive: true, mode: 0o700 });
-  for (const name of ['package-smoke.json', 'cli-shutdown-tests.txt']) {
+  for (const name of ['package-smoke.json', 'cli-shutdown-tests.txt', 'runtime-drain-tests.txt']) {
     assert(!fs.existsSync(path.join(output, name)), 'Choose a new output directory; historical receipts are not overwritten');
   }
   const status = cp.execFileSync('git', ['status', '--porcelain', '--', 'bin', 'src', 'scripts', 'assets', 'package.json', 'README.md', 'README.vi.md', 'LICENSE', 'CHANGELOG.md'], { encoding: 'utf8' });
@@ -56,11 +56,16 @@ const expectedCsp = "default-src 'self'; script-src 'self'; style-src 'self'; im
     const cli = cp.execFileSync(process.execPath, ['--test', 'test/cli-shutdown.test.js'], { cwd: packaged, encoding: 'utf8', timeout: 20000, maxBuffer: 256 * 1024 });
     for (const expected of [/^# tests 2$/m, /^# pass 2$/m, /^# fail 0$/m, /^# skipped 0$/m]) assert(expected.test(cli), String(expected));
     fs.writeFileSync(path.join(output, 'cli-shutdown-tests.txt'), cli, { flag: 'wx' });
+    fs.copyFileSync('test/runtime-cancel.test.js', packaged + '/test/runtime-cancel.test.js');
+    const drain = cp.execFileSync(process.execPath, ['--test', 'test/runtime-cancel.test.js'], { cwd: packaged, encoding: 'utf8', timeout: 20000, maxBuffer: 256 * 1024 });
+    for (const expected of [/^# tests 2$/m, /^# pass 2$/m, /^# fail 0$/m, /^# skipped 0$/m]) assert(expected.test(drain), String(expected));
+    fs.writeFileSync(path.join(output, 'runtime-drain-tests.txt'), drain, { flag: 'wx' });
     const report = { schema: 'agent-meeting/final-package-smoke@1', at: new Date().toISOString(), node: process.version, platform: process.platform,
       sourceCommit: cp.execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
       verificationProgramSha256: sha(fs.readFileSync(__filename)), tarballSha256: sha(fs.readFileSync(tar)), tarballBytes: fs.statSync(tar).size,
       files: info.files.length, unpackedSize: info.unpackedSize, allPackedFileHashes, checks, bundledSkills: skill.items.map(item => item.id),
       cliShutdown: { pass: 2, fail: 0, skipped: 0, testSourceSha256: sha(fs.readFileSync('test/cli-shutdown.test.js')), scope: 'Test copied after packing, never shipped; real signals and isolated stores' },
+      runtimeDrain: { pass: 2, fail: 0, skipped: 0, testSourceSha256: sha(fs.readFileSync('test/runtime-cancel.test.js')), scope: 'Test copied after packing; actual POSIX process groups with substituted Node executable, zero native AI' },
       nativeModelCalls: 0, installedUserApp: false, limits: ['Local package and transport/CLI checks, not native model quality or eight-hour runtime', 'Development/CI/schema costs are not metered here'] };
     fs.writeFileSync(path.join(output, 'package-smoke.json'), JSON.stringify(report, null, 2) + '\n', { flag: 'wx' });
     console.log(JSON.stringify({ output, temporaryPackage: packaged, files: report.files, checks: checks.length, tarballSha256: report.tarballSha256 }));

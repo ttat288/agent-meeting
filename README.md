@@ -103,7 +103,7 @@ The selected admin section survives reload and language changes. Late configurat
 
 Verification and integration show progress and **Cancel run** in Results. Cancellation waits for the test process to stop; if the source was edited or its permissions changed meanwhile, a rollback conflict requires manual reconciliation.
 
-Ctrl+C and SIGTERM wait for managed processes, verification and integration rollback before the CLI exits. Let shutdown finish; force-killing the process cannot provide this guarantee. A recorded rollback conflict still needs manual reconciliation.
+Ctrl+C and SIGTERM wait for managed processes, verification and integration rollback before the CLI exits. Cancellation, timeout or an output limit can add a two-second process-group escalation grace before the run settles. Let shutdown finish; force-killing the process cannot provide this guarantee. A recorded rollback conflict still needs manual reconciliation.
 
 ![Current Results view: a local subprocess fixture is integrated and independently tested; live updates share the compact session shell.](docs/evidence/shift-20261022/results-final-en.png)
 

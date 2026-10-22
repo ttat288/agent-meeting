@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: runtime cancelled drains group escalation when its parent exits before a silent grandchild
+not ok 1 - runtime cancelled drains group escalation when its parent exits before a silent grandchild
+  ---
+  duration_ms: 402.533213
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/runtime-cancel.test.js:9:46'
+  failureType: 'testCodeFailure'
+  error: |-
+    Resolving runtime must not release ownership while a TERM-resistant grandchild is still writing
+    + actual - expected
+    
+    + '1792708875337'
+    - 'ready'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'ready'
+  actual: '1792708875337'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/runtime-cancel.test.js:29:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: runtime timeout drains group escalation when its parent exits before a silent grandchild
+not ok 2 - runtime timeout drains group escalation when its parent exits before a silent grandchild
+  ---
+  duration_ms: 1696.084328
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/runtime-cancel.test.js:9:46'
+  failureType: 'testCodeFailure'
+  error: |-
+    Resolving runtime must not release ownership while a TERM-resistant grandchild is still writing
+    + actual - expected
+    
+    + ''
+    - '1792708876868'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '1792708876868'
+  actual: ''
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/runtime-cancel.test.js:29:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2251.256122

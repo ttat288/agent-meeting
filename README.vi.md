@@ -103,7 +103,7 @@ Nhóm Quản trị đang chọn được giữ khi tải lại hoặc đổi ng�
 
 Kiểm chứng và tích hợp hiển thị tiến trình cùng nút **Hủy phiên chạy** tại Kết quả. Hủy đợi test dừng; nếu source hoặc quyền file đã đổi trong lúc đó, rollback conflict cần được đối chiếu thủ công.
 
-Ctrl+C và SIGTERM chờ tiến trình được quản lý, kiểm chứng và rollback tích hợp trước khi CLI thoát. Hãy đợi tắt hoàn tất; ép dừng tiến trình không có bảo đảm này. Rollback conflict đã ghi vẫn cần đối chiếu thủ công.
+Ctrl+C và SIGTERM chờ tiến trình được quản lý, kiểm chứng và rollback tích hợp trước khi CLI thoát. Hủy, timeout hoặc vượt hạn output có thể chờ thêm hai giây để gửi tín hiệu mạnh cho nhóm tiến trình. Hãy đợi tắt hoàn tất; ép dừng tiến trình không có bảo đảm này. Rollback conflict đã ghi vẫn cần đối chiếu thủ công.
 
 ![Kết quả hiện tại: fixture subprocess local đã tích hợp và test độc lập, trạng thái tự cập nhật trong shell gọn.](docs/evidence/shift-20261022/results-final-vi.png)
 

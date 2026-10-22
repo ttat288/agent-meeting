@@ -1,0 +1,100 @@
+TAP version 13
+# Subtest: runtime cancelled drains group escalation when its parent exits before a silent grandchild
+ok 1 - runtime cancelled drains group escalation when its parent exits before a silent grandchild
+  ---
+  duration_ms: 2400.823361
+  type: 'test'
+  ...
+# Subtest: runtime timeout drains group escalation when its parent exits before a silent grandchild
+ok 2 - runtime timeout drains group escalation when its parent exits before a silent grandchild
+  ---
+  duration_ms: 3693.377393
+  type: 'test'
+  ...
+# Subtest: adapter arguments require an explicit safe provider ID and bounded nonempty prompt
+ok 3 - adapter arguments require an explicit safe provider ID and bounded nonempty prompt
+  ---
+  duration_ms: 3.398948
+  type: 'test'
+  ...
+# Subtest: agy receives the entire prompt as one literal argv value and rejects writes
+ok 4 - agy receives the entire prompt as one literal argv value and rejects writes
+  ---
+  duration_ms: 0.673378
+  type: 'test'
+  ...
+# Subtest: Claude keeps prompt out of flags, isolates MCP, and limits write tool scope
+ok 5 - Claude keeps prompt out of flags, isolates MCP, and limits write tool scope
+  ---
+  duration_ms: 0.237422
+  type: 'test'
+  ...
+# Subtest: malformed JSON and nonobject JSON always fail without throwing
+ok 6 - malformed JSON and nonobject JSON always fail without throwing
+  ---
+  duration_ms: 0.644914
+  type: 'test'
+  ...
+# Subtest: runtime error variants and missing output cannot become successful reports
+ok 7 - runtime error variants and missing output cannot become successful reports
+  ---
+  duration_ms: 0.834324
+  type: 'test'
+  ...
+# Subtest: Claude envelope preserves machine model, usage, cost and a permission-denial diagnostic
+ok 8 - Claude envelope preserves machine model, usage, cost and a permission-denial diagnostic
+  ---
+  duration_ms: 0.416712
+  type: 'test'
+  ...
+# Subtest: runtime billing and model evidence stay unknown when inconsistent
+ok 9 - runtime billing and model evidence stay unknown when inconsistent
+  ---
+  duration_ms: 0.617297
+  type: 'test'
+  ...
+# Subtest: agy success keeps self-identified prose model unknown and bounds model output
+ok 10 - agy success keeps self-identified prose model unknown and bounds model output
+  ---
+  duration_ms: 1.052744
+  type: 'test'
+  ...
+# Subtest: runCli sends Claude prompt verbatim on stdin, uses shell false and never claims verified
+ok 11 - runCli sends Claude prompt verbatim on stdin, uses shell false and never claims verified
+  ---
+  duration_ms: 4.553073
+  type: 'test'
+  ...
+# Subtest: runtime reports preserve Vietnamese and emoji across arbitrary UTF-8 stream boundaries
+ok 12 - runtime reports preserve Vietnamese and emoji across arbitrary UTF-8 stream boundaries
+  ---
+  duration_ms: 2.999973
+  type: 'test'
+  ...
+# Subtest: UTF-8 stream decoding retains the one-MiB output byte cap
+ok 13 - UTF-8 stream decoding retains the one-MiB output byte cap
+  ---
+  duration_ms: 2009.402875
+  type: 'test'
+  ...
+# Subtest: runCli rejects nonzero exit, malformed result, and permission denial despite positive success JSON
+ok 14 - runCli rejects nonzero exit, malformed result, and permission denial despite positive success JSON
+  ---
+  duration_ms: 5.614061
+  type: 'test'
+  ...
+# Subtest: agy SUCCESS with denied_actions is a permission failure, not a completed report
+ok 15 - agy SUCCESS with denied_actions is a permission failure, not a completed report
+  ---
+  duration_ms: 1.669606
+  type: 'test'
+  ...
+1..15
+# tests 15
+# suites 0
+# pass 15
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8419.642265

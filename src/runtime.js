@@ -57,7 +57,7 @@ function runCli(options) {
   const wrapped = options.write || options.isolate ? require('./execution-sandbox').wrapExecution(bin, args, { workspace: cwd, write: options.write === true }) : null;
   if (wrapped) bin = wrapped.bin;
   return new Promise(resolve => {
-    let stdout = '', stderr = '', stdoutBytes = 0, reason = null, finished = false;
+    let stdout = '', stderr = '', stdoutBytes = 0, reason = null, finished = false, closed;
     const child = spawn(bin, wrapped ? wrapped.args : args, { cwd, shell: false, detached: options.detached !== false && process.platform !== 'win32', stdio: ['pipe', 'pipe', 'pipe'] });
     child.stdin.on('error', () => {});
     child.stdin.end(adapter === 'claude' ? options.prompt : '');
@@ -65,8 +65,11 @@ function runCli(options) {
       if (finished || reason) return;
       reason = why;
       try { process.platform === 'win32' || options.detached === false ? child.kill('SIGTERM') : process.kill(-child.pid, 'SIGTERM'); } catch {}
-      killTimer = setTimeout(() => { try { process.platform === 'win32' || options.detached === false ? child.kill('SIGKILL') : process.kill(-child.pid, 'SIGKILL'); } catch {} }, 2000);
-      killTimer.unref();
+      killTimer = setTimeout(() => {
+        try { process.platform === 'win32' || options.detached === false ? child.kill('SIGKILL') : process.kill(-child.pid, 'SIGKILL'); } catch {}
+        killTimer = null;
+        if (closed) done(closed.code, closed.error);
+      }, 2000);
     };
     let killTimer;
     const timer = setTimeout(() => stop('timeout'), timeoutMs);
@@ -78,8 +81,12 @@ function runCli(options) {
     child.stdout.on('data', text => { const bytes = Buffer.byteLength(text); if (stdoutBytes + bytes > 1024 * 1024) return stop('output-limit'); stdoutBytes += bytes; stdout += text; });
     child.stderr.on('data', text => { stderr = (stderr + text).slice(-8192).replace(/^[\uDC00-\uDFFF]/, ''); });
     const done = (code, err) => {
-      if (finished) return; finished = true;
-      clearTimeout(timer); // Keep kill escalation alive if grandchildren survived the parent.
+      if (finished) return;
+      // A silent grandchild can outlive the parent and its stdio. Keep the
+      // promise and escalation timer alive until the group has been signalled.
+      if (reason && killTimer) { closed ||= { code, error: err }; return; }
+      finished = true;
+      clearTimeout(timer);
       signal?.removeEventListener('abort', abort);
       wrapped?.cleanup();
       const parsed = parseOutput(adapter, stdout);

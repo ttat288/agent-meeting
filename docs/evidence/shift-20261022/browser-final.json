@@ -70,5 +70,23 @@
   "screenshots": {
     "results-final-en.png": "ea190c05566691957039cc7deaf56eabf75192ba512e37bf34cc9ca60d27d703",
     "results-final-vi.png": "868d7a377fbd7c1ad997c742c923df830d16dd19c537a7b298cad8570f6e0d44"
+  },
+  "postRuntimeFixReload": {
+    "sourceCommit": "953225b92604e706d37e49cdb6688bb94a3c4f20",
+    "uiHashes": "unchanged, see footprint-drain-final.json",
+    "cards": 2,
+    "focusId": "workTitle",
+    "heading": "Kết quả (2)",
+    "horizontalOverflow": false,
+    "recordedAt": "2026-10-22T22:47:36.052Z",
+    "runHandoffs": [
+      "/api/host/host_consistency_preview_1234/work/runs/f6e6dd10-caf4-4721-aed6-7b4d3fa96245/handoff",
+      "/api/host/host_consistency_preview_1234/work/runs/265ce1c9-7b10-433e-9dbb-2d52352ecc60/handoff"
+    ],
+    "sourceLinks": [
+      "#message-1",
+      "#message-45"
+    ],
+    "url": "http://127.0.0.1:3150/m/host_consistency_preview_1234?lang=vi#results"
   }
 }

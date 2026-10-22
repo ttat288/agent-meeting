@@ -1,0 +1,166 @@
+TAP version 13
+# Subtest: explicit runtime errors override a success marker and plausible prose
+ok 1 - explicit runtime errors override a success marker and plausible prose
+  ---
+  duration_ms: 2.760214
+  type: 'test'
+  ...
+# Subtest: adapter arguments require an explicit safe provider ID and bounded nonempty prompt
+ok 2 - adapter arguments require an explicit safe provider ID and bounded nonempty prompt
+  ---
+  duration_ms: 2.976621
+  type: 'test'
+  ...
+# Subtest: agy receives the entire prompt as one literal argv value and rejects writes
+ok 3 - agy receives the entire prompt as one literal argv value and rejects writes
+  ---
+  duration_ms: 0.392784
+  type: 'test'
+  ...
+# Subtest: Claude keeps prompt out of flags, isolates MCP, and limits write tool scope
+ok 4 - Claude keeps prompt out of flags, isolates MCP, and limits write tool scope
+  ---
+  duration_ms: 0.168575
+  type: 'test'
+  ...
+# Subtest: malformed JSON and nonobject JSON always fail without throwing
+ok 5 - malformed JSON and nonobject JSON always fail without throwing
+  ---
+  duration_ms: 0.511277
+  type: 'test'
+  ...
+# Subtest: runtime error variants and missing output cannot become successful reports
+ok 6 - runtime error variants and missing output cannot become successful reports
+  ---
+  duration_ms: 0.393908
+  type: 'test'
+  ...
+# Subtest: Claude envelope preserves machine model, usage, cost and a permission-denial diagnostic
+ok 7 - Claude envelope preserves machine model, usage, cost and a permission-denial diagnostic
+  ---
+  duration_ms: 0.196572
+  type: 'test'
+  ...
+# Subtest: runtime billing and model evidence stay unknown when inconsistent
+ok 8 - runtime billing and model evidence stay unknown when inconsistent
+  ---
+  duration_ms: 0.461397
+  type: 'test'
+  ...
+# Subtest: agy success keeps self-identified prose model unknown and bounds model output
+ok 9 - agy success keeps self-identified prose model unknown and bounds model output
+  ---
+  duration_ms: 0.425657
+  type: 'test'
+  ...
+# Subtest: runCli sends Claude prompt verbatim on stdin, uses shell false and never claims verified
+ok 10 - runCli sends Claude prompt verbatim on stdin, uses shell false and never claims verified
+  ---
+  duration_ms: 3.951873
+  type: 'test'
+  ...
+# Subtest: runtime reports preserve Vietnamese and emoji across arbitrary UTF-8 stream boundaries
+ok 11 - runtime reports preserve Vietnamese and emoji across arbitrary UTF-8 stream boundaries
+  ---
+  duration_ms: 2.44261
+  type: 'test'
+  ...
+# Subtest: UTF-8 stream decoding retains the one-MiB output byte cap
+ok 12 - UTF-8 stream decoding retains the one-MiB output byte cap
+  ---
+  duration_ms: 8.505196
+  type: 'test'
+  ...
+# Subtest: runCli rejects nonzero exit, malformed result, and permission denial despite positive success JSON
+ok 13 - runCli rejects nonzero exit, malformed result, and permission denial despite positive success JSON
+  ---
+  duration_ms: 1.689911
+  type: 'test'
+  ...
+# Subtest: agy SUCCESS with denied_actions is a permission failure, not a completed report
+ok 14 - agy SUCCESS with denied_actions is a permission failure, not a completed report
+  ---
+  duration_ms: 0.569641
+  type: 'test'
+  ...
+# Subtest: already cancelled verification subprocess never starts
+ok 15 - already cancelled verification subprocess never starts
+  ---
+  duration_ms: 4.753622
+  type: 'test'
+  ...
+# Subtest: long Unicode test evidence retains complete characters within its tail budget
+ok 16 - long Unicode test evidence retains complete characters within its tail budget
+  ---
+  duration_ms: 222.16315
+  type: 'test'
+  ...
+# Subtest: aborting runTest stops the test and its process group
+ok 17 - aborting runTest stops the test and its process group
+  ---
+  duration_ms: 2523.567924
+  type: 'test'
+  ...
+# Subtest: verify owns a cancellable controller and cannot publish verified after cancel
+ok 18 - verify owns a cancellable controller and cannot publish verified after cancel
+  ---
+  duration_ms: 2049.810977
+  type: 'test'
+  ...
+# Subtest: closing manager aborts verification and exceptions leave terminal failed state
+ok 19 - closing manager aborts verification and exceptions leave terminal failed state
+  ---
+  duration_ms: 2041.436132
+  type: 'test'
+  ...
+# Subtest: source integration reruns the same tests before marking task done
+ok 20 - source integration reruns the same tests before marking task done
+  ---
+  duration_ms: 490.018184
+  type: 'test'
+  ...
+# Subtest: failing integrated-source tests restore original file and record failure evidence
+ok 21 - failing integrated-source tests restore original file and record failure evidence
+  ---
+  duration_ms: 593.486103
+  type: 'test'
+  ...
+# Subtest: cancelling integration restores original source and does not publish done
+ok 22 - cancelling integration restores original source and does not publish done
+  ---
+  duration_ms: 2322.393458
+  type: 'test'
+  ...
+# Subtest: integration rollback preserves a concurrent source permission change for manual reconciliation
+ok 23 - integration rollback preserves a concurrent source permission change for manual reconciliation
+  ---
+  duration_ms: 2258.126827
+  type: 'test'
+  ...
+# Subtest: integration rollback preserves a concurrently installed symlink even when its bytes match
+ok 24 - integration rollback preserves a concurrently installed symlink even when its bytes match
+  ---
+  duration_ms: 2259.654706
+  type: 'test'
+  ...
+# Subtest: verification failure records real failing test execution and releases the controller
+ok 25 - verification failure records real failing test execution and releases the controller
+  ---
+  duration_ms: 243.419724
+  type: 'test'
+  ...
+# Subtest: verification sandbox blocks test writes and cannot remain verifying
+ok 26 - verification sandbox blocks test writes and cannot remain verifying
+  ---
+  duration_ms: 237.798798
+  type: 'test'
+  ...
+1..26
+# tests 26
+# suites 0
+# pass 26
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 15785.701514

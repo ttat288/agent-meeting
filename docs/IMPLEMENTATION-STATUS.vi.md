@@ -1,5 +1,7 @@
 # Tiến độ triển khai routing / workspace
 
+> **Ca nâng cấp2026-10-22/23 đang tiếp tục:** các số và hạn chế bên dưới là mốc lịch sử. Source mới có live work reads, PM recovery/keyboard/draft guards, hủy verification/integration tại Results, HEAD/snapshot guards và bảo toàn file/Unicode; xem [evidence và hashes theo checkpoint](evidence/shift-20261022/ACCEPTANCE.vi.md), [PR nháp#1](https://github.com/ttat288/agent-meeting/pull/1). Lệnh8 giờ mới trong HANDOFF cho phép commit/push, thay phạm vi local-only cũ; chưa nghiệm thu UX/model cost hoặc runtime8h.
+
 > **Cập nhật ưu tiên 2026-10-21:** người dùng phát hiện phòng và workspace chưa nhất quán; chặng C/D chưa được nghiệm thu về trải nghiệm xuyên suốt. Phiên kế tiếp làm [HANDOFF-consistency.vi.md](HANDOFF-consistency.vi.md) trước danh sách backlog bên dưới. Các kết quả module/test sau đây giữ làm baseline kỹ thuật.
 
 Ngày 2026-10-21. Base Git: `556b9f69c39a1b1dd6fb9cc71d1b9ddfe5798b47`.

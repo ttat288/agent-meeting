@@ -36,6 +36,16 @@ test('already cancelled verification subprocess never starts', async t => {
   assert.equal(result.cancelled, true); assert.equal(result.exitCode, null); assert.equal(result.elapsedMs, 0);
 });
 
+test('long Unicode test evidence retains complete characters within its tail budget', async t => {
+  const root = temp(t), name = 'Việt🧪'.repeat(5000);
+  fs.writeFileSync(path.join(root,'unicode.test.js'), "require('node:test')(" + JSON.stringify(name) + ",()=>{});");
+  const result = await runTest(root,'unicode.test.js');
+  assert.equal(result.exitCode,0); assert(result.output.length <= 32768);
+  assert(!/^[\uDC00-\uDFFF]/.test(result.output), 'Evidence must not start with half an emoji');
+  assert(!result.output.includes('\ufffd'), 'Streaming must preserve valid UTF-8');
+  assert.match(result.output,/# pass 1/);
+});
+
 test('aborting runTest stops the test and its process group', { skip: process.platform === 'win32' }, async t => {
   const root = temp(t), marker = path.join(root, 'heartbeat'), file = 'slow.test.js';
   const grandchild = `const fs=require('fs');process.on('SIGTERM',()=>{});setInterval(()=>fs.writeFileSync(${JSON.stringify(marker)},String(Date.now())),25);`;

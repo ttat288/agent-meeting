@@ -100,6 +100,8 @@ test('agy success keeps self-identified prose model unknown and bounds model out
   assert.equal(parsed.costUsd, null);
   assert.equal(parseOutput('agy', JSON.stringify({ status: 'SUCCESS', response: 'Done', model: 'explicit-model' })).reportedModel, 'explicit-model');
   assert.equal(parseOutput('claude', JSON.stringify({ type: 'result', subtype: 'success', result: 'Done', modelUsage: { a: {}, b: {} } })).reportedModel, 'unknown');
+  const clipped = parseOutput('agy', JSON.stringify({status:'SUCCESS',response:'a'.repeat(65535)+'🧪tail'}));
+  assert.equal(clipped.text,'a'.repeat(65535), 'The report prefix must not end with half an emoji');
 });
 
 // Substitute only process launch/discovery: exercise runCli without starting any
@@ -113,7 +115,7 @@ function fakeRuntime(output, exitCode = 0) {
       const child = new EventEmitter();
       child.stdout = new PassThrough(); child.stderr = new PassThrough();
       child.stdin = new Writable({ write(chunk, encoding, cb) { captured.stdin = (captured.stdin || '') + chunk; cb(); } });
-      queueMicrotask(() => { child.stdout.write(output); child.stdout.end(); child.stderr.end(); child.emit('close', exitCode); });
+      queueMicrotask(() => { for (const chunk of Array.isArray(output) ? output : [output]) child.stdout.write(chunk); child.stdout.end(); child.stderr.end(); child.emit('close', exitCode); });
       return child;
     },
   };
@@ -132,6 +134,22 @@ test('runCli sends Claude prompt verbatim on stdin, uses shell false and never c
   assert.equal(result.status, 'reported');
   assert.equal(result.reportedModel, 'unknown');
   assert.equal(result.requestedModel, 'test-id');
+});
+
+test('runtime reports preserve Vietnamese and emoji across arbitrary UTF-8 stream boundaries', async () => {
+  const text = 'Đã kiểm chứng tiếng Việt và 🧪; đường dẫn không thay đổi.';
+  const bytes = Buffer.from(JSON.stringify({type:'result',subtype:'success',result:text}));
+  const { runtime } = fakeRuntime([...bytes].map(byte => Buffer.from([byte])));
+  const result = await runtime.runCli({adapter:'claude',modelId:'test-id',prompt:'Read',workspace:__dirname,timeoutMs:1000});
+  assert.equal(result.status,'reported'); assert.equal(result.text,text);
+  assert.equal(result.stdout,bytes.toString('utf8'));
+});
+
+test('UTF-8 stream decoding retains the one-MiB output byte cap', async () => {
+  const { runtime } = fakeRuntime([Buffer.from('ệ'.repeat(200000)),Buffer.from('ệ'.repeat(200000))]);
+  const result = await runtime.runCli({adapter:'claude',modelId:'test-id',prompt:'Read',workspace:__dirname,timeoutMs:1000});
+  assert.equal(result.status,'output-limit');
+  assert(Buffer.byteLength(result.stdout)<=1024*1024);
 });
 
 test('runCli rejects nonzero exit, malformed result, and permission denial despite positive success JSON', async () => {

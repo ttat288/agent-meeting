@@ -359,7 +359,10 @@ function runTest(workspace, file, signal, isolate = false) {
     const wrapped = isolate ? require('./execution-sandbox').wrapExecution(process.execPath, args, { workspace, write: false }) : null;
     const started = Date.now(), child = spawn(wrapped ? wrapped.bin : process.execPath, wrapped ? wrapped.args : args, { cwd: workspace, shell: false, env, detached: process.platform !== 'win32', stdio: ['ignore','pipe','pipe'] });
     let output = '', reason = null, finished = false, killTimer, closed;
-    for (const stream of [child.stdout, child.stderr]) stream.on('data', b => { output = (output + b).slice(-32768); });
+    for (const stream of [child.stdout, child.stderr]) {
+      stream.setEncoding('utf8');
+      stream.on('data', text => { output = (output + text).slice(-32768).replace(/^[\uDC00-\uDFFF]/, ''); });
+    }
     const kill = kind => { try { if (process.platform === 'win32') child.kill(kind); else if (child.pid) process.kill(-child.pid, kind); } catch {} };
     const stop = why => {
       if (finished || reason) return;

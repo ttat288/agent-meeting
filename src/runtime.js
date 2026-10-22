@@ -42,7 +42,7 @@ function parseOutput(adapter, stdout) {
   // agy response contracts vary. Only machine fields count; prose self-identification is not evidence.
   const reportedModel = models.length === 1 ? models[0] : models.length > 1 ? 'unknown' : typeof obj.model === 'string' ? obj.model : 'unknown';
   return { valid: success, reportedModel,
-    text: String(obj.result ?? obj.response ?? obj.text ?? '').slice(0, 65536), usage: obj.usage || null,
+    text: String(obj.result ?? obj.response ?? obj.text ?? '').slice(0, 65536).replace(/[\uD800-\uDBFF]$/, ''), usage: obj.usage || null,
     costUsd: Number.isFinite(obj.total_cost_usd) && obj.total_cost_usd >= 0 ? obj.total_cost_usd : null,
     permissionDenials,
     error: !success ? String(obj.error || obj.result || obj.subtype || obj.status || 'Missing positive success result').slice(0, 1000) : permissionDenials ? 'Runtime reported permission denials' : null };
@@ -57,7 +57,7 @@ function runCli(options) {
   const wrapped = options.write || options.isolate ? require('./execution-sandbox').wrapExecution(bin, args, { workspace: cwd, write: options.write === true }) : null;
   if (wrapped) bin = wrapped.bin;
   return new Promise(resolve => {
-    let stdout = '', stderr = '', reason = null, finished = false;
+    let stdout = '', stderr = '', stdoutBytes = 0, reason = null, finished = false;
     const child = spawn(bin, wrapped ? wrapped.args : args, { cwd, shell: false, detached: options.detached !== false && process.platform !== 'win32', stdio: ['pipe', 'pipe', 'pipe'] });
     child.stdin.on('error', () => {});
     child.stdin.end(adapter === 'claude' ? options.prompt : '');
@@ -73,8 +73,10 @@ function runCli(options) {
     const abort = () => stop('cancelled');
     signal?.addEventListener('abort', abort, { once: true });
     if (signal?.aborted) stop('cancelled');
-    child.stdout.on('data', b => { if (Buffer.byteLength(stdout) + b.length > 1024 * 1024) return stop('output-limit'); stdout += b.toString(); });
-    child.stderr.on('data', b => { stderr = (stderr + b.toString()).slice(-8192); });
+    // StringDecoder retains partial UTF-8 sequences between pipe chunks.
+    child.stdout.setEncoding('utf8'); child.stderr.setEncoding('utf8');
+    child.stdout.on('data', text => { const bytes = Buffer.byteLength(text); if (stdoutBytes + bytes > 1024 * 1024) return stop('output-limit'); stdoutBytes += bytes; stdout += text; });
+    child.stderr.on('data', text => { stderr = (stderr + text).slice(-8192).replace(/^[\uDC00-\uDFFF]/, ''); });
     const done = (code, err) => {
       if (finished) return; finished = true;
       clearTimeout(timer); // Keep kill escalation alive if grandchildren survived the parent.

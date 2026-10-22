@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-22T23:14:15.137175+00:00",
+  "sourceCommit": "d4b6208d7d0563982afe520b4040b9dffc0b2e71",
+  "packagedCommit": "5c81b30ce5959a4f18a882ab3c8cd83d3994d416",
+  "runtimeBeforeBytes": 887535,
+  "runtimeAfterBytes": 918530,
+  "runtimeDeltaBytes": 30995,
+  "uiBeforeBytes": 268524,
+  "uiAfterBytes": 293562,
+  "toastMaxHeight": "min(25dvh,160px)",
+  "runtimeCancellationGraceMs": 2000,
+  "limits": [
+    "Blob bytes and geometry only, not CPU/tokens/billing/user effort.",
+    "Burst notifications are controlled geometry regression cases, not byte-identical latency/model benchmarks.",
+    "Earlier HTTP benchmark controls both policies on the current server; the added74-byte ETag header is included in raw response headers."
+  ]
+}

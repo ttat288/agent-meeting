@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-22T22:37:57.115Z",
+  "packageSourceCommit": "fb50427611cc8307e663a0afeb58c73b274061e1",
+  "tarballSha256": "9970f35bfa341cca37fd5a44b2f4d357df804352cb1a62df5f8c80fc4515800b",
+  "checks": [
+    "packaged skills list: one bundled skill",
+    "packaged inspect: one available declared reference",
+    "packaged manifest show",
+    "packaged declared reference show",
+    "packaged doctor: read-only/not-probed/unknown access",
+    "undeclared traversal resource refused with exit1"
+  ],
+  "sourceHashes": {
+    "src/cli-discovery.js": "b3948e9628a72087b36dcd718b96d32ef03bea3ec12365c3287dcd22daeccf7a"
+  },
+  "nativeModelCalls": 0,
+  "installedOrChangedConfiguration": false,
+  "limits": [
+    "Doctor reads local connection presence; no private endpoints/keys or actual local statuses retained in this public report.",
+    "No connect/disconnect/install or external CLI invocation performed.",
+    "Package artifact binds source fb50427, before documentation-only final edits."
+  ]
+}

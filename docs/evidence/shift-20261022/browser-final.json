@@ -1,0 +1,74 @@
+{
+  "recordedAt": "2026-10-22T22:36:24.432Z",
+  "desktopAfterReload": {
+    "focusId": "workTitle",
+    "heading": "Kết quả (2)",
+    "height": 720,
+    "overflow": false,
+    "recordedAt": "2026-10-22T22:34:21.776Z",
+    "taskCards": [
+      {
+        "detailsOpen": false,
+        "text": "Correct sum and preserve independent tests\n\nViệc #1 · Dev\n\nĐã tích hợp và test\nLần chạy 1\nĐã tích hợp\n\nDeterministic Node subprocess fixture; not a paid AI model.\n\nTệp thay đổi: sum.js\n\nTest đạt: 2/2\n\nBằng chứng và tệp bàn giao\nNguồn hội thoại\nChi tiết task",
+        "title": "Correct sum and preserve independent tests"
+      },
+      {
+        "detailsOpen": false,
+        "text": "Final integrated-source fixture: correct sum(2,3) to5 with independent tests; no model claim\n\nViệc #2 · Dev\n\nĐã tích hợp và test\nLần chạy 1\nĐã tích hợp\n\nDeterministic Node subprocess fixture; not a paid AI model.\n\nTệp thay đổi: sum.js\n\nTest đạt: 2/2\n\nBằng chứng và tệp bàn giao\nNguồn hội thoại\nChi tiết task",
+        "title": "Final integrated-source fixture: correct sum(2,3) to5 with independent tests; no model claim"
+      }
+    ],
+    "url": "http://127.0.0.1:3150/m/host_consistency_preview_1234?lang=vi#results",
+    "width": 1280
+  },
+  "mobile": [
+    {
+      "cards": 2,
+      "focusedId": "btnOptions",
+      "heading": "Results (2)",
+      "height": 812,
+      "overflow": false,
+      "theme": "dark",
+      "url": "http://127.0.0.1:3150/m/host_consistency_preview_1234?lang=en#results",
+      "width": 375
+    },
+    {
+      "cards": 2,
+      "focusedId": "workTitle",
+      "heading": "Kết quả (2)",
+      "height": 812,
+      "overflow": false,
+      "theme": "dark",
+      "url": "http://127.0.0.1:3150/m/host_consistency_preview_1234?lang=vi#results",
+      "width": 375
+    }
+  ],
+  "journey": [
+    "Latest run evidence opened: 265ce1c9-7b10-433e-9dbb-2d52352ecc60",
+    "Conversation source followed to #message-45; Back returned to Results (2)",
+    "Reload retained two canonical tasks and heading focus",
+    "Screenshots EN/VI desktop1280x812 light; mobile375x812 dark VI/EN no horizontal overflow",
+    "Restored system theme and reset temporary viewport"
+  ],
+  "limits": [
+    "Deterministic local subprocess fixture; zero new native model invocations in this final browser pass",
+    "No new integration run performed in this pass; prior journey evidence has its own source hashes",
+    "No screen-reader or human UX acceptance claim"
+  ],
+  "sourceCommit": "fb50427611cc8307e663a0afeb58c73b274061e1",
+  "sourceHashes": {
+    "src/ui/app.css": "126c32c9879a71c11e74f8a05df3caf67b072c1fa54b9bdae45f7fa8039fa67f",
+    "src/ui/app.js": "fd371dbb08e176cb303dee32733c23d227a464986cd78f8505ada17ad7a2426d",
+    "src/ui/favicon.svg": "f71b583ae1857da282387a372c939b7da9109ed97084452397ec8f75b3ee7319",
+    "src/ui/i18n.js": "1c84e057d7a9c15561142401c2483b5272cfa32a53358427453f8a1dbc14c78c",
+    "src/ui/index.html": "8c74b07c8bf0a4e4457cfaf72b1c52959b154e83d9ac24a31b263348476d505e",
+    "src/ui/pm-ui.js": "44e0980d1bf776765eec3a0feb577b28dff3210d8391e822f2c30202f8d6eb3b",
+    "src/ui/workspace.css": "9c5c34ee23cc1e5b04151a3117d6029904ada3182c942951b1ef1d34ff7b9a1a",
+    "src/ui/workspace.html": "6a1b29c517b844e9467d0c750a1c99b7eb720ffb136cbd3a260ed171bc76ab57",
+    "src/ui/workspace.js": "466e76c320bfadda9074dc5b3d75e4699085b8a4596408d87c3dca5ba23b5812"
+  },
+  "screenshots": {
+    "results-final-en.png": "ea190c05566691957039cc7deaf56eabf75192ba512e37bf34cc9ca60d27d703",
+    "results-final-vi.png": "868d7a377fbd7c1ad997c742c923df830d16dd19c537a7b298cad8570f6e0d44"
+  }
+}

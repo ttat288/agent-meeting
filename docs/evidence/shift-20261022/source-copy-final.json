@@ -1,0 +1,12 @@
+{
+  "recordedAt": "2026-10-22T22:33:54.755Z",
+  "sourceCommit": "fb50427611cc8307e663a0afeb58c73b274061e1",
+  "files": 580,
+  "bytes": 21783903,
+  "inventoryDigest": "5b66ef97ea7dcdad44156891ceee3a70ba0ede4dbe30682252fb2f2f769cd3c0",
+  "limits": [
+    "Point-in-time tracked plus nonignored untracked source inventory; includes current final receipts, excludes this receipt and later documentation.",
+    "Nominal copy input bytes only; no copy latency, tokens or billing measured.",
+    "User app/store, ignored local tools and global configuration are not this source inventory."
+  ]
+}

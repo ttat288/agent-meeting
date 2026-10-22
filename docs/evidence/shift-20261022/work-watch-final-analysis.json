@@ -1,0 +1,98 @@
+{
+  "sourceCommit": "fb50427611cc8307e663a0afeb58c73b274061e1",
+  "rawSha256": "1f6d5deeb86c712ec946d8940fa968844b02f004a104f03ba7b9552bdebe652a",
+  "rows": [
+    {
+      "tasks": 1,
+      "samplesPerArm": 30,
+      "unconditional": {
+        "samples": 30,
+        "medianMs": 0.5249120000000005,
+        "maxMs": 1.3694259999999758,
+        "bodyBytes": 82320,
+        "responseHeaderBytes": 10890,
+        "conditionalRequestHeaderBytes": 0
+      },
+      "conditional": {
+        "samples": 30,
+        "medianMs": 0.48326400000000547,
+        "maxMs": 1.0172880000000077,
+        "bodyBytes": 0,
+        "responseHeaderBytes": 10350,
+        "conditionalRequestHeaderBytes": 2490
+      },
+      "mutationEqualFacts": true,
+      "errorStatuses": [
+        403,
+        404,
+        405
+      ],
+      "conditionalMedianSlower": false,
+      "conditionalMaxSlower": false
+    },
+    {
+      "tasks": 25,
+      "samplesPerArm": 30,
+      "unconditional": {
+        "samples": 30,
+        "medianMs": 1.0604009999999846,
+        "maxMs": 1.9649969999999826,
+        "bodyBytes": 435360,
+        "responseHeaderBytes": 10890,
+        "conditionalRequestHeaderBytes": 0
+      },
+      "conditional": {
+        "samples": 30,
+        "medianMs": 0.96968099999998,
+        "maxMs": 2.0946799999999826,
+        "bodyBytes": 0,
+        "responseHeaderBytes": 10350,
+        "conditionalRequestHeaderBytes": 2490
+      },
+      "mutationEqualFacts": true,
+      "errorStatuses": [
+        403,
+        404,
+        405
+      ],
+      "conditionalMedianSlower": false,
+      "conditionalMaxSlower": true
+    },
+    {
+      "tasks": 100,
+      "samplesPerArm": 30,
+      "unconditional": {
+        "samples": 30,
+        "medianMs": 2.2704349999999636,
+        "maxMs": 5.60264200000006,
+        "bodyBytes": 1540170,
+        "responseHeaderBytes": 10890,
+        "conditionalRequestHeaderBytes": 0
+      },
+      "conditional": {
+        "samples": 30,
+        "medianMs": 2.037339999999972,
+        "maxMs": 2.72941000000003,
+        "bodyBytes": 0,
+        "responseHeaderBytes": 10350,
+        "conditionalRequestHeaderBytes": 2490
+      },
+      "mutationEqualFacts": true,
+      "errorStatuses": [
+        403,
+        404,
+        405
+      ],
+      "conditionalMedianSlower": false,
+      "conditionalMaxSlower": false
+    }
+  ],
+  "limits": [
+    "HTTP transport only, not a model A/B or native direct CLI measurement. Strong native direct model attempt failed authentication; see model-ledger.json.",
+    "Unconditional full read is the prior web policy when explicitly refreshed; this benchmark scripts equal request counts, not human refresh behavior.",
+    "Auto monitoring adds idle requests compared with a user who does not refresh. A direct CLI can stream its own result without these polling requests.",
+    "Body bytes and reconstructed response header bytes are separate; request base headers, TCP/IP framing and browser rendering are excluded. Conditional header overhead is included separately.",
+    "No human active time, tokens, billing, semantic quality or 8-hour runtime measured; modelCalls=0 does not make development free.",
+    "Latency samples cover short local requests only. No P95, statistical significance or remote latency claim."
+  ]
+}

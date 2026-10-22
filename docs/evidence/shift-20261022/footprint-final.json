@@ -1,0 +1,47 @@
+{
+  "recordedAt": "2026-10-22T22:33:54.491736+00:00",
+  "baseCommit": "805f638bdd68cb08103c8c1ca93b832be54e1a69",
+  "sourceCommit": "fb50427611cc8307e663a0afeb58c73b274061e1",
+  "rows": {
+    "runtime": {
+      "beforeFiles": 63,
+      "beforeBytes": 887535,
+      "afterFiles": 63,
+      "afterBytes": 918198,
+      "deltaBytes": 30663
+    },
+    "ui": {
+      "beforeFiles": 9,
+      "beforeBytes": 268524,
+      "afterFiles": 9,
+      "afterBytes": 293476,
+      "deltaBytes": 24952
+    },
+    "tests": {
+      "beforeFiles": 37,
+      "beforeBytes": 350224,
+      "afterFiles": 44,
+      "afterBytes": 423368,
+      "deltaBytes": 73144
+    },
+    "publicShiftEvidence": {
+      "beforeFiles": 0,
+      "beforeBytes": 0,
+      "afterFiles": 208,
+      "afterBytes": 4922400,
+      "deltaBytes": 4922400
+    },
+    "readmeEnVi": {
+      "beforeFiles": 2,
+      "beforeBytes": 18104,
+      "afterFiles": 2,
+      "afterBytes": 24570,
+      "deltaBytes": 6466
+    }
+  },
+  "limits": [
+    "Git blob bytes, not memory/CPU/tokens/billing or quality. Categories overlap (UI is part of runtime).",
+    "New untracked final receipts and later handoff edits are excluded from this immutable tree comparison.",
+    "Public development evidence is not shipped in npm tarball, but whole-checkout execution can include it. No new default evidence filter was added without a verified user requirement."
+  ]
+}

@@ -1,0 +1,364 @@
+TAP version 13
+# Subtest: action adapter is idempotent and preserves provenance, manual reports and carry identity
+ok 1 - action adapter is idempotent and preserves provenance, manual reports and carry identity
+  ---
+  duration_ms: 19.673228
+  type: 'test'
+  ...
+# Subtest: edits invalidate old evidence; configure CAS retains ID and rejects cycles and active-run edits
+ok 2 - edits invalidate old evidence; configure CAS retains ID and rejects cycles and active-run edits
+  ---
+  duration_ms: 10.878039
+  type: 'test'
+  ...
+# Subtest: HTTP room → plan → execution requirements retains one task across restart and legacy deep links
+ok 3 - HTTP room → plan → execution requirements retains one task across restart and legacy deep links
+  ---
+  duration_ms: 129.687271
+  type: 'test'
+  ...
+# Subtest: real Node subprocess fixture follows linked task through report, verification and integration
+ok 4 - real Node subprocess fixture follows linked task through report, verification and integration
+  ---
+  duration_ms: 782.458856
+  type: 'test'
+  ...
+# Subtest: non-fixed continuation shares the plan, rejects old-room writes and invalidates changed context
+ok 5 - non-fixed continuation shares the plan, rejects old-room writes and invalidates changed context
+  ---
+  duration_ms: 18.531194
+  type: 'test'
+  ...
+# Subtest: English and Vietnamese conclusions capture the same decision and owned tasks
+ok 6 - English and Vietnamese conclusions capture the same decision and owned tasks
+  ---
+  duration_ms: 6.826861
+  type: 'test'
+  ...
+# Subtest: English aliases retain case, sentence boundaries and decision cleanup rules
+ok 7 - English aliases retain case, sentence boundaries and decision cleanup rules
+  ---
+  duration_ms: 3.232285
+  type: 'test'
+  ...
+# Subtest: English capture keeps one linked task and decision through HTTP plan reads and server restart
+ok 8 - English capture keeps one linked task and decision through HTTP plan reads and server restart
+  ---
+  duration_ms: 135.077531
+  type: 'test'
+  ...
+# Subtest: slot tăng dần khi agent vào; tên và model được ghi nhận
+ok 9 - slot tăng dần khi agent vào; tên và model được ghi nhận
+  ---
+  duration_ms: 7.068227
+  type: 'test'
+  ...
+# Subtest: trùng tên thì bị từ chối và phải đặt tên khác (không phân biệt hoa thường)
+ok 10 - trùng tên thì bị từ chối và phải đặt tên khác (không phân biệt hoa thường)
+  ---
+  duration_ms: 0.879195
+  type: 'test'
+  ...
+# Subtest: bắt buộc tự đặt tên và khai báo model
+ok 11 - bắt buộc tự đặt tên và khai báo model
+  ---
+  duration_ms: 0.439992
+  type: 'test'
+  ...
+# Subtest: tên của agent đã rời: cùng model thì vào lại được, khác model thì bị coi là trùng
+ok 12 - tên của agent đã rời: cùng model thì vào lại được, khác model thì bị coi là trùng
+  ---
+  duration_ms: 0.552319
+  type: 'test'
+  ...
+# Subtest: agent đã rời có thể vào lại với tên cũ
+ok 13 - agent đã rời có thể vào lại với tên cũ
+  ---
+  duration_ms: 0.596776
+  type: 'test'
+  ...
+# Subtest: agent chờ ở sảnh rồi nhận bối cảnh khi chủ trì bắt đầu
+ok 14 - agent chờ ở sảnh rồi nhận bối cảnh khi chủ trì bắt đầu
+  ---
+  duration_ms: 52.052249
+  type: 'test'
+  ...
+# Subtest: A nói, B nghe được; người nói không nhận lại tin của mình
+ok 15 - A nói, B nghe được; người nói không nhận lại tin của mình
+  ---
+  duration_ms: 401.923865
+  type: 'test'
+  ...
+# Subtest: im lặng: chỉ agent slot nhỏ nhất bị hỏi, agent kia không
+ok 16 - im lặng: chỉ agent slot nhỏ nhất bị hỏi, agent kia không
+  ---
+  duration_ms: 602.067708
+  type: 'test'
+  ...
+# Subtest: không kiểm tra im lặng khi có agent đang soạn tin (typing)
+ok 17 - không kiểm tra im lặng khi có agent đang soạn tin (typing)
+  ---
+  duration_ms: 602.429955
+  type: 'test'
+  ...
+# Subtest: leave thông báo cho người còn lại, người cuối cùng được nhắc rời
+ok 18 - leave thông báo cho người còn lại, người cuối cùng được nhắc rời
+  ---
+  duration_ms: 1.120939
+  type: 'test'
+  ...
+# Subtest: tất cả rời thì cuộc họp tự kết thúc
+ok 19 - tất cả rời thì cuộc họp tự kết thúc
+  ---
+  duration_ms: 0.492751
+  type: 'test'
+  ...
+# Subtest: chủ trì dừng thì mọi tool báo kết thúc
+ok 20 - chủ trì dừng thì mọi tool báo kết thúc
+  ---
+  duration_ms: 0.290365
+  type: 'test'
+  ...
+# Subtest: agent im quá lâu chỉ bị đánh dấu vắng, gọi wait lại thì đọc tiếp phần đã lỡ và giữ vai trò
+ok 21 - agent im quá lâu chỉ bị đánh dấu vắng, gọi wait lại thì đọc tiếp phần đã lỡ và giữ vai trò
+  ---
+  duration_ms: 203.944564
+  type: 'test'
+  ...
+# Subtest: vắng mà không có tin mới: wait báo ngay rồi bảo gọi lại
+ok 22 - vắng mà không có tin mới: wait báo ngay rồi bảo gọi lại
+  ---
+  duration_ms: 202.221182
+  type: 'test'
+  ...
+# Subtest: lần lượt: agent vắng bị bỏ qua lượt, không làm kẹt phòng; quay lại thì có lượt như cũ
+ok 23 - lần lượt: agent vắng bị bỏ qua lượt, không làm kẹt phòng; quay lại thì có lượt như cũ
+  ---
+  duration_ms: 201.247719
+  type: 'test'
+  ...
+# Subtest: người cuối cùng rời phòng khi còn agent vắng: phòng chưa đóng; vắng quá awayMs mới tính mất kết nối
+ok 24 - người cuối cùng rời phòng khi còn agent vắng: phòng chưa đóng; vắng quá awayMs mới tính mất kết nối
+  ---
+  duration_ms: 652.231188
+  type: 'test'
+  ...
+# Subtest: agent bị tính mất kết nối quay lại khi phòng còn mở thì tự vào lại
+ok 25 - agent bị tính mất kết nối quay lại khi phòng còn mở thì tự vào lại
+  ---
+  duration_ms: 652.828695
+  type: 'test'
+  ...
+# Subtest: agent tự rời (leave) thì không tự vào lại
+ok 26 - agent tự rời (leave) thì không tự vào lại
+  ---
+  duration_ms: 0.820878
+  type: 'test'
+  ...
+# Subtest: agent vắng gọi join lại với cùng tên và model thì vào lại, không bị báo trùng tên
+ok 27 - agent vắng gọi join lại với cùng tên và model thì vào lại, không bị báo trùng tên
+  ---
+  duration_ms: 200.802946
+  type: 'test'
+  ...
+# Subtest: trạng thái vắng được lưu và nạp lại (--data-dir)
+ok 28 - trạng thái vắng được lưu và nạp lại (--data-dir)
+  ---
+  duration_ms: 203.759141
+  type: 'test'
+  ...
+# Subtest: giao thức dặn: cần người dùng duyệt thì nói vào phòng rồi wait tiếp; tách lệnh đọc tệp với lệnh gửi
+ok 29 - giao thức dặn: cần người dùng duyệt thì nói vào phòng rồi wait tiếp; tách lệnh đọc tệp với lệnh gửi
+  ---
+  duration_ms: 1.25512
+  type: 'test'
+  ...
+# Subtest: đạt giới hạn tin nhắn thì kết thúc
+ok 30 - đạt giới hạn tin nhắn thì kết thúc
+  ---
+  duration_ms: 0.815384
+  type: 'test'
+  ...
+# Subtest: long-poll trả về ngay khi có thay đổi và treo khi không có
+ok 31 - long-poll trả về ngay khi có thay đổi và treo khi không có
+  ---
+  duration_ms: 152.512119
+  type: 'test'
+  ...
+# Subtest: lần lượt: chỉ người có lượt được nói, lượt chuyển theo slot
+ok 32 - lần lượt: chỉ người có lượt được nói, lượt chuyển theo slot
+  ---
+  duration_ms: 1.722329
+  type: 'test'
+  ...
+# Subtest: lần lượt: cả vòng đều bỏ lượt thì kết thúc
+ok 33 - lần lượt: cả vòng đều bỏ lượt thì kết thúc
+  ---
+  duration_ms: 0.669267
+  type: 'test'
+  ...
+# Subtest: lần lượt: người giữ lượt rời phòng thì lượt chuyển cho người kế
+ok 34 - lần lượt: người giữ lượt rời phòng thì lượt chuyển cho người kế
+  ---
+  duration_ms: 0.582345
+  type: 'test'
+  ...
+# Subtest: lần lượt: giữ lượt quá lâu thì tự bỏ lượt
+ok 35 - lần lượt: giữ lượt quá lâu thì tự bỏ lượt
+  ---
+  duration_ms: 200.828376
+  type: 'test'
+  ...
+# Subtest: chủ trì nhắn giữa cuộc họp: agent nhận được [CHỦ TRÌ]
+ok 36 - chủ trì nhắn giữa cuộc họp: agent nhận được [CHỦ TRÌ]
+  ---
+  duration_ms: 1.332041
+  type: 'test'
+  ...
+# Subtest: kick: agent bị mời ra nhận thông báo và không vào lại được
+ok 37 - kick: agent bị mời ra nhận thông báo và không vào lại được
+  ---
+  duration_ms: 0.88624
+  type: 'test'
+  ...
+# Subtest: giới hạn thời gian: hết giờ thì kết thúc
+ok 38 - giới hạn thời gian: hết giờ thì kết thúc
+  ---
+  duration_ms: 350.981427
+  type: 'test'
+  ...
+# Subtest: cấu hình từ chủ trì bị giới hạn trong khoảng hợp lệ
+ok 39 - cấu hình từ chủ trì bị giới hạn trong khoảng hợp lệ
+  ---
+  duration_ms: 1.228161
+  type: 'test'
+  ...
+# Subtest: tin quá dài bị cắt và agent được báo
+ok 40 - tin quá dài bị cắt và agent được báo
+  ---
+  duration_ms: 0.752735
+  type: 'test'
+  ...
+# Subtest: tin KẾT LUẬN được đánh dấu
+ok 41 - tin KẾT LUẬN được đánh dấu
+  ---
+  duration_ms: 2.445016
+  type: 'test'
+  ...
+# Subtest: tên có dấu cách được mã hoá trong lệnh curl của giao thức
+ok 42 - tên có dấu cách được mã hoá trong lệnh curl của giao thức
+  ---
+  duration_ms: 1.569326
+  type: 'test'
+  ...
+# Subtest: snapshot chỉ gửi phần log mới
+ok 43 - snapshot chỉ gửi phần log mới
+  ---
+  duration_ms: 0.570103
+  type: 'test'
+  ...
+# Subtest: ở phòng chờ, nhận thông báo hệ thống không bị coi là đang soạn tin
+ok 44 - ở phòng chờ, nhận thông báo hệ thống không bị coi là đang soạn tin
+  ---
+  duration_ms: 0.819659
+  type: 'test'
+  ...
+# Subtest: chủ trì mời agent ra ngay từ phòng chờ
+ok 45 - chủ trì mời agent ra ngay từ phòng chờ
+  ---
+  duration_ms: 0.798034
+  type: 'test'
+  ...
+# Subtest: bỏ tiền tố tên của chính người nói ([Tên], **Tên**:, Tên:)
+ok 46 - bỏ tiền tố tên của chính người nói ([Tên], **Tên**:, Tên:)
+  ---
+  duration_ms: 2.578737
+  type: 'test'
+  ...
+# Subtest: việc cần làm: đọc dòng VIỆC trong tin, gộp việc trùng
+ok 47 - việc cần làm: đọc dòng VIỆC trong tin, gộp việc trùng
+  ---
+  duration_ms: 1.951139
+  type: 'test'
+  ...
+# Subtest: chương trình họp: XONG MỤC chuyển mục, hết mục thì nhắc kết luận tổng hợp
+ok 48 - chương trình họp: XONG MỤC chuyển mục, hết mục thì nhắc kết luận tổng hợp
+  ---
+  duration_ms: 3.610461
+  type: 'test'
+  ...
+# Subtest: không nhận nhầm câu chỉ nhắc tới XONG MỤC (dữ liệu từ agent thật)
+ok 49 - không nhận nhầm câu chỉ nhắc tới XONG MỤC (dữ liệu từ agent thật)
+  ---
+  duration_ms: 0.747847
+  type: 'test'
+  ...
+# Subtest: nhận diện theo cách agent thật hay viết (XONG MỤC giữa đoạn, KẾT LUẬN ở dòng 2, nhảy mục)
+ok 50 - nhận diện theo cách agent thật hay viết (XONG MỤC giữa đoạn, KẾT LUẬN ở dòng 2, nhảy mục)
+  ---
+  duration_ms: 0.876509
+  type: 'test'
+  ...
+# Subtest: việc nhắc lại với câu chữ hơi khác được gộp (dữ liệu từ agent thật); việc khác nhau thì giữ
+ok 51 - việc nhắc lại với câu chữ hơi khác được gộp (dữ liệu từ agent thật); việc khác nhau thì giữ
+  ---
+  duration_ms: 2.242708
+  type: 'test'
+  ...
+# Subtest: vai trò: có trong tin mở đầu; đổi khi đang họp thì chỉ agent đó nhận
+ok 52 - vai trò: có trong tin mở đầu; đổi khi đang họp thì chỉ agent đó nhận
+  ---
+  duration_ms: 401.329282
+  type: 'test'
+  ...
+# Subtest: nhắn riêng: chỉ người nhận thấy, history không lộ cho người khác
+ok 53 - nhắn riêng: chỉ người nhận thấy, history không lộ cho người khác
+  ---
+  duration_ms: 402.445407
+  type: 'test'
+  ...
+# Subtest: sự kiện ended phát đúng một lần
+ok 54 - sự kiện ended phát đúng một lần
+  ---
+  duration_ms: 1.224075
+  type: 'test'
+  ...
+# Subtest: Việc có số và trạng thái: TIẾN ĐỘ VIỆC trong tin, tool progress, chủ trì đổi trạng thái
+ok 55 - Việc có số và trạng thái: TIẾN ĐỘ VIỆC trong tin, tool progress, chủ trì đổi trạng thái
+  ---
+  duration_ms: 9.177013
+  type: 'test'
+  ...
+# Subtest: Giữ phòng báo tiến độ: chốt xong thì sang WORK, agent rời đi làm, báo xong hết thì đóng phòng
+ok 56 - Giữ phòng báo tiến độ: chốt xong thì sang WORK, agent rời đi làm, báo xong hết thì đóng phòng
+  ---
+  duration_ms: 7.076055
+  type: 'test'
+  ...
+# Subtest: chủ trì gộp/xoá việc trùng: agent nhắc lại không tạo lại việc, báo tiến độ số cũ được chỉ sang số giữ lại
+ok 57 - chủ trì gộp/xoá việc trùng: agent nhắc lại không tạo lại việc, báo tiến độ số cũ được chỉ sang số giữ lại
+  ---
+  duration_ms: 2.54109
+  type: 'test'
+  ...
+# Subtest: Giữ phòng báo tiến độ: không có việc thì kết thúc như thường; chủ trì đóng phòng; hết giờ cũng sang WORK
+ok 58 - Giữ phòng báo tiến độ: không có việc thì kết thúc như thường; chủ trì đóng phòng; hết giờ cũng sang WORK
+  ---
+  duration_ms: 23.445867
+  type: 'test'
+  ...
+# Subtest: Giữ phòng báo tiến độ: tên agent có dấu gạch, dấu chấm vẫn nhận đúng việc của mình
+ok 59 - Giữ phòng báo tiến độ: tên agent có dấu gạch, dấu chấm vẫn nhận đúng việc của mình
+  ---
+  duration_ms: 6.046455
+  type: 'test'
+  ...
+1..59
+# tests 59
+# suites 0
+# pass 59
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5733.527964

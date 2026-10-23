@@ -1,0 +1,40 @@
+TAP version 13
+# Subtest: action adapter is idempotent and preserves provenance, manual reports and carry identity
+ok 1 - action adapter is idempotent and preserves provenance, manual reports and carry identity
+  ---
+  duration_ms: 14.478751
+  type: 'test'
+  ...
+# Subtest: edits invalidate old evidence; configure CAS retains ID and rejects cycles and active-run edits
+ok 2 - edits invalidate old evidence; configure CAS retains ID and rejects cycles and active-run edits
+  ---
+  duration_ms: 8.780919
+  type: 'test'
+  ...
+# Subtest: HTTP room → plan → execution requirements retains one task across restart and legacy deep links
+ok 3 - HTTP room → plan → execution requirements retains one task across restart and legacy deep links
+  ---
+  duration_ms: 100.920884
+  type: 'test'
+  ...
+# Subtest: real Node subprocess fixture follows linked task through report, verification and integration
+ok 4 - real Node subprocess fixture follows linked task through report, verification and integration
+  ---
+  duration_ms: 597.736493
+  type: 'test'
+  ...
+# Subtest: non-fixed continuation shares the plan, rejects old-room writes and invalidates changed context
+ok 5 - non-fixed continuation shares the plan, rejects old-room writes and invalidates changed context
+  ---
+  duration_ms: 17.911777
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 899.143787

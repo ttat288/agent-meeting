@@ -1,0 +1,14 @@
+{
+  "fixture": true,
+  "comparison": "Original WorkManager from f415cf4, current other modules; component replay, not a complete old checkout",
+  "workHashMatchesOriginalBaseline": true,
+  "inputHashesMatchBeforeAndAfter": true,
+  "managedStatus": "failed",
+  "retryContext": null,
+  "firstAndRetryPromptBytes": [
+    1263,
+    1263
+  ],
+  "rawSha256": "a464b432456e62de1ca679bcf59f4d0d776f89f5dac349da90bbe2af97d5196f",
+  "note": "Full raw original baseline is before.json. Component replay raw is in /tmp and is not durable."
+}

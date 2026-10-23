@@ -1,0 +1,110 @@
+{
+  "checkedAt": "2026-10-23T02:31:45.010121+00:00",
+  "localLinksChecked": 57,
+  "missing": [],
+  "fileHashes": {
+    "README.md": "c19e9fe4fd3521d2b5e90ad1a3f02f84913e78a95220e610fe8b340df47fe75c",
+    "README.vi.md": "dc2c7f173ba309592f49c1e1cba492febafb497cc35109d9dfd535d4487dc2ca",
+    "docs/SHOWCASE.md": "08fbace6b3a18eaef2657020e9a22a939449db7215703c09b3b1b11caf64fc8e",
+    "tools/try-workflow.js": "c89745f02bc64d2560380fc0d1dbc0ddacf2bfcc7bfe38a3453c192674501c02"
+  },
+  "pr": {
+    "baseRefName": "main",
+    "headRefOid": "f415cf46961ac43301083c4784fb216b68e87ac6",
+    "isDraft": true,
+    "state": "OPEN",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-22T23:25:08Z",
+        "conclusion": "CANCELLED",
+        "detailsUrl": "https://github.com/ttat288/agent-meeting/actions/runs/39871631575/job/120147190202",
+        "name": "test (18)",
+        "startedAt": "2026-10-22T23:25:05Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-22T23:27:16Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/ttat288/agent-meeting/actions/runs/39871637474/job/120147210805",
+        "name": "test (18)",
+        "startedAt": "2026-10-22T23:25:12Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-22T23:25:41Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/ttat288/agent-meeting/actions/runs/39871637423/job/120147207849",
+        "name": "native-smoke (ubuntu-22.04)",
+        "startedAt": "2026-10-22T23:25:11Z",
+        "status": "COMPLETED",
+        "workflowName": "Desktop installer"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-22T23:25:08Z",
+        "conclusion": "CANCELLED",
+        "detailsUrl": "https://github.com/ttat288/agent-meeting/actions/runs/39871631575/job/120147190212",
+        "name": "test (20)",
+        "startedAt": "2026-10-22T23:25:05Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-22T23:29:08Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/ttat288/agent-meeting/actions/runs/39871637474/job/120147210507",
+        "name": "test (20)",
+        "startedAt": "2026-10-22T23:27:19Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-22T23:25:53Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/ttat288/agent-meeting/actions/runs/39871637423/job/120147207499",
+        "name": "native-smoke (macos-latest)",
+        "startedAt": "2026-10-22T23:25:44Z",
+        "status": "COMPLETED",
+        "workflowName": "Desktop installer"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-22T23:25:08Z",
+        "conclusion": "CANCELLED",
+        "detailsUrl": "https://github.com/ttat288/agent-meeting/actions/runs/39871631575/job/120147190266",
+        "name": "test (22)",
+        "startedAt": "2026-10-22T23:25:05Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-22T23:31:08Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/ttat288/agent-meeting/actions/runs/39871637474/job/120147210715",
+        "name": "test (22)",
+        "startedAt": "2026-10-22T23:29:10Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-22T23:26:22Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/ttat288/agent-meeting/actions/runs/39871637423/job/120147207872",
+        "name": "native-smoke (windows-latest)",
+        "startedAt": "2026-10-22T23:25:56Z",
+        "status": "COMPLETED",
+        "workflowName": "Desktop installer"
+      }
+    ]
+  },
+  "scope": "Local links and script syntax/API fixture only; remote HTTP links not all fetched. PR CI applies to pushed HEAD, not local changes."
+}

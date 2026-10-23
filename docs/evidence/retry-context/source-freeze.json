@@ -1,0 +1,69 @@
+{
+  "recordedAt": "2026-10-23T03:41:58Z",
+  "head": "f415cf46961ac43301083c4784fb216b68e87ac6",
+  "files": {
+    "src/work.js": {
+      "sha256": "f763e29cbd2a6774df6a6c19a2d3a0ec2f3513a3cc67053a580609f3a36c4d61",
+      "bytes": 37345
+    },
+    "src/runtime.js": {
+      "sha256": "32eb7100b33b4754c76b8a185fef314acd22e3db61e94961c44661b5faaff5b5",
+      "bytes": 7534
+    },
+    "src/ui/workspace.js": {
+      "sha256": "f5bf20fd2bc14f2903d2da4e57658e448e479e1a06da03e926a18bb621b1bc50",
+      "bytes": 88514
+    },
+    "src/ui/i18n.js": {
+      "sha256": "dde85b92a039b2c171b568332fcf1fee099b00c3690c26191bd84d327f5b8f11",
+      "bytes": 42610
+    },
+    "src/meeting.js": {
+      "sha256": "7dcaccd0525f596db71667a50853bff5a35c5f4c535c0a439311f666d22ef592",
+      "bytes": 84170
+    },
+    "src/server.js": {
+      "sha256": "fb021ebf152ab76bced7420f30c1bdaa4b90b014a77c222421d0631662a77652",
+      "bytes": 62093
+    },
+    "src/config-store.js": {
+      "sha256": "7c4a04fa320dc1b0a4ddd9dd5a4f3702b2a881a56d023fe68052aec6f8eb4f5c",
+      "bytes": 5706
+    },
+    "src/routing.js": {
+      "sha256": "a44f5056b2572ae4991d3af6d90cfce6b424467f71b7403e9e9406c061c2d62b",
+      "bytes": 13319
+    },
+    "src/routing-tools.js": {
+      "sha256": "b9bb77bc9023dac5c21a131aed8fb592d60c5e2dd27060f7648950ace480c3bc",
+      "bytes": 3163
+    },
+    "src/execution-sandbox.js": {
+      "sha256": "64257d7b0c9525f690e38e55b16f4bdc304d9932103152a74bc5163f9d5ca75a",
+      "bytes": 5528
+    },
+    "test/retry-context.test.js": {
+      "sha256": "739b80947cecbf45107a4458e70c85977c856bf719f570f42ff73d2be629c1a6",
+      "bytes": 12020
+    },
+    "test/ui-language-switch.test.js": {
+      "sha256": "c149057bb6fa412119579530c3cc406a285860c70e421121b42be391274768b8",
+      "bytes": 1736
+    },
+    "test/fixtures/csv-retry.js": {
+      "sha256": "077c0b85283d198c2ad5eb24783f89ca8e0c7fc493504b4ecfc017d3c6221f0e",
+      "bytes": 3922
+    },
+    "tools/check-retry-context.js": {
+      "sha256": "93f9cac6a2918c881394add55eaf7b993d3481be022eee842c88804c5fb460f9",
+      "bytes": 9870
+    },
+    "tools/retry-context-preview.js": {
+      "sha256": "c775b1f1054c4dba497e3c92abb2f28e3d41cce0a9fe7de1ce9ce4a858d0b479",
+      "bytes": 2630
+    }
+  },
+  "toolValidationUpdate": "Added explicit expected outcome after production freeze; application hashes unchanged. Default check and component failure replay rerun.",
+  "lastUpdatedAt": "2026-10-23T04:18:11.333177+00:00",
+  "finalGuardUpdate": "Require matching canonical source path in addition to requirement/Git base/snapshot; red-source-identity.txt -> green. Final full regression454/454 passed; final browser repeated on fresh preview3182."
+}

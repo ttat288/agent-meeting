@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased — retry with independent failure context
+
+- Explicit retries receive bounded failed-check diagnostics from the latest attempt when task requirements, canonical source path, Git base and source snapshot still match. New attempts keep a fresh source copy; no automatic retry or test acceptance.
+- Retain original evidence and record retry provenance, payload hash, truncation and possible-secret omission. Optional feedback is omitted when it would exceed the existing runtime prompt limit; Results explains that limit.
+- Add a CSV recovery fixture with a direct CLI baseline, failed verification, restart and tests on integrated source. Scripted participants do not establish AI debugging quality, multi-provider value or billing savings.
+- Language switching keeps the chosen locale in the URL so repeated switches work without a manual reload, including when browser storage is blocked; current view and other query parameters are preserved.
+
+## Unreleased — English decision/task capture
+
+- Accept `CONCLUSION:` and `TASK:` alongside Vietnamese markers, preserving decision cleanup, task owners, source links and restart identity. The pinned preview still requires Vietnamese markers.
+
+## Unreleased — reproducible first result
+
+- Lead English/Vietnamese READMEs with a shared decision → owned tasks → conversation-source example. Add a no-model browser trial pinned to the published preview commit; move benchmark details into the English showcase and distinguish draft PR, historical media and local additions.
+- Add `tools/try-workflow.js`: disposable no-model API walkthrough with direct fixture comparison, conflict recovery, verification/integration and restart evidence. Measurements describe machinery only; model efficacy and human value remain unproven.
+
 ## Unreleased — live work monitoring and revision guards
 
 - Plan/Execute/Results follow external run updates using conditional reads. Active edits, evidence and keyboard focus defer replacement; offline results remain visible with bounded retry.

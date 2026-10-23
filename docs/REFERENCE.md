@@ -149,10 +149,12 @@ When the meeting ends, the page summarizes the reason, duration, message count, 
 
 The server reads three line patterns in agent messages (the protocol tells agents exactly how to write them):
 
+English `CONCLUSION:` and `TASK:` aliases are additions in this checkout over the pinned preview `f415cf4`. Vietnamese markers remain supported. Other agenda/progress markers are unchanged.
+
 | Pattern | Meaning |
 |---|---|
-| `KẾT LUẬN: <decision>` | Final decision (for the current item, or the overall one after the last item). If agents repeat it, the latest one wins. |
-| `VIỆC: <owner> \| <task> \| <due>` | One action item. Repeated items with nearly the same wording are merged. |
+| `KẾT LUẬN: <decision>` / `CONCLUSION: <decision>` | Final decision (for the current item, or the overall one after the last item). If agents repeat it, the latest one wins. |
+| `VIỆC: <owner> \| <task> \| <due>` / `TASK: …` | One action item. Repeated items with nearly the same wording are merged. |
 | `XONG MỤC <n>: <summary>` | Item n is settled; move to the next one. |
 | `TIẾN ĐỘ VIỆC <n>: <status> \| <evidence>` | Progress on task n: `chưa làm`, `đang làm`, `xong` or `vướng` (English `todo`, `doing`, `done`, `blocked` also work), with evidence such as a commit/PR link or test output. The `progress` tool does the same. |
 
@@ -425,3 +427,11 @@ At a checkpoint, keep the existing `decisions` (chosen decision and short ration
 ## Live work updates
 
 Plan/Execute/Results check for external task/run changes while visible. Unchanged reads use `If-None-Match`/HTTP304. Active edits, keyboard focus and open evidence defer DOM replacement; use **Show updates** to apply the pending state. Foreground work reads cancel stale background reads, and navigation clears the cached tag. Offline results remain visible with retry, up to30 seconds between attempts; each background request is bounded to10 seconds. This is polling transport, not a model or billing guarantee. Human-mode PM history is under Options and source deep links; takeover closes the supervision region without deleting history.
+
+### Retrying failed independent checks
+
+When independent verification fails, open **Execute**, choose a profile and explicitly run again. The task and requirement revision stay the same; the new attempt gets its own run ID. If the latest attempt failed independent verification and the canonical source path, Git base, source snapshot and requirements still match, its failed-check diagnostics are attached to the runtime prompt. You do not need to copy them into Facts or save a new requirement revision. New attempts start from a fresh source copy: the old patch and CLI session are not resumed. Diagnostics describe the previous candidate, not tests of the new copy. Verification and tests on integrated source remain mandatory.
+
+Only up to four failed checks are included, with bounded output (the JSON diagnostic stays below16 KiB). Original evidence remains available under the earlier attempt. Possible secrets detected by the existing pattern scanner are omitted before truncation; the scanner is not comprehensive. Test output is untrusted diagnostic data, never permission or instructions. `retryContext` on the new run records the source run, hash/bytes and omission/truncation flags. If optional feedback would exceed the runtime's128 KiB prompt limit, it is omitted and the UI says to review earlier evidence. Changed source/requirements, another task, a later cancelled/rejected run, or a self-report without independent checks do not inherit older failures. There is no background retry or new execution authority.
+
+Reproduce locally without model calls: `node tools/check-retry-context.js` (Linux/bwrap). It uses a scripted CSV patch participant, real Node subprocess checks, HTTP, persistence/restart and single-file integration. Direct CLI already receives its native test feedback without a manual transfer; this check demonstrates closing a managed feedback gap, not superiority to direct CLI or lower model cost. The script and fixture are included in this checkout, but not in the pinned preview `f415cf4`.

@@ -1,0 +1,17 @@
+{
+  "recordedAt": "2026-10-23T04:27:47.012015+00:00",
+  "ownedPreviewPidsStopped": [
+    43602,
+    54706
+  ],
+  "portsClosed": {
+    "3181": true,
+    "3182": true
+  },
+  "fixtureDataPreservedUnder": "/tmp/am-feedback-90m-20261023-100456",
+  "dataDurabilityPromised": false,
+  "browserTabClosed": true,
+  "viewportOverrideReset": true,
+  "preview3181ThemeRestoredToSystem": true,
+  "userApp3000Touched": false
+}

@@ -4,6 +4,7 @@ const { spawn, spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const ADAPTERS = Object.freeze(['claude', 'agy']);
+const MAX_PROMPT_BYTES = 128 * 1024;
 function executable(adapter) {
   if (adapter === 'claude') return require('./connect').findCli('claude');
   if (adapter !== 'agy') return null;
@@ -21,7 +22,7 @@ function checkRuntime(adapter) {
 function buildArgs(adapter, { modelId, prompt, write = false, readOnlyTools = false }) {
   if (!ADAPTERS.includes(adapter)) throw new Error('Unsupported adapter');
   if (typeof modelId !== 'string' || !/^[a-zA-Z0-9][\w.:-]{0,120}$/.test(modelId)) throw new Error('Explicit model ID required');
-  if (typeof prompt !== 'string' || !prompt.trim() || Buffer.byteLength(prompt) > 128 * 1024) throw new Error('Invalid prompt');
+  if (typeof prompt !== 'string' || !prompt.trim() || Buffer.byteLength(prompt) > MAX_PROMPT_BYTES) throw new Error('Invalid prompt');
   if (adapter === 'claude') return ['--print', '--model', modelId, '--output-format', 'json', '--no-session-persistence',
     '--permission-mode', write ? 'auto' : 'plan', '--permission-prompts', 'none', '--strict-mcp-config', '--mcp-config', '{"mcpServers":{}}',
     '--tools', write ? 'Read,Edit,Write,Glob,Grep' : readOnlyTools ? 'Read,Glob,Grep' : ''];
@@ -97,4 +98,4 @@ function runCli(options) {
     child.on('error', e => done(null, e)); child.on('close', code => done(code));
   });
 }
-module.exports = { ADAPTERS, executable, checkRuntime, buildArgs, parseOutput, runCli };
+module.exports = { ADAPTERS, MAX_PROMPT_BYTES, executable, checkRuntime, buildArgs, parseOutput, runCli };

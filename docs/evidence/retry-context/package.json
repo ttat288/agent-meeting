@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-10-23T04:18:26.697181+00:00",
+  "filename": "agent-meeting-3.5.0.tgz",
+  "packageBytes": 376271,
+  "unpackedBytes": 979872,
+  "files": 68,
+  "tarSha256": "362d6e3b40d4ed34ce5c670525c628036801d151576d274e0220979c5727331b",
+  "productionHashesMatchFreeze": {
+    "src/work.js": true,
+    "src/runtime.js": true,
+    "src/ui/workspace.js": true,
+    "src/ui/i18n.js": true,
+    "src/meeting.js": true,
+    "src/server.js": true,
+    "src/config-store.js": true,
+    "src/routing.js": true,
+    "src/routing-tools.js": true,
+    "src/execution-sandbox.js": true
+  },
+  "published": false
+}

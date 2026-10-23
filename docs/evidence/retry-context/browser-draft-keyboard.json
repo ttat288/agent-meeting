@@ -1,0 +1,24 @@
+{
+  "recordedAt": "2026-10-23T04:00:33.349Z",
+  "fixture": true,
+  "languageSwitchWithoutManualReload": true,
+  "draftSurvivedLanguageReload": true,
+  "draftRestoredWithoutSave": true,
+  "keyboard": {
+    "activeTag": "BUTTON",
+    "activeText": "Refresh",
+    "runIds": [
+      "a2f6bff1-8279-48a0-9735-892ddd59bdec",
+      "aaa3b86b-80ed-4233-920d-6ad16c39cf6b",
+      "f50985c7-31b9-4bef-abeb-36f51f0c3b00",
+      "e13eff09-d344-406d-9e8c-e0289bafd881",
+      "6205d0a2-b5ec-4f97-b647-8c286bda7dc3"
+    ],
+    "taskIds": [
+      "meeting-3aeb2be13a91f223efcac43549bf5a03",
+      "673eeb39-0c32-487e-bf29-d0110042aaf3",
+      "7472cf9d-d8c3-4309-a277-c6faa6506ecf"
+    ],
+    "url": "http://127.0.0.1:3181/m/host_csv_retry_preview_1234?lang=en#results"
+  }
+}

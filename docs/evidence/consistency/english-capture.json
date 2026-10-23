@@ -1,0 +1,55 @@
+{
+  "checkedAt": "2026-10-23T02:57:44.841702+00:00",
+  "scope": "English aliases for decision/task capture, local unpublished source over f415cf4; no UI or agent protocol edits. No models, OAuth, settings changes or publication.",
+  "baseCommit": "f415cf46961ac43301083c4784fb216b68e87ac6",
+  "sourceHashes": {
+    "src/meeting.js": "7dcaccd0525f596db71667a50853bff5a35c5f4c535c0a439311f666d22ef592",
+    "test/english-capture.test.js": "7260b2a0adce71c73acfe6af0a91671587acd5122f39c345186d18a425837ff4",
+    "README.md": "e82d5fbf96ca4e75537bdc344409a19c96164607367201cf40b57a351731340a",
+    "README.vi.md": "2cfd0c742f9c5b11280dd31391a2245eef5de9753784176b2e83ead54ab39f2d",
+    "docs/SHOWCASE.md": "bb570f9fad828b476fe1bda4ab16b8e0b0e9ffc663931fca721e720b5024acf8",
+    "docs/REFERENCE.md": "1ffab4ae5f39204db3e393ba8fb4fedbadd310611a4fde880faf687f9167f474"
+  },
+  "before": {
+    "command": "node --test test/english-capture.test.js",
+    "exitCode": 1,
+    "tests": 3,
+    "pass": 0,
+    "fail": 3,
+    "raw": "english-capture-before.txt"
+  },
+  "targeted": {
+    "command": "node --test test/english-capture.test.js test/meeting.test.js test/consistency.test.js",
+    "exitCode": 0,
+    "tests": 59,
+    "pass": 59,
+    "fail": 0,
+    "raw": "english-capture-after.txt"
+  },
+  "full": {
+    "command": "systemd-run --user --scope -q -p MemoryMax=1200M -p MemorySwapMax=0 timeout 900 npm test",
+    "exitCode": 0,
+    "files": 39,
+    "tests": 439,
+    "pass": 439,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "rawLocalPath": "/tmp/am-english-full-tests.txt",
+    "rawSha256": "37dac9b5f71ea4d2f3020c91a6dab560759c54848d136858fd8ed2c27ea81fcc",
+    "rawPersistence": "Temporary local log, not durable published evidence; counts and digest retained here."
+  },
+  "accepted": [
+    "Vietnamese and English capture the same decision and task fields",
+    "Ordinary prose does not become a conclusion/task",
+    "Markdown and lowercase line markers accepted; inline conclusion still requires uppercase",
+    "HTTP work reads and server restart preserve task ID, revision, source message and decision"
+  ],
+  "limits": [
+    "No new browser/user acceptance",
+    "Agenda/progress markers and outgoing agent protocol remain Vietnamese",
+    "Pinned public f415cf4 does not contain aliases",
+    "No model quality or net human coordination/cost benefit measured",
+    "Only this capture bottleneck fixed; other customer pain points remain open"
+  ]
+}

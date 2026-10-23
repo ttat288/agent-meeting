@@ -1,0 +1,94 @@
+TAP version 13
+# Subtest: language switching without a query language navigates to the explicit chosen locale
+not ok 1 - language switching without a query language navigates to the explicit chosen locale
+  ---
+  duration_ms: 8.04917
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/ui-language-switch.test.js:12:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + '/m/fixture#results'
+    - '/m/fixture?lang=en#results'
+                 ^
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '/m/fixture?lang=en#results'
+  actual: '/m/fixture#results'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/ui-language-switch.test.js:14:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.start (node:internal/test_runner/test:944:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+  ...
+# Subtest: language switching preserves the current view and other query parameters
+not ok 2 - language switching preserves the current view and other query parameters
+  ---
+  duration_ms: 1.332259
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/ui-language-switch.test.js:16:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + '/m/fixture/admin?section=runtime#results'
+    - '/m/fixture/admin?section=runtime&lang=vi#results'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '/m/fixture/admin?section=runtime&lang=vi#results'
+  actual: '/m/fixture/admin?section=runtime#results'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/ui-language-switch.test.js:18:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: chosen language remains navigable when browser storage is blocked
+not ok 3 - chosen language remains navigable when browser storage is blocked
+  ---
+  duration_ms: 1.078195
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/ui-language-switch.test.js:20:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + '/m/fixture#execute'
+    - '/m/fixture?lang=en#execute'
+                 ^
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: '/m/fixture?lang=en#execute'
+  actual: '/m/fixture#execute'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/ui-language-switch.test.js:22:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..3
+# tests 3
+# suites 0
+# pass 0
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 159.9295

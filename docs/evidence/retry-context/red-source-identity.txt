@@ -1,0 +1,214 @@
+TAP version 13
+# Subtest: a different canonical source path cannot inherit old diagnostics even with identical HEAD and bytes
+not ok 1 - a different canonical source path cannot inherit old diagnostics even with identical HEAD and bytes
+  ---
+  duration_ms: 463.791488
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/retry-context.test.js:149:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Canonical source identity changed
+    + actual - expected
+    
+    + {
+    +   checks: [
+    +     {
+    +       error: '',
+    +       exitCode: 1,
+    +       file: 'test/csv-cell.test.js',
+    +       output: 'TAP version 13\n' +
+    +         '# Subtest: keeps plain cells\n' +
+    +         'ok 1 - keeps plain cells\n' +
+    +         '  ---\n' +
+    +         '  duration_ms: 1.319035\n' +
+    +         "  type: 'test'\n" +
+    +         '  ...\n' +
+    +         '# Subtest: quotes delimiter\n' +
+    +         'ok 2 - quotes delimiter\n' +
+    +         '  ---\n' +
+    +         '  duration_ms: 0.158601\n' +
+    +         "  type: 'test'\n" +
+    +         '  ...\n' +
+    +         '# Subtest: escapes embedded double quotes\n' +
+    +         'not ok 3 - escapes embedded double quotes\n' +
+    +         '  ---\n' +
+    +         '  duration_ms: 1.279651\n' +
+    +         "  type: 'test'\n" +
+    +         "  location: '/tmp/am-retry-test-WZcQmk/work/runs/b3a5f06f-1e08-4d91-882a-34cd893cb98c/workspace/test/csv-cell.test.js:4:1'\n" +
+    +         "  failureType: 'testCodeFailure'\n" +
+    +         '  error: |-\n' +
+    +         '    Expected values to be strictly equal:\n' +
+    +         '    + actual - expected\n' +
+    +         '    \n' +
+    +         `    + 'say "hi"'\n` +
+    +         `    - '"say ""hi"""'\n` +
+    +         '    \n' +
+    +         "  code: 'ERR_ASSERTION'\n" +
+    +         "  name: 'AssertionError'\n" +
+    +         `  expected: '"say ""hi"""'\n` +
+    +         `  actual: 'say "hi"'\n` +
+    +         "  operator: 'strictEqual'\n" +
+    +         '  stack: |-\n' +
+    +         '    TestContext.<anonymous> (/tmp/am-retry-test-WZcQmk/work/runs/b3a5f06f-1e08-4d91-882a-34cd893cb98c/workspace/test/csv-cell.test.js:4:53)\n' +
+    +         '    Test.\n' +
+    +         '[truncated]\n' +
+    +         ' |-\n' +
+    +         '    TestContext.<anonymous> (/tmp/am-retry-test-WZcQmk/work/runs/b3a5f06f-1e08-4d91-882a-34cd893cb98c/workspace/test/csv-cell.test.js:6:45)\n' +
+    +         '    Test.runInAsyncScope (node:async_hooks:214:14)\n' +
+    +         '    Test.run (node:internal/test_runner/test:1047:25)\n' +
+    +         '    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n' +
+    +         '    Test.postRun (node:internal/test_runner/test:1173:19)\n' +
+    +         '    Test.run (node:internal/test_runner/test:1101:12)\n' +
+    +         '    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n' +
+    +         '  ...\n' +
+    +         '# Subtest: keeps empty cells\n' +
+    +         'ok 6 - keeps empty cells\n' +
+    +         '  ---\n' +
+    +         '  duration_ms: 0.103944\n' +
+    +         "  type: 'test'\n" +
+    +         '  ...\n' +
+    +         '# Subtest: keeps unicode\n' +
+    +         'ok 7 - keeps unicode\n' +
+    +         '  ---\n' +
+    +         '  duration_ms: 0.09088\n' +
+    +         "  type: 'test'\n" +
+    +         '  ...\n' +
+    +         '# Subtest: converts zero\n' +
+    +         'ok 8 - converts zero\n' +
+    +         '  ---\n' +
+    +         '  duration_ms: 0.146773\n' +
+    +         "  type: 'test'\n" +
+    +         '  ...\n' +
+    +         '1..8\n' +
+    +         '# tests 8\n' +
+    +         '# suites 0\n' +
+    +         '# pass 5\n' +
+    +         '# fail 3\n' +
+    +         '# cancelled 0\n' +
+    +         '# skipped 0\n' +
+    +         '# todo 0\n' +
+    +         '# duration_ms 122.137843\n',
+    +       testFileIndex: 0,
+    +       timeout: false
+    +     }
+    +   ],
+    +   requirementRevision: 1,
+    +   runId: 'b3a5f06f-1e08-4d91-882a-34cd893cb98c',
+    +   sensitiveOutputOmitted: false,
+    +   sourceRevision: '7dc1fd4dd15a7c10b7517ab6d69a374d12f999a4',
+    +   testedCandidate: 'previous-attempt',
+    +   totalFailedChecks: 1,
+    +   truncated: true,
+    +   trust: 'untrusted-test-output',
+    +   workspaceState: 'fresh-source-copy'
+    + }
+    - undefined
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual:
+    runId: 'b3a5f06f-1e08-4d91-882a-34cd893cb98c'
+    requirementRevision: 1
+    sourceRevision: '7dc1fd4dd15a7c10b7517ab6d69a374d12f999a4'
+    workspaceState: 'fresh-source-copy'
+    testedCandidate: 'previous-attempt'
+    trust: 'untrusted-test-output'
+    checks:
+      0:
+        testFileIndex: 0
+        file: 'test/csv-cell.test.js'
+        exitCode: 1
+        timeout: false
+        error: ''
+        output: |-
+          TAP version 13
+          # Subtest: keeps plain cells
+          ok 1 - keeps plain cells
+            ---
+            duration_ms: 1.319035
+            type: 'test'
+            ...
+          # Subtest: quotes delimiter
+          ok 2 - quotes delimiter
+            ---
+            duration_ms: 0.158601
+            type: 'test'
+            ...
+          # Subtest: escapes embedded double quotes
+          not ok 3 - escapes embedded double quotes
+            ---
+            duration_ms: 1.279651
+            type: 'test'
+            location: '/tmp/am-retry-test-WZcQmk/work/runs/b3a5f06f-1e08-4d91-882a-34cd893cb98c/workspace/test/csv-cell.test.js:4:1'
+            failureType: 'testCodeFailure'
+            error: |-
+              Expected values to be strictly equal:
+              + actual - expected
+              
+              + 'say "hi"'
+              - '"say ""hi"""'
+              
+            code: 'ERR_ASSERTION'
+            name: 'AssertionError'
+            expected: '"say ""hi"""'
+            actual: 'say "hi"'
+            operator: 'strictEqual'
+            stack: |-
+              TestContext.<anonymous> (/tmp/am-retry-test-WZcQmk/work/runs/b3a5f06f-1e08-4d91-882a-34cd893cb98c/workspace/test/csv-cell.test.js:4:53)
+              Test.
+          [truncated]
+           |-
+              TestContext.<anonymous> (/tmp/am-retry-test-WZcQmk/work/runs/b3a5f06f-1e08-4d91-882a-34cd893cb98c/workspace/test/csv-cell.test.js:6:45)
+              Test.runInAsyncScope (node:async_hooks:214:14)
+              Test.run (node:internal/test_runner/test:1047:25)
+              Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+              Test.postRun (node:internal/test_runner/test:1173:19)
+              Test.run (node:internal/test_runner/test:1101:12)
+              async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+            ...
+          # Subtest: keeps empty cells
+          ok 6 - keeps empty cells
+            ---
+            duration_ms: 0.103944
+            type: 'test'
+            ...
+          # Subtest: keeps unicode
+          ok 7 - keeps unicode
+            ---
+            duration_ms: 0.09088
+            type: 'test'
+            ...
+          # Subtest: converts zero
+          ok 8 - converts zero
+            ---
+            duration_ms: 0.146773
+            type: 'test'
+            ...
+          1..8
+          # tests 8
+          # suites 0
+          # pass 5
+          # fail 3
+          # cancelled 0
+          # skipped 0
+          # todo 0
+          # duration_ms 122.137843
+          
+    totalFailedChecks: 1
+    truncated: true
+    sensitiveOutputOmitted: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/retry-context.test.js:154:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 589.631081

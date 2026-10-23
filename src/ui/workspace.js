@@ -63,7 +63,7 @@
   function acceptWork(next) { work = next; pendingWork = null; }
   function friendlyError(message) {
     const translations = {
-      'Independent verification failed': 'Test độc lập thất bại. Xem bằng chứng, sửa yêu cầu hoặc checkout rồi chạy lại.',
+      'Independent verification failed': 'Test độc lập thất bại. Xem bằng chứng rồi thử lại trong Thực hiện.',
       'Runtime reported permission denials': 'CLI đã từ chối một thao tác. Kiểm tra quyền CLI và phạm vi task trước khi thử lại.',
       'Acceptance criteria required': 'Cần ít nhất một tiêu chí nghiệm thu.',
       'Runtime access is unverified or routing constraints reject this task; probe the profile first': 'Chưa xác nhận quyền truy cập runtime hoặc task không đáp ứng quy tắc chia việc. Vào Quản trị → Agent & runtime để kiểm tra hồ sơ.',
@@ -343,12 +343,18 @@
       if (tab !== 'plan') for (const [index, run] of [...runs].reverse().entries()) {
         const runView = node('section', { class: 'ws-run', 'data-run-id': run.id }, node('div', { class: 'ws-row between' }, node('h3', {}, t('Lần chạy ', 'Attempt ') + (runs.length - index)), node('span', { class: 'ws-pill', 'data-status': run.status }, statusText(run.status || 'unknown'))));
         const explanation = { reported: t('Báo cáo đã sẵn sàng. Cần test độc lập trước khi nhận kết quả.', 'Report ready. Independent tests are required before acceptance.'), verified: t('Test đã đạt. Tích hợp sẽ kiểm tra lại trên checkout nguồn.', 'Tests passed. Integration will test the source checkout again.'), integrated: t('Đã tích hợp và test trên checkout nguồn.', 'Integrated and tested on the source checkout.'), failed: t('Phiên chạy thất bại. Xem bằng chứng và điều chỉnh trước khi chạy lại.', 'Run failed. Review the evidence and adjust before retrying.') }[run.status];
-        if (explanation && run.status !== 'integrated') runView.append(node('p', { class:'ws-subtle' }, explanation));
+        const checkFailed = run.status === 'failed' && run.error === 'Independent verification failed';
+        if (explanation && run.status !== 'integrated') runView.append(node('p', { class: checkFailed ? 'ws-warning' : 'ws-subtle' }, checkFailed
+          ? t('Test độc lập thất bại. Thử lại trong Thực hiện; lỗi test được kèm nếu nguồn và yêu cầu còn khớp.', 'Independent checks failed. Retry in Execute; diagnostics are attached when source and requirements still match.') : explanation));
+        if (run.retryContext) runView.append(node('p', { class: 'ws-meta ws-retry-context' }, run.retryContext.omitted
+          ? t('Không kèm lỗi test vì prompt đã gần giới hạn. Xem bằng chứng của lần trước.', 'Previous checks omitted: prompt size limit. Review the earlier evidence.') : t('Đã kèm lỗi test từ lần chạy trước.', 'Previous failed checks included.')
+          + (run.retryContext.truncated ? t(' Chẩn đoán đã rút gọn; bằng chứng gốc vẫn được giữ.', ' Diagnostics shortened; original evidence is retained.') : '')
+          + (run.retryContext.sensitiveOutputOmitted ? t(' Đã bỏ nội dung có dấu hiệu bí mật.', ' Possible secret output omitted.') : '')));
         if (tab === 'results' && run.report) runView.append(node('p', { class: 'ws-report' }, run.report));
         if (tab === 'results' && run.changes?.length) runView.append(node('p', { class: 'ws-meta' }, t('Tệp thay đổi: ', 'Changed files: ') + run.changes.map(c => c.file).join(', ')));
         const evidence = [...(run.evidence || []), ...(run.integrationEvidence || [])];
         if (evidence.length) runView.append(node('p', { class: 'ws-meta' }, t('Test đạt: ', 'Tests passed: ') + evidence.filter(evidencePassed).length + '/' + evidence.length));
-        if (run.error) runView.append(node('p', { class: 'ws-warning' }, friendlyError(run.error)));
+        if (run.error && !checkFailed) runView.append(node('p', { class: 'ws-warning' }, friendlyError(run.error)));
         const actions = node('div', { class: 'ws-actions' });
         if (tab === 'results' && ['failed','cancelled','rejected','timeout','output-limit'].includes(run.status) && task.sourceCurrent !== false) actions.append(viewLink('execute', t('Thử lại trong Thực hiện →', 'Retry in Execute →'), true));
         if (activeRun(run)) {

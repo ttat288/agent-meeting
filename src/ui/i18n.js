@@ -463,6 +463,6 @@
     for (const e of root.querySelectorAll('[placeholder],[title],[aria-label]'))
       for (const a of ['placeholder', 'title', 'aria-label']) { const v = e.getAttribute(a); if (v && EN.has(v)) e.setAttribute(a, EN.get(v)); }
   }
-  function setLang(l) { try { localStorage.setItem(KEY, l); } catch {} const u = new URL(location.href); u.searchParams.delete('lang'); location.replace(u.pathname + u.search + u.hash); }
+  function setLang(l) { try { localStorage.setItem(KEY, l); } catch {} const u = new URL(location.href); u.searchParams.set('lang', l); location.replace(u.pathname + u.search + u.hash); }
   window.AgentMeetingI18n = { lang, tr, apply, setLang, EN };
 })();

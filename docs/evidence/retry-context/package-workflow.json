@@ -1,0 +1,260 @@
+{
+  "schema": "agent-meeting/retry-context-check@1",
+  "recordedAt": "2026-10-23T04:18:26.831Z",
+  "fixture": true,
+  "modelCalls": 0,
+  "node": "v22.22.1",
+  "manualFeedback": false,
+  "goal": "Fix CSV cell escaping for commas, embedded double quotes and CR/LF; preserve plain, empty, numeric and Unicode cells. Change only csv-cell.js; keep independent tests unchanged.",
+  "acceptance": [
+    "keeps plain cells",
+    "quotes delimiter",
+    "escapes embedded double quotes",
+    "quotes line feed",
+    "quotes carriage return",
+    "keeps empty cells",
+    "keeps unicode",
+    "converts zero"
+  ],
+  "sourceHashes": {
+    "src/work.js": "f763e29cbd2a6774df6a6c19a2d3a0ec2f3513a3cc67053a580609f3a36c4d61",
+    "src/ui/workspace.js": "f5bf20fd2bc14f2903d2da4e57658e448e479e1a06da03e926a18bb621b1bc50",
+    "src/server.js": "fb021ebf152ab76bced7420f30c1bdaa4b90b014a77c222421d0631662a77652"
+  },
+  "fixtureHash": "077c0b85283d198c2ad5eb24783f89ca8e0c7fc493504b4ecfc017d3c6221f0e",
+  "http": [
+    {
+      "operation": "start",
+      "status": 200,
+      "elapsedMs": 56.88217099999997,
+      "requestBodyBytes": 202,
+      "responseBodyBytes": 11
+    },
+    {
+      "operation": "say",
+      "status": 200,
+      "elapsedMs": 7.277062999999998,
+      "requestBodyBytes": 124,
+      "responseBodyBytes": 11
+    },
+    {
+      "operation": "work",
+      "status": 200,
+      "elapsedMs": 5.499061999999981,
+      "requestBodyBytes": 0,
+      "responseBodyBytes": 2555
+    },
+    {
+      "operation": "work/tasks/meeting-dfad338562942b84b271c39c9ceaf2db/configure",
+      "status": 200,
+      "elapsedMs": 4.406869000000029,
+      "requestBodyBytes": 362,
+      "responseBodyBytes": 1314
+    },
+    {
+      "operation": "runtime/probe",
+      "status": 200,
+      "elapsedMs": 5.352012999999943,
+      "requestBodyBytes": 27,
+      "responseBodyBytes": 324
+    },
+    {
+      "operation": "work/tasks/meeting-dfad338562942b84b271c39c9ceaf2db/run",
+      "status": 202,
+      "elapsedMs": 109.44906100000003,
+      "requestBodyBytes": 86,
+      "responseBodyBytes": 20477
+    },
+    {
+      "operation": "work",
+      "status": 200,
+      "elapsedMs": 4.622720000000072,
+      "requestBodyBytes": 0,
+      "responseBodyBytes": 26640
+    },
+    {
+      "operation": "work/runs/becefa68-b6b4-4648-9fa4-e1ba53e604ce/verify",
+      "status": 200,
+      "elapsedMs": 257.82914600000004,
+      "requestBodyBytes": 2,
+      "responseBodyBytes": 25283
+    },
+    {
+      "operation": "work",
+      "status": 200,
+      "elapsedMs": 9.485976000000164,
+      "requestBodyBytes": 0,
+      "responseBodyBytes": 31136
+    },
+    {
+      "operation": "work/tasks/meeting-dfad338562942b84b271c39c9ceaf2db/run",
+      "status": 202,
+      "elapsedMs": 113.43478499999992,
+      "requestBodyBytes": 86,
+      "responseBodyBytes": 20698
+    },
+    {
+      "operation": "work",
+      "status": 200,
+      "elapsedMs": 5.509982000000036,
+      "requestBodyBytes": 0,
+      "responseBodyBytes": 52739
+    },
+    {
+      "operation": "work/runs/64f95c54-a0b2-4a23-96fb-a7a0996882d4/verify",
+      "status": 200,
+      "elapsedMs": 256.0987439999999,
+      "requestBodyBytes": 2,
+      "responseBodyBytes": 22510
+    },
+    {
+      "operation": "work/runs/64f95c54-a0b2-4a23-96fb-a7a0996882d4/integrate",
+      "status": 200,
+      "elapsedMs": 269.5003489999999,
+      "requestBodyBytes": 2,
+      "responseBodyBytes": 23835
+    },
+    {
+      "operation": "work",
+      "status": 200,
+      "elapsedMs": 6.2238880000002155,
+      "requestBodyBytes": 0,
+      "responseBodyBytes": 55566
+    }
+  ],
+  "humanTimeMs": null,
+  "modelTokens": null,
+  "billedCostUsd": null,
+  "inputHashes": {
+    "csv-cell.js": "9a38503b21f51c83e9e4fcf6eaf1bfad764d7304a3d466deea4a3b48d4e25e38",
+    "test/csv-cell.test.js": "1980bb1b858d1a7a12470ec1e93c9ef0a83e1ff07b39c250781506d0a04a9fc1"
+  },
+  "direct": {
+    "elapsedMs": 631.856269,
+    "attempts": 2,
+    "manualDiagnosticTransfers": 0,
+    "processes": 4,
+    "firstCheck": {
+      "exitCode": 1,
+      "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.36373\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.163375\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nnot ok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 1.354239\n  type: 'test'\n  location: '/tmp/am-csv-retry-E5E4j2/direct/test/csv-cell.test.js:4:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'say \"hi\"'\n    - '\"say \"\"hi\"\"\"'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: '\"say \"\"hi\"\"\"'\n  actual: 'say \"hi\"'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-csv-retry-E5E4j2/direct/test/csv-cell.test.js:4:53)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: quotes line feed\nnot ok 4 - quotes line feed\n  ---\n  duration_ms: 0.313286\n  type: 'test'\n  location: '/tmp/am-csv-retry-E5E4j2/direct/test/csv-cell.test.js:5:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'a\\nb' !== '\"a\\nb\"'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: |-\n    \"a\n    b\"\n  actual: |-\n    a\n    b\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-csv-retry-E5E4j2/direct/test/csv-cell.test.js:5:39)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: quotes carriage return\nnot ok 5 - quotes carriage return\n  ---\n  duration_ms: 0.255653\n  type: 'test'\n  location: '/tmp/am-csv-retry-E5E4j2/direct/test/csv-cell.test.js:6:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'a\\rb' !== '\"a\\rb\"'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: '\"a\\rb\"'\n  actual: 'a\\rb'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-csv-retry-E5E4j2/direct/test/csv-cell.test.js:6:45)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.109907\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.116459\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.148871\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 5\n# fail 3\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 128.947378\n"
+    },
+    "finalCheck": {
+      "exitCode": 0,
+      "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.479832\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.205755\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 0.113611\n  type: 'test'\n  ...\n# Subtest: quotes line feed\nok 4 - quotes line feed\n  ---\n  duration_ms: 0.095017\n  type: 'test'\n  ...\n# Subtest: quotes carriage return\nok 5 - quotes carriage return\n  ---\n  duration_ms: 0.107297\n  type: 'test'\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.090306\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.07901\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.083695\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 8\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 123.718824\n"
+    },
+    "outputHashes": {
+      "csv-cell.js": "882c54cb9a0664e132a9f9ddbbd462b17640217367359e52fad153625bcb39c0",
+      "test/csv-cell.test.js": "1980bb1b858d1a7a12470ec1e93c9ef0a83e1ff07b39c250781506d0a04a9fc1"
+    }
+  },
+  "managed": {
+    "elapsedMs": 1133.928504,
+    "status": "integrated",
+    "attempts": 2,
+    "manualDiagnosticTransfers": 0,
+    "requirementRevision": 2,
+    "taskId": "meeting-dfad338562942b84b271c39c9ceaf2db",
+    "sourceMessageIndex": 1,
+    "firstRunId": "becefa68-b6b4-4648-9fa4-e1ba53e604ce",
+    "retryRunId": "64f95c54-a0b2-4a23-96fb-a7a0996882d4",
+    "firstCheck": {
+      "command": [
+        "/usr/bin/node",
+        "--max-old-space-size=256",
+        "--test",
+        "--test-timeout=20000",
+        "test/csv-cell.test.js"
+      ],
+      "exitCode": 1,
+      "timeout": false,
+      "cancelled": false,
+      "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.415679\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.172354\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nnot ok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 1.326203\n  type: 'test'\n  location: '/tmp/am-csv-retry-E5E4j2/work/4903452fc6c00161bc60dd6465210fe29b221f0e85f4a1aac6b2ae6c71b90eee/runs/becefa68-b6b4-4648-9fa4-e1ba53e604ce/workspace/test/csv-cell.test.js:4:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'say \"hi\"'\n    - '\"say \"\"hi\"\"\"'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: '\"say \"\"hi\"\"\"'\n  actual: 'say \"hi\"'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-csv-retry-E5E4j2/work/4903452fc6c00161bc60dd6465210fe29b221f0e85f4a1aac6b2ae6c71b90eee/runs/becefa68-b6b4-4648-9fa4-e1ba53e604ce/workspace/test/csv-cell.test.js:4:53)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: quotes line feed\nnot ok 4 - quotes line feed\n  ---\n  duration_ms: 0.26306\n  type: 'test'\n  location: '/tmp/am-csv-retry-E5E4j2/work/4903452fc6c00161bc60dd6465210fe29b221f0e85f4a1aac6b2ae6c71b90eee/runs/becefa68-b6b4-4648-9fa4-e1ba53e604ce/workspace/test/csv-cell.test.js:5:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'a\\nb' !== '\"a\\nb\"'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: |-\n    \"a\n    b\"\n  actual: |-\n    a\n    b\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-csv-retry-E5E4j2/work/4903452fc6c00161bc60dd6465210fe29b221f0e85f4a1aac6b2ae6c71b90eee/runs/becefa68-b6b4-4648-9fa4-e1ba53e604ce/workspace/test/csv-cell.test.js:5:39)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: quotes carriage return\nnot ok 5 - quotes carriage return\n  ---\n  duration_ms: 0.221021\n  type: 'test'\n  location: '/tmp/am-csv-retry-E5E4j2/work/4903452fc6c00161bc60dd6465210fe29b221f0e85f4a1aac6b2ae6c71b90eee/runs/becefa68-b6b4-4648-9fa4-e1ba53e604ce/workspace/test/csv-cell.test.js:6:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'a\\rb' !== '\"a\\rb\"'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: '\"a\\rb\"'\n  actual: 'a\\rb'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-csv-retry-E5E4j2/work/4903452fc6c00161bc60dd6465210fe29b221f0e85f4a1aac6b2ae6c71b90eee/runs/becefa68-b6b4-4648-9fa4-e1ba53e604ce/workspace/test/csv-cell.test.js:6:45)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.10307\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.099072\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.16976\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 5\n# fail 3\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 130.891786\n",
+      "elapsedMs": 235,
+      "checkedAt": "2026-10-23T04:18:27.951Z"
+    },
+    "retryCheck": {
+      "command": [
+        "/usr/bin/node",
+        "--max-old-space-size=256",
+        "--test",
+        "--test-timeout=20000",
+        "test/csv-cell.test.js"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "cancelled": false,
+      "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.666402\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.219044\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 0.103806\n  type: 'test'\n  ...\n# Subtest: quotes line feed\nok 4 - quotes line feed\n  ---\n  duration_ms: 0.099923\n  type: 'test'\n  ...\n# Subtest: quotes carriage return\nok 5 - quotes carriage return\n  ---\n  duration_ms: 0.09605\n  type: 'test'\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.093478\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.115455\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.08924\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 8\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 126.420392\n",
+      "elapsedMs": 229,
+      "checkedAt": "2026-10-23T04:18:28.337Z"
+    },
+    "integratedCheck": {
+      "command": [
+        "/usr/bin/node",
+        "--max-old-space-size=256",
+        "--test",
+        "--test-timeout=20000",
+        "test/csv-cell.test.js"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "cancelled": false,
+      "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.581168\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.283111\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 0.147088\n  type: 'test'\n  ...\n# Subtest: quotes line feed\nok 4 - quotes line feed\n  ---\n  duration_ms: 0.135964\n  type: 'test'\n  ...\n# Subtest: quotes carriage return\nok 5 - quotes carriage return\n  ---\n  duration_ms: 0.11561\n  type: 'test'\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.11593\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.101286\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.112366\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 8\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 126.49353\n",
+      "elapsedMs": 228,
+      "checkedAt": "2026-10-23T04:18:28.601Z"
+    },
+    "retryContext": {
+      "runId": "becefa68-b6b4-4648-9fa4-e1ba53e604ce",
+      "requirementRevision": 2,
+      "sourceRevision": "0310f65df831bf0d87e05e2dcb4a23c5126da876",
+      "workspaceState": "fresh-source-copy",
+      "testedCandidate": "previous-attempt",
+      "trust": "untrusted-test-output",
+      "checks": [
+        {
+          "testFileIndex": 0,
+          "file": "test/csv-cell.test.js",
+          "exitCode": 1,
+          "timeout": false,
+          "error": "",
+          "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.415679\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.172354\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nnot ok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 1.326203\n  type: 'test'\n  location: '/tmp/am-csv-retry-E5E4j2/work/4903452fc6c00161bc60dd6465210fe29b221f0e85f4a1aac6b2ae6c71b90eee/runs/becefa68-b6b4-4648-9fa4-e1ba53e604ce/workspac\n[truncated]\ntest_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.10307\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.099072\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.16976\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 5\n# fail 3\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 130.891786\n"
+        }
+      ],
+      "totalFailedChecks": 1,
+      "truncated": true,
+      "sensitiveOutputOmitted": false
+    },
+    "retryContextBytes": 1505,
+    "promptBytes": [
+      1263,
+      3056
+    ],
+    "sameObjectiveScopeAcceptance": true,
+    "changedPaths": [
+      "csv-cell.js"
+    ],
+    "outputHashes": {
+      "csv-cell.js": "882c54cb9a0664e132a9f9ddbbd462b17640217367359e52fad153625bcb39c0",
+      "test/csv-cell.test.js": "1980bb1b858d1a7a12470ec1e93c9ef0a83e1ff07b39c250781506d0a04a9fc1"
+    },
+    "restartPreserved": true,
+    "storedRetryContext": {
+      "fromRunId": "becefa68-b6b4-4648-9fa4-e1ba53e604ce",
+      "checkCount": 1,
+      "bytes": 1505,
+      "sha256": "63ac613a0e267dee9b864fd8af5bafc46fe61ce08094b08f87de55f6c2d21b56",
+      "truncated": true,
+      "sensitiveOutputOmitted": false
+    },
+    "store": {
+      "files": 6,
+      "bytes": 139207
+    }
+  },
+  "limits": [
+    "Scripted participant selects a known patch using a known diagnostic; not evidence of AI debugging or multi-provider efficacy.",
+    "Direct baseline already gets test feedback with zero manual transfers. Managed before/after can only show removal of an avoidable feedback-transfer gap.",
+    "One direct-first sample; elapsed time is machinery only and includes extra managed config/conversation/restart/provenance. No human-time, model-token, billing or statistical claim.",
+    "HTTP measures body bytes only; disk measures the temporary work store. Headers, TCP, CPU, source copies, development and maintenance costs are not fully measured.",
+    "Source stays unchanged until independent verification and integrated tests pass. Normal restart is not crash-process reconciliation."
+  ]
+}

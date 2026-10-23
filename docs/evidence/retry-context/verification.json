@@ -1,0 +1,142 @@
+{
+  "schema": "agent-meeting/retry-context-verification@1",
+  "recordedAt": "2026-10-23T04:35:16.357508+00:00",
+  "session": {
+    "startedAt": "2026-10-23T10:04:56+07:00",
+    "deadline": "2026-10-23T11:34:56+07:00",
+    "endedAt": "2026-10-23T11:35:16+07:00",
+    "actualSeconds": 5420.357,
+    "status": "completed"
+  },
+  "head": "f415cf46961ac43301083c4784fb216b68e87ac6",
+  "sourceSealSha256": "4926c66fb3381623b97a6e5e64d8321f051f36ed7b0f4bc33ca960400b9e8f62",
+  "sourceHashes": {
+    "src/work.js": "f763e29cbd2a6774df6a6c19a2d3a0ec2f3513a3cc67053a580609f3a36c4d61",
+    "src/runtime.js": "32eb7100b33b4754c76b8a185fef314acd22e3db61e94961c44661b5faaff5b5",
+    "src/ui/workspace.js": "f5bf20fd2bc14f2903d2da4e57658e448e479e1a06da03e926a18bb621b1bc50",
+    "src/ui/i18n.js": "dde85b92a039b2c171b568332fcf1fee099b00c3690c26191bd84d327f5b8f11"
+  },
+  "node": "v22.22.1",
+  "fullRegression": {
+    "tests": 454,
+    "pass": 454,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "files": 41,
+    "elapsedSeconds": 101.84,
+    "command": "systemd-run --user --scope -q -p MemoryMax=1200M -p MemorySwapMax=0 timeout 900 npm test",
+    "rawLog": "/tmp/am-feedback-90m-20261023-100456/full-tests-final.txt",
+    "rawLogSha256": "8ea4577ca3d4953078fc1108a548920863db6d3c6db6603c7e20daa66012c767",
+    "rawLogIsDurable": false
+  },
+  "workflow": {
+    "commonInputHashesMatch": true,
+    "finalDirectManagedOutputHashesMatch": true,
+    "beforeRetryStatus": "failed",
+    "beforeManualStatus": "integrated",
+    "afterStatus": "integrated",
+    "manualDiagnosticTransfersBefore": 1,
+    "manualDiagnosticTransfersAfter": 0,
+    "additionalConfiguresBefore": 1,
+    "additionalConfiguresAfter": 0,
+    "requirementRevisionBeforeManual": 3,
+    "requirementRevisionAfter": 2,
+    "sourceAndCandidateTestExitCodes": [
+      0,
+      0
+    ]
+  },
+  "measurements": {
+    "directMs": 694.178255,
+    "managedMs": 1237.741696,
+    "singleDirectFirstSample": true,
+    "firstPromptBytes": 1263,
+    "retryPromptBytes": 3056,
+    "addedRetryPromptBytes": 1793,
+    "diagnosticBytes": 1505,
+    "httpRequests": 14,
+    "requestBodyBytes": 893,
+    "responseBodyBytes": 283119,
+    "workStore": {
+      "files": 6,
+      "bytes": 139218
+    },
+    "productionByteDelta": 4539,
+    "humanTimeMs": null,
+    "modelTokens": null,
+    "billingUsd": null,
+    "developmentResources": null,
+    "directArm": "Direct Node subprocess fixture; no native coding CLI/model invocation"
+  },
+  "browser": {
+    "finalSourceFlowPassed": true,
+    "localeThemeWidthCases": 12,
+    "uiBundleUnchangedSinceMatrix": true,
+    "draftLanguageRoundtrip": true,
+    "keyboardHeadingToRefresh": true,
+    "expiryGuardAndRecovery": true,
+    "finalTaskId": "meeting-e5b450dedda4688c00359b793f073b6c",
+    "finalRunIds": [
+      "b4455d6d-a199-47f7-ad28-0894621ab99d",
+      "ac8ef581-62e0-4f81-91cd-c8b151f0a2c2"
+    ],
+    "finalImage": {
+      "file": "browser-final-en.jpg",
+      "format": "JPEG",
+      "width": 1280,
+      "height": 812,
+      "sha256": "1d360b495efc7174aa1c96bd387b760313e255dd0c1d5d64c0a6224e2225a642"
+    }
+  },
+  "package": {
+    "files": 68,
+    "bytes": 376271,
+    "tarSha256": "362d6e3b40d4ed34ce5c670525c628036801d151576d274e0220979c5727331b",
+    "published": false
+  },
+  "scope": {
+    "fixtureModelCalls": 0,
+    "additionalAgentCalls": 0,
+    "repositoryCommitted": false,
+    "pushedMergedReleased": false,
+    "globalSettingsEdited": false,
+    "userApp3000Touched": false
+  },
+  "unknowns": [
+    "Model debugging quality and multi-provider efficacy",
+    "Human effort and UX acceptance",
+    "Total tokens, billing and long-running model operation",
+    "Remote machine, crash reconciliation and multi-file integration",
+    "Node18/20 and new remote CI runs",
+    "Native coding CLI/model A/B under the same acceptance"
+  ],
+  "cleanup": {
+    "recordedAt": "2026-10-23T04:27:47.012015+00:00",
+    "ownedPreviewPidsStopped": [
+      43602,
+      54706
+    ],
+    "portsClosed": {
+      "3181": true,
+      "3182": true
+    },
+    "fixtureDataPreservedUnder": "/tmp/am-feedback-90m-20261023-100456",
+    "dataDurabilityPromised": false,
+    "browserTabClosed": true,
+    "viewportOverrideReset": true,
+    "preview3181ThemeRestoredToSystem": true,
+    "userApp3000Touched": false
+  },
+  "preservation": {
+    "initialUnrelatedFilesUnchanged": 15,
+    "initialDirtyDocsOnlyInsertions": 3,
+    "headUnchanged": true
+  },
+  "artifactChecks": {
+    "acceptanceLinksExist": true,
+    "allEvidenceJsonValid": true,
+    "diffWhitespaceCheckPassed": true,
+    "imageFormatCorrected": "Browser screenshot API returned JPEG bytes; renamed misleading .png outputs to .jpg without altering pixels."
+  }
+}

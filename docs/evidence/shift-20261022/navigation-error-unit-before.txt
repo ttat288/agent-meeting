@@ -1,0 +1,76 @@
+TAP version 13
+# Subtest: a superseded navigation error cannot attach to the newer Results view
+not ok 1 - a superseded navigation error cannot attach to the newer Results view
+  ---
+  duration_ms: 7.170673
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/ui-work-navigation.test.js:11:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+    + [
+    +   'Old Plan read failed'
+    + ]
+    - []
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+    0: 'Old Plan read failed'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/ui-work-navigation.test.js:13:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: a navigation error after returning to conversation cannot create a hidden alert
+not ok 2 - a navigation error after returning to conversation cannot create a hidden alert
+  ---
+  duration_ms: 1.626399
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/ui-work-navigation.test.js:15:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+    + [
+    +   'Old read failed'
+    + ]
+    - []
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+    0: 'Old read failed'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/ui-work-navigation.test.js:16:204)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: the active navigation failure remains visible and never renders success
+ok 3 - the active navigation failure remains visible and never renders success
+  ---
+  duration_ms: 1.516975
+  type: 'test'
+  ...
+# Subtest: a superseded success cannot rewind current work or focus
+ok 4 - a superseded success cannot rewind current work or focus
+  ---
+  duration_ms: 0.936682
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 2
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 164.488861

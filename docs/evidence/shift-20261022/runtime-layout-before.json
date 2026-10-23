@@ -1,0 +1,45 @@
+{
+  "cases": [
+    {
+      "expandedFields": 9,
+      "forms": 3,
+      "locale": "vi",
+      "observationTop": 2010,
+      "pageHeight": 2216,
+      "scrollWidth": 360,
+      "visibleTextLength": 2291,
+      "width": 375
+    },
+    {
+      "expandedFields": 9,
+      "forms": 3,
+      "locale": "vi",
+      "observationTop": 1647,
+      "pageHeight": 2070,
+      "scrollWidth": 753,
+      "visibleTextLength": 2291,
+      "width": 768
+    },
+    {
+      "expandedFields": 9,
+      "forms": 3,
+      "locale": "vi",
+      "observationTop": 1573,
+      "pageHeight": 1996,
+      "scrollWidth": 1265,
+      "visibleTextLength": 2291,
+      "width": 1280
+    }
+  ],
+  "fixture": "host_consistency_preview_1234 config revision3; one deterministic fixture-model observation plus two executable checks",
+  "scope": "Layout baseline after observation deduplication; no native model invocation",
+  "sourceCommit": "6bddfa2aa388d1ff4ede2c2ff63cb2da1d784249",
+  "uiSha256": {
+    "src/ui/workspace.js": "9a0d3866ddbf82f998a2f4c75e0da35c541cfba42f1cf1805c7cb50f5b76730d",
+    "src/ui/workspace.css": "77a0f02e7930632815faa638cc8fde68207a4c18762284c031f8512e6785aba8"
+  },
+  "measurementNotes": [
+    "Positions are document coordinates from bounding rect + scrollY; not time or human-task performance",
+    "Field-count baseline used positive bounds; for collapsed-details after cases exclude closed ancestor explicitly, because Chromium may retain child bounds"
+  ]
+}

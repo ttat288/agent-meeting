@@ -1,0 +1,28 @@
+{
+  "recordedAt": "2026-10-22T20:16:22.340417+00:00",
+  "baseCommit": "4c586299f86acbbd17de1abbc537d91740f19598",
+  "testedWorkingTreeChanges": [
+    "src/ui/workspace.js",
+    "test/ui-admin-state.test.js"
+  ],
+  "counts": {
+    "tests": 388,
+    "pass": 388,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "testFiles": 35,
+  "sourceSha256": {
+    "src/ui/workspace.js": "f21cd09b1e2d5d3c9dbb4d93bc2c7a3b4c433577913f0f870751df337d2b0d17",
+    "src/ui/workspace.css": "ce244e910a65391b049efd7a41f3f45e5ad996cbf566c6472b87fd011e477893",
+    "src/server.js": "fb021ebf152ab76bced7420f30c1bdaa4b90b014a77c222421d0631662a77652",
+    "src/work.js": "8a6f324a48c87916e98315ea472154d1655fa11fdb86551c8469f904108eda5e",
+    "test/ui-admin-state.test.js": "90b0acfb9a5194689ffdf39f566bea76990524525509e8d93766cae00473814d"
+  },
+  "command": "systemd-run --user --scope -q -p MemoryMax=1200M -p MemorySwapMax=0 timeout 900 npm test",
+  "limits": [
+    "Source/test unchanged while full suite ran; browser evidence separately sealed",
+    "Controlled adapter/HTTP/DOM functions and real Node/CLI tests, not model efficacy or billing evidence"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "recordedAt": "2026-10-22T18:50:03.724002+00:00",
+  "metrics": {
+    "calls": 10,
+    "active": 0,
+    "modelCalls": 0,
+    "fixture": "deterministic 3-second probe runner",
+    "pid": 131801,
+    "bootedAt": "2026-10-22T18:28:25.391Z",
+    "sourceHashes": {
+      "src/work.js": "511d31a3c34b9834e52a1eee424d8ff0fb4b0da658acd155c9084b96c87670c2",
+      "src/server.js": "fb021ebf152ab76bced7420f30c1bdaa4b90b014a77c222421d0631662a77652",
+      "src/ui/workspace.js": "9a0d3866ddbf82f998a2f4c75e0da35c541cfba42f1cf1805c7cb50f5b76730d"
+    }
+  },
+  "limits": [
+    "Counters span earlier fixture boots/source refinements; not all calls use one hash",
+    "Private fixture preview stopped after browser checks; no model calls"
+  ]
+}

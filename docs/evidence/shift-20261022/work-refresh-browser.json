@@ -1,0 +1,52 @@
+{
+  "at": "2026-10-22T20:49:24.412Z",
+  "source": "working tree after be737f7; full-test source seal follows",
+  "checks": [
+    {
+      "case": "typing during delayed refresh",
+      "state": {
+        "at": "2026-10-22T20:48:25.255Z",
+        "focus": "edit-091a4474-e580-4925-b73c-81e3e8bef9b8-acceptance",
+        "notice": "Đã đọc cập nhật; giữ nguyên view và phần đang nhập. Làm mới khi sẵn sàng xem dữ liệu hiện tại.",
+        "open": true,
+        "value": "New draft during refresh stays visible and focused"
+      }
+    },
+    {
+      "case": "old refresh after navigation to Results",
+      "state": {
+        "cards": 1,
+        "focus": "BODY",
+        "hash": "#results",
+        "notice": "Đã đọc cập nhật; giữ nguyên view và phần đang nhập. Làm mới khi sẵn sàng xem dữ liệu hiện tại.",
+        "title": "Kết quả (1)"
+      }
+    },
+    {
+      "case": "fresh refresh restores heading focus",
+      "state": {
+        "focus": "workTitle",
+        "title": "Kết quả (1)"
+      }
+    },
+    {
+      "case": "remote read failure keeps work results",
+      "state": {
+        "cards": 1,
+        "title": "Kết quả (1)",
+        "warning": "Chưa tải được dữ liệu worker: Controlled remote refresh failure"
+      }
+    },
+    {
+      "case": "retry clears worker warning and retains Results",
+      "state": {
+        "cards": 1,
+        "focus": "workTitle",
+        "runWarning": "Cancelled fixture",
+        "title": "Kết quả (1)",
+        "workerWarning": null
+      }
+    }
+  ],
+  "scope": "Loopback3156 own-store fixture; remote gates and503 only. No native model or new run. Initial recovery selector matched nested Cancelled fixture run warning; direct-child workerWarning corrected, runWarning remains."
+}

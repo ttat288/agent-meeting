@@ -1,0 +1,60 @@
+TAP version 13
+# Subtest: CLI SIGINT drains verify before process exit
+not ok 1 - CLI SIGINT drains verify before process exit
+  ---
+  duration_ms: 250.330681
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/cli-shutdown.test.js:38:80'
+  failureType: 'testCodeFailure'
+  error: |-
+    CLI exit must follow persisted cancellation
+    + actual - expected
+    
+    + 'verifying'
+    - 'cancelled'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'cancelled'
+  actual: 'verifying'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/cli-shutdown.test.js:44:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: CLI SIGTERM drains integrate before process exit
+not ok 2 - CLI SIGTERM drains integrate before process exit
+  ---
+  duration_ms: 188.702795
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/cli-shutdown.test.js:38:80'
+  failureType: 'testCodeFailure'
+  error: |-
+    CLI exit must follow persisted cancellation
+    + actual - expected
+    
+    + 'integrating'
+    - 'cancelled'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'cancelled'
+  actual: 'integrating'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/cli-shutdown.test.js:44:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 587.628549

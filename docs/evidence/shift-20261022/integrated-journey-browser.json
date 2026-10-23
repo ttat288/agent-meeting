@@ -1,0 +1,55 @@
+{
+  "at": "2026-10-22T21:05:32.206Z",
+  "appSourceCommit": "477c6b723088cb841a7a4ae7f15dbac3d231a5ef",
+  "taskId": "meeting-4b2b32ee60069e8709281a3d9d291c65",
+  "runId": "265ce1c9-7b10-433e-9dbb-2d52352ecc60",
+  "checks": [
+    {
+      "case": "expired access blocks dispatch and keeps profile",
+      "state": {
+        "at": "2026-10-22T21:01:57.063Z",
+        "error": "Chưa thể hoàn thành thao tácChưa xác nhận quyền truy cập runtime hoặc task không đáp ứng quy tắc chia việc. Vào Quản trị → Agent & runtime để kiểm tra hồ sơ.",
+        "profile": "opus-claude",
+        "taskId": "meeting-4b2b32ee60069e8709281a3d9d291c65"
+      }
+    },
+    {
+      "case": "explicit fixture probe restores current config3 access",
+      "state": {
+        "at": "2026-10-22T21:02:27.338Z",
+        "returnUrl": "/m/host_consistency_preview_1234?view=execute&lang=vi#execute",
+        "text": "Quản trị\n\nAgent & runtime\nCấu hình v3\nRuntime trên máy\nKiểm tra runtime\n\nclaude\n2.1.289 (Claude Code)\n\nagy\n1.4.5\n\nCó executable chưa chứng minh truy cập model. Xem quan sát trên từng hồ sơ.\n\nDữ liệu chẩn đoán\nHồ sơ model / runtime\n\nProbe gọi model thật và có thể phát sinh phí CLI; timeout 60 giây. Quan sát truy cập có hạn 30 phút.\n\nFlash / Gemini CLI\nĐã tắt\n\nChưa đặt model ID · Gemini CLI\n\nTruy cập chưa kiểm tra\nBật và xác minh model trước\nSửa ánh xạ\nAstra / Codex\nĐã tắt\n\nChưa đặt model ID · Codex\n\nTruy cập chưa kiểm tra\nBật và xác minh model trước\nSửa ánh xạ\nOpus / Claude Code\nĐã bật\n\nfixture-model · Claude Code\n\nĐã đối chiếu model\n\nModel báo lại: fixture-model · 2026-10-22T21:02:15.054Z\n\nKiểm tra truy cập model (gọi CLI thật)\nSửa ánh xạ"
+      }
+    },
+    {
+      "case": "reported run visible before independent verification",
+      "state": "Final integrated-source fixture: correct sum(2,3) to5 with independent tests; no model claim\n\nViệc #2 · Dev\n\nChờ kiểm chứng\nLần chạy 1\nAgent đã báo cáo\n\nBáo cáo đã sẵn sàng. Cần test độc lập trước khi nhận kết quả.\n\nDeterministic Node subprocess fixture; not a paid AI model.\n\nTệp thay đổi: sum.js\n\nKiểm chứng bằng Node test\nBằng chứng và tệp bàn giao\nNguồn hội thoại\nChi tiết task"
+    },
+    {
+      "case": "independent candidate verification passed",
+      "state": "Final integrated-source fixture: correct sum(2,3) to5 with independent tests; no model claim\n\nViệc #2 · Dev\n\nChờ tích hợp\nLần chạy 1\nĐã kiểm chứng\n\nTest đã đạt. Tích hợp sẽ kiểm tra lại trên checkout nguồn.\n\nDeterministic Node subprocess fixture; not a paid AI model.\n\nTệp thay đổi: sum.js\n\nTest đạt: 1/1\n\nTích hợp kết quả đã kiểm chứng\nBằng chứng và tệp bàn giao\nNguồn hội thoại\nChi tiết task"
+    },
+    {
+      "case": "integrated result survives reload with original source link",
+      "state": "Final integrated-source fixture: correct sum(2,3) to5 with independent tests; no model claim\n\nViệc #2 · Dev\n\nĐã tích hợp và test\nLần chạy 1\nĐã tích hợp\n\nDeterministic Node subprocess fixture; not a paid AI model.\n\nTệp thay đổi: sum.js\n\nTest đạt: 2/2\n\nBằng chứng và tệp bàn giao\nNguồn hội thoại\nChi tiết task"
+    },
+    {
+      "case": "handoff and artifact links retain the same run",
+      "links": [
+        {
+          "href": "/api/host/host_consistency_preview_1234/work/runs/265ce1c9-7b10-433e-9dbb-2d52352ecc60/handoff",
+          "text": "Tải bản bàn giao"
+        },
+        {
+          "href": "/api/host/host_consistency_preview_1234/work/runs/265ce1c9-7b10-433e-9dbb-2d52352ecc60/artifact?path=sum.js",
+          "text": "Tải kết quả: sum.js"
+        },
+        {
+          "href": "#message-45",
+          "text": "Nguồn hội thoại"
+        }
+      ]
+    }
+  ],
+  "scope": "Fresh source fixture via real UI and isolated Node subprocess, zero native model. Input red, candidate verification, source integration and developer independent test; no human/model quality or8h claim. One guessed Integrate label wait failed before reading the actual DOM label; no action or mutation from that wait."
+}

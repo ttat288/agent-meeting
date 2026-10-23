@@ -1,0 +1,13 @@
+{
+  "node": "22.22.1",
+  "files": 25,
+  "tests": 252,
+  "failed": 0,
+  "limits": {
+    "rss": "1200M",
+    "swap": 0,
+    "fileTimeoutSeconds": 150,
+    "totalTimeoutSeconds": 900,
+    "heapMiB": 768
+  }
+}

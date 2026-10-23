@@ -1,0 +1,24 @@
+{
+  "recordedAt": "2026-10-23T04:02:32.316Z",
+  "fixture": true,
+  "modelCalls": 0,
+  "taskId": "7472cf9d-d8c3-4309-a277-c6faa6506ecf",
+  "observedAt": "2026-10-23T03:31:03.498Z",
+  "expiresAt": "2026-10-23T04:01:03.498Z",
+  "ageMsAtRejection": 1888818,
+  "blockedResponse": {
+    "status": 409,
+    "data": {
+      "error": "Runtime access is unverified or routing constraints reject this task; probe the profile first"
+    }
+  },
+  "runCountBefore": 5,
+  "runCountAfterBlockedUiAndApi": 5,
+  "requirementRevision": 1,
+  "recoveryProbe": {
+    "checkedAt": "2026-10-23T04:02:32.294Z",
+    "reportedModel": "fixture-csv",
+    "modelVerified": true
+  },
+  "sourceUnchanged": true
+}

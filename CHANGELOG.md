@@ -1,5 +1,67 @@
 # Changelog
 
+## Unreleased — retry with independent failure context
+
+- Explicit retries receive bounded failed-check diagnostics from the latest attempt when task requirements, canonical source path, Git base and source snapshot still match. New attempts keep a fresh source copy; no automatic retry or test acceptance.
+- Retain original evidence and record retry provenance, payload hash, truncation and possible-secret omission. Optional feedback is omitted when it would exceed the existing runtime prompt limit; Results explains that limit.
+- Add a CSV recovery fixture with a direct CLI baseline, failed verification, restart and tests on integrated source. Scripted participants do not establish AI debugging quality, multi-provider value or billing savings.
+- Language switching keeps the chosen locale in the URL so repeated switches work without a manual reload, including when browser storage is blocked; current view and other query parameters are preserved.
+
+## Unreleased — English decision/task capture
+
+- Accept `CONCLUSION:` and `TASK:` alongside Vietnamese markers, preserving decision cleanup, task owners, source links and restart identity. The pinned preview still requires Vietnamese markers.
+
+## Unreleased — reproducible first result
+
+- Lead English/Vietnamese READMEs with a shared decision → owned tasks → conversation-source example. Add a no-model browser trial pinned to the published preview commit; move benchmark details into the English showcase and distinguish draft PR, historical media and local additions.
+- Add `tools/try-workflow.js`: disposable no-model API walkthrough with direct fixture comparison, conflict recovery, verification/integration and restart evidence. Measurements describe machinery only; model efficacy and human value remain unproven.
+
+## Unreleased — live work monitoring and revision guards
+
+- Plan/Execute/Results follow external run updates using conditional reads. Active edits, evidence and keyboard focus defer replacement; offline results remain visible with bounded retry.
+- Human chair stays the default, with optional PM controls/history in Options. PM connection errors clear on recovery without erasing action errors; terminal invitation words use POSIX quoting.
+- CLI SIGINT/SIGTERM and exit-on-end drain managed work and cancellation/rollback before exiting. Closed managers reject new dispatch instead of starting work during shutdown.
+- Slow verification/integration can be cancelled from Results; late completions preserve drafts opened in another view. PM updates preserve supervision focus and unsent drafts; director stop controls take priority over pending ordinary requests.
+- Concurrent initial work navigation awaits the same load promise. Explicit retry restores content focus only when the view and user interaction still match.
+- Frozen writer-input reproduction now isolates and checks a single shallow base commit, preventing later solution history from entering either prepared Git store. Preparationv2 keeps frozen source bytes while explicitly changing Git metadata.
+- Keyboard work-view navigation focuses its heading; background updates retain heading focus while preserving edits and outside navigation controls.
+- Session notices and send toasts reserve layout space so the focused message composer stays visible; feedback temporarily reduces content height.
+- Superseded navigation read failures cannot attach alerts to a newer work view or the conversation; current-view failures still surface.
+- Failed actions returning to a hidden work view use the existing notice channel while preserving chat focus; current-view errors retain inline recovery.
+- Manual work refresh preserves edits made while reads are pending and cannot replace a view opened afterward. Fresh refresh restores heading focus.
+- Late task saves preserve newer edits, their viewed revision and chat focus; explicit updates retain the previous draft for read-only recovery.
+- Task forms expose saved differences from the latest older draft for read-only recovery after a requirement change; no automatic replay or merge. Malformed or unavailable browser storage falls back to current server requirements.
+- Routing and execution use the freshest valid access observation across rooms sharing a catalog; a newer failed probe cannot be masked by an older room-local success. Duplicate local/shared copies appear once.
+- Small-screen administration uses one native section chooser; desktop keeps its sidebar. Both share the same section URLs and keyboard focus behavior.
+- Read-only host refresh preserves enrollment drafts and keyboard focus, ignores older snapshots and clears recovered refresh errors.
+- Late configuration saves preserve newer input and the viewed CAS revision. Explicit navigation/reload applies the acknowledged snapshot; import/reset/mapping responses share the guard. New notices keep their own display timer.
+- Administration retains the selected section across reload and language changes. Runtime views distinguish observations not loaded from access not tested, allowing a read-only check before a new paid probe.
+- Model-access badges expire locally at the observation deadline, preserving edits and diagnostic focus without automatic network requests or paid probes.
+- Runtime administration separates executable checks from dated model observations. Mapping fields and raw diagnostics open on demand; unavailable prerequisites are visible, and mapping saves retain keyboard context.
+- Pending model-access probes share one active invocation per host/profile/config revision, survive admin navigation, preserve edited forms and reject stale viewed mappings. Late observations cannot replace newer configuration evidence; shutdown aborts and drains probes.
+- Live renders retain profile choices within the same task/config revision. Web Run fences both viewed revisions before dispatch, including after another client probes a remapped profile.
+- Source inventories preserve prototype-named files in both local and remote worker copies. Rollback preserves concurrent chmod/path replacements and records a conflict for manual reconciliation.
+- Runtime and test streams retain Vietnamese/emoji across UTF-8 chunks and bounded report/log truncation.
+- Runtime evidence keeps negative costs and ambiguous multiple-model identity unknown; agy SUCCESS with denied_actions is a permission failure with an actionable diagnostic. Team checkpoint/swap/activation and completion reports check Git HEAD as well as file snapshots.
+- Reproducible local HTTP benchmark publishes raw samples, polling overhead and failure cases. Direct model pilot failed OAuth authentication; model efficacy, billing and eight-hour runtime remain unverified.
+
+## Unreleased — PM operator
+
+- Checkpoints accept an optional structured continuation delta for failed attempts and blockers. Omitted records remain unknown; the local canonical carry experiment checks revisions/source/WIP and measures transport overhead without enabling a controller or making model-cost claims.
+
+- Workspace chưa release: PM chờ sự kiện bằng client code; lead capability riêng, plan/readiness approval và same-slot managed swap có checkpoint/ACK/process lifecycle. Một task/slot A, Linux/bwrap, tích hợp một file; fixture có evidence, chưa nghiệm thu model thật/UI team hoặc chi phí.
+
+- Choose human or agent chair; dedicated local PM invitation/confirmation and private director channel.
+- Scoped goal/grant and canonical task/run lifecycle through independent verification, single-file integration and evidence report; pause/revoke/takeover and stale goal/lease guards.
+- No automatic model launch or spend; real-model UX, usage and billing comparison remain unverified.
+- Optional PM state/wait cursor avoids repeated snapshots and waits for changes already received; no billing savings claim.
+
+## Chưa phát hành — CLI, skill graph và context
+
+- `doctor` chỉ đọc, ẩn địa chỉ/mã phòng; phân biệt có executable/bridge với kết nối và quyền model thực tế.
+- `skills list/show/inspect`: skill Agent Meeting đóng gói và catalog local có giới hạn; graph liên kết thật tới references/scripts/assets, hash nguồn, đọc từng tài liệu theo nhu cầu. Không tự cài skill, chạy script hoặc sửa settings.
+- `history(offset, limit, maxChars)` phân trang theo tin được phép xem, giữ tin nguyên vẹn và cursor wait; lời gọi cũ vẫn trả toàn bộ. Sửa diễn đạt chi phí long-poll; có benchmark tokenizer local và cả ca overhead.
+
 ## Chưa phát hành — logo Briefcase
 
 - Thay Convergence bằng icon cặp công sở từ SVG người dùng chọn; đồng bộ README Anh/Việt, favicon/header, bộ SVG/PNG/ICO/ICNS.

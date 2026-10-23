@@ -1,0 +1,279 @@
+{
+  "at": "2026-10-22T21:22:32.536Z",
+  "baseCommit": "23bd7e8",
+  "source": "working tree navigation and background heading focus guards",
+  "checks": [
+    {
+      "case": "initial load",
+      "state": {
+        "focus": "workTitle",
+        "tag": "H1",
+        "title": "Plan (4)"
+      }
+    },
+    {
+      "case": "Enter Execute",
+      "state": {
+        "focus": "workTitle",
+        "hash": "#execute",
+        "title": "Execute (4)"
+      },
+      "nextTab": {
+        "tag": "BUTTON",
+        "text": "Refresh"
+      }
+    },
+    {
+      "case": "Enter Results",
+      "state": {
+        "focus": "workTitle",
+        "hash": "#results",
+        "title": "Results (1)"
+      },
+      "nextTab": {
+        "tag": "BUTTON",
+        "text": "Refresh"
+      }
+    },
+    {
+      "case": "Enter Plan",
+      "state": {
+        "focus": "workTitle",
+        "hash": "#plan",
+        "title": "Plan (4)"
+      },
+      "nextTab": {
+        "tag": "BUTTON",
+        "text": "Refresh"
+      }
+    },
+    {
+      "case": "background poll Plan4\u21925 retains heading focus",
+      "before": {
+        "at": "2026-10-22T21:19:58.792Z",
+        "focus": "workTitle",
+        "title": "Plan (4)"
+      },
+      "after": {
+        "at": "2026-10-22T21:20:13.426Z",
+        "focus": "workTitle",
+        "tag": "H1",
+        "title": "Plan (5)"
+      }
+    },
+    {
+      "case": "keyboard route matrix",
+      "state": {
+        "at": "2026-10-22T21:22:12.982Z",
+        "focus": "workTitle",
+        "hash": "#plan",
+        "locale": "vi",
+        "tag": "H1",
+        "title": "K\u1ebf ho\u1ea1ch (5)",
+        "width": 375
+      },
+      "nextTab": {
+        "tag": "BUTTON",
+        "text": "L\u00e0m m\u1edbi"
+      }
+    },
+    {
+      "case": "keyboard route matrix",
+      "state": {
+        "at": "2026-10-22T21:22:13.217Z",
+        "focus": "workTitle",
+        "hash": "#execute",
+        "locale": "vi",
+        "tag": "H1",
+        "title": "Th\u1ef1c hi\u1ec7n (5)",
+        "width": 375
+      },
+      "nextTab": {
+        "tag": "BUTTON",
+        "text": "L\u00e0m m\u1edbi"
+      }
+    },
+    {
+      "case": "keyboard route matrix",
+      "state": {
+        "at": "2026-10-22T21:22:13.449Z",
+        "focus": "workTitle",
+        "hash": "#results",
+        "locale": "vi",
+        "tag": "H1",
+        "title": "K\u1ebft qu\u1ea3 (1)",
+        "width": 375
+      },
+      "nextTab": {
+        "tag": "BUTTON",
+        "text": "L\u00e0m m\u1edbi"
+      }
+    },
+    {
+      "case": "keyboard route matrix",
+      "state": {
+        "at": "2026-10-22T21:22:13.639Z",
+        "focus": "workTitle",
+        "hash": "#plan",
+        "locale": "vi",
+        "tag": "H1",
+        "title": "K\u1ebf ho\u1ea1ch (5)",
+        "width": 1280
+      },
+      "nextTab": {
+        "tag": "BUTTON",
+        "text": "L\u00e0m m\u1edbi"
+      }
+    },
+    {
+      "case": "keyboard route matrix",
+      "state": {
+        "at": "2026-10-22T21:22:13.815Z",
+        "focus": "workTitle",
+        "hash": "#execute",
+        "locale": "vi",
+        "tag": "H1",
+        "title": "Th\u1ef1c hi\u1ec7n (5)",
+        "width": 1280
+      },
+      "nextTab": {
+        "tag": "BUTTON",
+        "text": "L\u00e0m m\u1edbi"
+      }
+    },
+    {
+      "case": "keyboard route matrix",
+      "state": {
+        "at": "2026-10-22T21:22:13.992Z",
+        "focus": "workTitle",
+        "hash": "#results",
+        "locale": "vi",
+        "tag": "H1",
+        "title": "K\u1ebft qu\u1ea3 (1)",
+        "width": 1280
+      },
+      "nextTab": {
+        "tag": "BUTTON",
+        "text": "L\u00e0m m\u1edbi"
+      }
+    },
+    {
+      "case": "keyboard route matrix",
+      "state": {
+        "at": "2026-10-22T21:22:14.419Z",
+        "focus": "workTitle",
+        "hash": "#plan",
+        "locale": "en",
+        "tag": "H1",
+        "title": "Plan (5)",
+        "width": 375
+      },
+      "nextTab": {
+        "tag": "BUTTON",
+        "text": "Refresh"
+      }
+    },
+    {
+      "case": "keyboard route matrix",
+      "state": {
+        "at": "2026-10-22T21:22:14.599Z",
+        "focus": "workTitle",
+        "hash": "#execute",
+        "locale": "en",
+        "tag": "H1",
+        "title": "Execute (5)",
+        "width": 375
+      },
+      "nextTab": {
+        "tag": "BUTTON",
+        "text": "Refresh"
+      }
+    },
+    {
+      "case": "keyboard route matrix",
+      "state": {
+        "at": "2026-10-22T21:22:14.770Z",
+        "focus": "workTitle",
+        "hash": "#results",
+        "locale": "en",
+        "tag": "H1",
+        "title": "Results (1)",
+        "width": 375
+      },
+      "nextTab": {
+        "tag": "BUTTON",
+        "text": "Refresh"
+      }
+    },
+    {
+      "case": "keyboard route matrix",
+      "state": {
+        "at": "2026-10-22T21:22:14.964Z",
+        "focus": "workTitle",
+        "hash": "#plan",
+        "locale": "en",
+        "tag": "H1",
+        "title": "Plan (5)",
+        "width": 1280
+      },
+      "nextTab": {
+        "tag": "BUTTON",
+        "text": "Refresh"
+      }
+    },
+    {
+      "case": "keyboard route matrix",
+      "state": {
+        "at": "2026-10-22T21:22:15.156Z",
+        "focus": "workTitle",
+        "hash": "#execute",
+        "locale": "en",
+        "tag": "H1",
+        "title": "Execute (5)",
+        "width": 1280
+      },
+      "nextTab": {
+        "tag": "BUTTON",
+        "text": "Refresh"
+      }
+    },
+    {
+      "case": "keyboard route matrix",
+      "state": {
+        "at": "2026-10-22T21:22:15.324Z",
+        "focus": "workTitle",
+        "hash": "#results",
+        "locale": "en",
+        "tag": "H1",
+        "title": "Results (1)",
+        "width": 1280
+      },
+      "nextTab": {
+        "tag": "BUTTON",
+        "text": "Refresh"
+      }
+    },
+    {
+      "case": "Back to Execute",
+      "state": {
+        "focus": "workTitle",
+        "hash": "#execute",
+        "title": "Execute (5)"
+      }
+    },
+    {
+      "case": "reload Execute",
+      "state": {
+        "focus": "workTitle",
+        "hash": "#execute",
+        "title": "Execute (5)"
+      }
+    }
+  ],
+  "scope": "Actual keyboard/DOM focus;12routecases VI/EN375/1280 plus initial/poll/Back/reload. Two no-dispatch API tasks changed fixture3\u21925. FourTabs\u2192oneTab applies to the no-pending-update header; not human-time, screenreader or model benchmark. First matrix chained goto+reload and an Enter did not navigate; not a pass. Rechecked href/focus/load, then repeated matrix on stable documents without overlapping navigation.",
+  "sourceHashes": {
+    "src/ui/workspace.js": "a9729e5a24e67b2b8375669db4d30002f7ce431dee716d01f3718e87040cc74c",
+    "src/ui/workspace.css": "9c5c34ee23cc1e5b04151a3117d6029904ada3182c942951b1ef1d34ff7b9a1a",
+    "src/ui/app.css": "126c32c9879a71c11e74f8a05df3caf67b072c1fa54b9bdae45f7fa8039fa67f"
+  }
+}

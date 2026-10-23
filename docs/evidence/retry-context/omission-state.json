@@ -1,0 +1,39 @@
+{
+  "recordedAt": "2026-10-23T03:33:00.409Z",
+  "fixture": true,
+  "modelCalls": 0,
+  "taskId": "673eeb39-0c32-487e-bf29-d0110042aaf3",
+  "firstRunId": "e13eff09-d344-406d-9e8c-e0289bafd881",
+  "secondRunId": "f50985c7-31b9-4bef-abeb-36f51f0c3b00",
+  "firstStatus": "failed",
+  "secondStatus": "reported",
+  "retryContext": {
+    "fromRunId": "e13eff09-d344-406d-9e8c-e0289bafd881",
+    "omitted": "prompt-limit",
+    "bytes": 0
+  },
+  "requirementRevision": 1,
+  "sourceUnchanged": true,
+  "postCheck": {
+    "recordedAt": "2026-10-23T04:04:58.612Z",
+    "status": "failed",
+    "evidence": [
+      {
+        "command": [
+          "/usr/bin/node",
+          "--max-old-space-size=256",
+          "--test",
+          "--test-timeout=20000",
+          "test/csv-cell.test.js"
+        ],
+        "exitCode": 1,
+        "timeout": false,
+        "cancelled": false,
+        "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.358358\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.156457\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nnot ok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 1.262874\n  type: 'test'\n  location: '/tmp/am-feedback-90m-20261023-100456/preview/work/cf0bbeb7e3ba22988aacfa70a54abea7d762162139884cc7b19e0dcadafb6b89/runs/f50985c7-31b9-4bef-abeb-36f51f0c3b00/workspace/test/csv-cell.test.js:4:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'say \"hi\"'\n    - '\"say \"\"hi\"\"\"'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: '\"say \"\"hi\"\"\"'\n  actual: 'say \"hi\"'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-feedback-90m-20261023-100456/preview/work/cf0bbeb7e3ba22988aacfa70a54abea7d762162139884cc7b19e0dcadafb6b89/runs/f50985c7-31b9-4bef-abeb-36f51f0c3b00/workspace/test/csv-cell.test.js:4:53)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: quotes line feed\nnot ok 4 - quotes line feed\n  ---\n  duration_ms: 0.264962\n  type: 'test'\n  location: '/tmp/am-feedback-90m-20261023-100456/preview/work/cf0bbeb7e3ba22988aacfa70a54abea7d762162139884cc7b19e0dcadafb6b89/runs/f50985c7-31b9-4bef-abeb-36f51f0c3b00/workspace/test/csv-cell.test.js:5:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'a\\nb' !== '\"a\\nb\"'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: |-\n    \"a\n    b\"\n  actual: |-\n    a\n    b\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-feedback-90m-20261023-100456/preview/work/cf0bbeb7e3ba22988aacfa70a54abea7d762162139884cc7b19e0dcadafb6b89/runs/f50985c7-31b9-4bef-abeb-36f51f0c3b00/workspace/test/csv-cell.test.js:5:39)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: quotes carriage return\nnot ok 5 - quotes carriage return\n  ---\n  duration_ms: 0.215475\n  type: 'test'\n  location: '/tmp/am-feedback-90m-20261023-100456/preview/work/cf0bbeb7e3ba22988aacfa70a54abea7d762162139884cc7b19e0dcadafb6b89/runs/f50985c7-31b9-4bef-abeb-36f51f0c3b00/workspace/test/csv-cell.test.js:6:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'a\\rb' !== '\"a\\rb\"'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: '\"a\\rb\"'\n  actual: 'a\\rb'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-feedback-90m-20261023-100456/preview/work/cf0bbeb7e3ba22988aacfa70a54abea7d762162139884cc7b19e0dcadafb6b89/runs/f50985c7-31b9-4bef-abeb-36f51f0c3b00/workspace/test/csv-cell.test.js:6:45)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.101926\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.090343\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.148157\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 5\n# fail 3\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 121.74031\n",
+        "elapsedMs": 219,
+        "checkedAt": "2026-10-23T04:04:58.537Z"
+      }
+    ],
+    "sourceStillUnchanged": true
+  }
+}

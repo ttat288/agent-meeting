@@ -1,0 +1,142 @@
+TAP version 13
+# Subtest: CLI SIGINT drains verify before process exit
+ok 1 - CLI SIGINT drains verify before process exit
+  ---
+  duration_ms: 2328.044716
+  type: 'test'
+  ...
+# Subtest: CLI SIGTERM drains integrate before process exit
+ok 2 - CLI SIGTERM drains integrate before process exit
+  ---
+  duration_ms: 2186.763014
+  type: 'test'
+  ...
+# Subtest: routing tool registry stays separate from room tools and auto-allow permissions
+ok 3 - routing tool registry stays separate from room tools and auto-allow permissions
+  ---
+  duration_ms: 4.588671
+  type: 'test'
+  ...
+# Subtest: queries read the same persisted configuration and revision on each call
+ok 4 - queries read the same persisted configuration and revision on each call
+  ---
+  duration_ms: 13.539193
+  type: 'test'
+  ...
+# Subtest: unknown access yields no candidate; task-supplied environment cannot self-authorize
+ok 5 - unknown access yields no candidate; task-supplied environment cannot self-authorize
+  ---
+  duration_ms: 3.25644
+  type: 'test'
+  ...
+# Subtest: standalone CLI works without a room and never creates config/default home files on lookup
+ok 6 - standalone CLI works without a room and never creates config/default home files on lookup
+  ---
+  duration_ms: 248.867186
+  type: 'test'
+  ...
+# Subtest: standalone CLI reports invalid operations without success JSON
+ok 7 - standalone CLI reports invalid operations without success JSON
+  ---
+  duration_ms: 306.218786
+  type: 'test'
+  ...
+# Subtest: stdio lookup initializes, lists bounded tools, and recommends without joining a room
+ok 8 - stdio lookup initializes, lists bounded tools, and recommends without joining a room
+  ---
+  duration_ms: 96.421094
+  type: 'test'
+  ...
+# Subtest: stdio invalid JSON and unknown tools return errors while later requests remain usable
+ok 9 - stdio invalid JSON and unknown tools return errors while later requests remain usable
+  ---
+  duration_ms: 104.289627
+  type: 'test'
+  ...
+# Subtest: saved runtime probes are shared with standalone lookup and expire on configuration revision
+ok 10 - saved runtime probes are shared with standalone lookup and expire on configuration revision
+  ---
+  duration_ms: 5.26318
+  type: 'test'
+  ...
+# Subtest: environment merging keeps the freshest dated observation and excludes stale or unmapped evidence
+ok 11 - environment merging keeps the freshest dated observation and excludes stale or unmapped evidence
+  ---
+  duration_ms: 0.666758
+  type: 'test'
+  ...
+# Subtest: host config shares catalog revision with routing and persists a model across app restart
+ok 12 - host config shares catalog revision with routing and persists a model across app restart
+  ---
+  duration_ms: 138.695439
+  type: 'test'
+  ...
+# Subtest: config CAS and invalid updates preserve the last complete snapshot
+ok 13 - config CAS and invalid updates preserve the last complete snapshot
+  ---
+  duration_ms: 26.379595
+  type: 'test'
+  ...
+# Subtest: invitation and unknown capabilities cannot read or change config, tasks, or workspace pages
+ok 14 - invitation and unknown capabilities cannot read or change config, tasks, or workspace pages
+  ---
+  duration_ms: 20.288771
+  type: 'test'
+  ...
+# Subtest: host mutations reject cross-origin browser requests before config or task writes
+ok 15 - host mutations reject cross-origin browser requests before config or task writes
+  ---
+  duration_ms: 21.337036
+  type: 'test'
+  ...
+# Subtest: tunnel and forwarded remote requests cannot access machine controls even with remoteHost enabled
+ok 16 - tunnel and forwarded remote requests cannot access machine controls even with remoteHost enabled
+  ---
+  duration_ms: 14.685577
+  type: 'test'
+  ...
+# Subtest: workspace/admin and self-hosted assets keep CSP while the existing room API still works
+ok 17 - workspace/admin and self-hosted assets keep CSP while the existing room API still works
+  ---
+  duration_ms: 16.642828
+  type: 'test'
+  ...
+# Subtest: work endpoints save actual plans without launching a process and reject malformed tasks
+ok 18 - work endpoints save actual plans without launching a process and reject malformed tasks
+  ---
+  duration_ms: 12.9502
+  type: 'test'
+  ...
+# Subtest: admin accepts the full documented config size and reset/history preserve revisions
+ok 19 - admin accepts the full documented config size and reset/history preserve revisions
+  ---
+  duration_ms: 45.085661
+  type: 'test'
+  ...
+# Subtest: conditional work reads track work, room and remote state without bypassing capability checks
+ok 20 - conditional work reads track work, room and remote state without bypassing capability checks
+  ---
+  duration_ms: 17.971983
+  type: 'test'
+  ...
+# Subtest: run HTTP fences the viewed config and requirement before any runtime dispatch
+ok 21 - run HTTP fences the viewed config and requirement before any runtime dispatch
+  ---
+  duration_ms: 56.783978
+  type: 'test'
+  ...
+# Subtest: concurrent probe HTTP callers share one same-config runner invocation
+ok 22 - concurrent probe HTTP callers share one same-config runner invocation
+  ---
+  duration_ms: 13.258163
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4659.84399

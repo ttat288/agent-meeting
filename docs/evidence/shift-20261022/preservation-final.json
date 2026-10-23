@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-22T22:38:37.823123+00:00",
+  "foundationCommit": "805f638bdd68cb08103c8c1ca93b832be54e1a69",
+  "startHead": "e292fd3833d65152ebfa6133fc27a67285b6cab9",
+  "snapshotFiles": 352,
+  "matchedFoundationFiles": 352,
+  "mismatches": [],
+  "method": "SHA-256 of Git foundation blob equals private T0 manifest for each captured file; no snapshot file bodies printed or copied into report.",
+  "limits": [
+    "Verifies captured source files, not all ignored/private user data or every machine file.",
+    "Subsequent intentional development changes are separate commits. No reset/clean or user-app update performed."
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "at": "2026-10-22T18:33:56.247Z",
+  "scope": "Disposable consistency-preview probe-delay smoke, no native model",
+  "configuredDelayMs": 300,
+  "elapsedMs": 439.25615000000005,
+  "status": 200,
+  "reportedModel": "fixture-model",
+  "sourceSha256": "c249c833562d54c259a358502dfdd006cb6c4b3a237ce29f71cdc81e9f6badfe"
+}

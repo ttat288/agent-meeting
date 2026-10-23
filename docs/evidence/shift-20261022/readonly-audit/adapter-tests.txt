@@ -1,0 +1,82 @@
+TAP version 13
+# Subtest: explicit runtime errors override a success marker and plausible prose
+ok 1 - explicit runtime errors override a success marker and plausible prose
+  ---
+  duration_ms: 1.819265
+  type: 'test'
+  ...
+# Subtest: adapter arguments require an explicit safe provider ID and bounded nonempty prompt
+ok 2 - adapter arguments require an explicit safe provider ID and bounded nonempty prompt
+  ---
+  duration_ms: 2.385762
+  type: 'test'
+  ...
+# Subtest: agy receives the entire prompt as one literal argv value and rejects writes
+ok 3 - agy receives the entire prompt as one literal argv value and rejects writes
+  ---
+  duration_ms: 0.262744
+  type: 'test'
+  ...
+# Subtest: Claude keeps prompt out of flags, isolates MCP, and limits write tool scope
+ok 4 - Claude keeps prompt out of flags, isolates MCP, and limits write tool scope
+  ---
+  duration_ms: 0.133143
+  type: 'test'
+  ...
+# Subtest: malformed JSON and nonobject JSON always fail without throwing
+ok 5 - malformed JSON and nonobject JSON always fail without throwing
+  ---
+  duration_ms: 0.377662
+  type: 'test'
+  ...
+# Subtest: runtime error variants and missing output cannot become successful reports
+ok 6 - runtime error variants and missing output cannot become successful reports
+  ---
+  duration_ms: 0.338424
+  type: 'test'
+  ...
+# Subtest: Claude envelope preserves machine model, usage, cost and a permission-denial diagnostic
+ok 7 - Claude envelope preserves machine model, usage, cost and a permission-denial diagnostic
+  ---
+  duration_ms: 0.174321
+  type: 'test'
+  ...
+# Subtest: runtime billing and model evidence stay unknown when inconsistent
+ok 8 - runtime billing and model evidence stay unknown when inconsistent
+  ---
+  duration_ms: 0.389537
+  type: 'test'
+  ...
+# Subtest: agy success keeps self-identified prose model unknown and bounds model output
+ok 9 - agy success keeps self-identified prose model unknown and bounds model output
+  ---
+  duration_ms: 0.374142
+  type: 'test'
+  ...
+# Subtest: runCli sends Claude prompt verbatim on stdin, uses shell false and never claims verified
+ok 10 - runCli sends Claude prompt verbatim on stdin, uses shell false and never claims verified
+  ---
+  duration_ms: 3.426293
+  type: 'test'
+  ...
+# Subtest: runCli rejects nonzero exit, malformed result, and permission denial despite positive success JSON
+ok 11 - runCli rejects nonzero exit, malformed result, and permission denial despite positive success JSON
+  ---
+  duration_ms: 2.291131
+  type: 'test'
+  ...
+# Subtest: agy SUCCESS with denied_actions is a permission failure, not a completed report
+ok 12 - agy SUCCESS with denied_actions is a permission failure, not a completed report
+  ---
+  duration_ms: 0.762308
+  type: 'test'
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 353.820476

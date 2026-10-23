@@ -1,0 +1,430 @@
+{
+  "checkedAt": "2026-10-23T02:46:06.414092+00:00",
+  "scope": "Documentation-only follow-up over existing local changes; no production edits, paid calls, OAuth changes, commit/push/merge/release. No full suite rerun. No human comprehension/UX acceptance claimed.",
+  "freshClone": {
+    "command": "git clone --branch codex/2026-10-22-product-hardening https://github.com/ttat288/agent-meeting.git; git checkout f415cf46961ac43301083c4784fb216b68e87ac6",
+    "head": "f415cf46961ac43301083c4784fb216b68e87ac6",
+    "productionFilesIdenticalToCurrentCheckout": 42,
+    "unpublishedWalkthroughAbsent": true
+  },
+  "remoteReadOnlyCheck": {
+    "date": "2026-10-23",
+    "method": "gh pr view 1 --json state,isDraft,headRefOid,headRefName,baseRefName; git ls-remote origin refs/heads/main refs/heads/codex/2026-10-22-product-hardening",
+    "prState": "OPEN",
+    "prDraft": true,
+    "prHead": "f415cf46961ac43301083c4784fb216b68e87ac6",
+    "main": "e292fd3833d65152ebfa6133fc27a67285b6cab9"
+  },
+  "browser": {
+    "checkedAt": "2026-10-23T02:44:36.822Z",
+    "sourceCommit": "f415cf46961ac43301083c4784fb216b68e87ac6",
+    "browser": "154.0.8037.98",
+    "checks": [
+      {
+        "lang": "en",
+        "labels": {
+          "next": "Next: invite agents",
+          "start": "\n          Start meeting\n        ",
+          "source": "Conversation source"
+        },
+        "taskCount": 3,
+        "statuses": [
+          "planned",
+          "planned",
+          "planned"
+        ],
+        "idsPreserved": true,
+        "sourceReloadBack": true,
+        "modelCalls": 0
+      },
+      {
+        "lang": "vi",
+        "labels": {
+          "next": "Tiếp: mời agent",
+          "start": "\n          Bắt đầu cuộc họp\n        ",
+          "source": "Nguồn hội thoại"
+        },
+        "taskCount": 3,
+        "statuses": [
+          "planned",
+          "planned",
+          "planned"
+        ],
+        "idsPreserved": true,
+        "sourceReloadBack": true,
+        "modelCalls": 0
+      }
+    ],
+    "errors": [],
+    "scope": "Browser executes README manual sample on a fresh published preview clone, disposable server/stores. Actual CLI startup/shutdown with disposable --config-dir/--work-dir and AGENT_MEETING_HOME for its MCP room registry. No models, screenshots or user acceptance."
+  },
+  "offlineRepeat": {
+    "recordedAt": "2026-10-23T02:42:42.117Z",
+    "sourceHashes": {
+      "tools/try-workflow.js": "c89745f02bc64d2560380fc0d1dbc0ddacf2bfcc7bfe38a3453c192674501c02",
+      "src/server.js": "fb021ebf152ab76bced7420f30c1bdaa4b90b014a77c222421d0631662a77652",
+      "src/meeting.js": "c24a73242274427ddb97207f72c941c430b7a3f9c1cc34adc84955d0e6e01294",
+      "src/work.js": "8a6f324a48c87916e98315ea472154d1655fa11fdb86551c8469f904108eda5e",
+      "src/execution-sandbox.js": "64257d7b0c9525f690e38e55b16f4bdc304d9932103152a74bc5163f9d5ca75a",
+      "src/runtime.js": "846fde47e70653363179ba90490c821c3ac4d8c832c3cada0c7a17e51dbd18de",
+      "src/config-store.js": "7c4a04fa320dc1b0a4ddd9dd5a4f3702b2a881a56d023fe68052aec6f8eb4f5c",
+      "src/routing.js": "a44f5056b2572ae4991d3af6d90cfce6b424467f71b7403e9e9406c061c2d62b",
+      "src/routing-tools.js": "b9bb77bc9023dac5c21a131aed8fb592d60c5e2dd27060f7648950ace480c3bc"
+    },
+    "modelCalls": 0,
+    "status": "integrated",
+    "verificationExitCode": 0,
+    "integrationExitCode": 0,
+    "restartPreserved": true,
+    "staleSave": {
+      "status": 409,
+      "error": "Task changed; reload before saving this draft",
+      "recovered": true
+    },
+    "identicalOutputHashes": true,
+    "directElapsedMs": 566.034656,
+    "managedElapsedMs": 1046.290164,
+    "limits": [
+      "One sample, direct first; timings include warmup/order effects, not a performance benchmark.",
+      "Managed timing includes config, conversation, recovery and restart; direct produces a tested file without linked history. Common code acceptance is identical; provenance is a separate managed check.",
+      "Known patch supplied to both deterministic arms. No semantic model evaluation, user trial, token or billing comparison.",
+      "HTTP body bytes exclude headers/TCP; disk is temporary work store only. Development, maintenance and human effort are unmeasured.",
+      "Server/API walkthrough only; no new browser, remote machine, multi-file or long-duration acceptance."
+    ],
+    "note": "Additional reproducibility check, not a new performance/model benchmark; historical raw sample in offline-workflow.json remains unchanged."
+  },
+  "localLinks": {
+    "count": 77,
+    "missing": [],
+    "links": [
+      {
+        "from": "README.md",
+        "target": "README.vi.md"
+      },
+      {
+        "from": "README.md",
+        "target": "#try-it-without-a-model"
+      },
+      {
+        "from": "README.md",
+        "target": "docs/SHOWCASE.md"
+      },
+      {
+        "from": "README.md",
+        "target": "docs/REFERENCE.md"
+      },
+      {
+        "from": "README.md",
+        "target": "docs/SHOWCASE.md#source-and-evidence"
+      },
+      {
+        "from": "README.md",
+        "target": "docs/showcase/en/005_plan.png"
+      },
+      {
+        "from": "README.md",
+        "target": "docs/SHOWCASE.md#discussion-recording"
+      },
+      {
+        "from": "README.md",
+        "target": "docs/demo.gif"
+      },
+      {
+        "from": "README.md",
+        "target": "docs/SHOWCASE.md#watch-or-read-at-your-own-pace"
+      },
+      {
+        "from": "README.md",
+        "target": "docs/SHOWCASE.md#offline-result-walkthrough"
+      },
+      {
+        "from": "README.md",
+        "target": "docs/SHOWCASE.md#offline-result-walkthrough"
+      },
+      {
+        "from": "README.md",
+        "target": "docs/SHOWCASE.md#try-the-linked-task-flow"
+      },
+      {
+        "from": "README.md",
+        "target": "#boundaries-and-data"
+      },
+      {
+        "from": "README.md",
+        "target": "docs/REFERENCE.md"
+      },
+      {
+        "from": "README.md",
+        "target": "SECURITY.md"
+      },
+      {
+        "from": "README.md",
+        "target": "docs/SECURITY-DESIGN.md"
+      },
+      {
+        "from": "README.md",
+        "target": "docs/SHOWCASE.md"
+      },
+      {
+        "from": "README.md",
+        "target": "docs/IMPLEMENTATION-STATUS.vi.md"
+      },
+      {
+        "from": "README.md",
+        "target": "docs/REFERENCE.md"
+      },
+      {
+        "from": "README.md",
+        "target": "docs/DEPLOY.md"
+      },
+      {
+        "from": "README.md",
+        "target": "docs/INSTALL.md"
+      },
+      {
+        "from": "README.md",
+        "target": "CONTRIBUTING.md"
+      },
+      {
+        "from": "README.md",
+        "target": "LICENSE"
+      },
+      {
+        "from": "README.md",
+        "target": "assets/icon.svg"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "README.md"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "#thử-không-cần-model"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "docs/SHOWCASE.md"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "docs/REFERENCE.vi.md"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "docs/SHOWCASE.md#source-and-evidence"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "docs/showcase/vi/005_plan.png"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "docs/SHOWCASE.md#discussion-recording"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "docs/demo.vi.gif"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "docs/SHOWCASE.md#watch-or-read-at-your-own-pace"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "docs/SHOWCASE.md#offline-result-walkthrough"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "docs/SHOWCASE.md#offline-result-walkthrough"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "docs/SHOWCASE.md#try-the-linked-task-flow"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "#ranh-giới-và-dữ-liệu"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "docs/REFERENCE.vi.md"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "SECURITY.md"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "docs/SECURITY-DESIGN.md"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "docs/SHOWCASE.md"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "docs/IMPLEMENTATION-STATUS.vi.md"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "docs/REFERENCE.vi.md"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "docs/DEPLOY.md"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "docs/INSTALL.md"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "CONTRIBUTING.md"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "LICENSE"
+      },
+      {
+        "from": "README.vi.md",
+        "target": "assets/icon.svg"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "showcase/en/manifest.json"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "showcase/vi/manifest.json"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "evidence/showcase/source-hashes.txt"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "#offline-result-walkthrough"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "evidence/showcase/readme-review.json"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "../README.md#try-it-without-a-model"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "../README.vi.md#thử-không-cần-model"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "REFERENCE.md"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "../SECURITY.md"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "demo.gif"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "demo.vi.gif"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "showcase/en"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "showcase/vi"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "evidence/showcase/offline-workflow.json"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "evidence/showcase/offline-repeat-check.json"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "evidence/showcase/offline-consistency-tests.txt"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "evidence/showcase/source-status.json"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "evidence/showcase/readme-review.json"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "evidence/shift-20261022/toast-burst-browser.json"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "evidence/shift-20261022/ACCEPTANCE.vi.md#benchmark-có-rawscript"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "evidence/showcase/checks.json"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "evidence/showcase/player.json"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "evidence/showcase/tests.json"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "evidence/showcase/ended-1280.png"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "evidence/showcase/ended-375.png"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "evidence/showcase/zoom200.png"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "IMPLEMENTATION-STATUS.vi.md"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "IMPLEMENTATION-STATUS.vi.md"
+      },
+      {
+        "from": "docs/SHOWCASE.md",
+        "target": "ROUTING-WORKFLOW.vi.md"
+      }
+    ]
+  },
+  "englishVietnameseCommandsAndInputIdentical": true,
+  "fileHashes": {
+    "README.md": "89fc95229fed31ce581f4af266e54d64ee8be32b479eb530ad424d99846981f6",
+    "README.vi.md": "16850e4ac6b021c0c72ae88df3ac4d5dbc8840d7d597e8263dda2a670644d9b2",
+    "docs/SHOWCASE.md": "ba381da6095c79fe168149d4def8d304045f3f8b9eaec63d866a72e35f0c8fd4",
+    "CHANGELOG.md": "f4278d87e8804c3b6f2da0349e6b3830a99dbd5e8cdcafce62d9bfa9e5695167",
+    "tools/try-workflow.js": "c89745f02bc64d2560380fc0d1dbc0ddacf2bfcc7bfe38a3453c192674501c02",
+    "docs/showcase/en/005_plan.png": "0d3d15f8544df5339bd89b86e94c3a5b8859a0996c7d4a58aff724726360b40c",
+    "docs/showcase/vi/005_plan.png": "0c765f2f8af1f2d6240eb9c72d09af735a85261b2a33117a7f834d0c8579216e",
+    "docs/demo.gif": "1141743f02c4155c2d9e42ec21f39d7de213449d7f0fa755c8add9fbd222d186",
+    "docs/demo.vi.gif": "801dd986fc0253f1fab6e8759886b03e7c64b30238c85f8802a3180f5ac89b4f",
+    "docs/showcase/en/manifest.json": "51aee5247e271a0b7d3d59f1e62cf22b29f020e47c20bc8d0cafeb3768fea232",
+    "docs/showcase/vi/manifest.json": "e232f2aa4ad4c7903d72db396e5cd05b3cc187745bdbf2ea6813a4b25019be28"
+  },
+  "limits": [
+    "External links were not all fetched; GitHub source/PR was checked with authenticated read-only CLI.",
+    "Browser checks the documented manual host sample and source navigation only, not model reasoning, full discussion or human comprehension.",
+    "CLI tested with disposable config/work directories and AGENT_MEETING_HOME registry; normal README command uses default local storage.",
+    "No new capture or broad responsive/theme UX review; historical screenshots/GIF retain their original provenance."
+  ]
+}

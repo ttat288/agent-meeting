@@ -1,0 +1,46 @@
+{
+  "source": "23bd7e8",
+  "checks": [
+    {
+      "at": "2026-10-22T21:17:15.355Z",
+      "focus": {
+        "href": "#plan",
+        "id": "",
+        "tag": "A",
+        "text": "Plan"
+      },
+      "focusSelectorCount": 1,
+      "hash": "#plan",
+      "title": "Plan (3)"
+    },
+    {
+      "tab": 1,
+      "href": "#execute",
+      "id": "",
+      "tag": "A",
+      "text": "Execute"
+    },
+    {
+      "tab": 2,
+      "href": "#results",
+      "id": "",
+      "tag": "A",
+      "text": "Results"
+    },
+    {
+      "tab": 3,
+      "href": null,
+      "id": "btnOptions",
+      "tag": "BUTTON",
+      "text": "Options"
+    },
+    {
+      "tab": 4,
+      "href": null,
+      "id": "",
+      "tag": "BUTTON",
+      "text": "Refresh"
+    }
+  ],
+  "scope": "Actual keyboard Enter on Plan then4Tabs on already-loaded session. Desired focus transition to view heading; no screenreader/human-time claim."
+}

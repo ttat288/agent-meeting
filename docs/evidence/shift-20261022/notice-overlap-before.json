@@ -1,0 +1,51 @@
+{
+  "source": "64b7ef4 with same UI hashes as477c6b7",
+  "checks": [
+    {
+      "at": "2026-10-22T21:07:33.919Z",
+      "focus": "hostMsg",
+      "focusRect": {
+        "bottom": 804,
+        "height": 112,
+        "right": 247.2890625,
+        "width": 147.2890625,
+        "x": 100,
+        "y": 692
+      },
+      "height": 812,
+      "noticeRect": {
+        "bottom": 792,
+        "height": 64,
+        "right": 355,
+        "width": 335,
+        "x": 20,
+        "y": 728
+      },
+      "overlapArea": 9426.5,
+      "text": "Đã đọc cập nhật; giữ nguyên view và phần đang nhập. Làm mới khi sẵn sàng xem dữ liệu hiện tại.",
+      "width": 375
+    },
+    {
+      "at": "2026-10-22T21:08:00.063Z",
+      "focus": "hostMsg",
+      "focusRect": {
+        "height": 88,
+        "width": 147.2890625,
+        "x": 100,
+        "y": 716
+      },
+      "height": 812,
+      "kind": "send toast",
+      "noticeRect": {
+        "height": 38,
+        "width": 161.375,
+        "x": 106.8125,
+        "y": 754
+      },
+      "overlapArea": 5338.109375,
+      "text": "Đã gửi tới các agent",
+      "width": 375
+    }
+  ],
+  "scope": "Real own-fixture notifications; rectangle overlap, no screenreader or human-time claim. No new task/native model."
+}

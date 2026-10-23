@@ -1,0 +1,79 @@
+{
+  "recordedAt": "2026-10-22T22:52:54.261350+00:00",
+  "sourceCommit": "953225b92604e706d37e49cdb6688bb94a3c4f20",
+  "runs": [
+    {
+      "runId": 39867337067,
+      "workflow": "CI",
+      "headSha": "953225b92604e706d37e49cdb6688bb94a3c4f20",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/ttat288/agent-meeting/actions/runs/39867337067",
+      "jobs": [
+        {
+          "name": "test (18)",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-22T22:46:25Z",
+          "completed_at": "2026-10-22T22:48:22Z",
+          "html_url": "https://github.com/ttat288/agent-meeting/actions/runs/39867337067/job/120132736920"
+        },
+        {
+          "name": "test (22)",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-22T22:50:11Z",
+          "completed_at": "2026-10-22T22:52:04Z",
+          "html_url": "https://github.com/ttat288/agent-meeting/actions/runs/39867337067/job/120132737091"
+        },
+        {
+          "name": "test (20)",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-22T22:48:24Z",
+          "completed_at": "2026-10-22T22:50:08Z",
+          "html_url": "https://github.com/ttat288/agent-meeting/actions/runs/39867337067/job/120132737288"
+        }
+      ]
+    },
+    {
+      "runId": 39867337059,
+      "workflow": "Desktop installer",
+      "headSha": "953225b92604e706d37e49cdb6688bb94a3c4f20",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/ttat288/agent-meeting/actions/runs/39867337059",
+      "jobs": [
+        {
+          "name": "native-smoke (ubuntu-22.04)",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-22T22:46:25Z",
+          "completed_at": "2026-10-22T22:47:08Z",
+          "html_url": "https://github.com/ttat288/agent-meeting/actions/runs/39867337059/job/120132733938"
+        },
+        {
+          "name": "native-smoke (windows-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-22T22:47:24Z",
+          "completed_at": "2026-10-22T22:47:54Z",
+          "html_url": "https://github.com/ttat288/agent-meeting/actions/runs/39867337059/job/120132734107"
+        },
+        {
+          "name": "native-smoke (macos-latest)",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-22T22:47:13Z",
+          "completed_at": "2026-10-22T22:47:22Z",
+          "html_url": "https://github.com/ttat288/agent-meeting/actions/runs/39867337059/job/120132734230"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Exact source SHA and all six leaf jobs verified via GitHub REST.",
+    "Documentation-only later commits have separate CI; this receipt does not predict their outcome.",
+    "CI tests and installer smoke do not prove native model efficacy or human UX acceptance."
+  ]
+}

@@ -1,0 +1,118 @@
+TAP version 13
+# Subtest: mọi chuỗi tr() trong app.js có bản tiếng Anh
+ok 1 - mọi chuỗi tr() trong app.js có bản tiếng Anh
+  ---
+  duration_ms: 8.984796
+  type: 'test'
+  ...
+# Subtest: mọi đoạn chữ / thuộc tính trong index.html có bản tiếng Anh
+ok 2 - mọi đoạn chữ / thuộc tính trong index.html có bản tiếng Anh
+  ---
+  duration_ms: 1.423917
+  type: 'test'
+  ...
+# Subtest: tr: tiếng Việt giữ nguyên, tiếng Anh dịch, template đổi được tham số
+ok 3 - tr: tiếng Việt giữ nguyên, tiếng Anh dịch, template đổi được tham số
+  ---
+  duration_ms: 2.89925
+  type: 'test'
+  ...
+# Subtest: parseBrief / aiPrompt tiếng Anh
+ok 4 - parseBrief / aiPrompt tiếng Anh
+  ---
+  duration_ms: 3.189401
+  type: 'test'
+  ...
+# Subtest: PM CLI journey creates one canonical task, runs subprocess, verifies and integrates with evidence; private channel stays private
+ok 5 - PM CLI journey creates one canonical task, runs subprocess, verifies and integrates with evidence; private channel stays private
+  ---
+  duration_ms: 805.366951
+  type: 'test'
+  ...
+# Subtest: PM joins before workers, confirmation is explicit, pending capability cannot read private history; spoof and remote/CSRF blocked
+ok 6 - PM joins before workers, confirmation is explicit, pending capability cannot read private history; spoof and remote/CSRF blocked
+  ---
+  duration_ms: 49.816215
+  type: 'test'
+  ...
+# Subtest: no execution without goal/grant, explicit unknown cost consent, safe paths and immutable tests; no paid probe via PM
+ok 7 - no execution without goal/grant, explicit unknown cost consent, safe paths and immutable tests; no paid probe via PM
+  ---
+  duration_ms: 87.415198
+  type: 'test'
+  ...
+# Subtest: scope/profile/requirement changes cannot escape director grant; run attempts are capped
+ok 8 - scope/profile/requirement changes cannot escape director grant; run attempts are capped
+  ---
+  duration_ms: 340.651863
+  type: 'test'
+  ...
+# Subtest: pause during a run requests cancellation, blocks stale operations and preserves actual outcome
+ok 9 - pause during a run requests cancellation, blocks stale operations and preserves actual outcome
+  ---
+  duration_ms: 99.192729
+  type: 'test'
+  ...
+# Subtest: revoke during a run requests cancellation, blocks stale operations and preserves actual outcome
+ok 10 - revoke during a run requests cancellation, blocks stale operations and preserves actual outcome
+  ---
+  duration_ms: 94.568561
+  type: 'test'
+  ...
+# Subtest: takeover during a run requests cancellation, blocks stale operations and preserves actual outcome
+ok 11 - takeover during a run requests cancellation, blocks stale operations and preserves actual outcome
+  ---
+  duration_ms: 95.32376
+  type: 'test'
+  ...
+# Subtest: goal during a run requests cancellation, blocks stale operations and preserves actual outcome
+ok 12 - goal during a run requests cancellation, blocks stale operations and preserves actual outcome
+  ---
+  duration_ms: 94.517684
+  type: 'test'
+  ...
+# Subtest: lease loss, restart and old meeting cannot silently resume or dispatch duplicate work
+ok 13 - lease loss, restart and old meeting cannot silently resume or dispatch duplicate work
+  ---
+  duration_ms: 39.777632
+  type: 'test'
+  ...
+# Subtest: expert review requirement cannot be bypassed by a successful PM report or passed tests
+ok 14 - expert review requirement cannot be bypassed by a successful PM report or passed tests
+  ---
+  duration_ms: 400.016552
+  type: 'test'
+  ...
+# Subtest: takeover keeps private goal history across actual room persistence and server restart
+ok 15 - takeover keeps private goal history across actual room persistence and server restart
+  ---
+  duration_ms: 32.425399
+  type: 'test'
+  ...
+# Subtest: new grant cannot authorize an old reported run; replan reuses task ID with a new requirement revision
+ok 16 - new grant cannot authorize an old reported run; replan reuses task ID with a new requirement revision
+  ---
+  duration_ms: 191.391535
+  type: 'test'
+  ...
+# Subtest: profile/model catalog revision is pinned by the grant; a config change requires new director authorization
+ok 17 - profile/model catalog revision is pinned by the grant; a config change requires new director authorization
+  ---
+  duration_ms: 39.468056
+  type: 'test'
+  ...
+# Subtest: packaged Node PM client reaches a localhost room without changing settings or launching a model
+ok 18 - packaged Node PM client reaches a localhost room without changing settings or launching a model
+  ---
+  duration_ms: 166.640436
+  type: 'test'
+  ...
+1..18
+# tests 18
+# suites 0
+# pass 18
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2801.815766

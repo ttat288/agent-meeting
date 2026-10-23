@@ -149,10 +149,12 @@ When the meeting ends, the page summarizes the reason, duration, message count, 
 
 The server reads three line patterns in agent messages (the protocol tells agents exactly how to write them):
 
+English `CONCLUSION:` and `TASK:` aliases are additions in this checkout over the pinned preview `f415cf4`. Vietnamese markers remain supported. Other agenda/progress markers are unchanged.
+
 | Pattern | Meaning |
 |---|---|
-| `KẾT LUẬN: <decision>` | Final decision (for the current item, or the overall one after the last item). If agents repeat it, the latest one wins. |
-| `VIỆC: <owner> \| <task> \| <due>` | One action item. Repeated items with nearly the same wording are merged. |
+| `KẾT LUẬN: <decision>` / `CONCLUSION: <decision>` | Final decision (for the current item, or the overall one after the last item). If agents repeat it, the latest one wins. |
+| `VIỆC: <owner> \| <task> \| <due>` / `TASK: …` | One action item. Repeated items with nearly the same wording are merged. |
 | `XONG MỤC <n>: <summary>` | Item n is settled; move to the next one. |
 | `TIẾN ĐỘ VIỆC <n>: <status> \| <evidence>` | Progress on task n: `chưa làm`, `đang làm`, `xong` or `vướng` (English `todo`, `doing`, `done`, `blocked` also work), with evidence such as a commit/PR link or test output. The `progress` tool does the same. |
 
@@ -308,7 +310,7 @@ npx github:ttat288/agent-meeting --local --no-open --admit none \
 | Tool | Purpose |
 |---|---|
 | `join(name, model)` | Join with a self-chosen name and the model in use; returns the meeting protocol. Call first; pick another name if it is taken. |
-| `wait(name)` | Wait for new messages or your turn (blocks up to ~50 s, no tokens). |
+| `wait(name)` | Wait for new messages or your turn (blocks up to ~50 s; returned content still uses context). |
 | `say(name, text)` | Speak. `KẾT LUẬN:`, `VIỆC:` and `XONG MỤC n:` lines record results. |
 | `pass(name)` | Pass your turn (turns mode). |
 | `typing(name)` | Signal that you are composing a long reply. |
@@ -381,3 +383,55 @@ Dockerfile         node:22-alpine image for company servers (docs/DEPLOY.md)
 ```
 
 The host page uses long-polling instead of SSE/WebSocket because free Cloudflare quick tunnels do not support SSE.
+
+### CLI skills and bounded history
+
+From a checkout, use `node bin/cli.js` in place of `agent-meeting` below. These commands do not connect clients, install skills, execute scripts or change settings:
+
+```bash
+agent-meeting doctor
+agent-meeting skills list
+agent-meeting skills show agent-meeting
+agent-meeting skills list --local --query security
+agent-meeting skills list --local --graph --query network
+agent-meeting skills inspect my-skill --local
+agent-meeting skills show my-skill --local --resource references/network.md
+```
+
+`--local` reads only cwd's `.agents/skills`; `--dir <skill-directory>` selects another catalog. List reads bounded frontmatter; `--limit` (1–20) and `--offset` page results. `inspect` returns explicit resource edges and the manifest hash. It reads no reference bodies. `--graph` matches declared resource paths as well as metadata, without semantic search. Missing, unsafe and symlink resources are unavailable. Show prints a single complete text file up to32000 bytes; inspect larger manifests directly. This catalog supports simple name/description YAML fields and skips malformed manifests. It is not a global CLI skill inventory. Printing a skill does not activate CLI-native discovery; choose the installation method for your client separately.
+
+`doctor` hides room endpoints/keys and checks local presence only: live MCP registration, server reachability, client permissions and model access remain unverified. A bridge already installed before these changes needs a user-requested reconnect to obtain the new schema.
+
+Use `wait` for unseen messages. For a missing passage, `history(offset=0, limit=20, maxChars=8000)` returns JSON `messages`, `nextOffset`, `chars` and `oversized`; curl accepts the same query parameters. Offsets count only messages visible to the authenticated reader. Follow nextOffset only if more context is needed; history never advances wait's cursor. One oversized message is kept whole. maxChars counts Unicode characters in message text, not JSON bytes or tokens. Without pagination arguments the legacy full-history response remains. Replaying all pages costs more than a single full retrieval; this feature saves context when only a passage is needed. Concurrent appends can extend the result; room renewal starts a new history, so discard old offsets. No model billing savings are promised by a transport budget alone.
+
+## PM CLI chair (local experiment)
+
+Open **Options → Agent chairs** in the session and paste the dedicated prompt into an existing CLI on the same machine. The PM joins with `bin/pm.js`, reports a four-digit code, and waits for your confirmation. As director, assign a goal/acceptance criteria and grant workspace, write paths, immutable tests, a configured/probed profile, run count and expiry. The PM can then plan/run/verify/integrate/report using the canonical task/run store. Invitation and grant do not launch a model. Host runtime probing can incur real model charges.
+
+Use **Pause PM**, **Revoke PM**, or **I take over**; inspect the existing Plan/Execute/Results views and follow PM goal provenance back to the private channel. A goal change invalidates the old grant/result and requests cancellation. Reload preserves data; restart or lost lease requires a new invitation, confirmation and grant. Never infer that a saved room proves the CLI is still running. On client timeout, read state before retrying mutations.
+
+PM `state`/`wait` accept an optional `cursor` from the last snapshot (keep `after` unchanged). An outdated cursor immediately returns a new snapshot; a current cursor may return `unchanged:true` with status/lease, so retain the previous snapshot. `wait` with a current cursor waits up to25 seconds; omitting the cursor preserves legacy behavior. The CLI does not persist cursors. This reduces repeated payloads and idle waits; model billing remains unmeasured.
+
+Unknown model cost blocks execution by default. Explicit unknown-cost consent plus a run cap is not a hard monetary cap; external PM usage is unobserved. Required expert review and multi-file integration still block automatic acceptance. Fixture evidence does not demonstrate lower total tokens, cost or human effort than a direct coding CLI. [Evidence and limitations](evidence/pm-operator/ACCEPTANCE.vi.md).
+
+### Local delegated team and same-slot swap (workspace, unreleased)
+
+A director-issued PM grant may include `team`. The PM client adds `team-invite`, `approve-plan`, `watch`, `events`, `ack-event` and scoped `chair` operations. The lead uses `bin/team.js` with separate `AGENT_MEETING_TEAM_URL=http://127.0.0.1:<port>/api/team/<room>` and `AGENT_MEETING_TEAM_TOKEN`, never the host or PM credential. Actions: `join|state|propose|run|checkpoint|swap|verify|integrate|submit|blocker`; mutations require the current runtime generation.
+
+This slice supports one canonical task, logical slot A and single-file integration on Linux/bwrap. The supervisor stores a checkpoint, bootstraps the successor read-only, validates hash/generation/model acknowledgement, drains the previous process group and promotes the next generation without losing WIP. Managed runtimes can also emit a structured swap request. `watch` waits in code and returns actionable events or a blocked guard; it does not launch a model or reopen a disconnected CLI. Events survive disconnection; restart revokes capabilities and requires reconciliation. Session duration60/120/180 minutes or null remains separate from expiry and run/invocation/swap/wake caps, with no hard monetary cap. [Contracts](prompts/pm-operator.vi.md), [fixture evidence and limitations](evidence/pm-team/ACCEPTANCE.vi.md). Team UI, paid-model behavior,8-hour context reliability and efficiency remain unverified.
+
+At a checkpoint, keep the existing `decisions` (chosen decision and short rationale), `unknowns` and `next` fields. Optionally record `continuation: {failedAttempts: [{attempt, outcome, avoid}], blockers: [{issue, resolution}]}` in that same output. Both arrays must be explicit, contain at most10 entries each, and use nonempty text up to1000 characters per field; credential-pattern checks apply. `resolution` describes the condition needed to clear the blocker. Empty arrays mean the caller explicitly recorded none at this milestone; omission remains unknown. This stores outcomes, not private reasoning, and does not grant permission or launch a summary model.
+
+`tools/carry-canonical.js` is an explicit local experiment over a supplied canonical store, with bounded public evidence references and current source/revision checks. It has no CLI default store, runtime hook or controller. The automated journey uses only a test-created store and executable fixture; [assessment and reproduction](evidence/context-window/carry-review/ASSESSMENT.vi.md#lát-cắt-canonical-local-trong60-phút-2026-10-22) distinguish transport bytes from unmeasured model quality, usage and billing.
+
+## Live work updates
+
+Plan/Execute/Results check for external task/run changes while visible. Unchanged reads use `If-None-Match`/HTTP304. Active edits, keyboard focus and open evidence defer DOM replacement; use **Show updates** to apply the pending state. Foreground work reads cancel stale background reads, and navigation clears the cached tag. Offline results remain visible with retry, up to30 seconds between attempts; each background request is bounded to10 seconds. This is polling transport, not a model or billing guarantee. Human-mode PM history is under Options and source deep links; takeover closes the supervision region without deleting history.
+
+### Retrying failed independent checks
+
+When independent verification fails, open **Execute**, choose a profile and explicitly run again. The task and requirement revision stay the same; the new attempt gets its own run ID. If the latest attempt failed independent verification and the canonical source path, Git base, source snapshot and requirements still match, its failed-check diagnostics are attached to the runtime prompt. You do not need to copy them into Facts or save a new requirement revision. New attempts start from a fresh source copy: the old patch and CLI session are not resumed. Diagnostics describe the previous candidate, not tests of the new copy. Verification and tests on integrated source remain mandatory.
+
+Only up to four failed checks are included, with bounded output (the JSON diagnostic stays below16 KiB). Original evidence remains available under the earlier attempt. Possible secrets detected by the existing pattern scanner are omitted before truncation; the scanner is not comprehensive. Test output is untrusted diagnostic data, never permission or instructions. `retryContext` on the new run records the source run, hash/bytes and omission/truncation flags. If optional feedback would exceed the runtime's128 KiB prompt limit, it is omitted and the UI says to review earlier evidence. Changed source/requirements, another task, a later cancelled/rejected run, or a self-report without independent checks do not inherit older failures. There is no background retry or new execution authority.
+
+Reproduce locally without model calls: `node tools/check-retry-context.js` (Linux/bwrap). It uses a scripted CSV patch participant, real Node subprocess checks, HTTP, persistence/restart and single-file integration. Direct CLI already receives its native test feedback without a manual transfer; this check demonstrates closing a managed feedback gap, not superiority to direct CLI or lower model cost. The script and fixture are included in this checkout, but not in the pinned preview `f415cf4`.

@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-22T22:24:14.099103+00:00",
+  "patternLocations": [
+    {
+      "file": "test/security.test.js",
+      "line": 52,
+      "kind": "private-key"
+    },
+    {
+      "file": "test/security.test.js",
+      "line": 231,
+      "kind": "private-key"
+    }
+  ],
+  "patterns": [
+    "private-key",
+    "openai-key",
+    "github-token"
+  ],
+  "scope": "Tracked text files <=8MiB, no secret values printed; pattern scan is not a complete secret audit.",
+  "classifiedLocations": [
+    {
+      "file": "test/security.test.js",
+      "line": 52,
+      "codeWithoutLiteralValues": "assert.equal(findSecret([literal]), [literal]);",
+      "containsOnlyHeaderMarkerNotPemBlock": true
+    },
+    {
+      "file": "test/security.test.js",
+      "line": 231,
+      "codeWithoutLiteralValues": "const leak = await fetch(`${api}/send?file=k.pem`, { method: [literal], headers: { authorization: `Bearer ${a.tok}` }, body: [literal] });",
+      "containsOnlyHeaderMarkerNotPemBlock": true
+    }
+  ],
+  "classification": "Synthetic security-test PEM-header strings; values not printed. No actual complete PEM key found by these patterns."
+}

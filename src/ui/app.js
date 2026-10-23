@@ -74,7 +74,8 @@
   // ---------- thông báo, hộp xác nhận ----------
   function toast(msg, bad) {
     const t = el('div', { class: 'toast' + (bad ? ' bad' : '') }, msg);
-    $('toasts').append(t); setTimeout(() => t.remove(), 2600);
+    const stack = $('toasts'); stack.append(t); stack.scrollTop = stack.scrollHeight;
+    setTimeout(() => t.remove(), 2600);
   }
   // Disclosures keep native button/link semantics; modal surfaces isolate the background.
   let overlayReturn = null, inerted = [];

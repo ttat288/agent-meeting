@@ -164,3 +164,73 @@ test('admin accepts the full documented config size and reset/history preserve r
  const reset=await post(url('/config/reset'),{group:'models',expectedRevision:2});assert.equal(reset.status,200);assert.deepEqual((await reset.json()).models,routing.defaults().models);
  assert.equal((await post(url('/config/reset'),{group:'policy',expectedRevision:2})).status,409);
 });
+
+test('conditional work reads track work, room and remote state without bypassing capability checks', async t => {
+  const { app, room, base, url } = await boot(t);
+  const first = await fetch(url('/work'));
+  assert.equal(first.status, 200);
+  const etag = first.headers.get('etag'); assert.match(etag, /^"[a-f0-9]{64}"$/);
+  assert.equal(first.headers.get('cache-control'), 'no-store');
+  const original = await first.json();
+  const unchanged = await fetch(url('/work'), { headers: { 'if-none-match': etag } });
+  assert.equal(unchanged.status, 304); assert.equal(await unchanged.text(), '');
+  assert.equal(unchanged.headers.get('etag'), etag);
+  // Ordinary callers still receive the complete compatible representation.
+  assert.deepEqual(await (await fetch(url('/work'))).json(), original);
+  room.start('Changed objective', '', { agenda: [] });
+  const changed = await fetch(url('/work'), { headers: { 'if-none-match': etag } });
+  assert.equal(changed.status, 200); assert.notEqual(changed.headers.get('etag'), etag);
+  assert.equal((await changed.json()).session.context, 'Changed objective');
+  const nextTag = changed.headers.get('etag');
+  await post(url('/work/tasks'), { goal: 'A task', acceptance: ['Works'] });
+  const taskChange = await fetch(url('/work'), { headers: { 'if-none-match': nextTag } });
+  assert.equal(taskChange.status, 200); assert.equal((await taskChange.json()).tasks.length, 1);
+  const taskTag = taskChange.headers.get('etag');
+  const enrolled = await post(url('/remote/enroll'), { label: 'Fixture host', workspaceId: 'w1', baseRevision: 'base', capabilities: ['claude'] });
+  assert.equal(enrolled.status, 201);
+  const remoteChange = await fetch(url('/work'), { headers: { 'if-none-match': taskTag } });
+  assert.equal(remoteChange.status, 200); assert.notEqual(remoteChange.headers.get('etag'), taskTag);
+  const latest = remoteChange.headers.get('etag');
+  for (const headers of [{ 'x-forwarded-for': '192.0.2.3' }, { 'cf-connecting-ip': '192.0.2.3', 'cf-ray': 'fixture' }])
+    assert.equal((await fetch(url('/work'), { headers: { ...headers, 'if-none-match': latest } })).status, 403);
+  assert.equal((await fetch(base + '/api/host/' + room.id + '/work', { headers: { 'if-none-match': latest } })).status, 404);
+  const other = app.create({ hostKey: 'other_host_work_0123456789', id: 'other_agent_work_0123456789', fixed: true });
+  assert.equal((await fetch(base + '/api/host/' + other.hostKey + '/work', { headers: { 'if-none-match': latest } })).status, 200);
+});
+
+test('run HTTP fences the viewed config and requirement before any runtime dispatch', async t => {
+  let starts = 0;
+  const {app,root,url}=await boot(t,{runCli:async options=>{if(!options.prompt.includes('READY'))starts++;return{status:'reported',reportedModel:'fixture-model',text:'Deterministic fixture; not an AI call',exitCode:0};}});
+  const source=path.join(root,'source');fs.mkdirSync(path.join(source,'test'),{recursive:true});
+  fs.writeFileSync(path.join(source,'sum.js'),'module.exports=(a,b)=>a-b;\n');
+  fs.writeFileSync(path.join(source,'test/sum.test.js'),"require('node:test')('sum',()=>require('node:assert/strict').equal(require('../sum')(2,3),5));\n");
+  const {execFileSync}=require('node:child_process');execFileSync('git',['init','-q',source]);execFileSync('git',['-C',source,'add','.']);execFileSync('git',['-C',source,'-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','fixture']);
+  const config=app.configStore.read(),model=config.models.find(m=>m.id==='opus');
+  Object.assign(model,{enabled:true,providerModelId:'fixture-model',verification:'verified',source:{...model.source,checkedAt:new Date().toISOString(),confidence:'user-configured'}});config.profiles.find(p=>p.id==='opus-claude').enabled=true;
+  const viewed=app.configStore.save(config,config.revision).revision;
+  const task=await(await post(url('/work/tasks'),{goal:'Bounded view revision fixture',acceptance:['sum(2,3)=5'],purpose:'execute',workspace:source,writePaths:['sum.js'],testFiles:['test/sum.test.js']})).json();
+  const changed=app.configStore.read();changed.models[0].label+=' updated elsewhere';const current=app.configStore.save(changed,changed.revision).revision;
+  assert.equal((await post(url('/runtime/probe'),{profileId:'opus-claude'})).status,200);
+  const stale=await post(url(`/work/tasks/${task.id}/run`),{profileId:'opus-claude',expectedConfigRevision:viewed,expectedRequirementRevision:task.requirementRevision});
+  assert.equal(stale.status,409);assert.match((await stale.json()).error,/Configuration changed/);assert.equal(starts,0);
+  const edited=await(await post(url(`/work/tasks/${task.id}/configure`),{expectedRevision:task.requirementRevision,acceptance:['Changed acceptance from another client']})).json();
+  const oldTask=await post(url(`/work/tasks/${task.id}/run`),{profileId:'opus-claude',expectedConfigRevision:current,expectedRequirementRevision:task.requirementRevision});
+  assert.equal(oldTask.status,409);assert.match((await oldTask.json()).error,/Task changed/);assert.equal(starts,0);
+  assert.equal((await(await fetch(url('/work'))).json()).runs.length,0);
+  const launch=await post(url(`/work/tasks/${task.id}/run`),{profileId:'opus-claude',expectedConfigRevision:current,expectedRequirementRevision:edited.requirementRevision});
+  assert.equal(launch.status,202);const run=await launch.json();assert.equal(run.configRevision,current);assert.equal(run.requirementRevision,edited.requirementRevision);
+  for(let i=0;i<50&&!starts;i++)await new Promise(r=>setTimeout(r,10));assert.equal(starts,1);
+});
+
+test('concurrent probe HTTP callers share one same-config runner invocation',async t=>{
+  let calls=0,release,started,bodies=0,bothBodies;
+  const gate=new Promise(resolve=>{release=resolve;}),firstStarted=new Promise(resolve=>{started=resolve;}),allBodies=new Promise(resolve=>{bothBodies=resolve;});
+  const{app,url}=await boot(t,{runCli:async options=>{calls++;started();await gate;return{status:'reported',reportedModel:options.modelId};}});
+  const c=app.configStore.read(),m=c.models.find(m=>m.id==='opus');Object.assign(m,{enabled:true,providerModelId:'fixture-model',verification:'verified',source:{...m.source,checkedAt:new Date().toISOString(),confidence:'user-configured'}});c.profiles.find(p=>p.id==='opus-claude').enabled=true;app.configStore.save(c,c.revision);
+  app.server.on('request',req=>{if(req.url.endsWith('/runtime/probe'))req.on('end',()=>{if(++bodies===2)bothBodies();});});
+  const first=post(url('/runtime/probe'),{profileId:'opus-claude'}),second=post(url('/runtime/probe'),{profileId:'opus-claude'});
+  try{await allBodies;await firstStarted;assert.equal(calls,1);}
+  finally{release();await Promise.allSettled([first,second]);}
+  const [a,b]=await Promise.all([first,second]);assert.equal(a.status,200);assert.equal(b.status,200);assert.deepEqual(await a.json(),await b.json());assert.equal(calls,1);
+  const stale=await post(url('/runtime/probe'),{profileId:'opus-claude',expectedConfigRevision:1});assert.equal(stale.status,409);assert.match((await stale.json()).error,/Configuration changed/);assert.equal(calls,1);
+});

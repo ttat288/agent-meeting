@@ -1,0 +1,94 @@
+TAP version 13
+# Subtest: mọi chuỗi tr() trong app.js có bản tiếng Anh
+ok 1 - mọi chuỗi tr() trong app.js có bản tiếng Anh
+  ---
+  duration_ms: 8.579544
+  type: 'test'
+  ...
+# Subtest: mọi đoạn chữ / thuộc tính trong index.html có bản tiếng Anh
+ok 2 - mọi đoạn chữ / thuộc tính trong index.html có bản tiếng Anh
+  ---
+  duration_ms: 1.463932
+  type: 'test'
+  ...
+# Subtest: tr: tiếng Việt giữ nguyên, tiếng Anh dịch, template đổi được tham số
+ok 3 - tr: tiếng Việt giữ nguyên, tiếng Anh dịch, template đổi được tham số
+  ---
+  duration_ms: 2.794786
+  type: 'test'
+  ...
+# Subtest: parseBrief / aiPrompt tiếng Anh
+ok 4 - parseBrief / aiPrompt tiếng Anh
+  ---
+  duration_ms: 3.030176
+  type: 'test'
+  ...
+# Subtest: PM terminal words round-trip through a POSIX shell without interpolation
+ok 5 - PM terminal words round-trip through a POSIX shell without interpolation
+  ---
+  duration_ms: 18.50128
+  type: 'test'
+  ...
+# Subtest: host config shares catalog revision with routing and persists a model across app restart
+ok 6 - host config shares catalog revision with routing and persists a model across app restart
+  ---
+  duration_ms: 104.741174
+  type: 'test'
+  ...
+# Subtest: config CAS and invalid updates preserve the last complete snapshot
+ok 7 - config CAS and invalid updates preserve the last complete snapshot
+  ---
+  duration_ms: 32.649815
+  type: 'test'
+  ...
+# Subtest: invitation and unknown capabilities cannot read or change config, tasks, or workspace pages
+ok 8 - invitation and unknown capabilities cannot read or change config, tasks, or workspace pages
+  ---
+  duration_ms: 17.824686
+  type: 'test'
+  ...
+# Subtest: host mutations reject cross-origin browser requests before config or task writes
+ok 9 - host mutations reject cross-origin browser requests before config or task writes
+  ---
+  duration_ms: 15.120496
+  type: 'test'
+  ...
+# Subtest: tunnel and forwarded remote requests cannot access machine controls even with remoteHost enabled
+ok 10 - tunnel and forwarded remote requests cannot access machine controls even with remoteHost enabled
+  ---
+  duration_ms: 20.85143
+  type: 'test'
+  ...
+# Subtest: workspace/admin and self-hosted assets keep CSP while the existing room API still works
+ok 11 - workspace/admin and self-hosted assets keep CSP while the existing room API still works
+  ---
+  duration_ms: 19.089104
+  type: 'test'
+  ...
+# Subtest: work endpoints save actual plans without launching a process and reject malformed tasks
+ok 12 - work endpoints save actual plans without launching a process and reject malformed tasks
+  ---
+  duration_ms: 12.388511
+  type: 'test'
+  ...
+# Subtest: admin accepts the full documented config size and reset/history preserve revisions
+ok 13 - admin accepts the full documented config size and reset/history preserve revisions
+  ---
+  duration_ms: 56.638111
+  type: 'test'
+  ...
+# Subtest: conditional work reads track work, room and remote state without bypassing capability checks
+ok 14 - conditional work reads track work, room and remote state without bypassing capability checks
+  ---
+  duration_ms: 26.21092
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 677.361074

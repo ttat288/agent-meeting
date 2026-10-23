@@ -1,0 +1,74 @@
+{
+  "scope": "No model; immutable acceptance fails on unresolved bugs; runtime regression passes.",
+  "modelCalls": 0,
+  "rows": [
+    {
+      "arm": "direct",
+      "file": "test/pm-pilot-acceptance.test.js",
+      "command": [
+        "/usr/bin/node",
+        "--max-old-space-size=256",
+        "--test",
+        "--test-timeout=20000",
+        "test/pm-pilot-acceptance.test.js"
+      ],
+      "exitCode": 1,
+      "timeout": false,
+      "cancelled": false,
+      "output": "TAP version 13\n# Subtest: billing evidence accepts only finite nonnegative numeric costs, with unknown preserved\nnot ok 1 - billing evidence accepts only finite nonnegative numeric costs, with unknown preserved\n  ---\n  duration_ms: 2.434736\n  type: 'test'\n  location: '/tmp/am-pm-pilot-bh1LIJ/direct/test/pm-pilot-acceptance.test.js:5:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    -1\n    \n    -1 !== null\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: ~\n  actual: -1\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-pm-pilot-bh1LIJ/direct/test/pm-pilot-acceptance.test.js:7:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n# Subtest: multiple machine model usage entries cannot be hidden by a single model label\nnot ok 2 - multiple machine model usage entries cannot be hidden by a single model label\n  ---\n  duration_ms: 0.526051\n  type: 'test'\n  location: '/tmp/am-pm-pilot-bh1LIJ/direct/test/pm-pilot-acceptance.test.js:11:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'expected'\n    - 'unknown'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'unknown'\n  actual: 'expected'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-pm-pilot-bh1LIJ/direct/test/pm-pilot-acceptance.test.js:12:10)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)\n  ...\n1..2\n# tests 2\n# suites 0\n# pass 0\n# fail 2\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 120.955057\n",
+      "elapsedMs": 233,
+      "checkedAt": "2026-10-22T08:33:37.914Z"
+    },
+    {
+      "arm": "direct",
+      "file": "test/runtime.test.js",
+      "command": [
+        "/usr/bin/node",
+        "--max-old-space-size=256",
+        "--test",
+        "--test-timeout=20000",
+        "test/runtime.test.js"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "cancelled": false,
+      "output": "TAP version 13\n# Subtest: adapter arguments require an explicit safe provider ID and bounded nonempty prompt\nok 1 - adapter arguments require an explicit safe provider ID and bounded nonempty prompt\n  ---\n  duration_ms: 2.346381\n  type: 'test'\n  ...\n# Subtest: agy receives the entire prompt as one literal argv value and rejects writes\nok 2 - agy receives the entire prompt as one literal argv value and rejects writes\n  ---\n  duration_ms: 0.259812\n  type: 'test'\n  ...\n# Subtest: Claude keeps prompt out of flags, isolates MCP, and limits write tool scope\nok 3 - Claude keeps prompt out of flags, isolates MCP, and limits write tool scope\n  ---\n  duration_ms: 0.137316\n  type: 'test'\n  ...\n# Subtest: malformed JSON and nonobject JSON always fail without throwing\nok 4 - malformed JSON and nonobject JSON always fail without throwing\n  ---\n  duration_ms: 0.460167\n  type: 'test'\n  ...\n# Subtest: runtime error variants and missing output cannot become successful reports\nok 5 - runtime error variants and missing output cannot become successful reports\n  ---\n  duration_ms: 0.333566\n  type: 'test'\n  ...\n# Subtest: Claude success preserves machine model, usage, permission denials and cost evidence\nok 6 - Claude success preserves machine model, usage, permission denials and cost evidence\n  ---\n  duration_ms: 0.192683\n  type: 'test'\n  ...\n# Subtest: agy success keeps self-identified prose model unknown and bounds model output\nok 7 - agy success keeps self-identified prose model unknown and bounds model output\n  ---\n  duration_ms: 0.466914\n  type: 'test'\n  ...\n# Subtest: runCli sends Claude prompt verbatim on stdin, uses shell false and never claims verified\nok 8 - runCli sends Claude prompt verbatim on stdin, uses shell false and never claims verified\n  ---\n  duration_ms: 3.041724\n  type: 'test'\n  ...\n# Subtest: runCli rejects nonzero exit, malformed result, and permission denial despite positive success JSON\nok 9 - runCli rejects nonzero exit, malformed result, and permission denial despite positive success JSON\n  ---\n  duration_ms: 2.216809\n  type: 'test'\n  ...\n1..9\n# tests 9\n# suites 0\n# pass 9\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 131.689038\n",
+      "elapsedMs": 230,
+      "checkedAt": "2026-10-22T08:33:38.151Z"
+    },
+    {
+      "arm": "pm",
+      "file": "test/pm-pilot-acceptance.test.js",
+      "command": [
+        "/usr/bin/node",
+        "--max-old-space-size=256",
+        "--test",
+        "--test-timeout=20000",
+        "test/pm-pilot-acceptance.test.js"
+      ],
+      "exitCode": 1,
+      "timeout": false,
+      "cancelled": false,
+      "output": "TAP version 13\n# Subtest: billing evidence accepts only finite nonnegative numeric costs, with unknown preserved\nnot ok 1 - billing evidence accepts only finite nonnegative numeric costs, with unknown preserved\n  ---\n  duration_ms: 2.591548\n  type: 'test'\n  location: '/tmp/am-pm-pilot-bh1LIJ/pm/test/pm-pilot-acceptance.test.js:5:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    -1\n    \n    -1 !== null\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: ~\n  actual: -1\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-pm-pilot-bh1LIJ/pm/test/pm-pilot-acceptance.test.js:7:12)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.start (node:internal/test_runner/test:944:17)\n    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)\n  ...\n# Subtest: multiple machine model usage entries cannot be hidden by a single model label\nnot ok 2 - multiple machine model usage entries cannot be hidden by a single model label\n  ---\n  duration_ms: 0.519096\n  type: 'test'\n  location: '/tmp/am-pm-pilot-bh1LIJ/pm/test/pm-pilot-acceptance.test.js:11:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'expected'\n    - 'unknown'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: 'unknown'\n  actual: 'expected'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-pm-pilot-bh1LIJ/pm/test/pm-pilot-acceptance.test.js:12:10)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)\n  ...\n1..2\n# tests 2\n# suites 0\n# pass 0\n# fail 2\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 119.806668\n",
+      "elapsedMs": 218,
+      "checkedAt": "2026-10-22T08:33:38.425Z"
+    },
+    {
+      "arm": "pm",
+      "file": "test/runtime.test.js",
+      "command": [
+        "/usr/bin/node",
+        "--max-old-space-size=256",
+        "--test",
+        "--test-timeout=20000",
+        "test/runtime.test.js"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "cancelled": false,
+      "output": "TAP version 13\n# Subtest: adapter arguments require an explicit safe provider ID and bounded nonempty prompt\nok 1 - adapter arguments require an explicit safe provider ID and bounded nonempty prompt\n  ---\n  duration_ms: 2.173705\n  type: 'test'\n  ...\n# Subtest: agy receives the entire prompt as one literal argv value and rejects writes\nok 2 - agy receives the entire prompt as one literal argv value and rejects writes\n  ---\n  duration_ms: 0.263679\n  type: 'test'\n  ...\n# Subtest: Claude keeps prompt out of flags, isolates MCP, and limits write tool scope\nok 3 - Claude keeps prompt out of flags, isolates MCP, and limits write tool scope\n  ---\n  duration_ms: 0.140528\n  type: 'test'\n  ...\n# Subtest: malformed JSON and nonobject JSON always fail without throwing\nok 4 - malformed JSON and nonobject JSON always fail without throwing\n  ---\n  duration_ms: 0.381026\n  type: 'test'\n  ...\n# Subtest: runtime error variants and missing output cannot become successful reports\nok 5 - runtime error variants and missing output cannot become successful reports\n  ---\n  duration_ms: 0.301839\n  type: 'test'\n  ...\n# Subtest: Claude success preserves machine model, usage, permission denials and cost evidence\nok 6 - Claude success preserves machine model, usage, permission denials and cost evidence\n  ---\n  duration_ms: 0.159875\n  type: 'test'\n  ...\n# Subtest: agy success keeps self-identified prose model unknown and bounds model output\nok 7 - agy success keeps self-identified prose model unknown and bounds model output\n  ---\n  duration_ms: 0.448887\n  type: 'test'\n  ...\n# Subtest: runCli sends Claude prompt verbatim on stdin, uses shell false and never claims verified\nok 8 - runCli sends Claude prompt verbatim on stdin, uses shell false and never claims verified\n  ---\n  duration_ms: 2.884606\n  type: 'test'\n  ...\n# Subtest: runCli rejects nonzero exit, malformed result, and permission denial despite positive success JSON\nok 9 - runCli rejects nonzero exit, malformed result, and permission denial despite positive success JSON\n  ---\n  duration_ms: 2.09747\n  type: 'test'\n  ...\n1..9\n# tests 9\n# suites 0\n# pass 9\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 126.670289\n",
+      "elapsedMs": 225,
+      "checkedAt": "2026-10-22T08:33:38.657Z"
+    }
+  ]
+}

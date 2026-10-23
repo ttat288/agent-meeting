@@ -1,0 +1,10 @@
+{
+  "repeatRecordedAt": "2026-10-23T02:30:40.550Z",
+  "directElapsedMs": 565.113689,
+  "managedElapsedMs": 960.9334030000001,
+  "identicalSourceInputOutputHashes": true,
+  "integratedAndRestartPreserved": true,
+  "publishedFallbackTestIdentical": true,
+  "anchorsChecked": 11,
+  "repeatNote": "Repetition validates reproducibility, not an independent sample of model/human performance."
+}

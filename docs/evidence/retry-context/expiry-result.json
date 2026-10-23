@@ -1,0 +1,62 @@
+{
+  "recordedAt": "2026-10-23T04:04:58.242Z",
+  "fixture": true,
+  "modelCalls": 0,
+  "taskId": "7472cf9d-d8c3-4309-a277-c6faa6506ecf",
+  "requirementRevision": 1,
+  "previousRunId": "6205d0a2-b5ec-4f97-b647-8c286bda7dc3",
+  "previousStatus": "failed",
+  "retryRunId": "dcc73553-0b85-4e39-8140-5ec7cf1c3eda",
+  "retryStatus": "integrated",
+  "retryContext": {
+    "fromRunId": "6205d0a2-b5ec-4f97-b647-8c286bda7dc3",
+    "checkCount": 1,
+    "bytes": 1535,
+    "sha256": "8a0bd07b4b75a8feb304ab6f7869103e29450afcf1fdcec7a6e3e97b92197109",
+    "truncated": true,
+    "sensitiveOutputOmitted": false
+  },
+  "runCount": 6,
+  "sourceHash": "882c54cb9a0664e132a9f9ddbbd462b17640217367359e52fad153625bcb39c0",
+  "testHash": "1980bb1b858d1a7a12470ec1e93c9ef0a83e1ff07b39c250781506d0a04a9fc1",
+  "testBytesUnchanged": true,
+  "verification": [
+    {
+      "command": [
+        "/usr/bin/node",
+        "--max-old-space-size=256",
+        "--test",
+        "--test-timeout=20000",
+        "test/csv-cell.test.js"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "cancelled": false,
+      "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.411096\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.199151\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 0.110608\n  type: 'test'\n  ...\n# Subtest: quotes line feed\nok 4 - quotes line feed\n  ---\n  duration_ms: 0.110194\n  type: 'test'\n  ...\n# Subtest: quotes carriage return\nok 5 - quotes carriage return\n  ---\n  duration_ms: 0.098653\n  type: 'test'\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.092257\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.080166\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.086083\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 8\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 124.223053\n",
+      "elapsedMs": 229,
+      "checkedAt": "2026-10-23T04:03:13.709Z"
+    }
+  ],
+  "integration": [
+    {
+      "command": [
+        "/usr/bin/node",
+        "--max-old-space-size=256",
+        "--test",
+        "--test-timeout=20000",
+        "test/csv-cell.test.js"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "cancelled": false,
+      "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 4.30862\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.363838\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 0.171614\n  type: 'test'\n  ...\n# Subtest: quotes line feed\nok 4 - quotes line feed\n  ---\n  duration_ms: 0.159385\n  type: 'test'\n  ...\n# Subtest: quotes carriage return\nok 5 - quotes carriage return\n  ---\n  duration_ms: 0.155432\n  type: 'test'\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.143943\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.151968\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.144419\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 8\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 199.495978\n",
+      "elapsedMs": 325,
+      "checkedAt": "2026-10-23T04:03:23.680Z"
+    }
+  ],
+  "limits": [
+    "Observation expiry was real elapsed wall time; no model was running during that interval.",
+    "Scripted participant and single-file fixture, not model quality, crash reconciliation or remote acceptance."
+  ],
+  "sourceVersionNote": "Timed expiry run preceded the final canonical-source identity guard. TTL/routing/runtime/UI modules stayed byte-identical; the final-source full454 regression and fresh browser retry flow were run afterward. This is not a second30minute run on the final WorkManager."
+}

@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-22T20:54:44.792Z",
+  "source": "one-line action catch visibility guard after4544951; full source seal follows",
+  "checks": [
+    {
+      "case": "hidden action failure uses notice without changing chat",
+      "state": {
+        "at": "2026-10-22T20:54:22.205Z",
+        "chat": "Chat draft after hidden failure fix",
+        "focus": "hostMsg",
+        "hash": "#conversation",
+        "hiddenError": null,
+        "notice": "Chưa nhận được kết quả thao tác trước: Controlled delayed work read failure",
+        "noticeHidden": false
+      }
+    },
+    {
+      "case": "visible action keeps inline alert and alert focus",
+      "state": {
+        "cards": 1,
+        "error": "Chưa thể hoàn thành thao tácControlled delayed work read failure",
+        "focusedAlert": "alert"
+      }
+    },
+    {
+      "case": "fresh retry clears inline failure and keeps result",
+      "state": {
+        "cards": 1,
+        "error": null,
+        "focus": "workTitle",
+        "title": "Kết quả (1)"
+      }
+    }
+  ],
+  "scope": "Controlled503/private3156 fixture. No run/model/enrollment/token."
+}

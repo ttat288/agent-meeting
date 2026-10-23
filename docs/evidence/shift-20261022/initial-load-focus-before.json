@@ -1,0 +1,11 @@
+{
+  "source": "ac84999",
+  "at": "2026-10-22T21:40:23.828Z",
+  "focus": {
+    "id": "",
+    "tag": "BODY"
+  },
+  "hash": "#results",
+  "title": "Results (1)",
+  "scope": "Fresh conversation document has no workTitle; initial Plan load held at remote GET; keyboard Results during loading; release gives correct Results data but BODY focus. Earlier DOM capture included body text; this receipt retains only relevant focus metadata. No native model/run."
+}

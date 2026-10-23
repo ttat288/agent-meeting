@@ -1,0 +1,49 @@
+{
+  "schema": "agent-meeting/context-review-verification@1",
+  "sourceHashes": [
+    {
+      "path": "src/team.js",
+      "sha256": "832fc96957ea2d31b22722d7913dcb481331adac9ef60fb68dfebe75e45d44ef",
+      "unchangedDuringReviews": true
+    },
+    {
+      "path": "src/session-child.js",
+      "sha256": "7ebd98e90d5d25bccf73be39a0131eb735f697f5329bcef168a202b13e943782",
+      "unchangedDuringReviews": true
+    },
+    {
+      "path": "src/runtime.js",
+      "sha256": "1647a1ee676f0f4dec24839aad5e0189f4c6646210847f1c23db05d6b41ae236",
+      "unchangedDuringReviews": true
+    },
+    {
+      "path": "src/work.js",
+      "sha256": "f5e81e3708a05cede28623850947d4e748924fb12cc8a0345e9f3d45765089fd",
+      "unchangedDuringReviews": true
+    },
+    {
+      "path": "tools/measure-context-window.js",
+      "sha256": "4e17a686cfb4f0df938c257973fcaea6f9933aaccafce3e124961e851563724c",
+      "unchangedDuringReviews": true
+    }
+  ],
+  "flashClaimsChecked": [
+    "session-child.js:13 and22 invoke runCli separately",
+    "runtime.js:26 disables native session persistence",
+    "team.js:208 requires decisions/unknowns/next from caller",
+    "team.js:16 contextFor removes only snapshot",
+    "team.js:205-208 stores WIP/revisions/metadata",
+    "work.js:246-264 verifies independently;292-294 limits integration",
+    "measure-context-window.js:2-14 is offline and Claude-specific",
+    "benchmark-local.json: five structural invariants; no semantic/model/token proof"
+  ],
+  "citationCorrections": [
+    "Flash invented file:// links rooted at temporary review workspace; use repo paths/line numbers, not those nonexistent links",
+    "Missing four fields applies to evidence export fixture, not all live WorkManager records",
+    "Absence of an auto-controller in selected excerpts is supported by root source inspection, not a whole-repo proof from a single comment"
+  ],
+  "reviewOutcome": "conditional feasibility from source audit and one factual reviewer; no successful Claude design review",
+  "paidInvocations": 2,
+  "realModelTaskBenchmark": false,
+  "productionSourcesChangedThisTurn": false
+}

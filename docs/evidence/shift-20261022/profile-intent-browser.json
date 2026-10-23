@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-22T18:00:49.239Z",
+  "capturedAfterSameRevisionRefresh": {
+    "heading": "Execute (3)",
+    "locale": "en",
+    "overflow": false,
+    "profile": "opus-claude"
+  },
+  "observedSteps": [
+    "Before fix: select opus-claude, focus Options, unrelated task creation => selection empty",
+    "After fix: select opus-claude, focus Options, unrelated task creation => selection opus-claude; Plan/Back retains it",
+    "Requirement5->6 while details open: old Run blocked with translated task-changed alert; Show updates clears profile",
+    "Config2->3 plus fresh deterministic probe: old Run blocked with translated config-changed alert; Refresh clears profile",
+    "Select then full reload with selector wait: selection empty; fixture room identity persisted"
+  ],
+  "scope": "Controlled local fixture and browser observations, no real model, no user data, no human-time/billing claim",
+  "backendAfterBlockedActions": {
+    "at": "2026-10-22T18:02:14.159Z",
+    "tasks": 3,
+    "historicalRuns": 1,
+    "requirementRevision": 6,
+    "configRevision": 3,
+    "modelCalls": 0,
+    "modelCallsBasis": "Preview runCli is a deterministic Node fixture; no native model invoked"
+  },
+  "sourceHashes": {
+    "src/ui/workspace.js": "686a08b62a131bd20f48a0bb87fb982fcecb6dd4fe5da07b084a9561719ab748",
+    "src/work.js": "5dffb15fc6e31ed132e0ceee8c6df73c18112c53390b6c3e860d9e11c4ff3054",
+    "src/server.js": "c004c0fe350616f8d693fbfe52c123b3c8d470ff3aab3396dcb80156d8deec1e"
+  }
+}

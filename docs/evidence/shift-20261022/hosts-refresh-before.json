@@ -1,0 +1,12 @@
+{
+  "draftBefore": {
+    "label": "Draft worker label during refresh",
+    "workspace": "/tmp/disposable-worker-draft"
+  },
+  "after": {
+    "focus": "",
+    "label": "",
+    "workspace": ""
+  },
+  "scope": "Read-only remote-list response gated on private fixture; no enrollment, token creation, dispatch or native model call"
+}

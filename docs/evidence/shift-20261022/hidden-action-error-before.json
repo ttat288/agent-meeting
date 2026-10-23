@@ -1,0 +1,12 @@
+{
+  "source": "4544951",
+  "at": "2026-10-22T20:53:36.324Z",
+  "chat": "Draft while old refresh fails in hidden view",
+  "focus": "hostMsg",
+  "hash": "#conversation",
+  "hiddenError": "Chưa thể hoàn thành thao tácControlled delayed work read failure",
+  "noticeHidden": true,
+  "noticeText": "Đã cập nhật",
+  "workHidden": true,
+  "scope": "Controlled503 work read ACK held while returning to conversation, own loopback proxy/store. No model."
+}

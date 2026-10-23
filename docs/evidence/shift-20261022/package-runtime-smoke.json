@@ -1,0 +1,135 @@
+{
+  "schema": "agent-meeting/package-smoke@1",
+  "at": "2026-10-22T19:25:35.298Z",
+  "node": "v22.22.1",
+  "tarballSha256": "cca0d3cdc7486e2de143b508614bfd6eca0ea27a2377eb0341d3a2a37610964b",
+  "files": 68,
+  "unpackedSize": 976604,
+  "bundledSkill": [
+    "agent-meeting"
+  ],
+  "checks": [
+    {
+      "url": "/m/<fixture-host>",
+      "status": 200,
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+    },
+    {
+      "url": "/assets/pm-ui.js",
+      "status": 200,
+      "csp": null
+    },
+    {
+      "url": "/assets/workspace.js",
+      "status": 200,
+      "csp": null
+    },
+    {
+      "url": "/assets/workspace.css",
+      "status": 200,
+      "csp": null
+    },
+    {
+      "url": "/assets/app.css",
+      "status": 200,
+      "csp": null
+    },
+    {
+      "url": "/api/host/<fixture-host>/work",
+      "status": 200,
+      "csp": null
+    },
+    {
+      "url": "/api/host/<fixture-host>/work",
+      "condition": "If-None-Match",
+      "status": 304
+    }
+  ],
+  "sourceHashes": {
+    "src/server.js": "fb021ebf152ab76bced7420f30c1bdaa4b90b014a77c222421d0631662a77652",
+    "src/work.js": "8a6f324a48c87916e98315ea472154d1655fa11fdb86551c8469f904108eda5e",
+    "src/runtime.js": "93c9c1d2eed7918764edba115b458dd237bf138f051f3230b2dffe406846f5de",
+    "src/worker.js": "2b82a25394542964f9bbec3ad0a4c698df30c66e6e8609a0c019b7416d6a6af7",
+    "src/ui/pm-ui.js": "44e0980d1bf776765eec3a0feb577b28dff3210d8391e822f2c30202f8d6eb3b",
+    "src/ui/workspace.js": "9f2417341e3d207fe8c6a39439935dcddde30f55f841becda10807615e001123"
+  },
+  "modelCalls": 0,
+  "installedUserApp": false,
+  "cliShutdown": {
+    "pass": 2,
+    "fail": 0,
+    "testSourceSha256": "a9ea8a33e3b6331bd90bb0f9d4d393d0662073dd829ebec0cf551b05ea1ff890",
+    "scope": "Public repository CLI test copied into extracted temporary package after packing; not shipped in tarball. Real signals, isolated stores, no native models."
+  },
+  "sourceCommit": "65476da6ca239ace3097776f81bed2654041e31f",
+  "allPackedFileHashes": {
+    "CHANGELOG.md": "47d8f1d565cec687c94972b09e12f7f6531e4a949571e7b30adb7e552b2d0569",
+    "LICENSE": "26b18c2057bde2da470e10729280120fbed5ffd2d87146b786c90ec6c8c9268a",
+    "README.md": "397c8d2caf5e36ffcfc00673881b217f266d3a1ea90cb25f3c6951ff612bc402",
+    "README.vi.md": "9a95f03029b54f622a5468faaa3457b51e4d8b5a9bfeb8c90f933a59bcf34a48",
+    "assets/brand/app-16.png": "bc5d72282285131d25791610693c0f1ad4be87fa5727b2a52e5fbe35900e7bca",
+    "assets/brand/app-24.png": "26cafcedfb3a20ee65db9280821c9e83c4ac734fe47ddba062d678ceab424a84",
+    "assets/brand/app-32.png": "fda9b68c63384dcb9fbd63db20831a47c9efa248bdb648bf06add435b5eb0258",
+    "assets/brand/app-48.png": "822d3571e52fd9049245cc7bed481edcaff586dcba6439e85c913e41e8148031",
+    "assets/brand/app-64.png": "949dfd3fa0c4b65340c288a669f7a30ac53912215e85b289de2724cbbca19a34",
+    "assets/brand/app-128.png": "3862c7a1abdc1c5b02a31eb4f9a84c34a71a476d5f1a18a2fd3c93075014da5e",
+    "assets/brand/app-256.png": "14caddc149f8e442754f7eb59d41c5c231a791d3107a8fb630011e6b7ed3b783",
+    "assets/brand/app-512.png": "464f337f1d053f39ed649701d96887ff7a9fcc70522e6fb707db156bf2425385",
+    "assets/brand/app-1024.png": "88800198dd8e47d7d77b62f2ca7c515df0557c7a6b65a5eed9affba681b763ef",
+    "assets/brand/app.icns": "b88c6c68bc474032b3e6e8d417d863e7c6b63a382a55a0c236bd80c02df6181c",
+    "assets/brand/app.ico": "ab7a8902591987de2f22a84c6a81197759e8ba4e1ccf65cf5b593a3c471e3250",
+    "assets/brand/app.svg": "f71b583ae1857da282387a372c939b7da9109ed97084452397ec8f75b3ee7319",
+    "assets/brand/legacy-icon.svg": "5a8b8f8b41c224d89fcf1f9b7235315f4cea68cc977931598f2afcabc39026d0",
+    "assets/brand/mark-inverse.svg": "8ea0ccb667c9ad7718f89b95a86c7a2a9c6d7c64c4a2c87738401b04634c2ca5",
+    "assets/brand/mark-mono.svg": "cddc63d90d7c9941cee60330b8f656af8365d1f735bdf6cda9e68ca4f6b2e7fe",
+    "assets/brand/mark.svg": "08356f65104f4463236549f57b664ca1c0980185ca243119118183dcf05f03b1",
+    "assets/brand/wordmark.svg": "db6084cb41df1ba73b27bd3a068dd9fcd98bf4136d3f7253490b200248e48cb4",
+    "assets/icon.svg": "f71b583ae1857da282387a372c939b7da9109ed97084452397ec8f75b3ee7319",
+    "bin/cli.js": "96b328fee14a0270b50142dc721ccc3c7517a37a7d18ccc0f7372e788be80e93",
+    "bin/pm.js": "055b84f6c56d91b8b790b98944a3560cecc2f01a4d8968a1f46058c9f9e82273",
+    "bin/routing.js": "365c4d94d79c8bba3ea2a15580f3b80b9cbe7ab5d49d4692bc90ba11dcebf49e",
+    "bin/team.js": "aa0c59aaf91e2151b3f7db4fd448c32f4cf0611a379305304b1bc3907c693542",
+    "bin/worker.js": "9d7095dc00f2c2ca82bc1be11d0f81086a50dc3f33d8fe0f1b9701ef38442637",
+    "package.json": "aef9614b72d7dc98b38883b705e34f1e7adfe198d8e25308b6cb0812dc6e5949",
+    "scripts/demo-bots.js": "6f64d4a49d9de5da34e372a2fd50be5cf2d5e43049ac76ee9e251d4584a3d2ba",
+    "scripts/install-linux.sh": "1684720fb9bc125ff6c8b66e0351294de1c0ba2a0bbc038d6eac7094fe3eb355",
+    "scripts/test.js": "b7a47e748e89fabd5f60ca1d52b44d5851a9f5248d5dfeae1afff5867e32691c",
+    "src/bridge.js": "1ba5864412c0e3cde3e32b88e928f4fb036825559f98437161cd691fbe2f4a67",
+    "src/brief.js": "dff4edc4b6be35fc4bd2790278201bc5f219b83edcc3937f4be3c48ed1b83502",
+    "src/cli-discovery.js": "b3948e9628a72087b36dcd718b96d32ef03bea3ec12365c3287dcd22daeccf7a",
+    "src/config-store.js": "7c4a04fa320dc1b0a4ddd9dd5a4f3702b2a881a56d023fe68052aec6f8eb4f5c",
+    "src/connect.js": "45d9d138b3231965d9d3ca686c125a0a0718b657b774a4b6f003f2a46b72234d",
+    "src/defaults/routing-source.md": "2111f5d95240131fcfcdbc90135d895cb4bbcde6023205c72d737516c0a8ace5",
+    "src/defaults/routing.json": "7d3e6a2ad26075affa330c91d310d0ef9853af69e643a911fef8ccb29a41132b",
+    "src/desktop-install.js": "64f4add7a19a3e08f246596f38ef399f2b276e14c938341aa3bf096f467b0ed1",
+    "src/evaluation.js": "66baf34fe8b152b892a692848fdceabdd59cc5b58414f353a243362f41d6886c",
+    "src/execution-sandbox.js": "64257d7b0c9525f690e38e55b16f4bdc304d9932103152a74bc5163f9d5ca75a",
+    "src/meeting.js": "c24a73242274427ddb97207f72c941c430b7a3f9c1cc34adc84955d0e6e01294",
+    "src/minutes.js": "6579190bc98be4142934e10c12870af54a0a02b425564684872ef512db4dd5db",
+    "src/operator-client.js": "b057939c4c4c6daf909d131f648fa7781287871ec11cb04ba9a694e63081b43f",
+    "src/pm.js": "2885f442ef5d91048855150d3ce3bdd003273dc194d7f388869a0494b88642b6",
+    "src/remote.js": "6c53052fd7131429b86d2c200eecad8099557b9359aa2201abe0837385e5111a",
+    "src/retention.js": "9acbf13f931fec3e97112287a44bf25f72576db556464f8b39d4e668b6ca672c",
+    "src/routing-tools.js": "b9bb77bc9023dac5c21a131aed8fb592d60c5e2dd27060f7648950ace480c3bc",
+    "src/routing.js": "a44f5056b2572ae4991d3af6d90cfce6b424467f71b7403e9e9406c061c2d62b",
+    "src/runtime.js": "93c9c1d2eed7918764edba115b458dd237bf138f051f3230b2dffe406846f5de",
+    "src/server.js": "fb021ebf152ab76bced7420f30c1bdaa4b90b014a77c222421d0631662a77652",
+    "src/session-child.js": "7ebd98e90d5d25bccf73be39a0131eb735f697f5329bcef168a202b13e943782",
+    "src/session-supervisor.js": "6e37575aea2edb74cb508d2d7cc572e6da4c6579663fc75aacd920a130b0bca1",
+    "src/skills/agent-meeting/references/cli.md": "fe7aef952ebc678810625df1197831b9f19d1058bcf5850744f9a56fb61ce1a8",
+    "src/skills/agent-meeting/SKILL.md": "44011bb8d82888b834a2f4abb2ffc4742985170a5a77857094a6e82c2de81100",
+    "src/team.js": "fdede46acd2032a415a65a873719dff55ce4b6cfa047e15a867ffbc20e7e7871",
+    "src/tunnel.js": "60c10dd0dc832292bb7a3687602809748e4fcbb1b665b387ff089998dfec5ebf",
+    "src/ui/app.css": "d26960f9c8ac422897ec303e33c6c84151547ce150fbdef0fecc106206176e0f",
+    "src/ui/app.js": "fd371dbb08e176cb303dee32733c23d227a464986cd78f8505ada17ad7a2426d",
+    "src/ui/favicon.svg": "f71b583ae1857da282387a372c939b7da9109ed97084452397ec8f75b3ee7319",
+    "src/ui/i18n.js": "1c84e057d7a9c15561142401c2483b5272cfa32a53358427453f8a1dbc14c78c",
+    "src/ui/index.html": "8c74b07c8bf0a4e4457cfaf72b1c52959b154e83d9ac24a31b263348476d505e",
+    "src/ui/pm-ui.js": "44e0980d1bf776765eec3a0feb577b28dff3210d8391e822f2c30202f8d6eb3b",
+    "src/ui/workspace.css": "ce244e910a65391b049efd7a41f3f45e5ad996cbf566c6472b87fd011e477893",
+    "src/ui/workspace.html": "6a1b29c517b844e9467d0c750a1c99b7eb720ffb136cbd3a260ed171bc76ab57",
+    "src/ui/workspace.js": "9f2417341e3d207fe8c6a39439935dcddde30f55f841becda10807615e001123",
+    "src/work.js": "8a6f324a48c87916e98315ea472154d1655fa11fdb86551c8469f904108eda5e",
+    "src/worker.js": "2b82a25394542964f9bbec3ad0a4c698df30c66e6e8609a0c019b7416d6a6af7"
+  }
+}

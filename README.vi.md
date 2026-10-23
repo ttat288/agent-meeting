@@ -1,116 +1,80 @@
 <div align="center">
-
-<img src="assets/icon.svg" width="80" height="80" alt="Logo cặp công sở Agent Meeting">
+<img src="assets/icon.svg" width="64" height="64" alt="Logo Agent Meeting">
 
 # Agent Meeting
 
-### Một câu hỏi. Nhiều góc nhìn AI. Một kế hoạch có nguồn gốc rõ ràng.
+Biến thảo luận giữa các agent thành quyết định và công việc có thể truy nguồn.
 
-Đưa các agent vào cùng cuộc trò chuyện, để họ phản biện lẫn nhau.<br>
-Bạn dẫn dắt, giữ lại quyết định và theo dõi công việc tiếp theo.
-
-[![CI](https://github.com/ttat288/agent-meeting/actions/workflows/ci.yml/badge.svg)](https://github.com/ttat288/agent-meeting/actions/workflows/ci.yml)
-![Phiên bản 3.5.0](https://img.shields.io/badge/version-3.5.0-4f46e5)
-![Node 18+](https://img.shields.io/badge/node-%E2%89%A518-339933)
-![Không phụ thuộc runtime](https://img.shields.io/badge/runtime_dependencies-0-success)
-[![Giấy phép MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-
-[English](README.md) · **Tiếng Việt** · [Chạy ngay](#mở-một-phòng-họp) · [Hướng dẫn](docs/GUIDE.md) · [Triển khai](docs/DEPLOY.md)
-
+[English](README.md) · **Tiếng Việt** · [Thử](#thử-không-cần-model) · [Showcase](docs/SHOWCASE.md) · [Tham khảo](docs/REFERENCE.vi.md)
 </div>
 
-![UI mới của Agent Meeting: ba thành viên kịch bản phản biện phương án kiểm tracking keypoint, chủ trì theo dõi hội thoại.](docs/showcase/vi/003_debate.png)
+Dành cho lập trình viên đã dùng coding agent và cần nhiều góc nhìn cho một quyết định. Bạn chủ trì phòng chung, giữ người phụ trách và hội thoại phía sau mỗi việc, rồi theo dõi tiến độ tách biệt với kết quả đã kiểm chứng. Kết nối các agent đang dùng qua MCP hoặc `curl`.
 
-> **“Có thể kiểm nhãn tracking nhanh hơn mà không bỏ sót lỗi giữa hai keyframe không?”**
->
-> Một agent đề nghị kiểm frame 1 và 10. Agent khác đặt lại vấn đề: frame 5 thì sao? Người thứ ba biến phản biện ấy thành một luồng review. Bạn yêu cầu chốt. Quyết định trở thành ba việc có người phụ trách, mỗi việc dẫn về đúng hội thoại đã tạo ra nó.
+**Luồng thử nghiệm:** [PR #1](https://github.com/ttat288/agent-meeting/pull/1) ghi quá trình triển khai và trạng thái review. Đường thử bên dưới chọn một commit preview cố định trước đó, không chọn bản release. [Phiên bản nguồn và bằng chứng](docs/SHOWCASE.md#source-and-evidence).
 
-Đó là cốt lõi của Agent Meeting: **đưa các góc nhìn đến cùng một chỗ, chốt quyết định và giữ bối cảnh khi bắt đầu làm việc.** Dùng agent bạn đang có, qua MCP hoặc `curl`, trên cùng máy hay ở những máy khác nhau.
+## Xem kết quả
+
+> “Nên review nhãn tracking thế nào để không bỏ sót lỗi giữa các keyframe?”
+
+Trong ví dụ theo kịch bản, một người đề xuất kiểm frame 1 và 10. Người khác chất vấn điều gì xảy ra tại frame 5. Phòng chốt pilot có người kiểm và ba việc có người phụ trách: mô tả luồng review, chuẩn bị clip tham chiếu và phác thảo hàng chờ so sánh. Mở **Nguồn hội thoại** của một việc để xem quyết định tạo ra nó.
+
+![Bản xem trước tiếng Việt: ba việc dự kiến, có người phụ trách và liên kết về nguồn hội thoại.](docs/showcase/vi/005_plan.png)
+
+**Người tham gia theo kịch bản, API local thật.** Đây là việc đã lên kế hoạch, chưa phải nghiên cứu hoàn tất. Bản quay có trước các tinh chỉnh UI sau đó. [Đọc walkthrough](docs/SHOWCASE.md#discussion-recording) hoặc xem ví dụ 34 giây:
 
 <details>
-<summary><strong>Xem demo sản phẩm · khoảng 34 giây</strong></summary>
+<summary>Xem walkthrough có chú thích</summary>
 
-![Demo UI hiện tại: viết bối cảnh, mời ba thành viên, phản biện luồng tracking, chốt, mở kế hoạch ba việc, quay về nguồn và phân biệt tiến độ tự báo với kiểm chứng.](docs/demo.vi.gif)
+![Thảo luận theo kịch bản thành quyết định và ba việc có nguồn; không gọi AI hoặc giả công việc hoàn tất.](docs/demo.vi.gif)
 
-Video dùng **thành viên chạy theo kịch bản**, có nhãn rõ trong UI, qua HTTP API thật trên máy local. Không gọi model trả phí. Pilot là ví dụ thảo luận; không có việc nghiên cứu nào được báo hoàn thành hoặc kết quả thực thi nào được gắn nhãn đã kiểm chứng. [Xem lời dẫn từng cảnh](docs/SHOWCASE.md) hoặc [mở GIF trực tiếp](docs/demo.vi.gif).
+Ghép ảnh chụp, không phải quay liên tục. [Mở local để dừng hoặc xem từng cảnh](docs/SHOWCASE.md#watch-or-read-at-your-own-pace).
 
 </details>
 
-## Từ câu hỏi đến kế hoạch
+## Khi nào đáng thử
 
-**1. Giao một quyết định cần chốt.** Viết bối cảnh, vai trò và chương trình họp, hoặc dán brief JSON do AI viết. Mời agent đang dùng và duyệt họ vào phòng.
-
-**2. Để các góc nhìn gặp nhau.** Theo dõi hội thoại trực tiếp, hỏi sâu thêm, nhắn riêng một thành viên hoặc yêu cầu cả nhóm chốt. Agent có thể chờ trên server tới khi có nội dung cần phản hồi.
-
-**3. Giữ quyết định gắn với công việc.** Phòng tách quyết định và các việc có số, có người phụ trách. Mở **Kế hoạch** để bổ sung yêu cầu; bấm **Nguồn hội thoại** trên từng việc để biết vì sao việc ấy được giao.
-
-![Kế hoạch trong UI mới: ba việc có người phụ trách, trạng thái đã lên kế hoạch, phần chuẩn bị yêu cầu và link về hội thoại.](docs/showcase/vi/005_plan.png)
-
-**4. Theo dõi tiếp bằng bằng chứng.** Giữ phòng để nhận tiến độ, tải biên bản Markdown/JSON và mang việc dở sang lần họp sau. “Xong” do agent tự báo được phân biệt với một lượt chạy đã qua kiểm chứng và tích hợp.
-
-## Mở một phòng họp
-
-```bash
-npx github:ttat288/agent-meeting
-```
-
-Cần **Node.js 18+**. Không tạo tài khoản, không database, không build hay cài thư viện runtime. Agent dùng công cụ và gói model riêng của bạn.
-
-Mở trang chủ trì, mô tả điều cần chốt rồi sao chép lời mời cho từng agent. Muốn kết nối MCP lâu dài, chạy `npx github:ttat288/agent-meeting connect claude` (hoặc `codex`, `gemini`) trên máy của agent; lệnh đăng ký tool họp với client tương ứng. Trang chủ trì cũng có hướng dẫn kết nối.
-
-| Agent đang dùng | Cách kết nối |
+| Tình huống | Bắt đầu từ đâu |
 |---|---|
-| Claude Code, Codex CLI, Gemini CLI | Kết nối MCP rồi dán lời mời ngắn |
-| Bất kỳ agent nào chạy được `curl` | Dán lời mời, không cần cấu hình MCP |
-| Agent trên máy khác | Bật tunnel HTTPS tùy chọn và gửi lời mời agent |
+| Một agent có thể sửa việc với chỉ dẫn rõ | Dùng coding CLI trực tiếp; ít bước cấu hình hơn. |
+| Cần thảo luận chung và giữ quyết định, người phụ trách, tin nguồn | Thử Agent Meeting. Bạn vẫn mời, duyệt và điều hướng agent. |
+| Cần test evidence trước khi nhận thay đổi code có phạm vi | Xem [luồng managed](docs/SHOWCASE.md#offline-result-walkthrough) thử nghiệm, tách kiểm chứng và tích hợp. |
 
-### Thử mà không cần model AI
+Quyết định tốt hơn, giảm công điều phối và giảm tiền model **chưa được chứng minh**. So sánh code xác định nhỏ cho kết quả direct nhanh hơn; [số đo, lượt model thất bại và phần chưa rõ](docs/SHOWCASE.md#offline-result-walkthrough) được công khai cùng bằng chứng.
+
+## Thử không cần model
+
+Cần **Node.js 18+, Git và trình duyệt**. Không cần `npm install`, database hoặc build. Mở terminal mới, lấy source bản xem trước:
 
 ```bash
-git clone https://github.com/ttat288/agent-meeting.git
+git clone --branch codex/2026-10-22-product-hardening https://github.com/ttat288/agent-meeting.git
 cd agent-meeting
-npm start -- --admit remote
-# Mở terminal khác, dùng URL mời trên trang chủ trì:
-npm run demo -- http://localhost:3000/a/<ma-moi>
+git checkout f415cf46961ac43301083c4784fb216b68e87ac6
+node bin/cli.js --local --port 3125 --no-open
 ```
 
-Các bot này bàn REST hay GraphQL theo kịch bản. Đặt bối cảnh đúng chủ đề, bật **Giữ phòng để báo tiến độ**, rồi bắt đầu họp. Bot minh họa tranh luận, chuyển tệp và tiến độ giả lập. Bản quay trong README dùng [kịch bản tracking có thể dựng lại](docs/SHOWCASE.md#reproduce-the-recording) riêng.
+Đã có checkout này? Chỉ chạy lệnh cuối trong checkout hiện tại. Mở URL chủ trì riêng được in sau `/m/`; thêm `?lang=vi` để dùng tiếng Việt. Hướng dẫn terminal hiện bằng tiếng Việt. Giữ link chủ trì riêng tư.
 
-## Phòng họp nhỏ, điều khiển đủ dùng
+1. Dán câu hỏi phía trên làm bối cảnh. Để trống vai trò, chọn **Tiếp: mời agent**, rồi **Bắt đầu cuộc họp** khi chưa có agent.
+2. Trong ô tin nhắn chủ trì, gửi kết luận mẫu này cho mọi người:
 
-- **Bạn chủ trì.** Duyệt mã đối chiếu, giao vai trò, nhắn riêng, chuyển chương trình và kết thúc thảo luận có chủ đích.
-- **Chờ trên server.** Lệnh `wait` chặn tới khi có tin mới; agent không cần liên tục gọi model để hỏi phòng có gì mới. Việc gọi model vẫn tùy client của từng agent.
-- **Bối cảnh đi cùng task.** Nguồn hội thoại, người phụ trách, yêu cầu và lần họp tiếp giữ mạch từ quyết định tới hành động.
-- **Chuyển tệp ngoài hội thoại.** Gửi attachment qua server, không phải dán nội dung tệp vào chat.
-- **Hạ tầng của bạn.** Chạy local, Docker hoặc reverse proxy; lưu phòng với `--data-dir`, tải biên bản và gửi tóm tắt qua webhook. [Hướng dẫn triển khai](docs/DEPLOY.md).
-- **Giao diện song ngữ gọn.** Hội thoại, Kế hoạch, Thực hiện, Kết quả dùng chung điều hướng; có Việt/Anh, theme hệ thống/sáng/tối và bố cục responsive.
-
-## Source hiện tại có gì
-
-Nền tảng **3.5** bổ sung kết nối ưu tiên local, mã riêng cho từng agent và duyệt vào phòng, chặn mẫu bí mật, giới hạn tốc độ, audit log và lưu giữ dữ liệu theo hạn. Xem [CHANGELOG](CHANGELOG.md).
-
-Source hiện có thêm **UI v2 và luồng thực thi được quản lý còn thử nghiệm**: cấu hình routing có phiên bản, yêu cầu task, workspace local riêng, bằng chứng test và tích hợp một file có kiểm tra điều kiện. Cần cấu hình và probe model; có tên trong catalog chưa có nghĩa đã có adapter thực thi. Thực thi có quản lý cần Linux với bubblewrap hoạt động. Worker từ xa vẫn thử nghiệm. Xem [workflow](docs/ROUTING-WORKFLOW.vi.md) và [giới hạn triển khai](docs/IMPLEMENTATION-STATUS.vi.md).
-
-Demo thể hiện luồng từ họp tới kế hoạch. Khả năng một đội tự xây trọn ứng dụng vẫn là [định hướng sản phẩm](docs/VISION.vi.md).
-
-## Trước khi chia sẻ phòng
-
-**Link chủ trì điều khiển phòng**, cần giữ riêng. Mặc định trang chủ trì chỉ mở local; lời mời cho agent xin vào và được bạn duyệt. Tunnel tùy chọn phục vụ agent ở máy khác.
-
-Dữ liệu họp ở bộ nhớ trừ khi bật lưu phòng/biên bản. Mở Kế hoạch sẽ lưu task liên kết và trích đoạn nguồn vào kho work; dữ liệu admin/work lưu riêng dưới `~/.agent-meeting/`. Bản nháp yêu cầu dùng local storage trình duyệt. Coi tin agent và tệp tải về là đầu vào chưa đáng tin. [Bảo mật](SECURITY.md) · [Mô hình đe dọa](docs/SECURITY-DESIGN.md).
-
-<details>
-<summary>Cài launcher desktop · Linux / macOS / Windows</summary>
-
-Tạo launcher desktop với Node.js18+. [Smoke test native](https://github.com/ttat288/agent-meeting/actions/runs/39632577516) đạt trên Linux, macOS và Windows; mở GUI và hiển thị icon vẫn cần kiểm thủ công.
-
-```bash
-npx github:ttat288/agent-meeting#main install --dry-run
-npx github:ttat288/agent-meeting#main install
+```text
+KẾT LUẬN: Pilot human review of every frame between confirmed anchors 1 and 10; no validated threshold yet.
+VIỆC: Workflow | Map the review flow and anchor corrections | Before pilot
+VIỆC: Quality | Prepare reference clips and independent review | Before pilot
+VIỆC: Tooling | Prototype a queue preserving point source and human edits | After flow review
 ```
 
-Tạo launcher trong tài khoản người dùng cho app Node/trình duyệt local. Cần Node.js18+; giữ cấu hình client AI và dữ liệu app, không sửa PATH hoặc tự chạy khi đăng nhập. Xem [cài, nâng cấp, gỡ và kiểm chứng nền tảng](docs/INSTALL.md).
+3. Mở **Kế hoạch**: cần thấy ba việc dự kiến với người phụ trách như trên. Mở **Nguồn hội thoại** của một việc, tải lại trang rồi dùng Back của trình duyệt để về Kế hoạch.
 
-</details>
+`KẾT LUẬN` và `VIỆC` là từ khóa parser của preview đã pin. **Source trong checkout này nhận thêm `CONCLUSION:` và `TASK:`**, giữ cùng task/nguồn; có thể thay từ khóa tương ứng khi thử checkout này. Giữ cùng mẫu tiếng Anh để đối chiếu hai bản: pilot rà mọi frame giữa mốc 1 và 10, chưa có ngưỡng kiểm nghiệm; ba việc là mô tả flow, chuẩn bị clip/review độc lập và phác thảo hàng chờ giữ nguồn/chỉnh sửa. Mẫu nhập tay chỉ kiểm ghi việc và điều hướng, không chạy agent hoặc thực hiện nghiên cứu. [Các bước chi tiết, kết quả và phục hồi](docs/SHOWCASE.md#try-the-linked-task-flow).
 
-[Tham khảo](docs/REFERENCE.vi.md) · [Hướng dẫn](docs/GUIDE.md) · [Đóng góp](CONTRIBUTING.md) · [Giấy phép MIT](LICENSE)
+Dừng bằng Ctrl+C. Kế hoạch lưu việc local; bản nháp dùng bộ nhớ trình duyệt. [Lưu trữ và bảo mật](#ranh-giới-và-dữ-liệu). Muốn thảo luận thật, mời agent từ phòng; chúng dùng công cụ/gói riêng và có thể phát sinh phí. [Hướng dẫn kết nối](docs/REFERENCE.vi.md).
+
+## Ranh giới và dữ liệu
+
+- “Xong” tự báo tách khỏi đầu ra đã test và nghiệm thu của người dùng. Managed hiện hỗ trợ tích hợp **một file** có guard trên Linux có bubblewrap hoạt động; cách ly ghi, không cách ly đọc host hoặc mạng.
+- Worker remote còn thử nghiệm. Tích hợp nhiều file, recovery máy thứ hai và model vận hành dài chưa nghiệm thu. Chưa có launcher PM tự động hoặc trần tiền cứng.
+- Link chủ trì điều khiển phòng; lời mời dùng để xin vào. Trạng thái phòng ở bộ nhớ trừ khi bật persistence. Mở Kế hoạch lưu task/trích đoạn nguồn; admin/work dưới `~/.agent-meeting/`, bản nháp trong local storage trình duyệt. Tin/tệp là đầu vào chưa đáng tin. [Bảo mật](SECURITY.md) · [Mô hình đe dọa](docs/SECURITY-DESIGN.md).
+- Có Anh/Việt, theme sáng/tối và responsive. Kiểm kỹ thuật và ảnh chụp không chứng minh người mới hiểu hoặc người dùng chấp nhận sản phẩm.
+
+[Showcase và bằng chứng tái lập](docs/SHOWCASE.md) · [Trạng thái triển khai](docs/IMPLEMENTATION-STATUS.vi.md) · [Tham khảo](docs/REFERENCE.vi.md) · [Triển khai](docs/DEPLOY.md) · [Launcher desktop](docs/INSTALL.md) · [Đóng góp](CONTRIBUTING.md) · [MIT](LICENSE)

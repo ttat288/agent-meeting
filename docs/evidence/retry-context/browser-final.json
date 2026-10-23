@@ -1,0 +1,35 @@
+{
+  "recordedAt": "2026-10-23T04:17:07.629Z",
+  "fixture": true,
+  "modelCalls": 0,
+  "flow": [
+    "Run",
+    "Verify fails",
+    "Explicit retry without configure or another profile selection",
+    "Verify",
+    "Integrate and source tests",
+    "Conversation source",
+    "Back",
+    "Reload"
+  ],
+  "state": {
+    "height": 812,
+    "overflow": false,
+    "retryText": "Previous failed checks included. Diagnostics shortened; original evidence is retained.",
+    "runIds": [
+      "b4455d6d-a199-47f7-ad28-0894621ab99d",
+      "ac8ef581-62e0-4f81-91cd-c8b151f0a2c2"
+    ],
+    "taskIds": [
+      "meeting-e5b450dedda4688c00359b793f073b6c"
+    ],
+    "url": "http://127.0.0.1:3182/m/host_csv_retry_preview_1234?lang=en#results",
+    "visibleText": "Results (1)\nLive updates\nRefresh\nFix CSV cell escaping\n\nTask #1 · Dev\n\nIntegrated and tested\nAttempt 2\nIntegrated\n\nPrevious failed checks included. Diagnostics shortened; original evidence is retained.\n\nScripted CSV patch selected from supplied diagnostics; not model reasoning.\n\nChanged files: csv-cell.js\n\nTests passed: 2/2\n\nEvidence and handoff files\nEarlier attempt · Failed\nConversation source\nTask details\nRun measurements\nSession context",
+    "width": 1280
+  },
+  "logs": [],
+  "limits": [
+    "Scripted patch participant, not a model or human UX trial.",
+    "Fresh preview after canonical source guard; earlier locale/geometry matrix uses byte-identical UI assets."
+  ]
+}

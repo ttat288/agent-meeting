@@ -1,0 +1,47 @@
+{
+  "checks": [
+    {
+      "case": "access_failure",
+      "text": "Probe failed\n\nReported model: unknown · 2026-10-22T19:00:21.566Z\n\nControlled access failure: fixture quota unavailable",
+      "probeEnabled": true,
+      "sourcePhase": "before mapping-save focus refinement"
+    },
+    {
+      "case": "model_mismatch_diagnostic_focus",
+      "diagnosticsOpen": true,
+      "focusParent": "runtimeDiagnostics",
+      "focusTag": "SUMMARY",
+      "positiveStatus": "stale",
+      "text": "Model unconfirmed\n\nReported model: different-fixture-model · 2026-10-22T19:00:42.872Z",
+      "sourcePhase": "before mapping-save focus refinement"
+    },
+    {
+      "case": "late_probe_keeps_open_mapping_draft",
+      "access": "Model matched\n\nReported model: fixture-model · 2026-10-22T19:01:22.576Z",
+      "diagnosticsOpen": true,
+      "focus": "model-opus-claude",
+      "mappingOpen": true,
+      "model": "astra",
+      "probeDisabled": true,
+      "sourcePhase": "before mapping-save focus refinement"
+    },
+    {
+      "case": "saved_mapping_focus",
+      "sourcePhase": "current source",
+      "config": "Administration\n\nAgents & runtimes\nConfiguration v6",
+      "focus": "mapping-toggle-opus-claude",
+      "mappingOpen": false,
+      "model": "opus"
+    },
+    {
+      "case": "saved_mapping_fresh_probe",
+      "sourcePhase": "current source",
+      "text": "Model matched\n\nReported model: fixture-model · 2026-10-22T19:02:56.916Z"
+    }
+  ],
+  "limits": [
+    "Private fixture at3154, deterministic runner; zero native model invocations",
+    "Early failure/mismatch/draft checks predate the small mapping-save focus refinement; phases retained",
+    "Save changes private config4→5→6 only; main matched-layout fixture config3 untouched"
+  ]
+}

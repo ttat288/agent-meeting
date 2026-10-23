@@ -1,0 +1,52 @@
+{
+  "schema": "agent-meeting/shift-model-attempts@1",
+  "attempts": [
+    {
+      "case": "runtime-evidence-writer",
+      "id": "claude-direct-01",
+      "requestedModel": "claude-opus-5-5",
+      "status": "OAuth-revoked",
+      "invocations": 1,
+      "billedCostUsd": null,
+      "source": "model-ledger.json"
+    },
+    {
+      "case": "readonly-runtime-audit-v1",
+      "id": "direct-01",
+      "requestedModel": "claude-opus-4-6-thinking",
+      "actualModel": "unknown",
+      "status": "CLI-flag-validation-failed",
+      "elapsedMs": 89.427449,
+      "usage": null,
+      "billedCostUsd": null,
+      "rawSha256": "d687edb6bddb8148a172e071093b9201fb856a44174d9b55dc24daef7200b5d2"
+    },
+    {
+      "case": "readonly-runtime-audit-v1",
+      "id": "direct-02",
+      "requestedModel": "claude-opus-4-6-thinking",
+      "actualModel": "unknown",
+      "status": "permission-interrupted-SUCCESS-envelope",
+      "elapsedMs": 42367.758427999994,
+      "usage": {
+        "input_tokens": 16289,
+        "output_tokens": 1169,
+        "thinking_tokens": 0,
+        "cache_read_tokens": 8441,
+        "total_tokens": 17458
+      },
+      "billedCostUsd": null,
+      "rawSha256": "682c080447d42636b452bd91e5192ce1b4307223f8132ff1ab41538eb728e31c"
+    }
+  ],
+  "invocationAttempts": 3,
+  "modelResponseObserved": 1,
+  "billedTotalUsd": null,
+  "externalCodexPreparationCostUsd": null,
+  "modelEfficacyComparison": false,
+  "notes": [
+    "All failed/technical attempts retained. No new invocation after read-only case cap2.",
+    "Metadata/version/help commands are not inference calls; provider billing was not reconciled.",
+    "HTTP fixtures and watcher soak are separate local measurements, not model or eight-hour acceptance."
+  ]
+}

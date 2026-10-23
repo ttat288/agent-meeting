@@ -1,0 +1,17 @@
+{
+  "recordedAt": "2026-10-22T19:19:16.343545+00:00",
+  "sourceCommit": "5c9e519",
+  "sourceSha256": {
+    "src/ui/workspace.js": "3b84b4575540cf7376f11ba95d4ab2470de762e2fd1a10cd93f1b9f980e97762",
+    "src/ui/workspace.css": "c7c142354e5f145dd932ad46412510be27515fa64c6757fd5c7461ce5ca1e746"
+  },
+  "case": {
+    "width": 375,
+    "scrollWidth": 360,
+    "locale": "vi",
+    "headerHeight": 113,
+    "sidebarHeight": 157,
+    "mainTop": 270
+  },
+  "scope": "Actual DOM width on selected browser tab4. Earlier file named mobile was width1280 after tab3 became selected; renamed desktop, actual375 image captured separately. Original12 runtime layout cases predated tab3 and recorded actual widths correctly."
+}

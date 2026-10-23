@@ -1,0 +1,414 @@
+{
+  "recordedAt": "2026-10-22T19:30:21.529172+00:00",
+  "runs": {
+    "push": {
+      "conclusion": "success",
+      "databaseId": 39835043314,
+      "event": "push",
+      "headSha": "2ac17135aa040a87a822d3bd39257a626177c33f",
+      "jobs": [
+        {
+          "completedAt": "2026-10-22T18:54:01Z",
+          "conclusion": "success",
+          "databaseId": 120021009659,
+          "name": "native-smoke (macos-latest)",
+          "startedAt": "2026-10-22T18:53:49Z",
+          "status": "completed",
+          "steps": [
+            {
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Run actions/setup-node@v4",
+              "number": 3,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Prepare Linux desktop validation tools",
+              "number": 4,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Linux native installer smoke (bounded)",
+              "number": 5,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "macOS and Windows native installer smoke (temporary user paths only)",
+              "number": 6,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Run actions/setup-node@v4",
+              "number": 11,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 12,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 13,
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/ttat288/agent-meeting/actions/runs/39835043314/job/120021009659"
+        },
+        {
+          "completedAt": "2026-10-22T18:54:37Z",
+          "conclusion": "success",
+          "databaseId": 120021010196,
+          "name": "native-smoke (windows-latest)",
+          "startedAt": "2026-10-22T18:54:04Z",
+          "status": "completed",
+          "steps": [
+            {
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Run actions/setup-node@v4",
+              "number": 3,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Prepare Linux desktop validation tools",
+              "number": 4,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Linux native installer smoke (bounded)",
+              "number": 5,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "macOS and Windows native installer smoke (temporary user paths only)",
+              "number": 6,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Run actions/setup-node@v4",
+              "number": 11,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 12,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 13,
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/ttat288/agent-meeting/actions/runs/39835043314/job/120021010196"
+        },
+        {
+          "completedAt": "2026-10-22T18:53:46Z",
+          "conclusion": "success",
+          "databaseId": 120021010299,
+          "name": "native-smoke (ubuntu-22.04)",
+          "startedAt": "2026-10-22T18:51:35Z",
+          "status": "completed",
+          "steps": [
+            {
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Run actions/setup-node@v4",
+              "number": 3,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Prepare Linux desktop validation tools",
+              "number": 4,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Linux native installer smoke (bounded)",
+              "number": 5,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "macOS and Windows native installer smoke (temporary user paths only)",
+              "number": 6,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Run actions/setup-node@v4",
+              "number": 11,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 12,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 13,
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/ttat288/agent-meeting/actions/runs/39835043314/job/120021010299"
+        }
+      ],
+      "status": "completed"
+    },
+    "pr": {
+      "conclusion": "success",
+      "databaseId": 39835053353,
+      "event": "pull_request",
+      "headSha": "2ac17135aa040a87a822d3bd39257a626177c33f",
+      "jobs": [
+        {
+          "completedAt": "2026-10-22T18:53:10Z",
+          "conclusion": "success",
+          "databaseId": 120021046545,
+          "name": "native-smoke (windows-latest)",
+          "startedAt": "2026-10-22T18:52:39Z",
+          "status": "completed",
+          "steps": [
+            {
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Run actions/setup-node@v4",
+              "number": 3,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Prepare Linux desktop validation tools",
+              "number": 4,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Linux native installer smoke (bounded)",
+              "number": 5,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "macOS and Windows native installer smoke (temporary user paths only)",
+              "number": 6,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Run actions/setup-node@v4",
+              "number": 11,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 12,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 13,
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/ttat288/agent-meeting/actions/runs/39835053353/job/120021046545"
+        },
+        {
+          "completedAt": "0001-01-01T00:00:00Z",
+          "conclusion": "",
+          "databaseId": 120021046755,
+          "name": "native-smoke (ubuntu-22.04)",
+          "startedAt": "2026-10-22T18:51:40Z",
+          "status": "in_progress",
+          "steps": [
+            {
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Run actions/setup-node@v4",
+              "number": 3,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Prepare Linux desktop validation tools",
+              "number": 4,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Linux native installer smoke (bounded)",
+              "number": 5,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "macOS and Windows native installer smoke (temporary user paths only)",
+              "number": 6,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Run actions/setup-node@v4",
+              "number": 11,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 12,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 13,
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/ttat288/agent-meeting/actions/runs/39835053353/job/120021046755"
+        },
+        {
+          "completedAt": "2026-10-22T18:52:36Z",
+          "conclusion": "success",
+          "databaseId": 120021047059,
+          "name": "native-smoke (macos-latest)",
+          "startedAt": "2026-10-22T18:52:21Z",
+          "status": "completed",
+          "steps": [
+            {
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Run actions/checkout@v4",
+              "number": 2,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Run actions/setup-node@v4",
+              "number": 3,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Prepare Linux desktop validation tools",
+              "number": 4,
+              "status": "completed"
+            },
+            {
+              "conclusion": "skipped",
+              "name": "Linux native installer smoke (bounded)",
+              "number": 5,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "macOS and Windows native installer smoke (temporary user paths only)",
+              "number": 6,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Run actions/setup-node@v4",
+              "number": 11,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@v4",
+              "number": 12,
+              "status": "completed"
+            },
+            {
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 13,
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/ttat288/agent-meeting/actions/runs/39835053353/job/120021047059"
+        }
+      ],
+      "status": "completed"
+    }
+  },
+  "scope": "Actual duplicate Desktop installer workflows on same2ac1713 SHA; not inferred billing savings"
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "agent-meeting/pm-wait-control@1",
+  "modelCalls": 0,
+  "usage": null,
+  "costUsd": null,
+  "fullStateBytes": 1363,
+  "unchangedStateBytes": 171,
+  "cursorWaitMs": 0,
+  "legacyWaitMs": 505,
+  "changedDelivered": true,
+  "scope": "Transport control only. Legacy wait released by a 500ms sentinel. No model, token or total billing conclusion."
+}

@@ -37,6 +37,19 @@ function coordinator(config, lease, overrides = {}) {
 }
 const reported = { status: 'reported', reportedModel: 'actual-machine-model', text: 'Changed file; needs verification.' };
 
+test('worker preserves prototype-named source input and rejects prototype-named out-of-scope output', async t => {
+  const { config, lease } = setup(t);
+  fs.writeFileSync(path.join(config.workspace, '__proto__'), 'Original special source');
+  const { calls, fetcher } = coordinator(config, lease);
+  await assert.rejects(runWorkerOnce(config, { fetch: fetcher, runner: async ({ workspace }) => {
+    assert.equal(fs.readFileSync(path.join(workspace, '__proto__'), 'utf8'), 'Original special source');
+    fs.writeFileSync(path.join(workspace, '__proto__'), 'Unscoped change');
+    return reported;
+  } }), /outside.*scope/i);
+  assert(!calls.some(c => c.action === 'complete'));
+  assert.equal(fs.readFileSync(path.join(config.workspace, '__proto__'), 'utf8'), 'Original special source');
+});
+
 test('worker registers actual HEAD, executes only in a separate copy, preserves source and submits hashed provenance', async t => {
   const { config, lease } = setup(t);
   fs.writeFileSync(path.join(config.workspace, 'ignored-secret'), 'DO NOT COPY');

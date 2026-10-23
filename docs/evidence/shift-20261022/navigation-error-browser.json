@@ -1,0 +1,30 @@
+{
+  "at": "2026-10-22T21:01:00.401Z",
+  "checks": [
+    {
+      "at": "2026-10-22T21:00:03.170Z",
+      "cards": 3,
+      "error": null,
+      "hash": "#plan",
+      "title": "Kế hoạch (3)",
+      "width": 375
+    },
+    {
+      "at": "2026-10-22T21:00:03.370Z",
+      "cards": 3,
+      "error": null,
+      "hash": "#execute",
+      "title": "Thực hiện (3)",
+      "width": 375
+    },
+    {
+      "at": "2026-10-22T21:00:03.559Z",
+      "cards": 1,
+      "error": null,
+      "hash": "#results",
+      "title": "Kết quả (1)",
+      "width": 375
+    }
+  ],
+  "scope": "Normal VI375 routes after catch request/hash guard. Two stale-error browser baseline attempts were inconclusive; do not treat absence of alert here as proof that a particular delayed navigation failed. Actual-function unit red/green supplies that race evidence."
+}

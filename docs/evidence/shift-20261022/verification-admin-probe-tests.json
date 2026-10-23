@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-10-22T18:44:30.978097+00:00",
+  "counts": {
+    "tests": 373,
+    "pass": 373,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "files": 33,
+  "sourceSha256": {
+    "src/work.js": "511d31a3c34b9834e52a1eee424d8ff0fb4b0da658acd155c9084b96c87670c2",
+    "src/server.js": "fb021ebf152ab76bced7420f30c1bdaa4b90b014a77c222421d0631662a77652",
+    "src/ui/workspace.js": "9a0d3866ddbf82f998a2f4c75e0da35c541cfba42f1cf1805c7cb50f5b76730d",
+    "test/work.test.js": "d4164ad7dd44d361a3632f2d8e9600d158904b97782b1accf35adc908b01d6e1",
+    "test/work-server.test.js": "7c6a19d551851fab8bdc39aab72091f49dce8693b15329afc05e842bdec07bf5",
+    "tools/consistency-preview.js": "c249c833562d54c259a358502dfdd006cb6c4b3a237ce29f71cdc81e9f6badfe"
+  },
+  "command": "systemd-run --user --scope -q -p MemoryMax=1200M -p MemorySwapMax=0 timeout 900 npm test",
+  "scope": "Local integrated deterministic adapters and real Node tests; zero native model invocations; not model efficacy or billing proof"
+}

@@ -317,7 +317,7 @@ npx github:ttat288/agent-meeting --local --no-open --admit none \
 | Tool | Tác dụng |
 |---|---|
 | `join(name, model)` | Vào phòng với tên tự đặt và model đang chạy, nhận giao thức cuộc họp. Gọi đầu tiên; trùng tên thì đặt tên khác. |
-| `wait(name)` | Chờ tin mới hoặc tới lượt (chặn tới ~50 giây, không tốn token). |
+| `wait(name)` | Chờ tin mới hoặc tới lượt (chặn tới ~50 giây; nội dung trả về vẫn dùng context). |
 | `say(name, text)` | Phát biểu. Dùng các dòng `KẾT LUẬN:`, `VIỆC:`, `XONG MỤC n:` để ghi kết quả. |
 | `pass(name)` | Bỏ lượt (chế độ lần lượt). |
 | `typing(name)` | Báo đang soạn tin dài. |
@@ -389,3 +389,47 @@ Dockerfile         image node:22-alpine cho server công ty (docs/DEPLOY.md)
 ```
 
 Trang chủ trì dùng long-poll thay cho SSE/WebSocket vì tunnel miễn phí của Cloudflare không hỗ trợ SSE.
+
+### CLI, skill và lịch sử có giới hạn
+
+Trong checkout, thay `agent-meeting` bằng `node bin/cli.js`. Các lệnh này chỉ đọc, không cài skill, chạy script hay sửa settings:
+
+```bash
+agent-meeting doctor
+agent-meeting skills list
+agent-meeting skills show agent-meeting
+agent-meeting skills list --local --query security
+agent-meeting skills list --local --graph --query network
+agent-meeting skills inspect my-skill --local
+agent-meeting skills show my-skill --local --resource references/network.md
+```
+
+`--local` chỉ đọc `.agents/skills` của cwd; `--dir <thư mục skills>` chọn catalog khác. List chỉ lấy frontmatter có giới hạn, phân trang bằng `--limit` (1–20)/`--offset`. Inspect trả liên kết resource khai báo thật và hash manifest; chưa đọc nội dung tham chiếu. `--graph` tìm thêm theo đường dẫn tham chiếu, chưa có tìm kiếm ngữ nghĩa. File thiếu/đường dẫn không an toàn/symlink không được đọc. Show in một file text nguyên vẹn tối đa32000 byte; file lớn hơn cần xem trực tiếp. Catalog hỗ trợ name/description YAML đơn giản, bỏ qua manifest không hợp lệ; không phải kiểm kê skill global của mọi CLI. In skill không tự kích hoạt discovery: việc cài theo CLI do người dùng chọn riêng.
+
+Doctor ẩn URL/mã phòng, chỉ kiểm hiện diện local; chưa xác minh đăng ký MCP, server sống, quyền client/model. Bridge đã cài trước thay đổi cần người dùng yêu cầu reconnect để nhận schema mới.
+
+Dùng wait để nhận tin chưa đọc. Khi cần tìm lại một đoạn: `history(offset=0, limit=20, maxChars=8000)` trả JSON có messages/nextOffset/chars/oversized; curl nhận cùng tham số query. Offset đếm tin mà danh tính đã xác thực được phép xem; chỉ theo nextOffset khi cần thêm, không làm tiến cursor wait. Một tin quá cỡ vẫn giữ nguyên. maxChars đếm ký tự Unicode của nội dung, không phải byte JSON hay token. Không truyền tham số thì giữ hành vi cũ trả toàn bộ. Đọc mọi trang có overhead; tiết kiệm khi chỉ cần một đoạn. Tin mới có thể nối tiếp kết quả; mở cuộc họp mới phải bỏ offset cũ. Giới hạn transport không tự chứng minh giảm billing model.
+
+## Chủ trì qua PM CLI (thử nghiệm local)
+
+Trong trang phiên mở **Tùy chọn → Agent làm chủ trì**, dán prompt riêng vào CLI đang mở trên cùng máy. PM dùng `bin/pm.js` join, báo mã4 số; bạn đối chiếu và xác nhận trên web. Bạn là giám đốc: giao mục tiêu/acceptance, cấp grant workspace/path/tests/profile đã cấu hình và probe, số lượt và expiry; sau đó PM tự gọi plan/run/verify/integrate/report. Không có model launcher: tạo lời mời hoặc grant không tự chạy model. Profile cần probe bằng quyền host và có thể tốn phí khi dùng model thật.
+
+**Dừng PM**, **Thu hồi quyền PM**, **Tôi tiếp quản** luôn có trên thanh Chủ trì. Xem task/run/evidence trong Kế hoạch/Thực hiện/Kết quả; nguồn task PM quay về mục tiêu riêng. Sửa mục tiêu vô hiệu grant/kết quả cũ và yêu cầu cancel run. Reload giữ dữ liệu; restart/mất lease cần mời/xác nhận/grant lại, không chứng minh CLI cũ tiếp tục chạy. Nếu request timeout, PM đọc state trước khi thử lại.
+
+PM `state`/`wait` nhận `cursor` tùy chọn từ snapshot cuối (giữ nguyên `after`). Cursor cũ trả ngay snapshot mới; cursor hiện hành có thể trả `unchanged:true` cùng trạng thái/lease để caller giữ snapshot trước. `wait` với cursor hiện hành chờ tối đa25 giây; không truyền cursor giữ hành vi cũ. CLI không tự lưu cursor. Đây là tối ưu payload/idle wait, chưa là bằng chứng chi phí model.
+
+Mặc định chặn run có cost unknown. Chỉ cấp checkbox unknown cost khi chấp nhận chi phí chưa biết; run cap không là hard monetary cap. Usage PM ngoài server chưa quan sát được. Expert review bắt buộc và multi-file vẫn chặn tự tích hợp. Đây là luồng có kiểm soát và bằng chứng; chưa chứng minh tiết kiệm hơn coding CLI trực tiếp. [Bằng chứng fixture/giới hạn](evidence/pm-operator/ACCEPTANCE.vi.md).
+
+### Team local và swap cùng slot (workspace, chưa release)
+
+Khi director cấp `team` trong PM grant, dùng `bin/pm.js` với các operation `team-invite`, `approve-plan`, `watch`, `events`, `ack-event`, `chair` và report hiện có. `bin/team.js` dùng biến môi trường riêng `AGENT_MEETING_TEAM_URL=http://127.0.0.1:<port>/api/team/<room>` và `AGENT_MEETING_TEAM_TOKEN`; nhận `join|state|propose|run|checkpoint|swap|verify|integrate|submit|blocker` cùng JSON. Mutation team phải có runtime generation hiện tại. Không dùng hostKey/PM token cho lead; không tự cài MCP/settings.
+
+Hành trình/JSON contract và quyền: [prompt PM](prompts/pm-operator.vi.md#khi-grant-có-team--pm-theo-sự-kiện-apicli-local). Một task/slot A, scope một file, Linux/bwrap và model observation có sẵn. Watch chờ bằng code, không tự mở CLI/model đã tắt. Swap có checkpoint/hash, read-only bootstrap, exact ACK và process-group drain trước chuyển generation; cùng task/run/WIP. Session limit60/120/180 phút hoặc null tách cap invocation/run/swap/wake và expiry, không là trần tiền cứng. UI team mới, paid model và8h chưa nghiệm thu; xem [evidence](evidence/pm-team/ACCEPTANCE.vi.md).
+
+Ở mốc checkpoint, giữ `decisions` (quyết định đã chọn và lý do ngắn), `unknowns`, `next` hiện có; có thể ghi thêm `continuation: {failedAttempts: [{attempt, outcome, avoid}], blockers: [{issue, resolution}]}` ngay trong output đó. Hai mảng phải hiện diện rõ, tối đa10 mục/mảng, mỗi field text không rỗng và tối đa1000 ký tự; áp dụng kiểm mẫu credential. `resolution` là điều kiện cần để gỡ blocker. Mảng rỗng nghĩa caller ghi rõ chưa có tại mốc này; không gửi record thì vẫn unknown. Không ghi suy nghĩ nội bộ, không cấp quyền hoặc gọi model riêng để summary.
+
+`tools/carry-canonical.js` là experiment local gọi tường minh với store canonical được truyền vào, có reference evidence công khai giới hạn và kiểm nguồn/revision hiện hành; chưa có default store, CLI, runtime hook hoặc controller. Journey tự động chỉ dùng kho do test tạo và executable fixture. [Assessment và cách tái lập](evidence/context-window/carry-review/ASSESSMENT.vi.md#lát-cắt-canonical-local-trong60-phút-2026-10-22) phân biệt overhead byte với chất lượng/token/billing model chưa đo.
+
+## Cập nhật công việc trực tiếp
+
+Kế hoạch/Thực hiện/Kết quả kiểm thay đổi task/run ngoài trang khi đang hiển thị. Dữ liệu không đổi dùng `If-None-Match`/HTTP304. Khi đang sửa, focus bàn phím hoặc mở bằng chứng, DOM được giữ lại; **Xem cập nhật** áp dụng trạng thái đang chờ. Lượt đọc foreground hủy background cũ; đổi view xóa tag cache. Offline giữ kết quả cuối và thử lại, khoảng chờ tối đa30 giây, mỗi request nền tối đa10 giây. Đây là transport polling, không bảo đảm model/billing. Lịch sử PM ở chế độ human mở qua Tùy chọn hoặc link nguồn; tiếp quản đóng vùng giám sát nhưng không xóa lịch sử.

@@ -1,0 +1,29 @@
+{
+  "recordedAt": "2026-10-22T22:47:06.605272+00:00",
+  "baseCommit": "805f638bdd68cb08103c8c1ca93b832be54e1a69",
+  "sourceCommit": "953225b92604e706d37e49cdb6688bb94a3c4f20",
+  "runtimeBefore": {
+    "files": 63,
+    "bytes": 887535
+  },
+  "runtimeAfter": {
+    "files": 63,
+    "bytes": 918444
+  },
+  "runtimeDeltaBytes": 30909,
+  "uiHashesUnchangedSinceFb50427": true,
+  "cancellationGraceMs": 2000,
+  "limits": [
+    "Git blob bytes only; no CPU/tokens/billing/quality inference.",
+    "Two-second escalation applies to cancellation/timeout/output-limit, not successful completion.",
+    "UI/HTTP earlier receipts retain their own source versions; HTTP hashed files separately compared above.",
+    "Public evidence grows with final receipts and is not in npm; previous point-in-time source-copy receipt is not an end-of-shift size."
+  ],
+  "httpHashedFilesMatch": {
+    "src/server.js": true,
+    "src/work.js": true,
+    "src/remote.js": true,
+    "src/ui/workspace.js": true,
+    "tools/benchmark-work-watch.js": true
+  }
+}

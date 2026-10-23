@@ -1,0 +1,24 @@
+{
+  "schema": "agent-meeting/agy-selected-receipt@1",
+  "status": "SUCCESS",
+  "response": "Now let me trace through `parseOutput` for each case carefully, then verify with Node.\n",
+  "duration_seconds": 26.555170136,
+  "num_turns": 1,
+  "usage": {
+    "input_tokens": 16289,
+    "output_tokens": 1169,
+    "thinking_tokens": 0,
+    "cache_read_tokens": 8441,
+    "total_tokens": 17458
+  },
+  "denied_actions": [
+    {
+      "action": "command",
+      "display_name": "RunCommand"
+    }
+  ],
+  "omitted": [
+    "conversation_id"
+  ],
+  "rawStdoutSha256": "81bd3621d2ddd3883c2199792e994659a3301b40895d383a5d92090a8cf61719"
+}

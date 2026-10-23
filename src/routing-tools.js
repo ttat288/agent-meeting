@@ -6,9 +6,21 @@ const { ConfigStore } = require('./config-store');
 function observationStore(store) {
   return new ConfigStore({ dir: path.join(store.dir, 'runtime-observations'), defaults: () => ({ schema: 'agent-meeting/observations@1', revision: 1, observations: [] }), validate: d => { if (d.schema !== 'agent-meeting/observations@1' || !Array.isArray(d.observations) || d.observations.length > 100) throw new Error('Invalid runtime observations'); } });
 }
+function currentEnvironment(config, observations, now = Date.now()) {
+  const latest = new Map();
+  for (const o of observations) {
+    const profile = o && config.profiles.find(p => p.id === o.profileId);
+    const checked = Date.parse(o?.checkedAt), age = now - checked;
+    if (!profile || o.configRevision !== config.revision || profile.runtimeId !== o.runtimeId || !(age >= 0 && age < 30 * 60000)) continue;
+    const previous = latest.get(o.profileId);
+    // Callers place the shared persisted copy last, so it wins timestamp ties.
+    if (!previous || checked >= Date.parse(previous.checkedAt)) latest.set(o.profileId, o);
+  }
+  return [...latest.values()];
+}
 function savedEnvironment(store, config) {
   if (!store.dir) return [];
-  return observationStore(store).read().observations.filter(o => o.configRevision === config.revision && config.profiles.some(p => p.id === o.profileId && p.runtimeId === o.runtimeId) && Date.now() - Date.parse(o.checkedAt) >= 0 && Date.now() - Date.parse(o.checkedAt) < 30 * 60000);
+  return currentEnvironment(config, observationStore(store).read().observations);
 }
 // Deliberately separate from server.TOOLS/connect.ALLOWED. No execution or writes.
 const object = { type: 'object', properties: {} };
@@ -28,4 +40,4 @@ function query(store, name, args = {}, environment) {
     default: throw new Error('Unknown routing tool');
   }
 }
-module.exports = { TOOLS, query, observationStore, savedEnvironment };
+module.exports = { TOOLS, query, observationStore, savedEnvironment, currentEnvironment };

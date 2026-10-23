@@ -1,0 +1,349 @@
+{
+  "at": "2026-10-22T19:44:09.736871+00:00",
+  "sourceCommit": "13e4cce0e40c975570021ac01af4ee1d4c86c5a0",
+  "desktopPrRun": 39841507338,
+  "desktopPushRun": 39841501626,
+  "desktopJobs": [
+    {
+      "name": "native-smoke (macos-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success",
+          "status": "completed"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success",
+          "status": "completed"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "conclusion": "success",
+          "status": "completed"
+        },
+        {
+          "name": "Prepare Linux desktop validation tools",
+          "conclusion": "skipped",
+          "status": "completed"
+        },
+        {
+          "name": "Linux native installer smoke (bounded)",
+          "conclusion": "skipped",
+          "status": "completed"
+        },
+        {
+          "name": "macOS and Windows native installer smoke (temporary user paths only)",
+          "conclusion": "success",
+          "status": "completed"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "conclusion": "success",
+          "status": "completed"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success",
+          "status": "completed"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success",
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "name": "native-smoke (ubuntu-22.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success",
+          "status": "completed"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success",
+          "status": "completed"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "conclusion": "success",
+          "status": "completed"
+        },
+        {
+          "name": "Prepare Linux desktop validation tools",
+          "conclusion": "success",
+          "status": "completed"
+        },
+        {
+          "name": "Linux native installer smoke (bounded)",
+          "conclusion": "success",
+          "status": "completed"
+        },
+        {
+          "name": "macOS and Windows native installer smoke (temporary user paths only)",
+          "conclusion": "skipped",
+          "status": "completed"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "conclusion": "success",
+          "status": "completed"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success",
+          "status": "completed"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success",
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "name": "native-smoke (windows-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success",
+          "status": "completed"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success",
+          "status": "completed"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "conclusion": "success",
+          "status": "completed"
+        },
+        {
+          "name": "Prepare Linux desktop validation tools",
+          "conclusion": "skipped",
+          "status": "completed"
+        },
+        {
+          "name": "Linux native installer smoke (bounded)",
+          "conclusion": "skipped",
+          "status": "completed"
+        },
+        {
+          "name": "macOS and Windows native installer smoke (temporary user paths only)",
+          "conclusion": "success",
+          "status": "completed"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "conclusion": "success",
+          "status": "completed"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success",
+          "status": "completed"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success",
+          "status": "completed"
+        }
+      ]
+    }
+  ],
+  "mainCiSnapshot": {
+    "conclusion": "success",
+    "headSha": "13e4cce0e40c975570021ac01af4ee1d4c86c5a0",
+    "jobs": [
+      {
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "databaseId": 120043477087,
+        "name": "test (20)",
+        "startedAt": "2026-10-22T19:38:05Z",
+        "status": "in_progress",
+        "steps": [
+          {
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Run actions/setup-node@v4",
+            "number": 3,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Prepare filesystem sandbox",
+            "number": 4,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Test sequentially with memory and time limits",
+            "number": 5,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Post Run actions/setup-node@v4",
+            "number": 9,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 10,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 11,
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/ttat288/agent-meeting/actions/runs/39841507363/job/120043477087"
+      },
+      {
+        "completedAt": "2026-10-22T19:38:03Z",
+        "conclusion": "success",
+        "databaseId": 120043477466,
+        "name": "test (18)",
+        "startedAt": "2026-10-22T19:36:08Z",
+        "status": "completed",
+        "steps": [
+          {
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Run actions/setup-node@v4",
+            "number": 3,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Prepare filesystem sandbox",
+            "number": 4,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Test sequentially with memory and time limits",
+            "number": 5,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Post Run actions/setup-node@v4",
+            "number": 9,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 10,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 11,
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/ttat288/agent-meeting/actions/runs/39841507363/job/120043477466"
+      },
+      {
+        "completedAt": "2026-10-22T19:41:00Z",
+        "conclusion": "success",
+        "databaseId": 120043477577,
+        "name": "test (22)",
+        "startedAt": "2026-10-22T19:39:44Z",
+        "status": "completed",
+        "steps": [
+          {
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Run actions/setup-node@v4",
+            "number": 3,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Prepare filesystem sandbox",
+            "number": 4,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Test sequentially with memory and time limits",
+            "number": 5,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Post Run actions/setup-node@v4",
+            "number": 9,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 10,
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 11,
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/ttat288/agent-meeting/actions/runs/39841507363/job/120043477577"
+      }
+    ],
+    "status": "completed"
+  },
+  "scope": "Actual Ubuntu apt preparation/native3OS passed; main Node snapshot18/22 success,20 still running at capture. Duplicate Desktop push cancelled, PR success per workflow listing; not money saved."
+}

@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: host config shares catalog revision with routing and persists a model across app restart
+ok 1 - host config shares catalog revision with routing and persists a model across app restart
+  ---
+  duration_ms: 115.955305
+  type: 'test'
+  ...
+# Subtest: config CAS and invalid updates preserve the last complete snapshot
+ok 2 - config CAS and invalid updates preserve the last complete snapshot
+  ---
+  duration_ms: 25.647038
+  type: 'test'
+  ...
+# Subtest: invitation and unknown capabilities cannot read or change config, tasks, or workspace pages
+ok 3 - invitation and unknown capabilities cannot read or change config, tasks, or workspace pages
+  ---
+  duration_ms: 17.438744
+  type: 'test'
+  ...
+# Subtest: host mutations reject cross-origin browser requests before config or task writes
+ok 4 - host mutations reject cross-origin browser requests before config or task writes
+  ---
+  duration_ms: 15.649659
+  type: 'test'
+  ...
+# Subtest: tunnel and forwarded remote requests cannot access machine controls even with remoteHost enabled
+ok 5 - tunnel and forwarded remote requests cannot access machine controls even with remoteHost enabled
+  ---
+  duration_ms: 19.302602
+  type: 'test'
+  ...
+# Subtest: workspace/admin and self-hosted assets keep CSP while the existing room API still works
+ok 6 - workspace/admin and self-hosted assets keep CSP while the existing room API still works
+  ---
+  duration_ms: 17.513519
+  type: 'test'
+  ...
+# Subtest: work endpoints save actual plans without launching a process and reject malformed tasks
+ok 7 - work endpoints save actual plans without launching a process and reject malformed tasks
+  ---
+  duration_ms: 13.032294
+  type: 'test'
+  ...
+# Subtest: admin accepts the full documented config size and reset/history preserve revisions
+ok 8 - admin accepts the full documented config size and reset/history preserve revisions
+  ---
+  duration_ms: 45.768095
+  type: 'test'
+  ...
+# Subtest: conditional work reads track work, room and remote state without bypassing capability checks
+ok 9 - conditional work reads track work, room and remote state without bypassing capability checks
+  ---
+  duration_ms: 16.982405
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 433.870584

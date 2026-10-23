@@ -1,0 +1,13 @@
+{
+  "observedAfter": "2026-10-22T19:33:33Z",
+  "expiryExpected": "2026-10-22T19:32:56.916Z",
+  "result": {
+    "focused": "",
+    "label": "Model matched\n\nReported model: fixture-model · 2026-10-22T19:02:56.916Z",
+    "status": "verified",
+    "url": "http://127.0.0.1:3154/m/host_probe_recovery_1234/admin?lang=en",
+    "visible": true,
+    "width": 375
+  },
+  "scope": "Read-only observation of tab3 kept without refresh/probe since19:09:58; pinned1ce861f UI; not model runtime"
+}

@@ -1,0 +1,11 @@
+{
+  "case": "same_form_edit_during_pending_save",
+  "sentLabel": "Saved label before delayed ACK",
+  "newDraftBeforeAck": "New draft typed while Save is waiting",
+  "afterAck": {
+    "focus": "",
+    "heading": "Administration\n\nModels & capabilities\nConfiguration v7",
+    "label": "Saved label before delayed ACK"
+  },
+  "scope": "Private config6→7 through loopback response gate; backend commit occurred before releasing ACK; zero native model calls"
+}

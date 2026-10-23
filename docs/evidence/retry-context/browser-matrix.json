@@ -1,0 +1,409 @@
+{
+  "recordedAt": "2026-10-23T03:54:23.043Z",
+  "fixture": true,
+  "modelCalls": 0,
+  "rows": [
+    {
+      "label": "EN dark final",
+      "height": 812,
+      "lang": "en",
+      "overflow": false,
+      "retryNotices": [
+        {
+          "left": 117,
+          "right": 1148,
+          "text": "Previous failed checks included. Diagnostics shortened; original evidence is retained."
+        },
+        {
+          "left": 117,
+          "right": 1148,
+          "text": "Previous checks omitted: prompt size limit. Review the earlier evidence."
+        }
+      ],
+      "runIds": [
+        "a2f6bff1-8279-48a0-9735-892ddd59bdec",
+        "aaa3b86b-80ed-4233-920d-6ad16c39cf6b",
+        "f50985c7-31b9-4bef-abeb-36f51f0c3b00",
+        "e13eff09-d344-406d-9e8c-e0289bafd881",
+        "6205d0a2-b5ec-4f97-b647-8c286bda7dc3"
+      ],
+      "taskIds": [
+        "meeting-3aeb2be13a91f223efcac43549bf5a03",
+        "673eeb39-0c32-487e-bf29-d0110042aaf3",
+        "7472cf9d-d8c3-4309-a277-c6faa6506ecf"
+      ],
+      "theme": "dark",
+      "url": "http://127.0.0.1:3181/m/host_csv_retry_preview_1234?lang=en#results",
+      "width": 1280
+    },
+    {
+      "label": "EN dark final",
+      "height": 812,
+      "lang": "en",
+      "overflow": false,
+      "retryNotices": [
+        {
+          "left": 29,
+          "right": 724,
+          "text": "Previous failed checks included. Diagnostics shortened; original evidence is retained."
+        },
+        {
+          "left": 29,
+          "right": 724,
+          "text": "Previous checks omitted: prompt size limit. Review the earlier evidence."
+        }
+      ],
+      "runIds": [
+        "a2f6bff1-8279-48a0-9735-892ddd59bdec",
+        "aaa3b86b-80ed-4233-920d-6ad16c39cf6b",
+        "f50985c7-31b9-4bef-abeb-36f51f0c3b00",
+        "e13eff09-d344-406d-9e8c-e0289bafd881",
+        "6205d0a2-b5ec-4f97-b647-8c286bda7dc3"
+      ],
+      "taskIds": [
+        "meeting-3aeb2be13a91f223efcac43549bf5a03",
+        "673eeb39-0c32-487e-bf29-d0110042aaf3",
+        "7472cf9d-d8c3-4309-a277-c6faa6506ecf"
+      ],
+      "theme": "dark",
+      "url": "http://127.0.0.1:3181/m/host_csv_retry_preview_1234?lang=en#results",
+      "width": 768
+    },
+    {
+      "label": "EN dark final",
+      "height": 812,
+      "lang": "en",
+      "overflow": false,
+      "retryNotices": [
+        {
+          "left": 25,
+          "right": 335,
+          "text": "Previous failed checks included. Diagnostics shortened; original evidence is retained."
+        },
+        {
+          "left": 25,
+          "right": 335,
+          "text": "Previous checks omitted: prompt size limit. Review the earlier evidence."
+        }
+      ],
+      "runIds": [
+        "a2f6bff1-8279-48a0-9735-892ddd59bdec",
+        "aaa3b86b-80ed-4233-920d-6ad16c39cf6b",
+        "f50985c7-31b9-4bef-abeb-36f51f0c3b00",
+        "e13eff09-d344-406d-9e8c-e0289bafd881",
+        "6205d0a2-b5ec-4f97-b647-8c286bda7dc3"
+      ],
+      "taskIds": [
+        "meeting-3aeb2be13a91f223efcac43549bf5a03",
+        "673eeb39-0c32-487e-bf29-d0110042aaf3",
+        "7472cf9d-d8c3-4309-a277-c6faa6506ecf"
+      ],
+      "theme": "dark",
+      "url": "http://127.0.0.1:3181/m/host_csv_retry_preview_1234?lang=en#results",
+      "width": 375
+    },
+    {
+      "label": "EN light final",
+      "height": 812,
+      "lang": "en",
+      "overflow": false,
+      "retryNotices": [
+        {
+          "left": 25,
+          "right": 335,
+          "text": "Previous failed checks included. Diagnostics shortened; original evidence is retained."
+        },
+        {
+          "left": 25,
+          "right": 335,
+          "text": "Previous checks omitted: prompt size limit. Review the earlier evidence."
+        }
+      ],
+      "runIds": [
+        "a2f6bff1-8279-48a0-9735-892ddd59bdec",
+        "aaa3b86b-80ed-4233-920d-6ad16c39cf6b",
+        "f50985c7-31b9-4bef-abeb-36f51f0c3b00",
+        "e13eff09-d344-406d-9e8c-e0289bafd881",
+        "6205d0a2-b5ec-4f97-b647-8c286bda7dc3"
+      ],
+      "taskIds": [
+        "meeting-3aeb2be13a91f223efcac43549bf5a03",
+        "673eeb39-0c32-487e-bf29-d0110042aaf3",
+        "7472cf9d-d8c3-4309-a277-c6faa6506ecf"
+      ],
+      "theme": "light",
+      "url": "http://127.0.0.1:3181/m/host_csv_retry_preview_1234?lang=en#results",
+      "width": 375
+    },
+    {
+      "label": "EN light final",
+      "height": 812,
+      "lang": "en",
+      "overflow": false,
+      "retryNotices": [
+        {
+          "left": 29,
+          "right": 724,
+          "text": "Previous failed checks included. Diagnostics shortened; original evidence is retained."
+        },
+        {
+          "left": 29,
+          "right": 724,
+          "text": "Previous checks omitted: prompt size limit. Review the earlier evidence."
+        }
+      ],
+      "runIds": [
+        "a2f6bff1-8279-48a0-9735-892ddd59bdec",
+        "aaa3b86b-80ed-4233-920d-6ad16c39cf6b",
+        "f50985c7-31b9-4bef-abeb-36f51f0c3b00",
+        "e13eff09-d344-406d-9e8c-e0289bafd881",
+        "6205d0a2-b5ec-4f97-b647-8c286bda7dc3"
+      ],
+      "taskIds": [
+        "meeting-3aeb2be13a91f223efcac43549bf5a03",
+        "673eeb39-0c32-487e-bf29-d0110042aaf3",
+        "7472cf9d-d8c3-4309-a277-c6faa6506ecf"
+      ],
+      "theme": "light",
+      "url": "http://127.0.0.1:3181/m/host_csv_retry_preview_1234?lang=en#results",
+      "width": 768
+    },
+    {
+      "label": "EN light final",
+      "height": 812,
+      "lang": "en",
+      "overflow": false,
+      "retryNotices": [
+        {
+          "left": 117,
+          "right": 1148,
+          "text": "Previous failed checks included. Diagnostics shortened; original evidence is retained."
+        },
+        {
+          "left": 117,
+          "right": 1148,
+          "text": "Previous checks omitted: prompt size limit. Review the earlier evidence."
+        }
+      ],
+      "runIds": [
+        "a2f6bff1-8279-48a0-9735-892ddd59bdec",
+        "aaa3b86b-80ed-4233-920d-6ad16c39cf6b",
+        "f50985c7-31b9-4bef-abeb-36f51f0c3b00",
+        "e13eff09-d344-406d-9e8c-e0289bafd881",
+        "6205d0a2-b5ec-4f97-b647-8c286bda7dc3"
+      ],
+      "taskIds": [
+        "meeting-3aeb2be13a91f223efcac43549bf5a03",
+        "673eeb39-0c32-487e-bf29-d0110042aaf3",
+        "7472cf9d-d8c3-4309-a277-c6faa6506ecf"
+      ],
+      "theme": "light",
+      "url": "http://127.0.0.1:3181/m/host_csv_retry_preview_1234?lang=en#results",
+      "width": 1280
+    },
+    {
+      "label": "VI light final",
+      "height": 812,
+      "lang": "vi",
+      "overflow": false,
+      "retryNotices": [
+        {
+          "left": 117,
+          "right": 1148,
+          "text": "Đã kèm lỗi test từ lần chạy trước. Chẩn đoán đã rút gọn; bằng chứng gốc vẫn được giữ."
+        },
+        {
+          "left": 117,
+          "right": 1148,
+          "text": "Không kèm lỗi test vì prompt đã gần giới hạn. Xem bằng chứng của lần trước."
+        }
+      ],
+      "runIds": [
+        "a2f6bff1-8279-48a0-9735-892ddd59bdec",
+        "aaa3b86b-80ed-4233-920d-6ad16c39cf6b",
+        "f50985c7-31b9-4bef-abeb-36f51f0c3b00",
+        "e13eff09-d344-406d-9e8c-e0289bafd881",
+        "6205d0a2-b5ec-4f97-b647-8c286bda7dc3"
+      ],
+      "taskIds": [
+        "meeting-3aeb2be13a91f223efcac43549bf5a03",
+        "673eeb39-0c32-487e-bf29-d0110042aaf3",
+        "7472cf9d-d8c3-4309-a277-c6faa6506ecf"
+      ],
+      "theme": "light",
+      "url": "http://127.0.0.1:3181/m/host_csv_retry_preview_1234?lang=vi#results",
+      "width": 1280
+    },
+    {
+      "label": "VI light final",
+      "height": 812,
+      "lang": "vi",
+      "overflow": false,
+      "retryNotices": [
+        {
+          "left": 29,
+          "right": 724,
+          "text": "Đã kèm lỗi test từ lần chạy trước. Chẩn đoán đã rút gọn; bằng chứng gốc vẫn được giữ."
+        },
+        {
+          "left": 29,
+          "right": 724,
+          "text": "Không kèm lỗi test vì prompt đã gần giới hạn. Xem bằng chứng của lần trước."
+        }
+      ],
+      "runIds": [
+        "a2f6bff1-8279-48a0-9735-892ddd59bdec",
+        "aaa3b86b-80ed-4233-920d-6ad16c39cf6b",
+        "f50985c7-31b9-4bef-abeb-36f51f0c3b00",
+        "e13eff09-d344-406d-9e8c-e0289bafd881",
+        "6205d0a2-b5ec-4f97-b647-8c286bda7dc3"
+      ],
+      "taskIds": [
+        "meeting-3aeb2be13a91f223efcac43549bf5a03",
+        "673eeb39-0c32-487e-bf29-d0110042aaf3",
+        "7472cf9d-d8c3-4309-a277-c6faa6506ecf"
+      ],
+      "theme": "light",
+      "url": "http://127.0.0.1:3181/m/host_csv_retry_preview_1234?lang=vi#results",
+      "width": 768
+    },
+    {
+      "label": "VI light final",
+      "height": 812,
+      "lang": "vi",
+      "overflow": false,
+      "retryNotices": [
+        {
+          "left": 25,
+          "right": 335,
+          "text": "Đã kèm lỗi test từ lần chạy trước. Chẩn đoán đã rút gọn; bằng chứng gốc vẫn được giữ."
+        },
+        {
+          "left": 25,
+          "right": 335,
+          "text": "Không kèm lỗi test vì prompt đã gần giới hạn. Xem bằng chứng của lần trước."
+        }
+      ],
+      "runIds": [
+        "a2f6bff1-8279-48a0-9735-892ddd59bdec",
+        "aaa3b86b-80ed-4233-920d-6ad16c39cf6b",
+        "f50985c7-31b9-4bef-abeb-36f51f0c3b00",
+        "e13eff09-d344-406d-9e8c-e0289bafd881",
+        "6205d0a2-b5ec-4f97-b647-8c286bda7dc3"
+      ],
+      "taskIds": [
+        "meeting-3aeb2be13a91f223efcac43549bf5a03",
+        "673eeb39-0c32-487e-bf29-d0110042aaf3",
+        "7472cf9d-d8c3-4309-a277-c6faa6506ecf"
+      ],
+      "theme": "light",
+      "url": "http://127.0.0.1:3181/m/host_csv_retry_preview_1234?lang=vi#results",
+      "width": 375
+    },
+    {
+      "label": "VI dark final",
+      "height": 812,
+      "lang": "vi",
+      "overflow": false,
+      "retryNotices": [
+        {
+          "left": 25,
+          "right": 335,
+          "text": "Đã kèm lỗi test từ lần chạy trước. Chẩn đoán đã rút gọn; bằng chứng gốc vẫn được giữ."
+        },
+        {
+          "left": 25,
+          "right": 335,
+          "text": "Không kèm lỗi test vì prompt đã gần giới hạn. Xem bằng chứng của lần trước."
+        }
+      ],
+      "runIds": [
+        "a2f6bff1-8279-48a0-9735-892ddd59bdec",
+        "aaa3b86b-80ed-4233-920d-6ad16c39cf6b",
+        "f50985c7-31b9-4bef-abeb-36f51f0c3b00",
+        "e13eff09-d344-406d-9e8c-e0289bafd881",
+        "6205d0a2-b5ec-4f97-b647-8c286bda7dc3"
+      ],
+      "taskIds": [
+        "meeting-3aeb2be13a91f223efcac43549bf5a03",
+        "673eeb39-0c32-487e-bf29-d0110042aaf3",
+        "7472cf9d-d8c3-4309-a277-c6faa6506ecf"
+      ],
+      "theme": "dark",
+      "url": "http://127.0.0.1:3181/m/host_csv_retry_preview_1234?lang=vi#results",
+      "width": 375
+    },
+    {
+      "label": "VI dark final",
+      "height": 812,
+      "lang": "vi",
+      "overflow": false,
+      "retryNotices": [
+        {
+          "left": 29,
+          "right": 724,
+          "text": "Đã kèm lỗi test từ lần chạy trước. Chẩn đoán đã rút gọn; bằng chứng gốc vẫn được giữ."
+        },
+        {
+          "left": 29,
+          "right": 724,
+          "text": "Không kèm lỗi test vì prompt đã gần giới hạn. Xem bằng chứng của lần trước."
+        }
+      ],
+      "runIds": [
+        "a2f6bff1-8279-48a0-9735-892ddd59bdec",
+        "aaa3b86b-80ed-4233-920d-6ad16c39cf6b",
+        "f50985c7-31b9-4bef-abeb-36f51f0c3b00",
+        "e13eff09-d344-406d-9e8c-e0289bafd881",
+        "6205d0a2-b5ec-4f97-b647-8c286bda7dc3"
+      ],
+      "taskIds": [
+        "meeting-3aeb2be13a91f223efcac43549bf5a03",
+        "673eeb39-0c32-487e-bf29-d0110042aaf3",
+        "7472cf9d-d8c3-4309-a277-c6faa6506ecf"
+      ],
+      "theme": "dark",
+      "url": "http://127.0.0.1:3181/m/host_csv_retry_preview_1234?lang=vi#results",
+      "width": 768
+    },
+    {
+      "label": "VI dark final",
+      "height": 812,
+      "lang": "vi",
+      "overflow": false,
+      "retryNotices": [
+        {
+          "left": 117,
+          "right": 1148,
+          "text": "Đã kèm lỗi test từ lần chạy trước. Chẩn đoán đã rút gọn; bằng chứng gốc vẫn được giữ."
+        },
+        {
+          "left": 117,
+          "right": 1148,
+          "text": "Không kèm lỗi test vì prompt đã gần giới hạn. Xem bằng chứng của lần trước."
+        }
+      ],
+      "runIds": [
+        "a2f6bff1-8279-48a0-9735-892ddd59bdec",
+        "aaa3b86b-80ed-4233-920d-6ad16c39cf6b",
+        "f50985c7-31b9-4bef-abeb-36f51f0c3b00",
+        "e13eff09-d344-406d-9e8c-e0289bafd881",
+        "6205d0a2-b5ec-4f97-b647-8c286bda7dc3"
+      ],
+      "taskIds": [
+        "meeting-3aeb2be13a91f223efcac43549bf5a03",
+        "673eeb39-0c32-487e-bf29-d0110042aaf3",
+        "7472cf9d-d8c3-4309-a277-c6faa6506ecf"
+      ],
+      "theme": "dark",
+      "url": "http://127.0.0.1:3181/m/host_csv_retry_preview_1234?lang=vi#results",
+      "width": 1280
+    }
+  ],
+  "notes": [
+    "12 distinct measured CSS-pixel/locale/theme cases; zero horizontal overflow.",
+    "Some initial requested viewport sizes disagreed with actual CSS sizes and were discarded.",
+    "An initial receipt writer retained an old array after reassignment; its empty receipt was discarded and these DOM measurements recollected.",
+    "No semantic model, human UX or universal accessibility acceptance."
+  ]
+}

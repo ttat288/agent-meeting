@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-22",
+  "sequential": true,
+  "memoryMax": "1200M",
+  "memorySwapMax": 0,
+  "commands": [
+    {
+      "command": "timeout 150 node --max-old-space-size=768 --test test/pm.test.js",
+      "pass": 15,
+      "fail": 0
+    },
+    {
+      "command": "timeout 60 node --max-old-space-size=768 --test test/pm-pilot.test.js",
+      "pass": 3,
+      "fail": 0,
+      "priorFailure": "Initial test assertion overlooked director savings independently passing the threshold; corrected test fixture, production threshold unchanged."
+    }
+  ],
+  "scope": "Targeted tests, not a new full-suite claim. Runtime preflight results in pilot-repro.json. No model invoked."
+}

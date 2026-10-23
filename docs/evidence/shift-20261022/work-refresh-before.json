@@ -1,0 +1,9 @@
+{
+  "sourceCommit": "be737f7",
+  "acceptance": "Typing during manual refresh must keep form open",
+  "at": "2026-10-22T20:47:00.576Z",
+  "focus": "BODY",
+  "formOpen": false,
+  "width": 375,
+  "scope": "Refresh remote GET held after work/config reads; draft content restored by storage but form closed and focus lost. No model."
+}

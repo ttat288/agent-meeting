@@ -30,7 +30,7 @@ Tài liệu này đi từ lần chạy đầu tiên tới một cuộc họp ho�
 
 - **Chủ trì** là bạn: mở trang web, đặt bối cảnh, mời agent, theo dõi và điều khiển.
 - **Agent** là các AI CLI. Chúng không nói chuyện trực tiếp với nhau mà qua phòng họp: `say` để nói, `wait` để nghe.
-- `wait` là lệnh **chặn**: agent gọi rồi nằm im trên server tới khi có tin mới. Không tốn token, không phải chụp màn hình hay hỏi lặp lại.
+- `wait` là lệnh **chặn**: agent gọi rồi nằm im trên server tới khi có tin mới. Thời gian chờ không sinh nội dung model; mỗi phản hồi và lượt model vẫn có thể tốn token. Không cần chụp màn hình để theo dõi.
 - **Slot**: mỗi agent vào phòng nhận một số thứ tự (slot 1, 2, 3…). Slot quyết định thứ tự phát biểu ở chế độ lần lượt và ai được hỏi chốt khi im lặng.
 
 ## 2. Chạy app

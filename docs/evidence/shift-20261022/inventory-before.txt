@@ -1,0 +1,59 @@
+TAP version 13
+# Subtest: prototype-named source files survive execution copy and snapshot serialization
+not ok 1 - prototype-named source files survive execution copy and snapshot serialization
+  ---
+  duration_ms: 92.918307
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/work.test.js:42:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    ENOENT: no such file or directory, open '/tmp/am-work-test-fMrLg6/work/runs/0998d47c-f3df-4819-9ac7-2280292f2226/workspace/__proto__'
+    + actual - expected
+    
+    + 'failed'
+    - 'reported'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'reported'
+  actual: 'failed'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/work.test.js:46:39)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: prototype-named output cannot disappear from outside-scope rejection
+not ok 2 - prototype-named output cannot disappear from outside-scope rejection
+  ---
+  duration_ms: 64.482385
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/work.test.js:48:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'reported'
+    - 'rejected'
+         ^
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'rejected'
+  actual: 'reported'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/work.test.js:51:39)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 305.188439

@@ -1,0 +1,100 @@
+{
+  "checks": [
+    {
+      "case": "same_form_new_edit_kept",
+      "focus": "modelLabel",
+      "header": "Administration\n\nModels & capabilities\nConfiguration v7",
+      "label": "New draft survives the delayed ACK",
+      "saveDisabled": false
+    },
+    {
+      "case": "stale_save_blocked",
+      "alert": "Unable to complete this action\n\nConfiguration changed elsewhere. Your draft is retained. Reload configuration to get the new revision; this discards your draft.\n\nReload configuration",
+      "attributeValue": null,
+      "fieldValue": "New draft survives the delayed ACK"
+    },
+    {
+      "case": "explicit_reload",
+      "label": "Saved origin label at revision eight",
+      "header": "Administration\n\nModels & capabilities\nConfiguration v8"
+    },
+    {
+      "case": "manual_restore_and_save",
+      "focus": "main",
+      "header": "Administration\n\nModels & capabilities\nConfiguration v9",
+      "label": "New draft survives the delayed ACK"
+    },
+    {
+      "case": "old_form_ack_keeps_different_view",
+      "draft": "{\"new\":\"draft in a different admin view\"}",
+      "focus": "configImportDraft",
+      "header": "Administration\n\nData & provenance\nConfiguration v9"
+    },
+    {
+      "case": "explicit_navigation_applies_saved_snapshot",
+      "header": "Administration\n\nAgents & runtimes\nConfiguration v10"
+    },
+    {
+      "case": "import_ack_keeps_new_json",
+      "draft": "{\"new\":\"unsaved JSON after import started\"}",
+      "focus": "configImportDraft",
+      "header": "Administration\n\nData & provenance\nConfiguration v10"
+    },
+    {
+      "case": "reset_ack_keeps_current_json",
+      "draft": "{\"new\":\"draft typed while policy reset waits\"}",
+      "focus": "configImportDraft",
+      "header": "Administration\n\nData & provenance\nConfiguration v11"
+    },
+    {
+      "case": "mapping_ack_keeps_new_choice",
+      "enabled": false,
+      "focus": "enabled-opus-claude",
+      "header": "Administration\n\nAgents & runtimes\nConfiguration v12",
+      "open": true
+    },
+    {
+      "case": "vi_policy_new_value_kept",
+      "focus": "maxCandidates",
+      "header": "Qu\u1ea3n tr\u1ecb\n\nQuy t\u1eafc chia vi\u1ec7c\nC\u1ea5u h\u00ecnh v13",
+      "notice": "\u0110\u00e3 l\u01b0u v14. Gi\u1eef ph\u1ea7n \u0111ang s\u1eeda; h\u00e3y sao ch\u00e9p tr\u01b0\u1edbc khi t\u1ea3i l\u1ea1i c\u1ea5u h\u00ecnh.",
+      "noticeHidden": true,
+      "scrollWidth": 360,
+      "value": "5",
+      "width": 375
+    }
+  ],
+  "limits": [
+    "Disposable config revisions7\u219214; no user catalog or native model calls",
+    "Source preserves newer input and current view, without field merging or automatic replay",
+    "Stale view needs explicit copy/reload/restore or a new navigation; extra recovery steps, not a measured human-time win",
+    "Explicit reload/language navigation does not persist unsaved admin fields",
+    "One DOM getAttribute value was null because the field uses the live value property; fieldValue is the actual draft assertion"
+  ],
+  "recordedAt": "2026-10-22T20:11:45.008430+00:00",
+  "sourceSha256": {
+    "src/ui/workspace.js": "f21cd09b1e2d5d3c9dbb4d93bc2c7a3b4c433577913f0f870751df337d2b0d17",
+    "test/ui-admin-state.test.js": "90b0acfb9a5194689ffdf39f566bea76990524525509e8d93766cae00473814d"
+  },
+  "backendOutcome": {
+    "revision": 14,
+    "savedMaxCandidates": 4,
+    "savedFlashLabel": "Imported snapshot before delayed ACK",
+    "runnerMetrics": {
+      "calls": 14,
+      "active": 0,
+      "runtimeReads": 0,
+      "probeRequests": 0,
+      "modelCalls": 0,
+      "fixture": "deterministic 3-second probe runner",
+      "pid": 170799,
+      "bootedAt": "2026-10-22T20:03:25.110Z",
+      "sourceHashes": {
+        "src/work.js": "8a6f324a48c87916e98315ea472154d1655fa11fdb86551c8469f904108eda5e",
+        "src/server.js": "fb021ebf152ab76bced7420f30c1bdaa4b90b014a77c222421d0631662a77652",
+        "src/ui/workspace.js": "f21cd09b1e2d5d3c9dbb4d93bc2c7a3b4c433577913f0f870751df337d2b0d17",
+        "src/ui/workspace.css": "ce244e910a65391b049efd7a41f3f45e5ad996cbf566c6472b87fd011e477893"
+      }
+    }
+  }
+}

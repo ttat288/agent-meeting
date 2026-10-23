@@ -1,5 +1,10 @@
 name: CI
 on: [push, pull_request]
+# A branch push and its PR update share one validation lane. Keep repository
+# identity in the key so equally named branches from forks stay independent.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
 jobs:
   test:
     # Ubuntu 22.04 supports the unprivileged namespaces required by bubblewrap.
@@ -17,8 +22,7 @@ jobs:
         with: { node-version: "${{ matrix.node }}" }
       - name: Prepare filesystem sandbox
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends bubblewrap desktop-file-utils libglib2.0-bin
+          bash .github/scripts/install-ubuntu-test-tools.sh bubblewrap desktop-file-utils libglib2.0-bin
           node -e "require('./src/execution-sandbox').checkSandbox()"
       - name: Test sequentially with memory and time limits
         shell: bash

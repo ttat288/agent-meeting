@@ -1,0 +1,38 @@
+{
+  "schema": "agent-meeting/pm-pilot-summary@1",
+  "rows": [
+    {
+      "id": "runtime-evidence-direct-01",
+      "arm": "direct",
+      "quality": false,
+      "costUsd": null,
+      "directorActiveMs": null,
+      "elapsedMs": null,
+      "comparable": false,
+      "requestedModel": null,
+      "actualModels": null,
+      "cliVersion": null
+    },
+    {
+      "id": "runtime-evidence-pm-01",
+      "arm": "pm",
+      "quality": false,
+      "costUsd": null,
+      "directorActiveMs": null,
+      "elapsedMs": null,
+      "comparable": false,
+      "requestedModel": null,
+      "actualModels": null,
+      "cliVersion": null
+    }
+  ],
+  "costSavingPercent": null,
+  "directorSavingPercent": null,
+  "verdict": "insufficient-evidence",
+  "limits": [
+    "One small repository repair; no general PM efficiency claim.",
+    "No amortization without observed reuse.",
+    "Token counts need provider provenance per call; not inferred from payload bytes.",
+    "Cost reduction and director effort reduction are distinct metrics."
+  ]
+}

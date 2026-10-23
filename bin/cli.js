@@ -13,6 +13,12 @@ const opt = (n, d) => { const i = args.indexOf(n); return i >= 0 && args[i + 1] 
 const opts = (n) => args.flatMap((a, i) => a === n && args[i + 1] ? [args[i + 1]] : []);
 const env = process.env;
 
+if (args[0] === 'skills' || args[0] === 'doctor') {
+  try { require('../src/cli-discovery').run(args); }
+  catch (e) { console.error('Lỗi: ' + e.message); process.exitCode = 1; }
+  return;
+}
+
 if (args[0] === 'install' || args[0] === 'uninstall') {
   try { process.exit(require('../src/desktop-install').runCLI(args)); }
   catch (e) { console.error('Install error: ' + e.message); process.exit(1); }
@@ -37,6 +43,10 @@ Dùng:  npx github:ttat288/agent-meeting [tuỳ chọn]
        npx github:ttat288/agent-meeting disconnect <claude|codex|gemini>
        npx github:ttat288/agent-meeting install [--dry-run]
        npx github:ttat288/agent-meeting uninstall [--dry-run]
+       agent-meeting doctor
+       agent-meeting skills list [--local] [--dir <thư mục skills>] [--query <từ>] [--graph] [--offset <n>] [--limit <n>]
+       agent-meeting skills show <tên> [--local] [--dir <thư mục skills>] [--resource <file>]
+       agent-meeting skills inspect <tên> [--local] [--dir <thư mục skills>]
 
 connect: một lần cho mỗi máy, cài MCP "agent-meeting" cho agent (qua CLI của chính agent đó) và cấp quyền đúng các tool
 hội thoại, để agent (cả Claude Code ở auto mode) vào họp không phải duyệt từng lệnh. Gửi tệp vẫn được hỏi từng lần.
@@ -202,7 +212,15 @@ function listen(server, port, host) {
     const run = () => prune({ minutesDir: cfg.minutesDir, dataDir, days: cfg.retentionDays, keep: [...app.meetings.keys()] }, cfg.log);
     run(); setInterval(run, 6 * 3600 * 1000).unref();
   }
-  ['SIGINT', 'SIGTERM'].forEach(s => process.on(s, () => { app.flush(); console.log('\nĐã tắt Agent Meeting.'); process.exit(0); }));
+  let shuttingDown = false;
+  const shutdown = async () => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    console.log('\nĐang dừng tiến trình được quản lý và lưu kết quả…');
+    try { await app.close(); app.flush(); console.log('Đã tắt Agent Meeting.'); process.exit(0); }
+    catch (e) { console.error('Không thể hoàn tất tắt an toàn:', e.message); process.exit(1); }
+  };
+  ['SIGINT', 'SIGTERM'].forEach(s => process.on(s, shutdown));
 
   // trang chủ trì luôn mở trên máy này (trừ --public-url: công ty tự bảo vệ bằng proxy)
   const host = `${publicUrl || local}/m/${meeting.hostKey}`;
@@ -238,6 +256,6 @@ ${cfg.auditLog ? `\n  Nhật ký kiểm toán: ${path.resolve(cfg.auditLog)}` : 
     };
     meeting.ev.on('change', check);
   }
-  if (flag('--exit-on-end')) app.ev.on('ended', () => { console.log('Cuộc họp đã kết thúc, thoát.'); app.flush(); setTimeout(() => process.exit(0), 200); });
+  if (flag('--exit-on-end')) app.ev.on('ended', () => { console.log('Cuộc họp đã kết thúc, thoát.'); setTimeout(shutdown, 200); });
   if (!flag('--no-open') && !autoStart) open(host);
 })().catch(e => { console.error('Lỗi:', e.message); process.exit(1); });

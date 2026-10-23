@@ -12,6 +12,52 @@
   document.documentElement.lang = lang;
 
   const EN = new Map([
+    ['Đã tích hợp và test', 'Integrated and tested'], ['Đang kiểm chứng', 'Verifying'], ['Đang tích hợp', 'Integrating'], ['Cần xử lý', 'Needs attention'],
+    ['Yêu cầu review chuyên gia (kết quả sẽ bị chặn trước tích hợp)', 'Require expert review (result will be blocked before integration)'],
+    ['tự khai báo', 'self-reported'], ['Thu hồi quyền PM', 'Revoke PM'], ['Test', 'Tests'], ['Hết hạn', 'Expires'],
+    ["Chủ trì", "Chair"],
+    ["Điều hành qua PM", "Work through PM"],
+    ["Tin riêng giám đốc và PM", "Private director–PM messages"],
+    ["Tôi làm chủ trì", "I chair"],
+    ["Chờ PM vào", "Waiting for PM"],
+    ["Xác nhận PM", "Confirm PM"],
+    ["PM đã xác nhận", "PM confirmed"],
+    ["Đã dừng PM", "PM paused"],
+    ["Mất kết nối PM", "PM connection lost"],
+    ["PM cần kết nối lại", "PM must reconnect"],
+    ["Đã thu hồi quyền PM", "PM revoked"],
+    ["Giao mục tiêu", "Assign goal"],
+    ["Mục tiêu cho PM", "Goal for PM"],
+    ["Tiêu chí nghiệm thu, mỗi dòng một tiêu chí", "Acceptance criteria, one per line"],
+    ["Cấp quyền thực hiện", "Grant execution rights"],
+    ["Workspace Git", "Git workspace"],
+    ["Đường dẫn được sửa, mỗi dòng một đường dẫn", "Allowed write paths, one per line"],
+    ["Test độc lập có sẵn (*.test.js), mỗi dòng một tệp", "Existing independent tests (*.test.js), one per line"],
+    ["Profile đã cấu hình và probe", "Configured and probed profile"],
+    ["Số lượt chạy tối đa (1–3)", "Maximum runs (1–3)"],
+    ["Cho phép chạy với chi phí model chưa biết; không có trần tiền cứng", "Allow execution with unknown model cost; no hard monetary cap"],
+    ["Quyền hết hạn sau một giờ. Mặc định không cho chạy model. PM CLI do bạn tự mở; app không khởi chạy PM.", "Grant expires in one hour. Model execution is disabled by default. Open the PM CLI yourself; the app does not launch it."],
+    ["Mục tiêu và tiêu chí", "Goal and acceptance"],
+    ["Quyền thực hiện", "Execution grant"],
+    ["Gửi riêng PM", "Send privately to PM"],
+    ["Tin riêng cho PM", "Private message to PM"],
+    ["Prompt riêng cho PM", "Dedicated PM prompt"],
+    ["Dán prompt riêng vào CLI của PM trên máy này, rồi đối chiếu mã và xác nhận. PM vào trước các worker.", "Paste the dedicated prompt into the PM CLI on this machine, then compare the code and confirm. PM joins before workers."],
+    ["Sao chép prompt PM", "Copy PM prompt"],
+    ["Tạo lại lời mời PM", "Regenerate PM invitation"],
+    ["Agent làm chủ trì", "Agent chairs"],
+    ["Dừng PM", "Pause PM"],
+    ["Tôi tiếp quản", "I take over"],
+    ["Mời lại PM", "Invite PM again"],
+    ["Mã PM báo cho bạn", "Code reported by PM"],
+    ["Giám đốc", "Director"],
+    ["Chưa giao mục tiêu", "No goal assigned"],
+    ["Chưa có lượt chạy", "No runs yet"],
+    ["Lượt chạy đã dùng", "Runs used"],
+    ["Chưa cấp quyền thực hiện", "No execution grant"],
+    ["Usage/chi phí PM chưa quan sát được. Chi phí chưa biết không bằng 0.", "PM usage/cost is not observed. Unknown cost is not zero."],
+    ["Xem bằng chứng", "View evidence"],
+
     ['Tùy chọn', 'Options'], ['Phiên', 'Session'], ['Ứng dụng', 'Application'], ['Hiển thị', 'Display'], ['Đóng chi tiết', 'Close details'], ['Chi tiết phiên', 'Session details'], ['Tin nhắn chủ trì', 'Host message'], ['Gợi ý', 'Prompts'],
     ['Biên bản và cuộc họp tiếp', 'Minutes and next meeting'],
     ['Kế hoạch →', 'Plan →'], ['Điều hướng phiên', 'Session navigation'],
@@ -417,6 +463,6 @@
     for (const e of root.querySelectorAll('[placeholder],[title],[aria-label]'))
       for (const a of ['placeholder', 'title', 'aria-label']) { const v = e.getAttribute(a); if (v && EN.has(v)) e.setAttribute(a, EN.get(v)); }
   }
-  function setLang(l) { try { localStorage.setItem(KEY, l); } catch {} const u = new URL(location.href); u.searchParams.delete('lang'); location.replace(u.pathname + u.search + u.hash); }
+  function setLang(l) { try { localStorage.setItem(KEY, l); } catch {} const u = new URL(location.href); u.searchParams.set('lang', l); location.replace(u.pathname + u.search + u.hash); }
   window.AgentMeetingI18n = { lang, tr, apply, setLang, EN };
 })();

@@ -1,0 +1,102 @@
+{
+  "id": "readonly-runtime-audit-v1",
+  "goal": "Audit the supplied runtime parser: predict its current behavior for every case in task.json, identify evidence problems and recommend minimal remedies.",
+  "acceptance": [
+    "Read src/runtime.js and task.json without changing any input.",
+    "Predict actual current behavior, including existing defects; do not substitute desired fixed behavior.",
+    "Return only JSON: {predictions:[{id,valid,reportedModel,costUsd}],remedies:[{issue,change}],limits:[string]}. Include exactly all eight case IDs, no duplicate predictions.",
+    "Give concise remedies for negative cost and ambiguous multiple-model evidence; report limitations."
+  ],
+  "cases": [
+    {
+      "id": "negative-cost",
+      "adapter": "claude",
+      "output": {
+        "type": "result",
+        "subtype": "success",
+        "result": "Done",
+        "total_cost_usd": -2,
+        "model": "expected"
+      }
+    },
+    {
+      "id": "string-cost",
+      "adapter": "claude",
+      "output": {
+        "type": "result",
+        "subtype": "success",
+        "result": "Done",
+        "total_cost_usd": "0.2"
+      }
+    },
+    {
+      "id": "zero-cost",
+      "adapter": "claude",
+      "output": {
+        "type": "result",
+        "subtype": "success",
+        "result": "Done",
+        "total_cost_usd": 0
+      }
+    },
+    {
+      "id": "multiple-models",
+      "adapter": "claude",
+      "output": {
+        "type": "result",
+        "subtype": "success",
+        "result": "Done",
+        "model": "expected",
+        "modelUsage": {
+          "expected": {},
+          "other": {}
+        }
+      }
+    },
+    {
+      "id": "single-model",
+      "adapter": "claude",
+      "output": {
+        "type": "result",
+        "subtype": "success",
+        "result": "Done",
+        "model": "fallback",
+        "modelUsage": {
+          "actual": {}
+        }
+      }
+    },
+    {
+      "id": "missing-model",
+      "adapter": "claude",
+      "output": {
+        "type": "result",
+        "subtype": "success",
+        "result": "Done"
+      }
+    },
+    {
+      "id": "agy-error",
+      "adapter": "agy",
+      "output": {
+        "status": "ERROR",
+        "error": "Access denied"
+      }
+    },
+    {
+      "id": "empty-success",
+      "adapter": "claude",
+      "output": {
+        "type": "result",
+        "subtype": "success",
+        "result": ""
+      }
+    }
+  ],
+  "rules": [
+    "Read only this input checkout. Do not access user files, settings, another arm, credentials or network via tools.",
+    "No file writes, extra models/subagents, commit/push/install/deploy or configuration changes.",
+    "Native tools and context management remain available; you may execute the supplied parser with Node to check your predictions. Do not alter it.",
+    "Do not claim your prose model identity as machine evidence. No private reasoning is requested."
+  ]
+}

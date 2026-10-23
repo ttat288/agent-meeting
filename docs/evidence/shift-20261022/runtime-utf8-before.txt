@@ -1,0 +1,40 @@
+TAP version 13
+# Subtest: runtime reports preserve Vietnamese and emoji across arbitrary UTF-8 stream boundaries
+not ok 1 - runtime reports preserve Vietnamese and emoji across arbitrary UTF-8 stream boundaries
+  ---
+  duration_ms: 12.457274
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/runtime.test.js:137:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + '���� ki���m ch���ng ti���ng Vi���t v�� ����; �������ng d���n kh��ng thay �����i.'
+    - 'Đã kiểm chứng tiếng Việt và 🧪; đường dẫn không thay đổi.'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'Đã kiểm chứng tiếng Việt và 🧪; đường dẫn không thay đổi.'
+  actual: '���� ki���m ch���ng ti���ng Vi���t v�� ����; �������ng d���n kh��ng thay �����i.'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/runtime.test.js:142:50)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: UTF-8 stream decoding retains the one-MiB output byte cap
+ok 2 - UTF-8 stream decoding retains the one-MiB output byte cap
+  ---
+  duration_ms: 11.473271
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 1
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 235.420956

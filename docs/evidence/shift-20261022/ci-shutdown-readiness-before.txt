@@ -1,0 +1,40 @@
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:18:59.8114283Z cli-shutdown.test.js
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:18:59.8432600Z TAP version 13
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.0568718Z # Subtest: CLI SIGINT drains verify before process exit
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.0585686Z ok 1 - CLI SIGINT drains verify before process exit
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.0586145Z   ---
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.0586475Z   duration_ms: 2128.78284
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.0587151Z   ...
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1576396Z # Subtest: CLI SIGTERM drains integrate before process exit
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1580338Z not ok 2 - CLI SIGTERM drains integrate before process exit
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1580959Z   ---
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1581379Z   duration_ms: 142.260725
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1581879Z   location: '/home/runner/work/agent-meeting/agent-meeting/test/cli-shutdown.test.js:38:80'
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1582337Z   failureType: 'testCodeFailure'
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1582575Z   error: |-
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1582855Z     The input did not match the regular expression /a\+b/. Input:
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1583205Z     
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1583410Z     'module.exports=(a,b)=>a-b;\n'
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1583558Z     
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1583664Z   code: 'ERR_ASSERTION'
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1583797Z   name: 'AssertionError'
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1583935Z   expected:
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1584047Z   actual: |-
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1584182Z     module.exports=(a,b)=>a-b;
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1584319Z     
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1584422Z   operator: 'match'
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1584536Z   stack: |-
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1584983Z     TestContext.<anonymous> (/home/runner/work/agent-meeting/agent-meeting/test/cli-shutdown.test.js:40:37)
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1585320Z     async Test.run (node:internal/test_runner/test:797:9)
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1585597Z     async Test.processPendingSubtests (node:internal/test_runner/test:526:7)
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1585816Z   ...
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1637772Z 1..2
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1639248Z # tests 2
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1639478Z # suites 0
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1639649Z # pass 1
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1640069Z # fail 1
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1640414Z # cancelled 0
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1640744Z # skipped 0
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1640988Z # todo 0
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1644302Z # duration_ms 2326.561082
+test (20)	Test sequentially with memory and time limits	2026-10-22T19:19:02.1671007Z cli-shutdown.test.js: exit 1

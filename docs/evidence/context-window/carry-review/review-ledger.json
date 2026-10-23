@@ -1,0 +1,79 @@
+{
+  "schema": "agent-meeting/cli-review-ledger@1",
+  "authorization": "User explicitly authorized paid Antigravity Gemini Flash3.8 and a Claude trial, maximum2 read-only invocation attempts; no retries or separate model probe; monetary hard cap unavailable",
+  "startedAt": "2026-10-22T13:57:29.231Z",
+  "packetSha256": "f720507a1ad38a301ed84bfa8478879bb8717df352a6f26f4fd1291d98f640d4",
+  "attemptCap": 2,
+  "attempts": [
+    {
+      "id": "flash-facts",
+      "adapter": "agy",
+      "requestedModel": "gemini-3.8-flash-low",
+      "paid": true,
+      "status": "reported",
+      "timeoutMs": 120000,
+      "startedAt": "2026-10-22T13:57:29.233Z",
+      "inputUtf8Bytes": 37337,
+      "inputSha256": "782d84b2cfb533110c0a303f9ab0c0e89742dad8fac21848331bab621d956c76",
+      "usage": {
+        "input_tokens": 18712,
+        "output_tokens": 1903,
+        "thinking_tokens": 0,
+        "cache_read_tokens": 0,
+        "total_tokens": 20615
+      },
+      "reportedModels": [],
+      "costEstimateUsd": null,
+      "billedCostUsd": null,
+      "exitCode": 0,
+      "finishedAt": "2026-10-22T13:57:58.889Z",
+      "elapsedMs": 29652,
+      "identityVerification": "unknown",
+      "error": null
+    },
+    {
+      "id": "claude-review",
+      "adapter": "claude",
+      "requestedModel": "claude-opus-5-5",
+      "paid": true,
+      "status": "failed",
+      "timeoutMs": 120000,
+      "startedAt": "2026-10-22T13:57:58.892Z",
+      "inputUtf8Bytes": 44434,
+      "inputSha256": "dd487dbbaf583f7188d6a807123de1aeae72165b9f1ab621e80c8ac89a5e88b0",
+      "usage": {
+        "output_tokens_details": {
+          "thinking_tokens": 0
+        },
+        "input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "output_tokens": 0,
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 0,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "",
+        "iterations": [],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "reportedModels": [],
+      "costEstimateUsd": 0,
+      "billedCostUsd": null,
+      "exitCode": 1,
+      "finishedAt": "2026-10-22T13:58:03.886Z",
+      "elapsedMs": 4971,
+      "identityVerification": "unknown",
+      "error": "Failed to authenticate: OAuth token revoked. Please log in again or contact your administrator."
+    }
+  ],
+  "billedCostUsd": null,
+  "implementationBenchmark": false,
+  "finishedAt": "2026-10-22T13:58:03.887Z"
+}

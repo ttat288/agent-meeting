@@ -1,0 +1,22 @@
+TAP version 13
+# Subtest: close waits for verification evidence and terminal state before resolving
+ok 1 - close waits for verification evidence and terminal state before resolving
+  ---
+  duration_ms: 2061.615306
+  type: 'test'
+  ...
+# Subtest: close waits for integration rollback before resolving
+ok 2 - close waits for integration rollback before resolving
+  ---
+  duration_ms: 2306.080317
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4509.543747

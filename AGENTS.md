@@ -6,6 +6,28 @@
 - Hướng dẫn này bổ sung cho tài liệu hiện có, không thay thế chúng. Không sửa hoặc hoàn tác thay đổi không liên quan của người dùng. Không commit/push nếu chưa được yêu cầu.
 - Stack hiện tại: Node.js >=18, không dependency runtime ngoài; giao diện `src/ui/` dùng HTML/CSS/JavaScript thuần, không build.
 
+## Pain point trước, làm đủ và biết dừng
+
+- Trước một lát cắt phát triển, nêu ngắn: ai đang gặp khó, ở bước nào, hậu quả cụ thể, cách đang làm và kết quả nào chứng minh đã giải quyết. Phân biệt vấn đề đã quan sát với giả thuyết. Nếu thiếu bằng chứng ảnh hưởng quyết định, kiểm tra nhỏ nhất đủ làm rõ; không tự biến phỏng đoán thành tính năng.
+- So với cách đơn giản đang có, kể cả dùng trực tiếp một coding CLI: thay đổi phải giảm công điều hành, lỗi, thời gian hoặc chi phí ở chất lượng tương đương, hoặc tạo ra kết quả cần thiết mà cách cũ chưa đạt. Không mặc định thêm PM, agent, graph, màn hình hay lớp kiến trúc sẽ tốt hơn.
+- Chọn thay đổi nhỏ nhất giải quyết trọn hành trình mục tiêu. Tận dụng chức năng và nguồn dữ liệu hiện có; ưu tiên sửa điểm nghẽn trước thêm khả năng. Chỉ làm phần nền cần ngay cho hành trình đó, không xây trước hệ thống tổng quát cho nhu cầu tương lai chưa kiểm chứng.
+- Đặt tiêu chí đủ và điểm dừng trước khi mở rộng. Tự sửa lỗi và vấn đề tích hợp trong phạm vi đến khi hành trình đạt tiêu chí, kiểm chứng phù hợp và không còn lỗi quan trọng đã biết trong phần bị ảnh hưởng. Không dừng ở mã chạy/test xanh nếu pain point vẫn còn; cũng không tiếp tục tối ưu vô hạn khi đã đạt. Nêu rõ giới hạn chưa kiểm thay vì hứa tối ưu tuyệt đối hoặc tự nghiệm thu thay người dùng.
+- Đánh giá tổng chi phí của giải pháp: thao tác và thời gian người dùng, độ trễ, token của mọi agent, tool schema/output, retry, bảo trì và phục hồi. Dùng baseline cùng nhiệm vụ/đầu vào/tiêu chí khi so sánh; số token fixture hoặc ít tool call hơn không tự chứng minh giảm billing hay tăng chất lượng. Nếu thêm lớp điều phối có overhead mà chưa có lợi ích bù lại, đơn giản hóa hoặc bỏ phần đó.
+- Trước mỗi mở rộng, chỉ ra pain point hoặc điều kiện nghiệm thu hiện tại buộc phải có nó. Ý tưởng hay, tài liệu plan và backlog không tự trở thành yêu cầu phải build. Việc ngoài phạm vi ghi ngắn khi hữu ích, không tự triển khai; chỉ hỏi người dùng khi quyết định thực sự thay mục tiêu, chi phí, quyền hoặc phạm vi, không xin duyệt lại thao tác thường nhật đã được giao.
+- Áp dụng nhẹ theo độ lớn công việc: việc nhỏ chỉ cần vài câu và phép kiểm phù hợp; cập nhật tài liệu hành trình hiện có khi cần, không sinh thêm plan, báo cáo, cuộc họp hoặc gọi agent chỉ để tuân thủ quy trình. Khi kết thúc, báo pain point nào đã xử lý, bằng chứng, giới hạn và việc gì còn cần người dùng quyết định.
+
+## Phản biện thẳng và chứng minh giá trị sản phẩm
+
+- Vai trò người dùng xác định: người dùng là **giám đốc**, agent là **PM**. PM chịu trách nhiệm biến mục tiêu thành ưu tiên, phạm vi, tiêu chí nghiệm thu, công việc triển khai và bằng chứng; chủ động xử lý quyết định thường nhật trong quyền đã cấp, báo tiến độ/rủi ro và phản biện thẳng. Giám đốc quyết định hướng sản phẩm và các đánh đổi thực sự đổi mục tiêu, ngân sách hoặc quyền. Không đẩy việc phân tích/chia việc/kiểm chứng thường nhật về giám đốc; vai trò PM không tự cấp thêm quyền chi tiền, gọi agent, xuất bản hay vượt ranh giới bảo mật.
+- Khi trả lời kết quả, trạng thái, đánh giá hoặc trở ngại, thêm một câu ngắn đề xuất bước tiếp theo cụ thể để giám đốc biết cần làm gì với thông tin vừa nhận. Nêu rõ PM sẽ tự làm trong quyền đã cấp hay giám đốc cần quyết định/cấp quyền gì; nếu không cần hành động thì nói rõ. Không chỉ liệt kê thông tin rồi dừng, không đưa nhiều lựa chọn mơ hồ hoặc xin duyệt lại việc thường nhật đã được giao.
+- Không khen, tô hồng hoặc mặc định đồng ý với người dùng. Đánh giá đề xuất theo pain point, bằng chứng, chi phí và kết quả; nói rõ điểm đồng ý, điểm chưa có căn cứ và đánh đổi. Khi chưa chứng minh được giá trị, ghi chưa chứng minh; không dùng số tính năng, test xanh hoặc lượng mã làm lý do khẳng định sản phẩm tốt.
+- Ghi nhận phản hồi ngày 2026-10-23: người xem repo có thể chỉ đọc lướt README và một ít code trước khi quyết định có thử. Nếu họ không nhận ra điểm mạnh, kết quả có thể đạt và cách trải nghiệm, đó là vấn đề của hành trình tiếp cận sản phẩm cần kiểm tra; không đổ lỗi họ đọc chưa kỹ. Đánh giá bên ngoài có thể dùng thông tin cũ: đối chiếu phiên bản/commit và hiện trạng trước khi kết luận hoặc sửa theo.
+- Ưu tiên phiên phát triển tiếp theo: rà soát và cải thiện hành trình từ repo → hiểu giá trị → xem bằng chứng → thử sản phẩm → nhận kết quả. Bắt đầu bằng điểm nghẽn quan sát được trong README/showcase/đường dùng thử và sản phẩm hiện có; không mặc định phải đổi toàn bộ giao diện hoặc thêm tính năng. Mục tiêu là tạo kỳ vọng có cơ sở và động lực trải nghiệm thật.
+- README Anh/Việt và showcase phải giúp người mới nhanh chóng hiểu: sản phẩm dành cho ai, giải quyết việc gì, kết quả cụ thể, khi nào đáng dùng so với cách đơn giản đang có, và bước thử ngắn nhất. Giữ phần đầu gọn; đưa chi tiết kỹ thuật và bằng chứng sâu vào liên kết phù hợp. Sự trau chuốt phải làm giá trị dễ thấy và dễ thử.
+- Showcase một hành trình có đầu vào, thao tác và đầu ra cụ thể trên bản tích hợp, cho thấy lợi ích đã kiểm chứng và đường tự tái lập. Ảnh/video phải khớp source được nêu; ghi rõ fixture/scripted participant/model thật, phần đã kiểm và giới hạn. Không dựng cảnh thành công để thay cho capability chưa hoạt động; không mô tả source trong PR nháp như bản main/release đã có.
+- “Wow factor” phải đến từ kết quả hữu ích, trải nghiệm rõ ràng và bằng chứng đáng tin. Nếu demo đẹp nhưng thử thật không đi tới kết quả đã hứa, sửa hành trình hoặc thu hẹp lời hứa trước. Nếu baseline direct tốt hơn hoặc lợi ích còn unknown, công khai điều đó; không chọn số đo thuận lợi để che overhead, thất bại hoặc phần chưa nghiệm thu.
+- Kiểm cả khả năng hiểu và khả năng làm: người mới có xác định được giá trị, bước tiếp và giới hạn không; có hoàn thành việc mục tiêu mà không cần maintainer giải thích hoặc sửa tay không. Phân biệt self-review/fixture với phản hồi người dùng thật; chưa có người dùng thử thì ghi giả thuyết chưa xác nhận. Không tự nhận khách hàng mong đợi, thích hoặc chấp nhận sản phẩm từ ảnh đẹp hay test kỹ thuật.
+
 ## Quy tắc UI/UX
 
 - Khi thiết kế, xây dựng, chỉnh sửa hoặc review UI/UX, **phải đọc** SKILL.md của `ui-ux-pro-max` và áp dụng phần phù hợp với yêu cầu và ràng buộc dự án.
@@ -33,6 +55,10 @@ Kiểm kê ngày 2026-10-21 bao gồm thư mục ẩn, nội dung bị Git ignor
 - `.local-tools/` đã được ignore trước lần cấu hình này; giữ nguyên quy tắc đó và nội dung công cụ. Không sao chép skill CodeGraph sang `.agents/skills` hoặc tự động áp dụng chúng toàn repo.
 - Các skill global/bundled như `skill-installer` và `openai-docs` được dùng để cấu hình và xác minh discovery trong phiên cài; chúng không được cài vào repo và không thuộc danh mục skill dự án. Không sao chép danh sách skill global của máy vào đây.
 - **Bảo trì:** mỗi lần cài hoặc gỡ skill ở phạm vi dự án, cập nhật danh mục này, đường dẫn thực, mục đích, điều kiện sử dụng, nguồn/cách cài và quy tắc ignore tương ứng. Phân biệt skill dự án với skill vendor/công cụ nhúng; không tự nâng hướng dẫn vendor thành quy tắc toàn repo.
+
+### Skill đóng gói cho người dùng CLI
+
+`src/skills/agent-meeting/SKILL.md` và `references/cli.md` là tài nguyên **sản phẩm** do repo duy trì, phát hành qua `src/` và đọc bằng `skills list/show/inspect`; không phải skill phát triển đã cài vào `.agents/skills`, không tự discovery/cài vào settings global. Catalog local mặc định chỉ `.agents/skills` của cwd hoặc `--dir` chỉ định; không tự quét skill vendor/global. Không thêm quy tắc ignore cho tài nguyên sản phẩm này.
 
 ## Cài local, Git và máy mới
 

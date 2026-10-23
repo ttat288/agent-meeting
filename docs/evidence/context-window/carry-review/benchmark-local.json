@@ -1,0 +1,91 @@
+{
+  "schema": "agent-meeting/carry-local-experiment@1",
+  "at": "2026-10-22T13:53:16.842Z",
+  "fixture": true,
+  "input": {
+    "path": "docs/evidence/pm-team/journey.json",
+    "sha256": "97f34355f25002c929b0bea09841687748616670d4c28b2071d7c58691044a1a",
+    "provenance": "Existing subprocess fixture evidence export, not a model transcript or complete live store"
+  },
+  "checks": {
+    "passed": 5,
+    "failed": 0,
+    "items": [
+      "integrated status requires both workspace and source test evidence",
+      "pre-integration checkpoint next step is not replayed after integration",
+      "missing decisions/base/revisions are visible; no automatic readiness claim",
+      "reported output does not become verified or integrated",
+      "integrated label without passing source evidence is rejected"
+    ]
+  },
+  "metrics": {
+    "assemblerElapsedMs": 1.4019919999999928,
+    "assemblerModelCalls": 0,
+    "rawExportBytes": 6456,
+    "knownCanonicalProjectionBytes": 660,
+    "capsuleBytes": 1154,
+    "capsuleOverheadVsKnownProjectionBytes": 494,
+    "requiredMetadataFieldsMissing": 4,
+    "successorInputTokens": null,
+    "totalModelUsage": null,
+    "billedCostUsd": null,
+    "contextPredictionError": null,
+    "contextOverflowRate": null,
+    "semanticRetention": null
+  },
+  "verdict": "Deterministic assembly can avoid an extra summarization call for recorded facts; this exported fixture cannot establish semantic completeness or model savings. Capsule framing adds bytes versus reading the same known facts directly.",
+  "capsule": {
+    "schema": "agent-meeting/carry-proposal@1",
+    "facts": {
+      "taskId": "e14d0588-1b48-49c8-af8f-9f530cda82bd",
+      "runId": "674df80f-ef76-4e9f-b32d-15aaf5c7fc9b",
+      "slot": "A",
+      "generation": 2,
+      "goalRevision": 1,
+      "status": "integrated",
+      "acceptance": [
+        "sum(2,3)=5"
+      ],
+      "scope": [
+        "sum.js"
+      ],
+      "changes": [
+        {
+          "file": "sum.js",
+          "before": "703cb2a470cfd0a2ea935122ac16338093078ba039d78aeda1e9442ffb5cc0a3",
+          "after": "c394fb43cb49b16d39abd6d77b3a2935584d588f71a88720e2b0c1c0fbccae95"
+        }
+      ],
+      "testsPassed": true,
+      "integratedTestsPassed": true,
+      "evidenceRefs": [
+        "run:674df80f-ef76-4e9f-b32d-15aaf5c7fc9b/evidence",
+        "run:674df80f-ef76-4e9f-b32d-15aaf5c7fc9b/integrationEvidence"
+      ],
+      "decisionRecord": null,
+      "unknownsRecord": null,
+      "baseRevision": null,
+      "requirementRevision": null
+    },
+    "completed": true,
+    "nextAction": "Stop this task; obtain a separately authorized next task",
+    "missingFields": [
+      "decisionRecord",
+      "unknownsRecord",
+      "baseRevision",
+      "requirementRevision"
+    ],
+    "readyForAutonomousContinuation": false,
+    "limits": [
+      "Record projection only; semantic decision coverage not established",
+      "Missing facts are not inferred from a done label",
+      "Evidence references in this experiment are identifiers, not a new implemented retrieval API"
+    ]
+  },
+  "limitations": [
+    "This is an experiment, not product context carry implementation",
+    "Raw export comparison is a transport bound, not a strong direct-CLI baseline",
+    "No fabricated telemetry, tokenizer, model usage, context bound or 8-hour claim",
+    "A zero-call assembler does not make successor context ingestion free"
+  ]
+}

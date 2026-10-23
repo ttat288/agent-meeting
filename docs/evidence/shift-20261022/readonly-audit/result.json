@@ -1,0 +1,202 @@
+{
+  "schema": "agent-meeting/readonly-audit-pilot@1",
+  "startedAt": "2026-10-22T16:24:13.781Z",
+  "input": {
+    "schema": "agent-meeting/readonly-audit-input@1",
+    "createdAt": "2026-10-22T16:23:27.323Z",
+    "model": "claude-opus-4-6-thinking",
+    "cliVersion": "1.4.5",
+    "revision": "c323eb7281a2e8880246004846aa95aec6fc880e",
+    "files": {
+      "AGENTS.md": {
+        "sha256": "bf46097e23aca8605a9e2f5107b7655935cbb11de74b31fd1888aeb1bbe6ed4e",
+        "size": 246
+      },
+      "src/runtime.js": {
+        "sha256": "1647a1ee676f0f4dec24839aad5e0189f4c6646210847f1c23db05d6b41ae236",
+        "size": 6722
+      },
+      "task.json": {
+        "sha256": "98c3e1da75d01527a813c38eba6cc26c6942e830e6e329888b09ffad29a282c0",
+        "size": 2890
+      }
+    },
+    "taskDigest": "da53d44dbd2c7bd1f94299045e2d64280b5b0c24ff76c842f655a7ff8b3407c7",
+    "preparationMs": 208.561099,
+    "modelCalls": 0,
+    "sourceDigest": "bf9cf300130836d65bdbd87de486c54b7544a86af9c581310f3aac09e3476de1"
+  },
+  "model": "claude-opus-4-6-thinking",
+  "maxInvocations": 2,
+  "calls": [
+    {
+      "id": "direct-01",
+      "role": "direct",
+      "valid": false,
+      "reportedModel": "unknown",
+      "text": "",
+      "usage": null,
+      "error": "Invalid runtime JSON",
+      "status": "failed",
+      "startedAt": "2026-10-22T16:24:13.791Z",
+      "elapsedMs": 89.427449,
+      "exitCode": 2,
+      "requestedModel": "claude-opus-4-6-thinking",
+      "rawSha256": "d687edb6bddb8148a172e071093b9201fb856a44174d9b55dc24daef7200b5d2",
+      "promptBytes": 2222,
+      "argvBytes": 2583,
+      "billedCostUsd": null
+    },
+    {
+      "id": "direct-02",
+      "role": "direct-technical-retry",
+      "valid": true,
+      "reportedModel": "unknown",
+      "text": "Now let me trace through `parseOutput` for each case carefully, then verify with Node.\n",
+      "usage": {
+        "input_tokens": 16289,
+        "output_tokens": 1169,
+        "thinking_tokens": 0,
+        "cache_read_tokens": 8441,
+        "total_tokens": 17458
+      },
+      "costUsd": null,
+      "permissionDenials": 0,
+      "error": null,
+      "status": "reported",
+      "startedAt": "2026-10-22T16:26:49.486Z",
+      "elapsedMs": 42367.758427999994,
+      "exitCode": 0,
+      "requestedModel": "claude-opus-4-6-thinking",
+      "rawSha256": "682c080447d42636b452bd91e5192ce1b4307223f8132ff1ab41538eb728e31c",
+      "promptBytes": 2222,
+      "argvBytes": 2584,
+      "billedCostUsd": null
+    }
+  ],
+  "arms": {
+    "direct": {
+      "status": "reported",
+      "quality": {
+        "predictionsPassed": 0,
+        "predictionsTotal": 8,
+        "error": "Unexpected token 'N', \"Now let me\"... is not valid JSON",
+        "codeFixVerified": false
+      },
+      "inputUnchanged": true
+    },
+    "managed": {
+      "status": "blocked",
+      "reason": "Total invocation cap2 includes failed CLI attempt and technical retry",
+      "accessObservation": {
+        "profileId": "audit-agy",
+        "runtimeId": "agy",
+        "adapter": "agy",
+        "configRevision": 1,
+        "providerModelId": "claude-opus-4-6-thinking",
+        "requestedModel": "claude-opus-4-6-thinking",
+        "reportedModel": "unknown",
+        "available": true,
+        "modelVerified": false,
+        "quotaAvailable": true,
+        "checkedAt": "2026-10-22T16:27:31.860Z",
+        "tools": [],
+        "permissions": [],
+        "provenance": "direct-02 machine receipt; no separate probe"
+      },
+      "modelCalls": 0,
+      "error": "Enable and verify the selected model/profile first"
+    }
+  },
+  "directorActiveMs": null,
+  "billedCostUsd": null,
+  "preparationSessionBillingUsd": null,
+  "protocolSha256": "a4c14a9a4772daa9f016edfa999ba4e8c920bc178a7d35cfbe275fcca3e4969d",
+  "sourceHashes": {
+    "src/runtime.js": "5b7a72abb335df8647cc89a1ed2df2ff4a7546c58c5f673adfff4144b66c6d95",
+    "src/work.js": "3c5f1ee78cd3db1733349c962f4008be36d89231b4a68079bc21b94fcbe4ff45",
+    "src/routing.js": "a44f5056b2572ae4991d3af6d90cfce6b424467f71b7403e9e9406c061c2d62b",
+    "tools/readonly-runtime-pilot.js": "290c8ed27f65b9fec13b4599f20a9ffc47deb94c612df80480203a899c156736"
+  },
+  "finishedAt": "2026-10-22T16:27:31.862Z",
+  "actualInvocations": 2,
+  "outcome": "direct-only-managed-unrun-no-efficacy-comparison",
+  "limits": [
+    "Read-only predictions only, no code fix or integration; natural language remedies need independent review.",
+    "One case/pair, no statistics or general superiority claim.",
+    "Missing actual model/billing/human preparation cost remains unknown; direct receipt reuse is counted, not a free probe.",
+    "Development time and HTTP soak do not prove model/context8h."
+  ],
+  "amendedProtocolSha256": "8fdd16ffe44b135656b0b12827d2f69c76b4ab1a36d81beccec2d13ef6083018",
+  "amendment": "One technical retry within total cap2; first CLI parser failure preserved",
+  "priorResultSha256": "7fc1f356387da71f1523bc2e92cb6b549265b22c794498aa7412c9c0391eb7b6",
+  "attempts": [
+    {
+      "kind": "cli-flags-validation-failed",
+      "receipt": {
+        "id": "direct-01",
+        "role": "direct",
+        "valid": false,
+        "reportedModel": "unknown",
+        "text": "",
+        "usage": null,
+        "error": "Invalid runtime JSON",
+        "status": "failed",
+        "startedAt": "2026-10-22T16:24:13.791Z",
+        "elapsedMs": 89.427449,
+        "exitCode": 2,
+        "requestedModel": "claude-opus-4-6-thinking",
+        "rawSha256": "d687edb6bddb8148a172e071093b9201fb856a44174d9b55dc24daef7200b5d2",
+        "promptBytes": 2222,
+        "argvBytes": 2583,
+        "billedCostUsd": null
+      },
+      "quality": "not-evaluated-no-model-response"
+    },
+    {
+      "kind": "corrected-native-direct",
+      "receipt": {
+        "id": "direct-02",
+        "role": "direct-technical-retry",
+        "valid": true,
+        "reportedModel": "unknown",
+        "text": "Now let me trace through `parseOutput` for each case carefully, then verify with Node.\n",
+        "usage": {
+          "input_tokens": 16289,
+          "output_tokens": 1169,
+          "thinking_tokens": 0,
+          "cache_read_tokens": 8441,
+          "total_tokens": 17458
+        },
+        "costUsd": null,
+        "permissionDenials": 0,
+        "error": null,
+        "status": "reported",
+        "startedAt": "2026-10-22T16:26:49.486Z",
+        "elapsedMs": 42367.758427999994,
+        "exitCode": 0,
+        "requestedModel": "claude-opus-4-6-thinking",
+        "rawSha256": "682c080447d42636b452bd91e5192ce1b4307223f8132ff1ab41538eb728e31c",
+        "promptBytes": 2222,
+        "argvBytes": 2584,
+        "billedCostUsd": null
+      },
+      "quality": {
+        "predictionsPassed": 0,
+        "predictionsTotal": 8,
+        "error": "Unexpected token 'N', \"Now let me\"... is not valid JSON",
+        "codeFixVerified": false
+      }
+    }
+  ],
+  "postRunClassification": {
+    "at": "2026-10-22T16:31:52.022Z",
+    "adapterFixSourceSha256": "dcf29c1231fc3773deb6b6e17e7f83a028e88ff69695cc1aadfa7190384c2159",
+    "permissionDenials": 1,
+    "statusUnderFixedAdapter": "failed",
+    "reason": "SUCCESS envelope contains denied_actions; no requested prediction answer was delivered",
+    "newModelCalls": 0,
+    "originalReceiptsUnchanged": true
+  },
+  "qualityInterpretation": "No delivered valid predictions (format/permission interruption); not a model reasoning-accuracy score. No completed managed model arm and no efficacy comparison."
+}

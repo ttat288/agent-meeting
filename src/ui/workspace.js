@@ -6,6 +6,8 @@
   const queryLang = new URLSearchParams(location.search).get('lang');
   const lang = ['vi', 'en'].includes(queryLang) ? queryLang : ['vi', 'en'].includes(storedLang) ? storedLang : navigator.language.startsWith('vi') ? 'vi' : 'en';
   const t = (vi, en) => lang === 'vi' ? vi : en;
+  const adminSections = [['models', t('Model & năng lực', 'Models & capabilities')], ['routing', t('Quy tắc chia việc', 'Routing policy')], ['runtime', t('Agent & runtime', 'Agents & runtimes')], ['hosts', t('Máy & workspace', 'Hosts & workspaces')], ['data', t('Dữ liệu & nguồn', 'Data & provenance')]];
+  const querySection = new URLSearchParams(location.search).get('section');
   document.documentElement.lang = lang;
   const path = location.pathname.split('/').filter(Boolean);
   const hostKey = path[1];
@@ -13,8 +15,20 @@
   const meetingUrl = '/m/' + encodeURIComponent(hostKey);
   const admin = path[2] === 'admin';
   const embedded = !!$('workView');
-  let config, work = { tasks: [], runs: [] }, tab = 'tasks', adminTab = 'models', selectedModel, runtime = [];
+  let config, work = { tasks: [], runs: [] }, tab = 'tasks', adminTab = adminSections.some(([id]) => id === querySection) ? querySection : 'models', selectedModel, runtime = [], runtimeLoaded = false;
   let remote = { hosts: [], runs: [] }, remoteError = null, metrics = null, metricsError = null, importDraft = '';
+  let workReadVersion = 0, activeWorkReads = 0, pollController, pendingWork = null, syncState = 'live';
+  const profileSelections = new Map();
+  const probingProfiles = new Set();
+  const runtimeObservationLifetime = 30 * 60000;
+  let runtimeExpiryTimer, noticeTimer, pendingConfig = null, adminEditVersion = 0, workEditVersion = 0;
+  if (!admin) for (const event of ['input', 'change']) $('page').addEventListener(event, () => { workEditVersion++; });
+  if (admin) {
+    for (const event of ['input', 'change']) $('page').addEventListener(event, () => { adminEditVersion++; });
+    document.addEventListener('visibilitychange', () => { clearTimeout(runtimeExpiryTimer); if (!document.hidden) renderProfileObservations(); });
+    window.addEventListener('pagehide', () => clearTimeout(runtimeExpiryTimer));
+    window.addEventListener('pageshow', () => renderProfileObservations());
+  }
   const node = (tag, attrs = {}, ...children) => {
     const e = document.createElement(tag);
     for (const [k, v] of Object.entries(attrs)) {
@@ -29,25 +43,32 @@
   };
   const button = (label, click, primary = false) => node('button', { type: 'button', class: 'btn ' + (primary ? 'primary' : 'ghost'), onclick: click }, label);
   const heading = (title, intro) => [node('p', { class: 'ws-eyebrow' }, admin ? t('Quản trị', 'Administration') : t('Không gian làm việc', 'Workspace')), node('h1', {}, title), node('p', { class: 'ws-intro' }, intro)];
-  function notify(message) { $('notice').textContent = message; $('notice').hidden = false; setTimeout(() => { $('notice').hidden = true; }, 6000); }
+  function notify(message) { clearTimeout(noticeTimer); $('notice').textContent = message; $('notice').hidden = false; noticeTimer = setTimeout(() => { $('notice').hidden = true; }, 6000); }
   async function api(endpoint, data) {
-    const response = await fetch(base + endpoint, { method: data === undefined ? 'GET' : 'POST', headers: data === undefined ? {} : { 'Content-Type': 'application/json' }, body: data === undefined ? undefined : JSON.stringify(data) });
-    let result;
-    try { result = await response.json(); } catch { result = {}; }
-    if (!response.ok) {
-      const error = new Error(response.status === 409 && endpoint.startsWith('/config') ? t('Cấu hình đã thay đổi ở nơi khác. Bản đang sửa được giữ lại. Tải lại cấu hình để lấy revision mới; thao tác này bỏ bản đang sửa.', 'Configuration changed elsewhere. Your draft is retained. Reload configuration to get the new revision; this discards your draft.') : result.error || result.message || t('Yêu cầu thất bại', 'Request failed') + ' (' + response.status + ')');
-      error.status = response.status; error.configConflict = response.status === 409 && endpoint.startsWith('/config');
-      throw error;
-    }
-    if (endpoint === '/work' && data === undefined) { metrics = result.metrics; metricsError = null; window.dispatchEvent(new CustomEvent('am-work-state', { detail: result })); }
-    return result;
+    const readingWork = endpoint === '/work' && data === undefined;
+    if (readingWork) { workReadVersion++; activeWorkReads++; pollController?.abort(); }
+    try {
+      const response = await fetch(base + endpoint, { method: data === undefined ? 'GET' : 'POST', headers: data === undefined ? {} : { 'Content-Type': 'application/json' }, body: data === undefined ? undefined : JSON.stringify(data) });
+      let result;
+      try { result = await response.json(); } catch { result = {}; }
+      if (!response.ok) {
+        const error = new Error(response.status === 409 && endpoint.startsWith('/config') ? t('Cấu hình đã thay đổi ở nơi khác. Bản đang sửa được giữ lại. Tải lại cấu hình để lấy revision mới; thao tác này bỏ bản đang sửa.', 'Configuration changed elsewhere. Your draft is retained. Reload configuration to get the new revision; this discards your draft.') : result.error || result.message || t('Yêu cầu thất bại', 'Request failed') + ' (' + response.status + ')');
+        error.status = response.status; error.configConflict = response.status === 409 && endpoint.startsWith('/config');
+        throw error;
+      }
+      if (endpoint === '/work' && data === undefined) { metrics = result.metrics; metricsError = null; window.dispatchEvent(new CustomEvent('am-work-state', { detail: result })); }
+      return result;
+    } finally { if (readingWork) activeWorkReads--; }
   }
+  function acceptWork(next) { work = next; pendingWork = null; }
   function friendlyError(message) {
     const translations = {
-      'Independent verification failed': 'Test độc lập thất bại. Xem bằng chứng, sửa yêu cầu hoặc checkout rồi chạy lại.',
+      'Independent verification failed': 'Test độc lập thất bại. Xem bằng chứng rồi thử lại trong Thực hiện.',
+      'Runtime reported permission denials': 'CLI đã từ chối một thao tác. Kiểm tra quyền CLI và phạm vi task trước khi thử lại.',
       'Acceptance criteria required': 'Cần ít nhất một tiêu chí nghiệm thu.',
       'Runtime access is unverified or routing constraints reject this task; probe the profile first': 'Chưa xác nhận quyền truy cập runtime hoặc task không đáp ứng quy tắc chia việc. Vào Quản trị → Agent & runtime để kiểm tra hồ sơ.',
       'Task changed; reload before saving this draft': 'Task đã thay đổi. Bản nháp được giữ theo revision cũ; làm mới để xem yêu cầu hiện tại.',
+      'Task changed; refresh before running this task': 'Yêu cầu của task đã đổi. Xem cập nhật trước khi chọn hồ sơ và chạy lại.',
       'Cancel or reconcile the existing run before changing execution requirements': 'Hủy hoặc xử lý phiên chạy hiện tại trước khi sửa yêu cầu.',
       'Task source is no longer in this meeting; review the current plan': 'Nguồn task không còn trong phòng. Xem lại kế hoạch hiện tại.',
       'Requirement revision changed; the old result cannot be accepted': 'Yêu cầu đã đổi phiên bản. Không thể nghiệm thu kết quả cũ.',
@@ -56,7 +77,10 @@
       'Unknown or self dependency': 'Task phụ thuộc không tồn tại hoặc trỏ tới chính task này.',
       'Dependency cycle': 'Các task đang phụ thuộc vòng vào nhau.',
       'Server restarted; reconcile the old process before starting a new task.': 'Server đã khởi động lại. Cần đối chiếu và xử lý tiến trình cũ trước khi chạy tiếp; chưa hỗ trợ phục hồi tự động.',
-      'Base revision changed': 'Base revision đã thay đổi. Kiểm tra lại checkout nguồn.'
+      'Base revision changed': 'Base revision đã thay đổi. Kiểm tra lại checkout nguồn.',
+      'Source checkout path changed': 'Đường dẫn checkout nguồn đã đổi. Kiểm tra thư mục thật trước khi tích hợp.',
+      'Configuration changed; refresh before selecting an execution profile': 'Cấu hình đã đổi. Bấm Làm mới để xem và chọn hồ sơ chạy hiện tại.',
+      'Configuration changed; reload before probing this profile': 'Cấu hình đã đổi. Giữ lại nội dung cần dùng rồi tải lại trang để xem ánh xạ hiện tại trước khi probe.'
     };
     return lang === 'vi' && translations[message] || message;
   }
@@ -64,14 +88,38 @@
     container.querySelector('.ws-error')?.remove();
     const box = node('div', { class: 'ws-error', role: 'alert', tabindex: '-1' }, node('strong', {}, t('Chưa thể hoàn thành thao tác', 'Unable to complete this action')), node('p', {}, friendlyError(error.message)));
     if (fieldId) { const input = $(fieldId); for (let parent = input?.parentElement; parent; parent = parent.parentElement) if (parent.tagName === 'DETAILS') parent.open = true; input?.setAttribute('aria-invalid', 'true'); box.append(button(t('Kiểm tra trường nhập', 'Check this field'), () => input?.focus())); }
-    if (error.configConflict) box.append(button(t('Tải lại cấu hình', 'Reload configuration'), async () => { try { config = await api('/config'); renderAdmin(); } catch (e) { errorBox(container, e); } }));
+    if (error.configConflict) box.append(button(t('Tải lại cấu hình', 'Reload configuration'), load));
     container.prepend(box); box.focus();
   }
   async function action(btn, container, fn) {
     btn.disabled = true;
     container.setAttribute('aria-busy', 'true');
-    try { await fn(); } catch (e) { errorBox(container, e); }
-    finally { btn.disabled = false; container.removeAttribute('aria-busy'); }
+    renderSyncStatus();
+    try { await fn(); } catch (e) { if (container.isConnected && btn.isConnected && !btn.closest('[hidden]')) errorBox(container, e); else notify(t('Chưa nhận được kết quả thao tác trước: ', 'Previous action result unavailable: ') + friendlyError(e.message)); }
+    finally { btn.disabled = false; container.removeAttribute('aria-busy'); renderSyncStatus(); }
+  }
+  function checkedAction(btn, container, run, operation) {
+    return action(btn, container, async () => {
+      const status = node('span', { role: 'status' }, operation === 'verify'
+        ? t('Đang chạy test độc lập…', 'Running independent tests…')
+        : t('Đang tích hợp và test checkout nguồn…', 'Integrating and testing the source checkout…'));
+      const cancel = button(t('Hủy phiên chạy', 'Cancel run'), async () => {
+        cancel.disabled = true;
+        try { await api('/work/runs/' + encodeURIComponent(run.id) + '/cancel', {}); status.textContent = t('Đã yêu cầu hủy; đang chờ tiến trình dừng…', 'Cancellation requested; waiting for the process to stop…'); }
+        catch (error) { errorBox(container, error); cancel.disabled = false; }
+      });
+      const waiting = node('div', { class: 'ws-actions' }, status, cancel);
+      btn.after(waiting);
+      try {
+        await api('/work/runs/' + encodeURIComponent(run.id) + '/' + operation, {});
+        // Navigation may have opened a different task draft while tests ran.
+        // Its DOM belongs to that view; the normal live read will refresh it.
+        if (container.isConnected) {
+          const next = await api('/work');
+          if (container.isConnected) { acceptWork(next); renderTaskList(); $('workTitle')?.focus({ preventScroll: true }); }
+        }
+      } finally { waiting.remove(); }
+    });
   }
   const field = (label, id, value = '', hint = '', type = 'input') => {
     const input = node(type === 'textarea' ? 'textarea' : 'input', { id, name: id, value, type: type === 'textarea' ? null : 'text' });
@@ -81,7 +129,7 @@
   const selectField = (label, id, options, value) => node('label', { class: 'ws-field', for: id }, node('span', {}, label), node('select', { id, name: id }, options.map(([v, text]) => node('option', { value: v, selected: v === value }, text))));
   const split = value => value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
   const csv = value => value.split(',').map(s => s.trim()).filter(Boolean);
-  const statusText = value => ({ planned: t('Đã lên kế hoạch', 'Planned'), ready: t('Chờ kiểm tra điều kiện', 'Awaiting readiness checks'), queued: t('Đang chờ', 'Queued'), running: t('Đang chạy', 'Running'), reported: t('Agent đã báo cáo', 'Agent reported'), verifying: t('Đang kiểm chứng', 'Verifying'), verified: t('Đã kiểm chứng', 'Verified'), integrating: t('Chờ tích hợp', 'Awaiting integration'), done: t('Đã nghiệm thu', 'Accepted'), failed: t('Thất bại', 'Failed'), cancelled: t('Đã hủy', 'Cancelled'), rejected: t('Bị từ chối', 'Rejected'), interrupted: t('Bị gián đoạn', 'Interrupted'), timeout: t('Hết thời gian', 'Timed out'), 'output-limit': t('Vượt giới hạn đầu ra', 'Output limit exceeded'), lost: t('Mất kết nối / lease hết hạn', 'Connection lost / lease expired'), leased: t('Worker đã nhận lease', 'Worker holds lease'), integrated: t('Đã tích hợp', 'Integrated'), stale: t('Yêu cầu đã thay đổi', 'Requirements changed'), retired: t('Lịch sử', 'History'), unknown: t('Chưa biết', 'Unknown') })[value] || value;
+  const statusText = value => ({ planned: t('Đã lên kế hoạch', 'Planned'), ready: t('Chờ kiểm tra điều kiện', 'Awaiting readiness checks'), queued: t('Đang chờ', 'Queued'), running: t('Đang chạy', 'Running'), reported: t('Agent đã báo cáo', 'Agent reported'), verifying: t('Đang kiểm chứng', 'Verifying'), verified: t('Đã kiểm chứng', 'Verified'), integrating: t('Chờ tích hợp', 'Awaiting integration'), done: t('Đã tích hợp và test', 'Integrated and tested'), failed: t('Thất bại', 'Failed'), cancelled: t('Đã hủy', 'Cancelled'), rejected: t('Bị từ chối', 'Rejected'), interrupted: t('Bị gián đoạn', 'Interrupted'), timeout: t('Hết thời gian', 'Timed out'), 'output-limit': t('Vượt giới hạn đầu ra', 'Output limit exceeded'), lost: t('Mất kết nối / lease hết hạn', 'Connection lost / lease expired'), leased: t('Worker đã nhận lease', 'Worker holds lease'), integrated: t('Đã tích hợp', 'Integrated'), stale: t('Yêu cầu đã thay đổi', 'Requirements changed'), retired: t('Lịch sử', 'History'), unknown: t('Chưa biết', 'Unknown') })[value] || value;
   const modeText = value => ({ discuss: t('Trao đổi', 'Discuss'), plan: t('Lập kế hoạch', 'Plan'), execute: t('Thực hiện', 'Execute'), local: t('Cùng máy', 'Local'), remote: t('Nhiều máy', 'Remote'), mixed: t('Kết hợp', 'Mixed'), invited: t('Mời bên ngoài', 'Invited'), managed: t('Tool quản lý', 'Managed') })[value] || value;
   const json = value => node('pre', { class: 'ws-code' }, JSON.stringify(value, null, 2));
   const val = id => $(id).value.trim();
@@ -104,9 +152,33 @@
   applyTheme();
   if (admin) $('language').before(theme); else $('displayOptions').append(theme);
   function taskDraftKey(task) { return 'agent-meeting:' + hostKey + ':task:' + task.id + ':' + task.requirementRevision; }
+  const draftArrayFields = new Set(['acceptance','writePaths','testFiles','dependencies','sources','facts','unknowns']);
+  function storedTaskDraft(key, fields) {
+    try {
+      const saved = JSON.parse(localStorage.getItem(key));
+      if (!saved || typeof saved !== 'object' || Array.isArray(saved)) return {};
+      return Object.fromEntries(fields.filter(name => draftArrayFields.has(name)
+        ? Array.isArray(saved[name]) && saved[name].every(value => typeof value === 'string')
+        : typeof saved[name] === 'string').map(name => [name, saved[name]]));
+    } catch { return {}; }
+  }
+  function previousTaskDraft(task, fields) {
+    const prefix = 'agent-meeting:' + hostKey + ':task:' + task.id + ':';
+    let previous = null;
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i); if (!key?.startsWith(prefix)) continue;
+        const revision = Number(key.slice(prefix.length));
+        if (!Number.isSafeInteger(revision) || revision < 1 || revision >= task.requirementRevision || revision <= (previous?.revision || 0)) continue;
+        const values = storedTaskDraft(key, fields);
+        if (Object.keys(values).length) previous = { revision, values };
+      }
+    } catch {}
+    return previous;
+  }
   function configureForm(task) {
     const prefix = 'edit-' + task.id + '-', fields = ['purpose','topology','management','workspace','baseRevision','acceptance','writePaths','testFiles','dependencies','sources','facts','unknowns'];
-    let draft = task; try { draft = { ...task, ...JSON.parse(localStorage.getItem(taskDraftKey(task)) || '{}') }; } catch {}
+    const draft = { ...task, ...storedTaskDraft(taskDraftKey(task), fields) }, previous = previousTaskDraft(task, fields);
     const form = node('form', { class: 'ws-panel' });
     const id = name => prefix + name;
     form.append(node('p', { class: 'ws-meta' }, t('Bổ sung điều kiện trên cùng task; lưu không khởi chạy agent.', 'Add prerequisites to this task; saving does not launch an agent.')),
@@ -114,38 +186,105 @@
         selectField(t('Mục đích', 'Purpose'), id('purpose'), [['plan', t('Lập kế hoạch', 'Plan')], ['execute', t('Thực hiện', 'Execute')]], draft.purpose),
         selectField(t('Vị trí', 'Location'), id('topology'), [['local', t('Cùng máy', 'Local')], ['remote', t('Nhiều máy', 'Remote')], ['mixed', t('Kết hợp', 'Mixed')]], draft.topology),
         selectField(t('Quản lý agent', 'Agent management'), id('management'), [['invited', t('Mời bên ngoài', 'Invited')], ['managed', t('Tool quản lý', 'Managed')], ['mixed', t('Kết hợp', 'Mixed')]], draft.management)));
-    for (const [name, vi, en, area] of [['acceptance','Tiêu chí nghiệm thu (mỗi dòng một mục)','Acceptance criteria (one per line)',true], ['workspace','Checkout nguồn','Source checkout'], ['baseRevision','Base revision','Base revision'], ['writePaths','Đường dẫn được sửa (mỗi dòng một mục)','Allowed write paths (one per line)',true], ['testFiles','Tệp Node test độc lập (mỗi dòng một mục)','Independent Node test files (one per line)',true], ['dependencies','Phụ thuộc: task ID (mỗi dòng một mục)','Dependencies: task IDs (one per line)',true], ['sources','Nguồn cần đọc (mỗi dòng một mục)','Sources to read (one per line)',true], ['facts','Facts (mỗi dòng một mục)','Facts (one per line)',true], ['unknowns','Điều chưa biết (mỗi dòng một mục)','Unknowns (one per line)',true]]) form.append(field(t(vi,en), id(name), area ? (draft[name] || []).join('\n') : draft[name] || '', '', area ? 'textarea' : 'input'));
+    const textFields = [['acceptance','Tiêu chí nghiệm thu (mỗi dòng một mục)','Acceptance criteria (one per line)',true], ['workspace','Checkout nguồn','Source checkout'], ['baseRevision','Base revision','Base revision'], ['writePaths','Đường dẫn được sửa (mỗi dòng một mục)','Allowed write paths (one per line)',true], ['testFiles','Tệp Node test độc lập (mỗi dòng một mục)','Independent Node test files (one per line)',true], ['dependencies','Phụ thuộc: task ID (mỗi dòng một mục)','Dependencies: task IDs (one per line)',true], ['sources','Nguồn cần đọc (mỗi dòng một mục)','Sources to read (one per line)',true], ['facts','Facts (mỗi dòng một mục)','Facts (one per line)',true], ['unknowns','Điều chưa biết (mỗi dòng một mục)','Unknowns (one per line)',true]];
+    for (const [name, vi, en, area] of textFields) form.append(field(t(vi,en), id(name), area ? (draft[name] || []).join('\n') : draft[name] || '', '', area ? 'textarea' : 'input'));
     const execution = node('div', { class: 'ws-grid two' });
     for (const name of ['workspace','baseRevision','writePaths','testFiles']) execution.append(form.querySelector('[id="' + id(name) + '"]').closest('.ws-field'));
     const advanced = disclosure(t('Phụ thuộc và bối cảnh bổ sung', 'Dependencies and additional context'));
     for (const name of ['dependencies','sources','facts','unknowns']) advanced.append(form.querySelector('[id="' + id(name) + '"]').closest('.ws-field'));
     form.append(node('h3', {}, t('Checkout và phạm vi kiểm chứng', 'Checkout and verification scope')), execution, advanced);
+    const previousFields = previous && fields.filter(name => Object.hasOwn(previous.values, name)
+      && JSON.stringify(previous.values[name]) !== JSON.stringify(draft[name] ?? (draftArrayFields.has(name) ? [] : '')));
+    if (previousFields?.length) {
+      const recovery = disclosure(t('Xem bản nháp trước · v', 'View previous draft · v') + previous.revision,
+        node('p', { class: 'ws-meta' }, t('Chỉ hiện trường khác với bản đang mở, chỉ đọc. Chép phần cần giữ vào trường hiện tại rồi kiểm tra trước khi lưu.', 'Only differing fields are shown, read-only. Copy what you need into the current fields and review before saving.')));
+      for (const [name, vi, en] of [['purpose','Mục đích','Purpose'], ['topology','Vị trí','Location'], ['management','Quản lý agent','Agent management'], ...textFields]) {
+        if (!previousFields.includes(name)) continue;
+        const value = previous.values[name], old = field(t(vi,en) + ' · v' + previous.revision, id('previous-' + name), Array.isArray(value) ? value.join('\n') : value, '', 'textarea');
+        old.querySelector('textarea').readOnly = true;
+        recovery.append(old);
+      }
+      form.append(recovery);
+    }
     const readDraft = () => Object.fromEntries(fields.map(name => [name, ['acceptance','writePaths','testFiles','dependencies','sources','facts','unknowns'].includes(name) ? split(val(id(name))) : val(id(name))]));
     form.oninput = form.onchange = () => { try { localStorage.setItem(taskDraftKey(task), JSON.stringify(readDraft())); } catch {} };
     const save = node('button', { class: 'btn primary', type: 'submit' }, t('Lưu yêu cầu của task', 'Save task requirements'));
     form.append(save);
     form.onsubmit = event => { event.preventDefault(); if (!split(val(id('acceptance'))).length) { errorBox(form, new Error(t('Cần ít nhất một tiêu chí nghiệm thu.', 'At least one acceptance criterion is required.')), id('acceptance')); return; } action(save, form, async () => {
-      await api('/work/tasks/' + encodeURIComponent(task.id) + '/configure', { ...readDraft(), expectedRevision: task.requirementRevision });
-      try { localStorage.removeItem(taskDraftKey(task)); } catch {}
-      work = await api('/work'); renderTaskList(); notify(t('Đã lưu; task ID được giữ nguyên. Chưa khởi chạy agent.', 'Saved with the same task ID. No agent has been launched.'));
+      await saveTaskRequirements(task, form, readDraft);
     }); };
     return node('details', { class: 'ws-configure' }, node('summary', {}, t('Chuẩn bị thực hiện / sửa yêu cầu', 'Prepare execution / edit requirements')), form);
+  }
+
+  async function saveTaskRequirements(task, form, readDraft) {
+    const version = workEditVersion, submitted = readDraft();
+    await api('/work/tasks/' + encodeURIComponent(task.id) + '/configure', { ...submitted, expectedRevision: task.requirementRevision });
+    const preserved = () => {
+      if (form.isConnected && !form.closest('[hidden]') && version === workEditVersion) return false;
+      notify(t('Đã lưu bản đã gửi. Giữ nguyên view và phần nhập mới; xem cập nhật để đối chiếu bản nháp trước khi lưu tiếp.', 'Submitted requirements saved. The current view and newer input are retained; show updates to compare the previous draft before saving again.'));
+      return true;
+    };
+    if (preserved()) return false;
+    const next = await api('/work');
+    if (preserved()) return false;
+    try { localStorage.removeItem(taskDraftKey(task)); } catch {}
+    acceptWork(next); renderTaskList(); $('workTitle')?.focus();
+    notify(t('Đã lưu; task ID được giữ nguyên. Chưa khởi chạy agent.', 'Saved with the same task ID. No agent has been launched.'));
+    return true;
   }
 
   const disclosure = (label, ...content) => node('details', { class: 'ws-disclosure' }, node('summary', {}, label), ...content);
   const viewLink = (hash, label, primary = false) => node('a', { class: 'btn ' + (primary ? 'primary' : 'ghost'), href: '#' + hash }, label);
   const activeRun = run => ['queued', 'starting', 'running', 'verifying', 'integrating'].includes(run.status);
+  function evidencePassed(entry) { return !!entry && typeof entry === 'object' && entry.exitCode === 0 && !entry.error && !entry.timeout && !entry.cancelled; }
+  function renderSyncStatus() {
+    const status = $('workSync'); if (!status) return;
+    const page = $('page'), busy = page.getAttribute('aria-busy') === 'true' || !!page.querySelector('[aria-busy=true]');
+    const signature = syncState + ':' + !!pendingWork + ':' + busy;
+    if (status.dataset.state === signature) return;
+    status.dataset.state = signature;
+    status.replaceChildren(node('span', { role: 'status' }, syncState === 'offline'
+      ? t('Mất kết nối · đang thử lại', 'Connection lost · retrying')
+      : pendingWork ? t('Có cập nhật', 'Updates available') : t('Tự cập nhật', 'Live updates')));
+    if (pendingWork) { const apply = button(t('Xem cập nhật', 'Show updates'), () => applyWorkUpdate(true)); apply.disabled = busy; status.append(apply); }
+  }
+  function applyWorkUpdate(explicit = false) {
+    if (!pendingWork) return;
+    const page = $('page'), list = $('taskList');
+    // A background update must not discard an edit, close evidence being read,
+    // or steal keyboard focus. The explicit button leaves saved drafts intact.
+    if (page.querySelector('[aria-busy=true]') || page.getAttribute('aria-busy') === 'true') return;
+    if (!explicit && (list?.contains(document.activeElement) || list?.querySelector('details[open]'))) return;
+    const scroll = $('workView').scrollTop, titleFocused = document.activeElement === $('workTitle');
+    work = pendingWork.work; remote = pendingWork.remote; pendingWork = null;
+    metrics = work.metrics; metricsError = null; remoteError = null;
+    renderDaily(); $('workView').scrollTop = scroll;
+    window.dispatchEvent(new CustomEvent('am-work-state', { detail: work }));
+    if (explicit || titleFocused) $('workTitle').focus({ preventScroll: true });
+  }
+  async function refreshWork(refresh) {
+    const version = workEditVersion, read = workReadVersion + 1;
+    const next = await api('/work'), nextConfig = await api('/config');
+    await loadAuxiliary();
+    if (!refresh.isConnected || refresh.closest('[hidden]') || version !== workEditVersion || read !== workReadVersion) {
+      notify(t('Đã đọc cập nhật; giữ nguyên view và phần đang nhập. Làm mới khi sẵn sàng xem dữ liệu hiện tại.', 'Updates read; the current view and input are retained. Refresh when ready to view current data.'));
+      return false;
+    }
+    config = nextConfig; acceptWork(next); renderDaily(); $('workTitle')?.focus();
+    notify(t('Đã cập nhật', 'Updated'));
+    return true;
+  }
   function renderDaily() {
     const page = $('page');
-    const refresh = button(t('Làm mới', 'Refresh'), () => action(refresh, page, async () => { work = await api('/work'); config = await api('/config'); await loadAuxiliary(); renderDaily(); notify(t('Đã cập nhật', 'Updated')); }));
+    const refresh = button(t('Làm mới', 'Refresh'), () => action(refresh, page, () => refreshWork(refresh)));
     let context = work.session?.context || '';
     if (!context) try { context = JSON.parse(localStorage.getItem('agent-meeting:' + hostKey + ':brief') || '{}').context || ''; } catch {}
     const title = tab === 'plan' ? t('Kế hoạch', 'Plan') : tab === 'results' ? t('Kết quả', 'Results') : t('Thực hiện', 'Execute');
-    const purpose = tab === 'plan' ? t('Chốt yêu cầu và tiêu chí cho từng việc.', 'Set requirements and acceptance criteria for each task.') : tab === 'results' ? t('Kiểm chứng báo cáo trước khi tích hợp.', 'Verify reported work before integration.') : t('Chọn hồ sơ và theo dõi phiên chạy.', 'Choose a profile and follow the run.');
-    page.replaceChildren(node('header', { class: 'ws-view-heading ws-row between' }, node('div', {}, node('h1', { tabindex: '-1', id: 'workTitle' }, title + ' (' + (work.tasks || []).filter(task => tab !== 'results' || [...(work.runs || []), ...(remote.runs || [])].some(run => run.taskId === task.id)).length + ')')), refresh),
+    page.replaceChildren(node('header', { class: 'ws-view-heading ws-row between' }, node('div', {}, node('h1', { tabindex: '-1', id: 'workTitle' }, title + ' (' + (work.tasks || []).filter(task => tab !== 'results' || [...(work.runs || []), ...(remote.runs || [])].some(run => run.taskId === task.id)).length + ')')), node('div', { class: 'ws-row' }, node('div', { id: 'workSync', class: 'ws-sync' }), refresh)),
       node('section', { id: 'taskList', 'aria-label': t('Danh sách công việc', 'Task list') }),
       disclosure(t('Bối cảnh phiên', 'Session context'), node('p', { class: 'session-context' }, context || t('Chưa có bối cảnh.', 'No context yet.')), viewLink('conversation', t('Về hội thoại', 'Go to conversation'))));
     renderTaskList();
+    renderSyncStatus();
   }
   function renderTaskList() {
     const list = $('taskList'); if (!list) return;
@@ -161,14 +300,14 @@
       if (tab === 'results' && !runs.length && !remoteRuns.length) continue;
       const state = task.sourceCurrent === false ? 'retired' : task.status || 'planned';
       const card = node('article', { class: 'ws-task', 'data-task-id': task.id },
-        node('header', { class: 'ws-row between' }, node('div', {}, node('h2', {}, task.goal), node('p', { class: 'ws-task-label' }, (task.origin ? t('Việc #', 'Task #') + task.origin.number : t('Công việc', 'Task')) + (task.owner ? ' · ' + task.owner : ''))), node('span', { class: 'ws-pill', 'data-status': state }, state === 'verifying' ? t('Chờ kiểm chứng', 'Awaiting verification') : statusText(state))));
-      const sourceHash = task.origin?.roomCreatedAt === work.session?.createdAt && task.origin?.messageIndex != null ? '#message-' + task.origin.messageIndex : '#conversation';
-      const source = node('div', { class: 'ws-task-source ws-row' }, task.origin ? node('a', { href: sourceHash }, t('Nguồn hội thoại', 'Conversation source')) : node('span', { class: 'ws-meta' }, t('Chưa liên kết nguồn hội thoại', 'No conversation source linked')),
+        node('header', { class: 'ws-row between' }, node('div', {}, node('h2', {}, task.goal), node('p', { class: 'ws-task-label' }, (task.origin?.kind === 'pm-goal' ? t('Mục tiêu PM #', 'PM goal #') + task.origin.goalRevision : task.origin?.kind === 'meeting-action' ? t('Việc #', 'Task #') + task.origin.number : t('Công việc', 'Task')) + (task.owner ? ' · ' + task.owner : ''))), node('span', { class: 'ws-pill', 'data-status': state }, task.pmId && state === 'done' ? t('Đã tích hợp và test', 'Integrated and tested') : state === 'verifying' ? t('Chờ kiểm chứng', 'Awaiting verification') : statusText(state))));
+      const sourceHash = task.origin?.kind === 'pm-goal' ? '#pmControl' : task.origin?.roomCreatedAt === work.session?.createdAt && task.origin?.messageIndex != null ? '#message-' + task.origin.messageIndex : '#conversation';
+      const source = node('div', { class: 'ws-task-source ws-row' }, task.origin ? node('a', { href: sourceHash }, task.origin.kind === 'pm-goal' ? t('Nguồn mục tiêu PM', 'PM goal source') : t('Nguồn hội thoại', 'Conversation source')) : node('span', { class: 'ws-meta' }, t('Chưa liên kết nguồn hội thoại', 'No conversation source linked')),
         disclosure(t('Chi tiết task', 'Task details'), node('p', { class: 'ws-meta' }, task.id + ' · ' + t('Yêu cầu v', 'Requirement v') + task.requirementRevision),
           node('p', {}, [task.purpose || 'plan', task.topology || 'local', task.management || 'invited'].map(modeText).join(' · ')),
           task.workspace && node('p', { class: 'ws-meta' }, task.workspace + ' · ' + (task.baseRevision || t('Chưa chốt base revision', 'Base revision not set'))),
           !!task.dependencies?.length && node('p', {}, t('Phụ thuộc: ', 'Dependencies: ') + task.dependencies.join(', ')),
-          task.origin && node('div', {}, node('p', { class: 'session-context' }, task.origin.context), node('pre', { class: 'ws-code' }, task.origin.message)),
+          task.origin?.kind === 'meeting-action' && node('div', {}, node('p', { class: 'session-context' }, task.origin.context), node('pre', { class: 'ws-code' }, task.origin.message)),
           task.reportedProgress && node('p', { class: 'ws-meta' }, t('Tiến độ tự báo (chưa kiểm chứng): ', 'Self-reported progress (unverified): ') + task.reportedProgress.status + (task.reportedProgress.note ? ' · ' + task.reportedProgress.note : ''))));
 
       if (task.sourceCurrent === false) card.append(node('p', { class: 'ws-warning' }, t('Nguồn không còn trong phòng hiện tại. Giữ lịch sử; không chạy hoặc tích hợp tự động.', 'Source no longer belongs to the current room. History is retained; execution and automatic integration are blocked.')));
@@ -181,14 +320,19 @@
         if (task.purpose === 'execute' && task.topology === 'local' && task.management === 'managed') {
           const profileId = 'profile-' + task.id;
           const profiles = (config?.profiles || []).filter(p => p.enabled);
+          const configRevision = config?.revision, savedProfile = profileSelections.get(task.id);
+          const selectedProfile = savedProfile?.requirementRevision === task.requirementRevision && savedProfile.configRevision === configRevision && profiles.some(p => p.id === savedProfile.id) ? savedProfile.id : '';
+          if (!selectedProfile) profileSelections.delete(task.id);
           const controls = node('div', { class: 'ws-run-controls' });
           const run = button(t('Chạy trong workspace riêng', 'Run in isolated workspace'), () => action(run, card, async () => {
             if (!val(profileId)) { errorBox(card, new Error(t('Chọn hồ sơ chạy trước.', 'Select an execution profile first.')), profileId); return; }
-            await api('/work/tasks/' + encodeURIComponent(task.id) + '/run', { profileId: val(profileId) }); work = await api('/work'); renderTaskList(); notify(t('Đã gửi yêu cầu chạy.', 'Run requested.'));
+            await api('/work/tasks/' + encodeURIComponent(task.id) + '/run', { profileId: val(profileId), expectedConfigRevision: configRevision, expectedRequirementRevision: task.requirementRevision }); acceptWork(await api('/work')); renderTaskList(); notify(t('Đã gửi yêu cầu chạy.', 'Run requested.'));
           }), true);
           const existingResult = runs.some(r => r.requirementRevision === task.requirementRevision && !['failed','cancelled','timeout','output-limit','rejected'].includes(r.status));
           run.disabled = !profiles.length || runs.some(activeRun) || existingResult;
-          controls.append(selectField(t('Hồ sơ chạy', 'Execution profile'), profileId, [['', t('Chọn hồ sơ', 'Select a profile')], ...profiles.map(p => [p.id, p.label])], ''), run);
+          const choice = selectField(t('Hồ sơ chạy', 'Execution profile'), profileId, [['', t('Chọn hồ sơ', 'Select a profile')], ...profiles.map(p => [p.id, p.label])], selectedProfile);
+          choice.querySelector('select').onchange = event => { if (event.target.value) profileSelections.set(task.id, { id: event.target.value, requirementRevision: task.requirementRevision, configRevision }); else profileSelections.delete(task.id); };
+          controls.append(choice, run);
           if (!existingResult && !runs.some(activeRun)) card.append(controls);
           if (!profiles.length) card.append(node('p', { class: 'ws-warning' }, t('Chưa có hồ sơ được bật. Mở Quản trị → Agent & runtime để cấu hình.', 'No enabled profiles. Open Administration → Agents & runtimes to configure one.')));
 
@@ -199,22 +343,28 @@
       if (tab !== 'plan') for (const [index, run] of [...runs].reverse().entries()) {
         const runView = node('section', { class: 'ws-run', 'data-run-id': run.id }, node('div', { class: 'ws-row between' }, node('h3', {}, t('Lần chạy ', 'Attempt ') + (runs.length - index)), node('span', { class: 'ws-pill', 'data-status': run.status }, statusText(run.status || 'unknown'))));
         const explanation = { reported: t('Báo cáo đã sẵn sàng. Cần test độc lập trước khi nhận kết quả.', 'Report ready. Independent tests are required before acceptance.'), verified: t('Test đã đạt. Tích hợp sẽ kiểm tra lại trên checkout nguồn.', 'Tests passed. Integration will test the source checkout again.'), integrated: t('Đã tích hợp và test trên checkout nguồn.', 'Integrated and tested on the source checkout.'), failed: t('Phiên chạy thất bại. Xem bằng chứng và điều chỉnh trước khi chạy lại.', 'Run failed. Review the evidence and adjust before retrying.') }[run.status];
-        if (explanation && run.status !== 'integrated') runView.append(node('p', { class:'ws-subtle' }, explanation));
+        const checkFailed = run.status === 'failed' && run.error === 'Independent verification failed';
+        if (explanation && run.status !== 'integrated') runView.append(node('p', { class: checkFailed ? 'ws-warning' : 'ws-subtle' }, checkFailed
+          ? t('Test độc lập thất bại. Thử lại trong Thực hiện; lỗi test được kèm nếu nguồn và yêu cầu còn khớp.', 'Independent checks failed. Retry in Execute; diagnostics are attached when source and requirements still match.') : explanation));
+        if (run.retryContext) runView.append(node('p', { class: 'ws-meta ws-retry-context' }, run.retryContext.omitted
+          ? t('Không kèm lỗi test vì prompt đã gần giới hạn. Xem bằng chứng của lần trước.', 'Previous checks omitted: prompt size limit. Review the earlier evidence.') : t('Đã kèm lỗi test từ lần chạy trước.', 'Previous failed checks included.')
+          + (run.retryContext.truncated ? t(' Chẩn đoán đã rút gọn; bằng chứng gốc vẫn được giữ.', ' Diagnostics shortened; original evidence is retained.') : '')
+          + (run.retryContext.sensitiveOutputOmitted ? t(' Đã bỏ nội dung có dấu hiệu bí mật.', ' Possible secret output omitted.') : '')));
         if (tab === 'results' && run.report) runView.append(node('p', { class: 'ws-report' }, run.report));
         if (tab === 'results' && run.changes?.length) runView.append(node('p', { class: 'ws-meta' }, t('Tệp thay đổi: ', 'Changed files: ') + run.changes.map(c => c.file).join(', ')));
         const evidence = [...(run.evidence || []), ...(run.integrationEvidence || [])];
-        if (evidence.length) runView.append(node('p', { class: 'ws-meta' }, t('Test đạt: ', 'Tests passed: ') + evidence.filter(e => e.exitCode === 0).length + '/' + evidence.length));
-        if (run.error) runView.append(node('p', { class: 'ws-warning' }, friendlyError(run.error)));
+        if (evidence.length) runView.append(node('p', { class: 'ws-meta' }, t('Test đạt: ', 'Tests passed: ') + evidence.filter(evidencePassed).length + '/' + evidence.length));
+        if (run.error && !checkFailed) runView.append(node('p', { class: 'ws-warning' }, friendlyError(run.error)));
         const actions = node('div', { class: 'ws-actions' });
         if (tab === 'results' && ['failed','cancelled','rejected','timeout','output-limit'].includes(run.status) && task.sourceCurrent !== false) actions.append(viewLink('execute', t('Thử lại trong Thực hiện →', 'Retry in Execute →'), true));
-        if (activeRun(run) && tab === 'tasks') {
-          const cancel = button(t('Hủy phiên chạy', 'Cancel run'), () => action(cancel, runView, async () => { await api('/work/runs/' + encodeURIComponent(run.id) + '/cancel', {}); work = await api('/work'); renderTaskList(); })); actions.append(cancel);
+        if (activeRun(run)) {
+          const cancel = button(t('Hủy phiên chạy', 'Cancel run'), () => action(cancel, runView, async () => { await api('/work/runs/' + encodeURIComponent(run.id) + '/cancel', {}); acceptWork(await api('/work')); renderTaskList(); })); actions.append(cancel);
         }
         if (tab === 'results' && run.status === 'reported' && task.sourceCurrent !== false && run.requirementRevision === task.requirementRevision) {
-          const verify = button(t('Kiểm chứng bằng Node test', 'Verify with Node tests'), () => action(verify, runView, async () => { await api('/work/runs/' + encodeURIComponent(run.id) + '/verify', {}); work = await api('/work'); renderTaskList(); }), true); actions.append(verify);
+          const verify = button(t('Kiểm chứng bằng Node test', 'Verify with Node tests'), () => checkedAction(verify, runView, run, 'verify'), true); actions.append(verify);
         }
         if (tab === 'results' && run.status === 'verified' && task.sourceCurrent !== false && run.requirementRevision === task.requirementRevision) {
-          const integrate = button(t('Tích hợp kết quả đã kiểm chứng', 'Integrate verified result'), () => action(integrate, runView, async () => { await api('/work/runs/' + encodeURIComponent(run.id) + '/integrate', {}); work = await api('/work'); renderTaskList(); }), true); actions.append(integrate);
+          const integrate = button(t('Tích hợp kết quả đã kiểm chứng', 'Integrate verified result'), () => checkedAction(integrate, runView, run, 'integrate'), true); actions.append(integrate);
         }
         if (tab === 'tasks' && ['reported', 'verified', 'integrated'].includes(run.status)) actions.append(viewLink('results', t('Xem kết quả →', 'Review results →'), true));
         if (run.requirementRevision !== task.requirementRevision) runView.append(node('p', { class: 'ws-warning' }, t('Kết quả thuộc yêu cầu cũ; không được nghiệm thu cho revision hiện tại.', 'This result belongs to an older requirement and cannot be accepted for the current revision.')));
@@ -222,10 +372,10 @@
         for (const change of run.changes || []) if (change.after) downloads.append(node('a', { class: 'btn ghost', href: base + '/work/runs/' + encodeURIComponent(run.id) + '/artifact?path=' + encodeURIComponent(change.file) }, t('Tải kết quả: ', 'Download result: ') + change.file));
         const details = disclosure(t('Bằng chứng và tệp bàn giao', 'Evidence and handoff files'), node('p', { class: 'ws-meta' }, run.id + ' · ' + (run.profileId || '') + ' · ' + (run.reportedModel || run.actualModel || t('Model chưa biết', 'Model unknown'))), downloads);
         if (['reported', 'verified'].includes(run.status)) {
-          const rebase = button(t('Cập nhật nguồn và kiểm chứng lại', 'Refresh source and verify again'), () => action(rebase, runView, async () => { await api('/work/runs/' + encodeURIComponent(run.id) + '/rebase', {}); work = await api('/work'); renderTaskList(); })); details.append(rebase);
+          const rebase = button(t('Cập nhật nguồn và kiểm chứng lại', 'Refresh source and verify again'), () => action(rebase, runView, async () => { await api('/work/runs/' + encodeURIComponent(run.id) + '/rebase', {}); acceptWork(await api('/work')); renderTaskList(); })); details.append(rebase);
         }
 
-        for (const [i, entry] of evidence.entries()) details.append(disclosure(t('Test ', 'Test ') + (i + 1) + ' · ' + (entry.exitCode === 0 ? t('Đạt', 'Passed') : t('Không đạt', 'Failed')), node('pre', { class: 'ws-code' }, entry.output || entry.error || t('Không có đầu ra', 'No output'))));
+        for (const [i, entry] of evidence.entries()) details.append(disclosure(t('Test ', 'Test ') + (i + 1) + ' · ' + (evidencePassed(entry) ? t('Đạt', 'Passed') : t('Không đạt', 'Failed')), node('pre', { class: 'ws-code' }, entry?.output || entry?.error || t('Không có đầu ra', 'No output'))));
         details.append(disclosure(t('Nhật ký và snapshot đầy đủ', 'Full logs and snapshot'), json(run)));
         runView.append(actions, details); card.append(index === 0 ? runView : disclosure(t('Lần chạy trước · ', 'Earlier attempt · ') + statusText(run.status), runView));
       }
@@ -248,16 +398,34 @@
     if (!renderedTasks) list.append(node('div', { class: 'ws-empty' }, node('h2', {}, t('Chưa có kết quả', 'No results yet')), node('p', {}, t('Kết quả xuất hiện sau khi một phiên chạy báo cáo.', 'Results appear when a run reports back.')), viewLink('execute', t('Mở Thực hiện →', 'Open Execute →'), true)));
     if (tab === 'results') { const measurements = disclosure(t('Số liệu phiên chạy', 'Run measurements')); renderMetrics(measurements); list.append(measurements); }
   }
-  async function saveConfig(next) {
-    config = await api('/config', { config: next, expectedRevision: config.revision });
-    notify(t('Đã lưu cấu hình xuống kho ứng dụng. Quyết định mới dùng revision ', 'Configuration saved to application storage. New decisions use revision ') + config.revision);
-    renderAdmin();
+  async function saveConfig(next, form) {
+    const edits = adminEditVersion;
+    const saved = await api('/config', { config: next, expectedRevision: config.revision });
+    return acceptSavedConfig(saved, form, edits, t('Đã lưu cấu hình xuống kho ứng dụng. Quyết định mới dùng revision ', 'Configuration saved to application storage. New decisions use revision ') + saved.revision);
+  }
+  function acceptSavedConfig(saved, form, edits, message) {
+    if (!form.isConnected || edits !== adminEditVersion || saved.revision < config.revision) {
+      if (saved.revision > config.revision && (!pendingConfig || saved.revision > pendingConfig.revision)) pendingConfig = saved;
+      notify(t('Đã lưu v', 'Saved revision ') + saved.revision + t('. Giữ phần đang sửa; hãy sao chép trước khi tải lại cấu hình.', '. New edits kept. Copy them before reloading configuration.'));
+      return false;
+    }
+    config = saved; pendingConfig = null;
+    renderAdmin(); $('main').focus(); notify(message);
+    return true;
   }
   function renderAdmin() {
+    if (pendingConfig && pendingConfig.revision > config.revision) config = pendingConfig;
+    pendingConfig = null;
+    clearTimeout(runtimeExpiryTimer);
+    const url = new URL(location.href); url.searchParams.set('section', adminTab); history.replaceState(null, '', url);
     $('shell').classList.add('admin'); $('sidebar').hidden = false;
-    $('sidebar').replaceChildren(node('nav', { 'aria-label': t('Nhóm quản trị', 'Administration sections') }, [['models', t('Model & năng lực', 'Models & capabilities')], ['routing', t('Quy tắc chia việc', 'Routing policy')], ['runtime', t('Agent & runtime', 'Agents & runtimes')], ['hosts', t('Máy & workspace', 'Hosts & workspaces')], ['data', t('Dữ liệu & nguồn', 'Data & provenance')]].map(([id, label]) => node('button', { type: 'button', class: 'btn ghost', 'aria-current': adminTab === id ? 'page' : null, onclick: () => { adminTab = id; renderAdmin(); } }, label))));
+    const selectSection = id => { adminTab = id; renderAdmin(); $('main').focus(); };
+    const mobileSections = selectField(t('Nhóm quản trị', 'Administration section'), 'adminSection', adminSections, adminTab);
+    mobileSections.classList.add('ws-mobile-sections');
+    mobileSections.querySelector('select').onchange = event => selectSection(event.target.value);
+    $('sidebar').replaceChildren(mobileSections, node('nav', { 'aria-label': t('Nhóm quản trị', 'Administration sections') }, adminSections.map(([id, label]) => node('button', { type: 'button', class: 'btn ghost', 'aria-current': adminTab === id ? 'page' : null, onclick: () => selectSection(id) }, label))));
     const page = $('page');
-    const titles = { models: t('Model & năng lực', 'Models & capabilities'), routing: t('Quy tắc chia việc', 'Routing policy'), runtime: t('Agent & runtime', 'Agents & runtimes'), hosts: t('Máy & workspace', 'Hosts & workspaces'), data: t('Dữ liệu & nguồn', 'Data & provenance') };
+    const titles = Object.fromEntries(adminSections);
     page.replaceChildren(node('header', { class: 'ws-view-heading ws-row between' }, node('div', {}, node('p', { class: 'ws-eyebrow' }, t('Quản trị', 'Administration')), node('h1', {}, titles[adminTab])), node('span', { class: 'ws-pill' }, t('Cấu hình v', 'Configuration v') + config.revision)));
     if (adminTab === 'models') renderModels(page);
     if (adminTab === 'routing') renderRouting(page);
@@ -309,7 +477,7 @@
         const changed = { ...m, id: val('modelId'), label: val('modelLabel'), provider: val('provider'), providerModelId: val('providerModelId') || null, enabled: $('modelEnabled').checked, verification: $('modelVerified').checked ? 'verified' : 'unverified', capabilities: csv(val('capabilities')), strengths: split(val('strengths')), limitations: split(val('limitations')), costTier: val('costTier'), source: { ...m.source, kind: 'user-supplied', confidence: 'user-configured', checkedAt: $('modelVerified').checked ? new Date().toISOString() : null, references: val('modelSource') ? [val('modelSource'), ...(m.source.references || []).slice(1)] : [] } };
         if (!model && next.models.some(x => x.id === changed.id)) throw new Error(t('ID model đã tồn tại.', 'This model ID already exists.'));
         if (model) next.models[next.models.findIndex(x => x.id === model.id)] = changed; else next.models.push(changed);
-        selectedModel = changed.id; await saveConfig(next);
+        selectedModel = changed.id; await saveConfig(next, form);
       });
     };
     detail.replaceChildren(form);
@@ -324,26 +492,89 @@
       node('p', { class: 'ws-subtle' }, t('Các quy tắc bảo toàn bằng chứng, context, fallback và chống sửa đè vẫn được giữ khi lưu.', 'Evidence, context retention, fallback and write isolation rules are preserved when saving.')));
     $('page').append(form); $('maxCandidates').type = 'number'; $('maxCandidates').min = '1'; $('maxCandidates').max = '5';
     const save = node('button', { type: 'submit', class: 'btn primary' }, t('Lưu quy tắc', 'Save policy')); form.append(save);
-    form.onsubmit = event => { event.preventDefault(); const max = Number(val('maxCandidates')); if (!Number.isInteger(max) || max < 1 || max > 5) { errorBox(form, new Error(t('Số ứng viên phải là số nguyên từ 1 đến 5.', 'Maximum candidates must be an integer from 1 to 5.')), 'maxCandidates'); return; } action(save, form, async () => { const next = structuredClone(config); Object.assign(next.policy, { leadProfileId: val('leadProfileId') || null, maxCandidates: max, reviewRequiredFor: split(val('reviewRequiredFor')), budget: { ...p.budget, maxCostTier: val('maxCostTier') || null } }); await saveConfig(next); }); };
+    form.onsubmit = event => { event.preventDefault(); const max = Number(val('maxCandidates')); if (!Number.isInteger(max) || max < 1 || max > 5) { errorBox(form, new Error(t('Số ứng viên phải là số nguyên từ 1 đến 5.', 'Maximum candidates must be an integer from 1 to 5.')), 'maxCandidates'); return; } action(save, form, async () => { const next = structuredClone(config); Object.assign(next.policy, { leadProfileId: val('leadProfileId') || null, maxCandidates: max, reviewRequiredFor: split(val('reviewRequiredFor')), budget: { ...p.budget, maxCostTier: val('maxCostTier') || null } }); await saveConfig(next, form); }); };
   }
   function renderRuntime(page) {
-    const refresh = button(t('Kiểm tra runtime', 'Check runtimes'), () => action(refresh, page, async () => { const result = await api('/runtime'); runtime = Array.isArray(result) ? result : [...(result.observations || []), ...(result.checks || [])]; renderAdmin(); notify(t('Đã cập nhật quan sát runtime. Có executable không đồng nghĩa có quyền truy cập model.', 'Runtime observations updated. An executable does not establish model access.')); }));
-    page.append(node('div', { class: 'ws-row between' }, node('h2', {}, t('Hồ sơ model / runtime', 'Model / runtime profiles')), refresh), node('p', { class: 'ws-warning' }, t('Catalog mô tả năng lực; quan sát runtime mô tả môi trường. Quyền truy cập chưa được kiểm tra phải giữ là unknown.', 'The catalog describes capabilities; runtime observations describe the environment. Untested access remains unknown.')));
+    const viewedRevision = config.revision;
+    const refresh = button(t('Kiểm tra runtime', 'Check runtimes'), () => action(refresh, page, async () => { const result = await api('/runtime'); runtime = Array.isArray(result) ? result : [...(result.observations || []), ...(result.checks || [])]; runtimeLoaded = true; renderRuntimeObservations(); notify(t('Đã cập nhật quan sát runtime. Có executable không đồng nghĩa có quyền truy cập model.', 'Runtime observations updated. An executable does not establish model access.')); }));
+    const diagnostics = disclosure(t('Dữ liệu chẩn đoán', 'Diagnostic data'), json(runtime)); diagnostics.id = 'runtimeDiagnostics';
+    page.append(node('section', { class: 'ws-panel', id: 'runtimeObservations' },
+      node('div', { class: 'ws-row between' }, node('h2', {}, t('Runtime trên máy', 'Local runtimes')), refresh),
+      node('div', { id: 'runtimeChecks' }), diagnostics),
+      node('h2', { class: 'ws-runtime-heading' }, t('Hồ sơ model / runtime', 'Model / runtime profiles')),
+      node('p', { class: 'ws-subtle' }, t('Probe gọi model thật và có thể phát sinh phí CLI; timeout 60 giây. Quan sát truy cập có hạn 30 phút.', 'Probing invokes the actual model and may use your CLI budget; timeout 60 seconds. Access observations expire after 30 minutes.')));
     for (const profile of config.profiles) {
-      const form = node('form', { class: 'ws-panel', novalidate: true }, node('h3', {}, profile.label), node('p', { class: 'ws-meta' }, profile.id),
+      const model = config.models.find(m => m.id === profile.modelId), adapter = config.runtimes.find(r => r.id === profile.runtimeId);
+      const mapping = disclosure(t('Sửa ánh xạ', 'Edit mapping'), node('p', { class: 'ws-meta' }, profile.id),
         selectField(t('Model', 'Model'), 'model-' + profile.id, config.models.map(m => [m.id, m.label]), profile.modelId),
         selectField(t('Runtime / adapter', 'Runtime / adapter'), 'runtime-' + profile.id, config.runtimes.map(r => [r.id, r.label]), profile.runtimeId),
-        node('label', { class: 'ws-check' }, node('input', { type: 'checkbox', id: 'enabled-' + profile.id, checked: profile.enabled }), t('Bật hồ sơ', 'Enable profile')),
-        node('p', { class: 'ws-subtle' }, t('Trạng thái truy cập: unknown cho tới khi runtime kiểm tra đúng model.', 'Access: unknown until the runtime checks the specific model.')));
-      const save = node('button', { type: 'submit', class: 'btn ghost' }, t('Lưu ánh xạ', 'Save mapping')); form.append(save);
-      form.onsubmit = event => { event.preventDefault(); action(save, form, async () => { const next = structuredClone(config); const p = next.profiles.find(x => x.id === profile.id); p.modelId = val('model-' + profile.id); p.runtimeId = val('runtime-' + profile.id); p.enabled = $('enabled-' + profile.id).checked; await saveConfig(next); }); };
-      const probe = button(t('Kiểm tra truy cập model (gọi CLI thật)', 'Probe model access (invokes the CLI)'), () => action(probe, form, async () => {
-        await api('/runtime/probe', { profileId: profile.id }); const result = await api('/runtime'); runtime = Array.isArray(result) ? result : [...(result.observations || []), ...(result.checks || [])]; renderAdmin(); notify(t('Đã ghi quan sát truy cập model.', 'Model access observation recorded.'));
-      }));
-      form.append(node('p', { class: 'ws-subtle' }, t('Kiểm tra truy cập gọi model thật, có thể mất tới 120 giây và phát sinh chi phí của tài khoản CLI.', 'Access probing invokes the actual model, may take up to 120 seconds and can use your CLI account budget.')), probe);
-      page.append(form);
+        node('label', { class: 'ws-check' }, node('input', { type: 'checkbox', id: 'enabled-' + profile.id, checked: profile.enabled }), t('Bật hồ sơ', 'Enable profile')));
+      mapping.firstElementChild.id = 'mapping-toggle-' + profile.id;
+      mapping.firstElementChild.setAttribute('aria-label', t('Sửa ánh xạ: ', 'Edit mapping: ') + profile.label);
+      const form = node('form', { class: 'ws-panel ws-runtime-profile', novalidate: true },
+        node('div', { class: 'ws-row between' }, node('h3', {}, profile.label), node('span', { class: 'ws-pill' }, profile.enabled ? t('Đã bật', 'Enabled') : t('Đã tắt', 'Disabled'))),
+        node('p', { class: 'ws-meta' }, (model?.providerModelId || t('Chưa đặt model ID', 'Model ID not set')) + ' · ' + (adapter?.label || profile.runtimeId)),
+        node('div', { id: 'access-' + profile.id, class: 'ws-access' }));
+      const save = node('button', { type: 'submit', class: 'btn ghost' }, t('Lưu ánh xạ', 'Save mapping')); mapping.append(save);
+      form.onsubmit = event => { event.preventDefault(); action(save, form, async () => { const next = structuredClone(config); const p = next.profiles.find(x => x.id === profile.id); p.modelId = val('model-' + profile.id); p.runtimeId = val('runtime-' + profile.id); p.enabled = $('enabled-' + profile.id).checked; if (await saveConfig(next, form)) $('mapping-toggle-' + profile.id)?.focus(); }); };
+      const probe = button('', async () => {
+        renderProbeButton(profile.id); if (probe.disabled) return;
+        probingProfiles.add(profile.id); renderProbeButton(profile.id);
+        try { await action(probe, form, async () => {
+          const observation = await api('/runtime/probe', { profileId: profile.id, expectedConfigRevision: viewedRevision }); const result = await api('/runtime'); runtime = Array.isArray(result) ? result : [...(result.observations || []), ...(result.checks || [])]; runtimeLoaded = true; renderRuntimeObservations();
+          notify(observation.stale ? t('Cấu hình đã đổi; quan sát cũ chưa được áp dụng. Kiểm tra ánh xạ hiện tại trước khi probe lại.', 'Configuration changed; the old observation was not applied. Review the current mapping before probing again.') : t('Đã ghi quan sát truy cập model.', 'Model access observation recorded.'));
+        }); } finally { probingProfiles.delete(profile.id); renderProbeButton(profile.id); }
+      });
+      probe.id = 'probe-' + profile.id;
+      probe.dataset.model = profile.modelId; probe.dataset.runtime = profile.runtimeId; probe.dataset.enabled = String(profile.enabled);
+      form.onchange = () => renderProbeButton(profile.id);
+      form.append(probe, mapping); page.append(form); renderProbeButton(profile.id);
     }
-    page.append(node('section', { class: 'ws-panel' }, node('h2', {}, t('Quan sát môi trường', 'Environment observations')), runtime.length ? json(runtime) : node('p', { class: 'ws-empty' }, t('Chưa kiểm tra ở màn hình này. Bấm Kiểm tra runtime để lấy quan sát từ server.', 'No observations loaded here. Choose Check runtimes to read server observations.'))));
+    renderRuntimeObservations();
+  }
+  function renderProbeButton(profileId) {
+    const probe = $('probe-' + profileId); if (!probe) return;
+    const pending = probingProfiles.has(profileId), dirty = $('model-' + profileId).value !== probe.dataset.model || $('runtime-' + profileId).value !== probe.dataset.runtime || String($('enabled-' + profileId).checked) !== probe.dataset.enabled;
+    const profile = config.profiles.find(p => p.id === profileId), model = config.models.find(m => m.id === profile?.modelId);
+    const ready = profile?.enabled && model?.enabled && model.verification === 'verified' && model.providerModelId;
+    probe.disabled = pending || dirty || !ready;
+    probe.textContent = pending ? t('Đang kiểm tra truy cập model…', 'Probing model access…') : dirty ? t('Lưu ánh xạ trước khi kiểm tra truy cập', 'Save mapping before probing') : !ready ? t('Bật và xác minh model trước', 'Enable and verify model first') : t('Kiểm tra truy cập model (gọi CLI thật)', 'Probe model access (invokes the CLI)');
+  }
+  function renderRuntimeObservations() {
+    const panel = $('runtimeObservations'); if (!panel) return;
+    const checks = runtime.filter(o => !o.profileId), list = $('runtimeChecks');
+    list.replaceChildren(...(checks.length ? checks.map(o => node('p', { class: 'ws-runtime-check' }, node('strong', {}, o.adapter),
+      node('span', {}, o.executable ? (o.version || t('Có executable', 'Executable found')) : t('Không tìm thấy executable', 'Executable not found')))) : [node('p', { class: 'ws-subtle' }, t('Chưa kiểm tra executable ở màn hình này.', 'Executable checks have not been loaded here.'))]),
+      node('p', { class: 'ws-subtle' }, t('Có executable chưa chứng minh truy cập model. Xem quan sát trên từng hồ sơ.', 'An executable does not establish model access. See each profile’s observation.')));
+    // Keep the disclosure and its summary mounted across late probe responses.
+    panel.querySelector('pre').textContent = JSON.stringify(runtime, null, 2);
+    renderProfileObservations(true);
+  }
+  function renderProfileObservations(refreshRows = false) {
+    clearTimeout(runtimeExpiryTimer);
+    if (adminTab !== 'runtime' || !config) return;
+    const now = Date.now(); let nextExpiry = Infinity;
+    for (const profile of config.profiles) {
+      const target = $('access-' + profile.id); if (!target) continue;
+      const model = config.models.find(m => m.id === profile.modelId), observed = runtime.find(o => o.profileId === profile.id);
+      const age = now - Date.parse(observed?.checkedAt);
+      const current = observed && observed.configRevision === config.revision && observed.runtimeId === profile.runtimeId && observed.providerModelId === model?.providerModelId && age >= 0 && age < runtimeObservationLifetime;
+      if (current) nextExpiry = Math.min(nextExpiry, Date.parse(observed.checkedAt) + runtimeObservationLifetime);
+      let label = runtimeLoaded ? t('Truy cập chưa kiểm tra', 'Access untested') : t('Chưa tải quan sát', 'Observations not loaded'), status = '';
+      if (observed && !current) { label = t('Quan sát đã cũ; kiểm tra lại', 'Observation stale; check again'); status = 'stale'; }
+      else if (current && observed.available !== true) { label = t('Probe thất bại', 'Probe failed'); status = 'failed'; }
+      else if (current && observed.modelVerified === true && observed.reportedModel === model?.providerModelId) { label = t('Đã đối chiếu model', 'Model matched'); status = 'verified'; }
+      else if (current) { label = t('Model chưa xác nhận', 'Model unconfirmed'); status = 'stale'; }
+      let badge = target.firstElementChild;
+      if (refreshRows || !badge) {
+        badge = node('span', { class: 'ws-pill' }); target.replaceChildren(badge);
+        if (observed) target.append(node('p', { class: 'ws-meta' }, t('Model báo lại: ', 'Reported model: ') + (observed.reportedModel || 'unknown') + ' · ' + observed.checkedAt));
+        if (observed?.error) target.append(node('p', { class: 'ws-subtle' }, friendlyError(observed.error)));
+      }
+      if (badge.textContent !== label) badge.textContent = label;
+      badge.dataset.status = status;
+    }
+    if (!document.hidden && nextExpiry < Infinity) runtimeExpiryTimer = setTimeout(renderProfileObservations, Math.max(1, nextExpiry - Date.now()));
   }
   async function loadAuxiliary() {
     const results = await Promise.allSettled([api('/remote'), api('/metrics')]);
@@ -422,17 +653,25 @@
       if (new Blob([importDraft]).size > 512 * 1024) throw new Error(t('Cấu hình vượt quá 512 KiB.', 'Configuration exceeds 512 KiB.'));
       let imported; try { imported = JSON.parse(importDraft); } catch { throw new Error(t('JSON chưa hợp lệ. Bản đang nhập được giữ lại.', 'Invalid JSON. Your import draft is retained.')); }
       if (!imported || imported.schema !== config.schema) throw new Error(t('Schema cấu hình không được hỗ trợ.', 'Unsupported configuration schema.'));
-      await saveConfig(imported); importDraft = ''; $('configImportDraft').value = '';
+      if (await saveConfig(imported, form)) { importDraft = ''; $('configImportDraft').value = ''; }
     }); };
     const reset = node('form', { class: 'ws-panel', novalidate: true }, node('h2', {}, t('Khôi phục mặc định theo nhóm', 'Restore group defaults')),
       node('p', { class: 'ws-warning' }, t('Nhóm được chọn sẽ được thay bằng mặc định đóng gói. Bản lưu trước có backup; các run đang chạy giữ snapshot cũ.', 'The selected group is replaced with packaged defaults. The previous save is backed up; active runs retain their existing snapshot.')),
       selectField(t('Nhóm cần khôi phục', 'Group to restore'), 'resetGroup', [['models', t('Model & năng lực', 'Models & capabilities')], ['policy', t('Quy tắc chia việc', 'Routing policy')], ['runtimes', t('Runtime', 'Runtimes')]], 'policy'));
     const restore = node('button', { type: 'submit', class: 'btn ghost' }, t('Khôi phục nhóm đã chọn', 'Restore selected group')); reset.append(restore);
-    reset.onsubmit = event => { event.preventDefault(); action(restore, reset, async () => { config = await api('/config/reset', { group: val('resetGroup'), expectedRevision: config.revision }); renderAdmin(); notify(t('Đã khôi phục nhóm mặc định.', 'Group defaults restored.')); }); };
+    reset.onsubmit = event => { event.preventDefault(); action(restore, reset, async () => { const edits = adminEditVersion, saved = await api('/config/reset', { group: val('resetGroup'), expectedRevision: config.revision }); acceptSavedConfig(saved, reset, edits, t('Đã khôi phục nhóm mặc định.', 'Group defaults restored.')); }); };
     page.append(reset);
   }
   function renderHosts(page) {
-    const refresh = button(t('Làm mới máy và lease', 'Refresh hosts and leases'), () => action(refresh, page, async () => { remote = await api('/remote'); remoteError = null; renderAdmin(); }));
+    const refresh = button(t('Làm mới máy và lease', 'Refresh hosts and leases'), () => action(refresh, page, refreshHosts));
+    async function refreshHosts() {
+      const next = await api('/remote');
+      if ((next.revision || 0) < (remote.revision || 0)) return;
+      remote = next; remoteError = null;
+      if (!hosts.isConnected) return;
+      page.querySelector(':scope > .ws-error')?.remove(); drawHosts();
+      notify(t('Đã cập nhật quan sát máy và lease.', 'Host and lease observations updated.'));
+    }
     page.append(node('div', { class: 'ws-row between' }, node('h2', {}, t('Máy & workspace', 'Hosts & workspaces')), refresh),
       node('p', { class: 'ws-warning' }, t('Máy đăng ký không tự trở thành runtime. Token chỉ cấp quyền pull/heartbeat/report cho máy đó. Người vận hành phải cấu hình và khởi động worker riêng.', 'An enrolled host does not automatically become a runtime. Its token authorizes host-scoped pull/heartbeat/report. An operator must configure and start its worker separately.')));
     if (remoteError) page.append(node('p', { class: 'ws-error', role: 'alert' }, remoteError.message));
@@ -485,22 +724,65 @@
     if ((remote.runs || []).length) page.append(node('section', { class: 'ws-panel' }, node('h3', {}, t('Phân công và lease từ xa', 'Remote assignments and leases')), json(remote.runs)));
   }
 
-  let loaded = false, loading = false;
+  let loaded = false, loading = null;
   const workVisitedKey = 'agent-meeting:' + hostKey + ':work-opened';
   const workWasVisited = () => { try { return localStorage.getItem(workVisitedKey) === '1'; } catch { return false; } };
-  async function load() {
-    if (loading) return;
-    loading = true;
+  function load() {
+    if (loading) return loading;
     const page = $('page'); page.replaceChildren(node('p', { role: 'status' }, t('Đang tải dữ liệu phiên…', 'Loading session data…')));
-    try { config = await api('/config'); if (admin) { await loadAuxiliary(); renderAdmin(); } else { await Promise.all([api('/work').then(value => { work = value; }), loadAuxiliary()]); renderDaily(); } loaded = true; if (!admin) try { localStorage.setItem(workVisitedKey, '1'); } catch {} }
-    catch (error) { page.replaceChildren(...heading(t('Không tải được dữ liệu', 'Could not load data'), t('Kiểm tra kết nối và quyền chủ trì local. Bản nháp task đã lưu trong trình duyệt được giữ lại.', 'Check the connection and local host capability. Saved task drafts are retained in this browser.'))); errorBox(page, error); page.append(button(t('Thử lại', 'Retry'), load)); }
-    finally { loading = false; }
+    loading = (async () => {
+      try { config = await api('/config'); if (admin) { await loadAuxiliary(); renderAdmin(); } else { await Promise.all([api('/work').then(acceptWork), loadAuxiliary()]); renderDaily(); } loaded = true; if (!admin) try { localStorage.setItem(workVisitedKey, '1'); } catch {} }
+      catch (error) {
+        page.replaceChildren(...heading(t('Không tải được dữ liệu', 'Could not load data'), t('Kiểm tra kết nối và quyền chủ trì local. Bản nháp task đã lưu trong trình duyệt được giữ lại.', 'Check the connection and local host capability. Saved task drafts are retained in this browser.'))); errorBox(page, error);
+        const retry = async () => {
+          const hash = location.hash, section = adminTab;
+          await load();
+          if (location.hash !== hash || adminTab !== section || document.activeElement !== document.body) return;
+          if (admin) $('main')?.focus(); else if (!$('workView').hidden) $('workTitle')?.focus();
+        };
+        page.append(button(t('Thử lại', 'Retry'), retry));
+      }
+      finally { loading = null; }
+    })();
+    return loading;
   }
   if (embedded) {
     document.querySelector('.skip-link').onclick = event => { event.preventDefault(); $('sessionNav').querySelector('a')?.focus(); };
     let navigationVersion = 0;
+    let pollTimer, pollEtag = '', pollBusy = false, pollFailures = 0;
+    const workVisible = () => !document.hidden && ['#plan', '#execute', '#results'].includes(location.hash);
+    const signature = (data, workers) => JSON.stringify([data.tasks, data.runs, data.session, data.metrics, workers]);
+    function schedulePoll(delay = 3000) { clearTimeout(pollTimer); pollTimer = setTimeout(pollWork, delay); }
+    async function pollWork() {
+      if (pollBusy) return;
+      if (!loaded || loading || activeWorkReads || !workVisible()) { schedulePoll(); return; }
+      const nav = navigationVersion, read = workReadVersion;
+      pollBusy = true; pollController = new AbortController();
+      const deadline = setTimeout(() => pollController?.abort(), 10000);
+      try {
+        const response = await fetch(base + '/work', { headers: pollEtag ? { 'If-None-Match': pollEtag } : {}, signal: pollController.signal });
+        if (response.status !== 304 && !response.ok) throw new Error('Work update failed');
+        if (response.status !== 304) {
+          const next = await response.json();
+          const workersResponse = await fetch(base + '/remote', { signal: pollController.signal });
+          if (!workersResponse.ok) throw new Error('Worker update failed');
+          const workers = await workersResponse.json();
+          if (nav !== navigationVersion || read !== workReadVersion || !workVisible()) return;
+          pollEtag = response.headers.get('etag') || '';
+          pendingWork = signature(next, workers) === signature(work, remote) ? null : { work: next, remote: workers };
+        }
+        if (nav !== navigationVersion || read !== workReadVersion || !workVisible()) return;
+        pollFailures = 0; syncState = 'live'; applyWorkUpdate(); renderSyncStatus();
+      } catch {
+        if (nav === navigationVersion && read === workReadVersion && workVisible()) { syncState = 'offline'; pollFailures++; renderSyncStatus(); }
+      } finally {
+        clearTimeout(deadline); pollController = null; pollBusy = false;
+        schedulePoll(Math.min(30000, 3000 * 2 ** Math.min(pollFailures, 4)));
+      }
+    }
     const navigate = async () => {
       const request = ++navigationVersion;
+      pendingWork = null; pollEtag = '';
       const hash = location.hash, active = ['#plan','#execute','#results'].includes(hash);
       $('workView').hidden = !active;
       for (const a of $('sessionNav').querySelectorAll('a[href^="#"]')) { if (a.hash === hash || a.hash === '#conversation' && !active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); }
@@ -509,8 +791,8 @@
       document.body.dataset.sessionView = view;
       if (!active) return;
       tab = hash === '#execute' ? 'tasks' : hash.slice(1);
-      if (!loaded) { await load(); if (request === navigationVersion) $('workView').scrollTop = 0; }
-      else { try { const next = await api('/work'); if (request !== navigationVersion || location.hash !== hash) return; work = next; renderDaily(); $('workView').scrollTop = 0; } catch (error) { errorBox($('page'), error); } }
+      if (!loaded) { await load(); if (request === navigationVersion && location.hash === hash) { $('workView').scrollTop = 0; $('workTitle')?.focus(); } }
+      else { try { const next = await api('/work'); if (request !== navigationVersion || location.hash !== hash) return; acceptWork(next); renderDaily(); $('workView').scrollTop = 0; $('workTitle')?.focus(); } catch (error) { if (request === navigationVersion && location.hash === hash) errorBox($('page'), error); } }
     };
     let summaryVersion = null, summaryBusy = false;
     window.addEventListener('am-meeting-state', async event => {
@@ -519,6 +801,10 @@
       try { await api('/work'); summaryVersion = event.detail.version; } catch {} finally { summaryBusy = false; }
     });
     window.addEventListener('hashchange', navigate);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) pollController?.abort(); else schedulePoll(0); });
+    window.addEventListener('pagehide', () => { clearTimeout(pollTimer); pollController?.abort(); });
+    window.addEventListener('pageshow', () => schedulePoll(0));
     navigate();
+    schedulePoll();
   } else load();
 })();

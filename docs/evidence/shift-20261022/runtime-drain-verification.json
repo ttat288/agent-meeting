@@ -1,0 +1,37 @@
+{
+  "at": "2026-10-22T22:41:59.168506+00:00",
+  "baseCommit": "f617e3aa5a9f8e6f9b1064b6e68e9cc5d9c0e980",
+  "pain": "Graceful model runtime cancellation/timeout can resolve before SIGKILL escalation when the parent exits and a TERM-resistant grandchild closes inherited stdio. CLI shutdown can then exit before the unref timer runs.",
+  "reproduction": "Real Node parent and POSIX process group; grandchild ignores SIGTERM, uses stdio ignore and writes heartbeat. Only discovery/process executable substituted; no native AI. Assert heartbeat stops before released runtime ownership. This specifically exercises the unwrapped/read-only runtime path (such as model-access probe), not a bypass of the production write sandbox.",
+  "before": {
+    "tests": 2,
+    "fail": 2,
+    "log": "runtime-drain-before.txt"
+  },
+  "after": {
+    "tests": 15,
+    "pass": 15,
+    "fail": 0,
+    "log": "runtime-drain-after.txt",
+    "scope": "Initial targeted run before final source cleanup and readiness margin; later frozen full-suite receipt covers final source."
+  },
+  "sourceHashes": {
+    "src/runtime.js": "0fbd0814b3ddaa307a9bec0f6346ef65044c14cc2a320df40758f297b91cee85",
+    "test/runtime-cancel.test.js": "1e1fa95ef3ce93c4556550b03819ba9f4e33269fbba25428bc9ab2053e099421",
+    "test/runtime.test.js": "19ef471df307d8f7cb5aecaee08af936d6aee0faf7e47ad671830b94788160a0"
+  },
+  "tradeoffs": [
+    "Cancel/timeout/output-limit retain the runtime promise and a referenced escalation timer until the two-second SIGKILL grace expires; normal successful runtime completion does not wait.",
+    "POSIX inherited process groups tested on Linux; tests explicitly skip Windows. No claim about escaped sessions, SIGKILL recovery, every descendant reaped, billing or a model eight-hour runtime.",
+    "Prior final package/test receipts remain bound to fb50427; a new regression/package receipt is required after this source change.",
+    "Sandboxed writes still require the existing bwrap PID/filesystem boundary; these two cancellation cases do not claim coverage of every namespace/remote/OS descendant configuration."
+  ],
+  "nativeModelCalls": 0,
+  "finalCandidateHashes": {
+    "src/runtime.js": "846fde47e70653363179ba90490c821c3ac4d8c832c3cada0c7a17e51dbd18de",
+    "test/runtime-cancel.test.js": "c7364e02ccb58c0795a6f5192a3a928e8dca1388c0e1bd9b45cb6ed08a0b8cd3",
+    "test/runtime.test.js": "19ef471df307d8f7cb5aecaee08af936d6aee0faf7e47ad671830b94788160a0"
+  },
+  "finalFreezeAt": "2026-10-22T22:44:06.810927+00:00",
+  "testEvolution": "Initial red and targeted green use the same two tests at1500ms timeout/1000ms readiness. Final test margins are5000ms timeout/3000ms readiness to keep the process-group assertion independent of CLI startup under CI load; heartbeat/ownership assertion unchanged. Final full-suite binds finalCandidateHashes."
+}

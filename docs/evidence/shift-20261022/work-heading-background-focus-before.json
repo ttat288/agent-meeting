@@ -1,0 +1,15 @@
+{
+  "source": "23bd7e8",
+  "before": {
+    "at": "2026-10-22T21:18:17.477Z",
+    "focus": "workTitle",
+    "title": "Plan (3)"
+  },
+  "after": {
+    "at": "2026-10-22T21:18:27.312Z",
+    "focus": "",
+    "tag": "BODY",
+    "title": "Plan (4)"
+  },
+  "scope": "Actual Refresh focuses heading; host task API creates one no-dispatch fixture, background poll rerenders Plan3→4 and loses heading focus. No native model/new run."
+}

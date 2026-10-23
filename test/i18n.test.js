@@ -51,7 +51,7 @@ function keysOf(src) {
 
 test('mọi chuỗi tr() trong app.js có bản tiếng Anh', () => {
   const { EN } = loadI18n('en');
-  const keys = keysOf(fs.readFileSync(path.join(UI, 'app.js'), 'utf8'));
+  const keys = ['app.js','pm-ui.js'].flatMap(file => keysOf(fs.readFileSync(path.join(UI, file), 'utf8')));
   assert.ok(keys.length > 200, 'tìm được ' + keys.length + ' chuỗi');
   const missing = [...new Set(keys)].filter(k => !EN.has(k));
   assert.deepEqual(missing, []);

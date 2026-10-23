@@ -1,0 +1,151 @@
+{
+  "schema": "agent-meeting/canonical-carry-benchmark@1",
+  "fixture": true,
+  "at": "2026-10-22T14:59:47.827Z",
+  "sourceHashes": [
+    {
+      "path": "src/team.js",
+      "sha256": "e823fe22467d0f2a03fc5b6094b5970c98cf5e931338a9fe774866ca6af14452"
+    },
+    {
+      "path": "src/work.js",
+      "sha256": "f5e81e3708a05cede28623850947d4e748924fb12cc8a0345e9f3d45765089fd"
+    },
+    {
+      "path": "src/session-supervisor.js",
+      "sha256": "6e37575aea2edb74cb508d2d7cc572e6da4c6579663fc75aacd920a130b0bca1"
+    },
+    {
+      "path": "src/session-child.js",
+      "sha256": "7ebd98e90d5d25bccf73be39a0131eb735f697f5329bcef168a202b13e943782"
+    },
+    {
+      "path": "src/runtime.js",
+      "sha256": "1647a1ee676f0f4dec24839aad5e0189f4c6646210847f1c23db05d6b41ae236"
+    },
+    {
+      "path": "tools/carry-canonical.js",
+      "sha256": "609d66b2f7ddf7d234eb98337cd8e48d65bdd14d8e1d2e92a88880d04196b225"
+    },
+    {
+      "path": "test/carry-canonical.test.js",
+      "sha256": "143c5787a4c53b58b560a3227e32c5bd0ff2572174d49ab0c39ea58bcbc9e382"
+    },
+    {
+      "path": "test/fixtures/carry-session.js",
+      "sha256": "81f880435230f9918fc842948eba6477ee03367141939095b02fcd65c1c1ae85"
+    },
+    {
+      "path": "test/fixtures/carry-cli-fixture.js",
+      "sha256": "1bc2935dc823d57d653a0c3852e71f5473f1043144513a9d5bbd25a53222e03f"
+    }
+  ],
+  "checks": {
+    "passed": 42,
+    "items": [
+      "Missing continuation stays unknown; legacy checkpoint API remains compatible",
+      "Delta is validated, secret-scanned and stored atomically without summary model",
+      "Canonical WIP binds identity, source, revisions, caller delta and retrievable evidence",
+      "Reject goal revision",
+      "Reject plan revision",
+      "Reject requirement revision",
+      "Reject run generation",
+      "Reject checkpoint generation",
+      "Reject base revision",
+      "Reject slot",
+      "Reject task/run binding",
+      "Reject goal text conflict",
+      "Reject acceptance conflict",
+      "Reject source no longer current",
+      "Reject grant expired",
+      "Reject grant replaced",
+      "Reject missing run",
+      "Reject missing base snapshot",
+      "Reject checkpoint changed without hash",
+      "Reject WIP metadata inconsistent",
+      "Reject credential in selected text",
+      "Reject missing next",
+      "Reject missing decisions",
+      "Reject missing unknowns",
+      "Reject missing blocker record",
+      "Reject missing attempt record",
+      "Reject missing grant limits",
+      "Reject stale routing revision",
+      "Explicit unresolved blocker selects resolution instead of silently continuing",
+      "Unselected PM messages, capabilities, snapshots, reports and raw output stay private",
+      "Reference privacy, tamper, byte/count limits and current revision are enforced",
+      "Source dirty change and WIP change invalidate capsule/reference and existing swap fence",
+      "Actual Git HEAD change fails even when source bytes are identical",
+      "Existing ACK/quiesce fence preserves same task/run/WIP and rejects old capability",
+      "Reported does not imply verified/integrated; historical next is not replayed",
+      "Independent verification and integrated source tests produce distinct canonical evidence",
+      "Reject missing integrated tests",
+      "Reject cancelled tests",
+      "Reject timeout tests",
+      "Reject failed tests",
+      "Reject duplicate evidence",
+      "Actual production bootstrap/activation transport is counted, including repeated checkpoint"
+    ]
+  },
+  "measurements": [
+    {
+      "label": "running-with-delta",
+      "directFactsAndBindingBytes": 1671,
+      "capsuleBytes": 2395,
+      "sameEvidenceReadbackBytes": 272,
+      "callerDeltaWriteBytesBothArms": 552,
+      "directPlusEvidenceAndDeltaBytes": 2495,
+      "capsulePlusEvidenceAndDeltaBytes": 3219,
+      "capsuleOverheadBytes": 724,
+      "dedicatedSummaryInvocations": 0
+    },
+    {
+      "label": "integrated-stop",
+      "directFactsAndBindingBytes": 1280,
+      "capsuleBytes": 2004,
+      "sameEvidenceReadbackBytes": 534,
+      "callerDeltaWriteBytesBothArms": 0,
+      "directPlusEvidenceAndDeltaBytes": 1814,
+      "capsulePlusEvidenceAndDeltaBytes": 2538,
+      "capsuleOverheadBytes": 724,
+      "dedicatedSummaryInvocations": 0
+    },
+    {
+      "label": "existing-swap-transport-fixture",
+      "bootstrapInputBytes": 1490,
+      "activationInputBytes": 2158,
+      "checkpointBytesEachInvocation": 1270,
+      "bootstrapAndActivationInputBytes": 3648,
+      "explicitAdapterArgsBytesBothInvocations": 475,
+      "bootstrapOutputTextBytes": 113,
+      "activationOutputTextBytes": 50,
+      "directNativeSwapOverheadBytes": null,
+      "comparison": "Observed existing swap transport; assembler is not wired into runtime. Direct native recovery is unmeasured."
+    }
+  ],
+  "protocol": {
+    "singleWriterFence": "verified by deterministic subprocess; old capability rejected, read-only bootstrap, process group drained",
+    "bootstrapInvocations": 1,
+    "activationInvocations": 1,
+    "actualModelCalls": 0,
+    "assemblerModelCalls": 0,
+    "deltaWrites": 1,
+    "ackAndActivationInputTokens": null,
+    "ackAndActivationOutputTokens": null,
+    "toolSchemaTokens": null,
+    "modelContextTokens": null,
+    "totalModelUsage": null,
+    "billedCostUsd": null,
+    "semanticRetention": null,
+    "context8hVerified": false,
+    "controllerEnabled": false
+  },
+  "elapsedFixtureAndChecksMs": 2111.7639999999997,
+  "limits": [
+    "Temporary canonical store created by production API with deterministic runtime fixture. No live-user store or provider calls.",
+    "Matched direct arm includes identical binding, facts, caller delta and evidence readback. Bytes are transport overhead, not tokens or billing.",
+    "Actual production ACK/activation prompts, repeated checkpoint and fixture responses are measured in bytes. Provider hidden prompts and direct-native recovery are unobserved; no total cost claim.",
+    "Assembler is explicit and read-only; no runtime integration or controller. Hash/presence is not semantic acceptance or writer authority.",
+    "Secrets matching existing patterns are rejected; arbitrary private prose cannot be recognized semantically. Raw output and PM channels are excluded."
+  ]
+}

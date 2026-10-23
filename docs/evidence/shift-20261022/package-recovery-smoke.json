@@ -1,0 +1,48 @@
+{
+  "schema": "agent-meeting/package-smoke@1",
+  "at": "2026-10-22T17:18:15.004Z",
+  "node": "v22.22.1",
+  "tarballSha256": "e3e9c43ae244baa660a82bc43b07b5eecca69dcff1bfe0f4fa30483830fb4780",
+  "files": 68,
+  "unpackedSize": 959511,
+  "bundledSkill": [
+    "agent-meeting"
+  ],
+  "checks": [
+    {
+      "url": "/m/<fixture-host>",
+      "status": 200,
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+    },
+    {
+      "url": "/assets/pm-ui.js",
+      "status": 200,
+      "csp": null
+    },
+    {
+      "url": "/assets/workspace.js",
+      "status": 200,
+      "csp": null
+    },
+    {
+      "url": "/api/host/<fixture-host>/work",
+      "status": 200,
+      "csp": null
+    },
+    {
+      "url": "/api/host/<fixture-host>/work",
+      "condition": "If-None-Match",
+      "status": 304
+    }
+  ],
+  "sourceHashes": {
+    "src/server.js": "c68a80cf28dabb998d30d3a6c2e9cadfd1b736bd303cf4516a00d1ce056eb48f",
+    "src/work.js": "557577e98e00fee8bda3414800cfdea945fb9f8c6dc64a2d7e994ac756d1f497",
+    "src/runtime.js": "93c9c1d2eed7918764edba115b458dd237bf138f051f3230b2dffe406846f5de",
+    "src/worker.js": "2b82a25394542964f9bbec3ad0a4c698df30c66e6e8609a0c019b7416d6a6af7",
+    "src/ui/pm-ui.js": "44e0980d1bf776765eec3a0feb577b28dff3210d8391e822f2c30202f8d6eb3b",
+    "src/ui/workspace.js": "8d5691b0f0e9a550812d8c2fa2ad7fd6f9dd08591640c398a8ba7f4ad630e5be"
+  },
+  "modelCalls": 0,
+  "installedUserApp": false
+}

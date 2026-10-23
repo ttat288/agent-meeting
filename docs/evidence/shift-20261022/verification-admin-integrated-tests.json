@@ -1,0 +1,27 @@
+{
+  "recordedAt": "2026-10-22T19:30:21.510633+00:00",
+  "commit": "ae17743fe1a2f897f19b9e6d19b53f62d260d002",
+  "node": "v22.22.1",
+  "counts": {
+    "tests": 382,
+    "pass": 382,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0
+  },
+  "testFiles": 34,
+  "sourceSha256": {
+    "bin/cli.js": "96b328fee14a0270b50142dc721ccc3c7517a37a7d18ccc0f7372e788be80e93",
+    "src/work.js": "8a6f324a48c87916e98315ea472154d1655fa11fdb86551c8469f904108eda5e",
+    "src/server.js": "fb021ebf152ab76bced7420f30c1bdaa4b90b014a77c222421d0631662a77652",
+    "src/routing-tools.js": "b9bb77bc9023dac5c21a131aed8fb592d60c5e2dd27060f7648950ace480c3bc",
+    "src/ui/workspace.js": "9f2417341e3d207fe8c6a39439935dcddde30f55f841becda10807615e001123",
+    "src/ui/workspace.css": "ce244e910a65391b049efd7a41f3f45e5ad996cbf566c6472b87fd011e477893",
+    "test/cli-shutdown.test.js": "a9ea8a33e3b6331bd90bb0f9d4d393d0662073dd829ebec0cf551b05ea1ff890"
+  },
+  "command": "systemd-run --user --scope -q -p MemoryMax=1200M -p MemorySwapMax=0 timeout 900 npm test",
+  "limits": [
+    "Source/test unchanged while suite ran; UI browser evidence has separate source seals",
+    "Deterministic adapters and real Node/CLI processes; zero native model invocations; not billing or model efficacy proof"
+  ]
+}

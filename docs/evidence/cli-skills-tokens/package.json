@@ -1,0 +1,8 @@
+{
+  "packaging": "npm pack --dry-run --ignore-scripts --json",
+  "files": [
+    "src/cli-discovery.js",
+    "src/skills/agent-meeting/references/cli.md",
+    "src/skills/agent-meeting/SKILL.md"
+  ]
+}

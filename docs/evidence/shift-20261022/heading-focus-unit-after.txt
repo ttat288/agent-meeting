@@ -1,0 +1,76 @@
+TAP version 13
+# Subtest: a superseded navigation error cannot attach to the newer Results view
+ok 1 - a superseded navigation error cannot attach to the newer Results view
+  ---
+  duration_ms: 6.084438
+  type: 'test'
+  ...
+# Subtest: a navigation error after returning to conversation cannot create a hidden alert
+ok 2 - a navigation error after returning to conversation cannot create a hidden alert
+  ---
+  duration_ms: 1.014683
+  type: 'test'
+  ...
+# Subtest: the active navigation failure remains visible and never renders success
+ok 3 - the active navigation failure remains visible and never renders success
+  ---
+  duration_ms: 1.232765
+  type: 'test'
+  ...
+# Subtest: a superseded success cannot rewind current work or focus
+ok 4 - a superseded success cannot rewind current work or focus
+  ---
+  duration_ms: 0.859151
+  type: 'test'
+  ...
+# Subtest: current navigation moves focus to its newly rendered heading
+ok 5 - current navigation moves focus to its newly rendered heading
+  ---
+  duration_ms: 0.68188
+  type: 'test'
+  ...
+# Subtest: background work updates restore focus only when replacing the focused heading
+ok 6 - background work updates restore focus only when replacing the focused heading
+  ---
+  duration_ms: 0.991819
+  type: 'test'
+  ...
+# Subtest: background work updates never pull focus from an outside navigation control
+ok 7 - background work updates never pull focus from an outside navigation control
+  ---
+  duration_ms: 0.779764
+  type: 'test'
+  ...
+# Subtest: an active edit still defers background updates instead of replacing its heading or input
+ok 8 - an active edit still defers background updates instead of replacing its heading or input
+  ---
+  duration_ms: 0.708622
+  type: 'test'
+  ...
+# Subtest: explicitly showing updates focuses the new heading once
+ok 9 - explicitly showing updates focuses the new heading once
+  ---
+  duration_ms: 1.342331
+  type: 'test'
+  ...
+# Subtest: initial work load focuses the active view heading
+ok 10 - initial work load focuses the active view heading
+  ---
+  duration_ms: 1.617342
+  type: 'test'
+  ...
+# Subtest: an initial load completing after return to conversation cannot take focus
+ok 11 - an initial load completing after return to conversation cannot take focus
+  ---
+  duration_ms: 1.740113
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 186.210177

@@ -1,0 +1,79 @@
+TAP version 13
+# Subtest: same-byte Git HEAD change blocks team checkpoint without promoting a stale generation
+not ok 1 - same-byte Git HEAD change blocks team checkpoint without promoting a stale generation
+  ---
+  duration_ms: 792.812579
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/team.test.js:223:66'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"schema":"agent-meeting/checkpoint@1","revision":1,"wip":[{"file":"sum.js","before":"703cb2a470cfd0a2ea935122ac16338093078ba039d78aeda1e9442ffb5cc0a3","after":"24462521e31d2d3a1d265ea1c04557812df9f286360e9234b6d419618aa10f28"}],"goalRevision":1,"planRevision":1,"taskId":"42a2713e-48a3-4998-aee1-38ee9a96919e","requirementRevision":1,"runId":"c9bf0f9f-19c4-41a9-b21b-ad5df8f4a7e9","slot":"A","generation":2,"baseRevision":"01685784840b685ece2db5185ef6273c1ee0b68b","workspace":"/tmp/am-pm-test-raEnN1/work/ad0a25f1a154b18b87a2dacaa9176851940015d7dd604bdd79990b4701457c05/runs/c9bf0f9f-19c4-41a9-b21b-ad5df8f4a7e9/workspace","acceptance":["sum(2,3)=5"],"scope":["sum.js"],"decisions":"Retain source revision and scope","unknowns":"Billing unknown","next":"Continue only at approved base","evidence":[],"at":1792684425562,"hash":"fa79825fcd9b9e2dad4688f7f8008ca04f00c0007d4d7f2161fbb3de07cfaa98","inputSnapshotHash":"1ef4af83a407d20c333e7161e803ec386bcf44da06c4bf897de9368c432b054e"}
+    
+    200 !== 409
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 409
+  actual: 200
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/team.test.js:244:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: same-byte Git HEAD change blocks team swap without promoting a stale generation
+not ok 2 - same-byte Git HEAD change blocks team swap without promoting a stale generation
+  ---
+  duration_ms: 984.708816
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/team.test.js:223:66'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"token":"[redacted-fixture-capability]","slot":"A","generation":2,"checkpointHash":"6f548640b7baee6927c00d71a1aaa2ece5cd9f0ebb1fb1d26e67763b6824515a","stopped":{"pid":63133,"stoppedAt":1792684426535,"boundary":"managed-process-group","liveWriters":0}}
+    
+    200 !== 409
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 409
+  actual: 200
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/team.test.js:244:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: same-byte Git HEAD change blocks team pending-readiness without promoting a stale generation
+not ok 3 - same-byte Git HEAD change blocks team pending-readiness without promoting a stale generation
+  ---
+  duration_ms: 1231.336606
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/team.test.js:223:66'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"token":"[redacted-fixture-capability]","slot":"A","generation":2,"checkpointHash":"c5c862db59b4c62e47881c8142d0ca0195b9d0abc7da3919eb1749c2f1a1eea1","stopped":{"pid":63212,"stoppedAt":1792684427768,"boundary":"managed-process-group","liveWriters":0}}
+    
+    200 !== 409
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 409
+  actual: 200
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/team.test.js:244:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..3
+# tests 3
+# suites 0
+# pass 0
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3185.186388

@@ -1,0 +1,82 @@
+{
+  "at": "2026-10-22T21:51:07.863Z",
+  "baseCommit": "ac84999",
+  "source": "shared initial load Promise and guarded retry focus in working tree",
+  "checks": [
+    {
+      "at": "2026-10-22T21:44:16.554Z",
+      "case": "Plan\u2192Results during initial shared load",
+      "focus": {
+        "id": "workTitle",
+        "tag": "H1"
+      },
+      "hash": "#results",
+      "title": "Results (1)"
+    },
+    {
+      "case": "initial load after return to conversation",
+      "focused": true,
+      "hash": "#conversation",
+      "value": "Chat draft while initial work load finishes in the background",
+      "verification": "Early observation before completion; not counted."
+    },
+    {
+      "case": "hidden initial load completed",
+      "focused": true,
+      "hash": "#conversation",
+      "value": "Chat draft survives completion of hidden initial load",
+      "workHeadingPresent": true,
+      "workHidden": true
+    },
+    {
+      "case": "initial load fails visibly",
+      "error": "Unable to complete this actionControlled delayed work read failure",
+      "focusRole": "alert",
+      "hash": "#plan"
+    },
+    {
+      "at": "2026-10-22T21:47:19.275Z",
+      "case": "initial error Retry returns focus to heading",
+      "error": null,
+      "focus": "workTitle",
+      "hash": "#plan",
+      "title": "Plan (5)"
+    },
+    {
+      "case": "Retry completes after leaving work view",
+      "focused": true,
+      "hash": "#conversation",
+      "hiddenWorkHeadingPresent": true,
+      "value": "Retry must preserve a newer conversation draft and focus",
+      "workHidden": true
+    },
+    {
+      "case": "Vietnamese fresh-document first Enter",
+      "verification": "Not counted: link focused but hash stayed conversation before document settled; no held request."
+    },
+    {
+      "at": "2026-10-22T21:48:59.303Z",
+      "case": "Vietnamese latest initial navigation",
+      "focus": "workTitle",
+      "hash": "#results",
+      "locale": "vi",
+      "title": "K\u1ebft qu\u1ea3 (1)"
+    },
+    {
+      "at": "2026-10-22T21:51:07.861Z",
+      "case": "admin initial config failure retries into selected section",
+      "error": null,
+      "focus": "main",
+      "heading": "Agents & runtimes",
+      "noticePosition": "fixed",
+      "overflow": false,
+      "section": "runtime"
+    }
+  ],
+  "scope": "Own-store gated initial loads EN/VI, hidden completion and controlled503 Retry. Includes shared admin config failure/recovery. Early chat read not counted until hidden heading attached; first VI Enter before settled doc did not navigate. Focus metadata only, no screenreader/native-model/runtime8h proof.",
+  "sourceHashes": {
+    "src/ui/workspace.js": "466e76c320bfadda9074dc5b3d75e4699085b8a4596408d87c3dca5ba23b5812",
+    "src/ui/app.css": "126c32c9879a71c11e74f8a05df3caf67b072c1fa54b9bdae45f7fa8039fa67f",
+    "src/ui/workspace.css": "9c5c34ee23cc1e5b04151a3117d6029904ada3182c942951b1ef1d34ff7b9a1a"
+  }
+}

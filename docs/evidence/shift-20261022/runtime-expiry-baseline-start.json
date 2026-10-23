@@ -1,0 +1,26 @@
+{
+  "startedAt": "2026-10-22T19:09:58.293445+00:00",
+  "observedAt": "2026-10-22T19:02:56.916Z",
+  "expiresAt": "2026-10-22T19:32:56.916Z",
+  "checkAfter": "2026-10-22T19:33:00Z",
+  "browserTab": "3",
+  "sourceCommit": "1ce861f",
+  "servedUiSha256": "9f902e769bec46f83e468badd49bfd96100fcaee4f87177abc9b5ca3ce2235ac",
+  "initialLabel": "Model matched",
+  "fixtureMetrics": {
+    "calls": 14,
+    "active": 0,
+    "modelCalls": 0,
+    "fixture": "deterministic 3-second probe runner",
+    "pid": 153624,
+    "bootedAt": "2026-10-22T19:01:54.968Z",
+    "sourceHashes": {
+      "src/work.js": "8a6f324a48c87916e98315ea472154d1655fa11fdb86551c8469f904108eda5e",
+      "src/server.js": "fb021ebf152ab76bced7420f30c1bdaa4b90b014a77c222421d0631662a77652",
+      "src/ui/workspace.js": "9f902e769bec46f83e468badd49bfd96100fcaee4f87177abc9b5ca3ce2235ac",
+      "src/ui/workspace.css": "c7c142354e5f145dd932ad46412510be27515fa64c6757fd5c7461ce5ca1e746"
+    }
+  },
+  "scope": "One idle browser tab, no subsequent manual refresh/probe; check real thirty-minute observation expiry while independent development continues; zero native model calls",
+  "status": "pending; not evidence of elapsed thirty minutes or model runtime"
+}

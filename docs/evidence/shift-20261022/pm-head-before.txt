@@ -1,0 +1,33 @@
+TAP version 13
+# Subtest: same-byte source HEAD movement after integration cannot receive a current PM completion report
+not ok 1 - same-byte source HEAD movement after integration cannot receive a current PM completion report
+  ---
+  duration_ms: 959.397648
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/pm.test.js:213:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    200 !== 409
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 409
+  actual: 200
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/pm.test.js:224:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1138.603872

@@ -1,0 +1,16 @@
+TAP version 13
+# Subtest: integration rollback preserves a concurrently installed symlink even when its bytes match
+ok 1 - integration rollback preserves a concurrently installed symlink even when its bytes match
+  ---
+  duration_ms: 2303.619472
+  type: 'test'
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2466.418652

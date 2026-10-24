@@ -1,0 +1,68 @@
+TAP version 13
+# Subtest: handoff retains the executed requirements after reconfiguration and restart
+not ok 1 - handoff retains the executed requirements after reconfiguration and restart
+  ---
+  duration_ms: 663.988562
+  type: 'test'
+  location: '/tmp/am-value-20261024-125904/direct-native-sealed-source/test/work-handoff.test.js:56:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert(handoff.limitations.some(x => /requirements.*differ/i.test(x)))
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/tmp/am-value-20261024-125904/direct-native-sealed-source/test/work-handoff.test.js:70:3)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: current and failed handoffs keep run identity and do not imply completion
+ok 2 - current and failed handoffs keep run identity and do not imply completion
+  ---
+  duration_ms: 63.547006
+  type: 'test'
+  ...
+# Subtest: legacy run without a requirement snapshot never borrows present-day criteria
+not ok 3 - legacy run without a requirement snapshot never borrows present-day criteria
+  ---
+  duration_ms: 64.038517
+  type: 'test'
+  location: '/tmp/am-value-20261024-125904/direct-native-sealed-source/test/work-handoff.test.js:88:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert(handoff.limitations.some(x => /snapshot.*(?:unavailable|missing|unknown)/i.test(x)))
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/tmp/am-value-20261024-125904/direct-native-sealed-source/test/work-handoff.test.js:95:3)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: a historical snapshot is exportable when the current task is unavailable
+ok 4 - a historical snapshot is exportable when the current task is unavailable
+  ---
+  duration_ms: 58.143784
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 2
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1006.304054

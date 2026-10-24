@@ -1,5 +1,28 @@
 # Changelog
 
+## Unreleased — Historical handoff and safe source refresh
+
+- Export the requirements captured by each run in handoff JSON; later task edits cannot borrow earlier verification evidence. Report historical/current revisions and unknown legacy snapshots explicitly.
+- Reject source refresh for obsolete requirements, removed task sources, redirected checkouts and closed work managers before changing the workspace or evidence. Hide refresh for obsolete attempts in Results.
+- Historical runs with missing or invalid requirement revisions cannot refresh, verify or integrate. Keep their evidence intact and recover with a new explicit attempt on the current task.
+- Preserve original file permission bits across integration and rollback under restrictive process umasks while retaining external-edit conflict guards.
+- When a CLI responds without a matching machine model identity, task recovery explains missing identity or a model mismatch and points to runtime reporting/profile mapping before another paid probe.
+- Require Linux/bubblewrap for every agy runtime model call, including read-only tasks and probes: its plan flags alone did not prevent native file editing in a real fixture. Missing isolation fails closed; managed agy writing/MCP guards remain.
+- Clarify the Claude Code writing adapter and unpublished direct-agy evidence in both READMEs; keep the historical trial pin without requiring a topic branch.
+
+## Unreleased — task-scoped skill supply and lookup
+
+- Local host task APIs can select required/optional skills and explicitly grant read-only skill lookup. Required manifests are supplied once per attempt; optional references load by pinned hash, with duplicate receipts and clear stale/missing/denied recovery.
+- Managed Claude uses a separate strict MCP server and disables native skills/hooks/settings sources for this task mode. Skills grant no script execution; external joined CLIs, agy, remote and team swaps do not support this policy.
+- Handoffs retain supply provenance and distinguish it from semantic application. Matched scripted CSV/API/MCP/browser checks expose wrapper overhead; live model quality, human effort and token/billing benefits remain unproven.
+- Skill lookup bounds each MCP input line independently, preserving valid request bursts. Discovery and task metadata mark descriptions shortened to 600 characters so callers can load the complete manifest.
+- Direct agy evaluation retains real model handoffs, mediated reference requests, independently tested patches, rejected outputs and usage. This does not add native agy task-skill/MCP/write support or establish net savings.
+
+## Unreleased — explicit model access recovery
+
+- When managed execution is blocked by missing, expired or failed model access evidence, offer an explicit check for that profile in the task. The check may invoke a paid CLI; it never retries the task automatically or changes requirements.
+- Distinguish routing constraint failures from model access failures so a rejected task does not suggest an unnecessary probe.
+
 ## Unreleased — retry with independent failure context
 
 - Explicit retries receive bounded failed-check diagnostics from the latest attempt when task requirements, canonical source path, Git base and source snapshot still match. New attempts keep a fresh source copy; no automatic retry or test acceptance.

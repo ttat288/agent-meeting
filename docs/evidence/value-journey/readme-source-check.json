@@ -1,0 +1,13 @@
+{
+  "pin": "f415cf46961ac43301083c4784fb216b68e87ac6",
+  "localMergedHead": "1b56f4db04d4135a66fcc329af89332eb21b9d3f",
+  "pinIsAncestorOfMergedHead": true,
+  "cloneNoLongerDependsOnTopicBranch": true,
+  "remoteFreshCloneVerified": false,
+  "gitRemoteCheck": {
+    "error": "SSL certificate verification failed: certificate signer not trusted",
+    "tlsVerificationBypassed": false
+  },
+  "webFallback": "GitHub API URLs inaccessible through web tool; no auth/CA/global settings repair",
+  "manualTrialCommandsOtherwiseUnchanged": true
+}

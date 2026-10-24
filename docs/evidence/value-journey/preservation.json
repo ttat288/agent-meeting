@@ -1,0 +1,41 @@
+{
+  "initialFilesDeleted": [],
+  "protectedFilesMatchT0": {
+    "AGENTS.md": true,
+    "src/execution-sandbox.js": true,
+    "src/task-skills.js": true,
+    "src/cli-discovery.js": true,
+    "bin/task-skills.js": true,
+    "src/connect.js": true,
+    "src/defaults/routing.json": true,
+    "package.json": true,
+    ".gitignore": true
+  },
+  "intentionalRuntimeDelta": "Mandatory readonly filesystem boundary for every agy model call only; exact reverse patch matches T0. Old write/MCP rejection preserved.",
+  "runtimeDeltaEvidence": "runtime-guard-preservation.json",
+  "securityDocChanged": "Documented stricter boundary, not a permission expansion.",
+  "existingFilesChanged": [
+    "docs/GEMINI-WORKFLOW.vi.md",
+    "test/ui-access-recovery.test.js",
+    "tools/check-task-skills-browser.js",
+    "CHANGELOG.md",
+    "README.md",
+    "README.vi.md",
+    "SECURITY.md",
+    "docs/CONSISTENCY-JOURNEYS.vi.md",
+    "docs/HANDOFF.md",
+    "docs/ROUTING-WORKFLOW.vi.md",
+    "docs/SHOWCASE.md",
+    "src/runtime.js",
+    "src/server.js",
+    "src/ui/workspace.js",
+    "src/work.js",
+    "test/runtime.test.js",
+    "test/work-cancel.test.js",
+    "test/work.test.js"
+  ],
+  "repositoryHeadUnchanged": true,
+  "commitPushMergeRelease": false,
+  "globalSettingsOrOAuthChanged": false,
+  "realRoomOrPort3000Touched": false
+}

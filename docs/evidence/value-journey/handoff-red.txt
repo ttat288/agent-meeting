@@ -1,0 +1,59 @@
+TAP version 13
+# Subtest: handoff retains the executed requirements after reconfiguration and restart
+not ok 1 - handoff retains the executed requirements after reconfiguration and restart
+  ---
+  duration_ms: 623.624532
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/work-handoff.test.js:46:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert(app.restore(host))
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: ~
+  operator: '=='
+  stack: |-
+    boot (/home/theo/workspace/agent-meeting/test/work-handoff.test.js:21:18)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Object.restart (/home/theo/workspace/agent-meeting/test/work-handoff.test.js:43:105)
+    async TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/work-handoff.test.js:51:3)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: current and failed handoffs keep run identity and do not imply completion
+not ok 2 - current and failed handoffs keep run identity and do not imply completion
+  ---
+  duration_ms: 56.862189
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/work-handoff.test.js:65:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + undefined
+    - true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/work-handoff.test.js:68:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 814.974699

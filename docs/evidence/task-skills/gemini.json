@@ -1,0 +1,42 @@
+{
+  "schema": "agent-meeting/gemini-attempt@1",
+  "cliVersion": "0.65.0",
+  "localInstall": ".local-tools/gemini-cli",
+  "install": {
+    "ignoreScripts": true,
+    "global": false,
+    "elapsedSecondsReportedByNpm": 13,
+    "integrity": "sha512-B+flaYBNqX2zO71I5/gu7ZsnI38NlpOl654HWz+bK8I/P5sGILQsbkTOQ5a9V+w1Q6QO3wf9PlqtuMsl7XxpNQ=="
+  },
+  "taskId": "SKILL-SCOUT-01",
+  "role": "read-only architecture scout",
+  "requestedModel": "gemini-3.8-flash",
+  "actualModel": "unknown",
+  "modelUsage": null,
+  "billedCostUsd": null,
+  "startedAtApprox": "2026-10-24T02:34:34.945Z",
+  "endedAt": "2026-10-24T02:34:38.702Z",
+  "elapsedMsApprox": 3757,
+  "exitCode": 55,
+  "promptBytes": 55067,
+  "promptSha256": "b79e772a4ee6179901964bd1145497c63acbfa003f0488adae59fa2388288b75",
+  "responseBytes": 0,
+  "errors": [
+    {
+      "code": "UNSUPPORTED_CLIENT",
+      "message": "This client is no longer supported for Gemini Code Assist for individuals."
+    },
+    {
+      "code": "EROFS",
+      "message": "Credential refresh could not write to the read-only OAuth credential mount."
+    },
+    {
+      "code": "UNTRUSTED_WORKSPACE",
+      "message": "CLI overrode plan mode to default; there was no model result and no approved tool call."
+    }
+  ],
+  "boundary": "bubblewrap: root read-only, local session directory writable, OAuth credential file mounted read-only; no model tools configured",
+  "attempts": 1,
+  "retryDecision": "Do not retry a terminal unsupported-client/auth state without changing authorization; no migration, provider/model switch or global OAuth/settings mutation.",
+  "reviewResult": "No scout/reviewer output. PM source review and fixtures are not an independent Gemini review."
+}

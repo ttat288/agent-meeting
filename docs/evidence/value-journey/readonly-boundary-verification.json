@@ -1,0 +1,16 @@
+{
+  "before": {
+    "fileChanged": true,
+    "flagsRequestedReadOnly": true,
+    "outerFixtureWritable": true,
+    "rawReceipt": "readonly-mode-probe.json"
+  },
+  "after": {
+    "fileChanged": false,
+    "samePromptHash": true,
+    "callerPassedIsolate": false,
+    "rawReceipt": "readonly-runtime-probe.json"
+  },
+  "cause": "Mandatory runtime filesystem mount boundary; CLI flags stayed the same. Model prose crediting execution mode is not accepted as causal evidence.",
+  "scope": "Linux1.4.7 observed native file tool fixture; no general read/network/external-tool-server isolation or managed writing/MCP capability claim."
+}

@@ -1,0 +1,274 @@
+{
+  "recordedAt": "2026-10-24T03:00:34.170Z",
+  "fixture": true,
+  "modelCalls": 0,
+  "calls": [
+    "probe",
+    "task",
+    "probe",
+    "probe",
+    "probe",
+    "task"
+  ],
+  "geometry": [
+    {
+      "lang": "vi",
+      "colorScheme": "light",
+      "width": 375,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 325,
+      "buttonWidth": 299,
+      "hasRecovery": true,
+      "text": "Chưa thể hoàn thành thao tác\n\nTruy cập model chưa được xác nhận, không khả dụng hoặc đã hết hạn. Kiểm tra lại hồ sơ đã chọn trước khi thử lại.\n\nHồ sơ: Opus / Claude Code\n\nKiểm tra gọi CLI thật và có thể tốn phí. Không sửa yêu cầu hoặc tự chạy lại task.\n\nKiểm tra truy cập hồ sơ đã chọn (gọi CLI thật)\nXem trong Quản trị",
+      "focusWithin": true
+    },
+    {
+      "lang": "vi",
+      "colorScheme": "light",
+      "width": 768,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 710,
+      "buttonWidth": 342.203125,
+      "hasRecovery": true,
+      "text": "Chưa thể hoàn thành thao tác\n\nTruy cập model chưa được xác nhận, không khả dụng hoặc đã hết hạn. Kiểm tra lại hồ sơ đã chọn trước khi thử lại.\n\nHồ sơ: Opus / Claude Code\n\nKiểm tra gọi CLI thật và có thể tốn phí. Không sửa yêu cầu hoặc tự chạy lại task.\n\nKiểm tra truy cập hồ sơ đã chọn (gọi CLI thật)\nXem trong Quản trị",
+      "focusWithin": true
+    },
+    {
+      "lang": "vi",
+      "colorScheme": "light",
+      "width": 1280,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 1046,
+      "buttonWidth": 342.203125,
+      "hasRecovery": true,
+      "text": "Chưa thể hoàn thành thao tác\n\nTruy cập model chưa được xác nhận, không khả dụng hoặc đã hết hạn. Kiểm tra lại hồ sơ đã chọn trước khi thử lại.\n\nHồ sơ: Opus / Claude Code\n\nKiểm tra gọi CLI thật và có thể tốn phí. Không sửa yêu cầu hoặc tự chạy lại task.\n\nKiểm tra truy cập hồ sơ đã chọn (gọi CLI thật)\nXem trong Quản trị",
+      "focusWithin": true
+    },
+    {
+      "lang": "vi",
+      "colorScheme": "dark",
+      "width": 375,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 325,
+      "buttonWidth": 299,
+      "hasRecovery": true,
+      "text": "Chưa thể hoàn thành thao tác\n\nTruy cập model chưa được xác nhận, không khả dụng hoặc đã hết hạn. Kiểm tra lại hồ sơ đã chọn trước khi thử lại.\n\nHồ sơ: Opus / Claude Code\n\nKiểm tra gọi CLI thật và có thể tốn phí. Không sửa yêu cầu hoặc tự chạy lại task.\n\nKiểm tra truy cập hồ sơ đã chọn (gọi CLI thật)\nXem trong Quản trị",
+      "focusWithin": true
+    },
+    {
+      "lang": "vi",
+      "colorScheme": "dark",
+      "width": 768,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 710,
+      "buttonWidth": 342.203125,
+      "hasRecovery": true,
+      "text": "Chưa thể hoàn thành thao tác\n\nTruy cập model chưa được xác nhận, không khả dụng hoặc đã hết hạn. Kiểm tra lại hồ sơ đã chọn trước khi thử lại.\n\nHồ sơ: Opus / Claude Code\n\nKiểm tra gọi CLI thật và có thể tốn phí. Không sửa yêu cầu hoặc tự chạy lại task.\n\nKiểm tra truy cập hồ sơ đã chọn (gọi CLI thật)\nXem trong Quản trị",
+      "focusWithin": true
+    },
+    {
+      "lang": "vi",
+      "colorScheme": "dark",
+      "width": 1280,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 1046,
+      "buttonWidth": 342.203125,
+      "hasRecovery": true,
+      "text": "Chưa thể hoàn thành thao tác\n\nTruy cập model chưa được xác nhận, không khả dụng hoặc đã hết hạn. Kiểm tra lại hồ sơ đã chọn trước khi thử lại.\n\nHồ sơ: Opus / Claude Code\n\nKiểm tra gọi CLI thật và có thể tốn phí. Không sửa yêu cầu hoặc tự chạy lại task.\n\nKiểm tra truy cập hồ sơ đã chọn (gọi CLI thật)\nXem trong Quản trị",
+      "focusWithin": true
+    },
+    {
+      "lang": "en",
+      "colorScheme": "light",
+      "width": 375,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 325,
+      "buttonWidth": 299,
+      "hasRecovery": true,
+      "text": "Unable to complete this action\n\nModel access is unverified, unavailable or expired; probe the selected profile before retrying\n\nProfile: Opus / Claude Code\n\nThe check invokes the CLI and may incur cost. It does not change requirements or rerun the task.\n\nProbe selected profile access (invokes the CLI)\nInspect in Administration",
+      "focusWithin": true
+    },
+    {
+      "lang": "en",
+      "colorScheme": "light",
+      "width": 768,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 710,
+      "buttonWidth": 346.90625,
+      "hasRecovery": true,
+      "text": "Unable to complete this action\n\nModel access is unverified, unavailable or expired; probe the selected profile before retrying\n\nProfile: Opus / Claude Code\n\nThe check invokes the CLI and may incur cost. It does not change requirements or rerun the task.\n\nProbe selected profile access (invokes the CLI)\nInspect in Administration",
+      "focusWithin": true
+    },
+    {
+      "lang": "en",
+      "colorScheme": "light",
+      "width": 1280,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 1046,
+      "buttonWidth": 346.90625,
+      "hasRecovery": true,
+      "text": "Unable to complete this action\n\nModel access is unverified, unavailable or expired; probe the selected profile before retrying\n\nProfile: Opus / Claude Code\n\nThe check invokes the CLI and may incur cost. It does not change requirements or rerun the task.\n\nProbe selected profile access (invokes the CLI)\nInspect in Administration",
+      "focusWithin": true
+    },
+    {
+      "lang": "en",
+      "colorScheme": "dark",
+      "width": 375,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 325,
+      "buttonWidth": 299,
+      "hasRecovery": true,
+      "text": "Unable to complete this action\n\nModel access is unverified, unavailable or expired; probe the selected profile before retrying\n\nProfile: Opus / Claude Code\n\nThe check invokes the CLI and may incur cost. It does not change requirements or rerun the task.\n\nProbe selected profile access (invokes the CLI)\nInspect in Administration",
+      "focusWithin": true
+    },
+    {
+      "lang": "en",
+      "colorScheme": "dark",
+      "width": 768,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 710,
+      "buttonWidth": 346.90625,
+      "hasRecovery": true,
+      "text": "Unable to complete this action\n\nModel access is unverified, unavailable or expired; probe the selected profile before retrying\n\nProfile: Opus / Claude Code\n\nThe check invokes the CLI and may incur cost. It does not change requirements or rerun the task.\n\nProbe selected profile access (invokes the CLI)\nInspect in Administration",
+      "focusWithin": true
+    },
+    {
+      "lang": "en",
+      "colorScheme": "dark",
+      "width": 1280,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 1046,
+      "buttonWidth": 346.90625,
+      "hasRecovery": true,
+      "text": "Unable to complete this action\n\nModel access is unverified, unavailable or expired; probe the selected profile before retrying\n\nProfile: Opus / Claude Code\n\nThe check invokes the CLI and may incur cost. It does not change requirements or rerun the task.\n\nProbe selected profile access (invokes the CLI)\nInspect in Administration",
+      "focusWithin": true
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)"
+  ],
+  "taskId": "meeting-a83c7d6b6cee2058acbc97b79f26e0a2",
+  "requirementRevision": 2,
+  "status": "integrated",
+  "runs": [
+    {
+      "id": "f6844a60-fb64-40b8-8833-f74f5e974d03",
+      "status": "failed",
+      "skillEvidence": {
+        "catalog": "local",
+        "entries": [
+          {
+            "id": "task-rules",
+            "name": "task-rules",
+            "description": "Task handoff rules",
+            "required": true,
+            "version": null,
+            "sha256": "01373de81cada2179e3936e7cb6ba164f605e0d758f045013fcebed1a9da3997",
+            "bytes": 131,
+            "resources": [],
+            "unavailableResources": []
+          }
+        ],
+        "supplied": [
+          {
+            "id": "task-rules",
+            "sha256": "01373de81cada2179e3936e7cb6ba164f605e0d758f045013fcebed1a9da3997"
+          }
+        ],
+        "tools": [],
+        "applied": "not-observed"
+      }
+    },
+    {
+      "id": "c36cc6ee-6ea5-47ad-9881-78eea8469cc8",
+      "status": "integrated",
+      "retryContext": {
+        "fromRunId": "f6844a60-fb64-40b8-8833-f74f5e974d03",
+        "checkCount": 1,
+        "bytes": 1511,
+        "sha256": "3e519524d79f97e2e3372c8a77240d8db4bbdcc597d1164e71791b2dadaa9e77",
+        "truncated": true,
+        "sensitiveOutputOmitted": false
+      },
+      "skillEvidence": {
+        "catalog": "local",
+        "entries": [
+          {
+            "id": "task-rules",
+            "name": "task-rules",
+            "description": "Task handoff rules",
+            "required": true,
+            "version": null,
+            "sha256": "01373de81cada2179e3936e7cb6ba164f605e0d758f045013fcebed1a9da3997",
+            "bytes": 131,
+            "resources": [],
+            "unavailableResources": []
+          }
+        ],
+        "supplied": [
+          {
+            "id": "task-rules",
+            "sha256": "01373de81cada2179e3936e7cb6ba164f605e0d758f045013fcebed1a9da3997"
+          }
+        ],
+        "tools": [],
+        "applied": "not-observed"
+      }
+    }
+  ],
+  "checks": [
+    {
+      "command": [
+        "/usr/bin/node",
+        "--max-old-space-size=256",
+        "--test",
+        "--test-timeout=20000",
+        "test/csv-cell.test.js"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "cancelled": false,
+      "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.584347\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.270943\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 0.168294\n  type: 'test'\n  ...\n# Subtest: quotes line feed\nok 4 - quotes line feed\n  ---\n  duration_ms: 0.136428\n  type: 'test'\n  ...\n# Subtest: quotes carriage return\nok 5 - quotes carriage return\n  ---\n  duration_ms: 0.137801\n  type: 'test'\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.108759\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.098277\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.094617\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 8\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 160.020007\n",
+      "elapsedMs": 287,
+      "checkedAt": "2026-10-24T03:00:33.774Z"
+    }
+  ],
+  "navigation": [
+    "reload Execute with no dispatch",
+    "reload Results",
+    "Plan/Back",
+    "Admin runtime/Back",
+    "direct Results hash"
+  ],
+  "limits": [
+    "Self-review on scripted model-access/CSV fixture; no human UX or native model acceptance.",
+    "Expiry backdated in both stores, not wall-clock 30 minutes.",
+    "Browser checks required supply without lookup; real MCP calls are covered separately in journey.json."
+  ]
+}

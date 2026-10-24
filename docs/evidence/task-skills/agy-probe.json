@@ -1,0 +1,27 @@
+{
+  "schema": "agent-meeting/agy-probe@1",
+  "recordedAt": "2026-10-24",
+  "executable": "/home/theo/.local/bin/agy",
+  "requestedModel": "gemini-3.8-flash-low",
+  "actualModel": "unknown; response has no machine model identity field",
+  "status": "SUCCESS",
+  "response": "ANTIGRAVITY_OK",
+  "exitCode": 0,
+  "duration_seconds": 5.106687326,
+  "num_turns": 1,
+  "usage": {
+    "input_tokens": 13087,
+    "output_tokens": 6,
+    "thinking_tokens": 0,
+    "cache_read_tokens": 0,
+    "total_tokens": 13093
+  },
+  "flags": [
+    "--mode plan",
+    "--sandbox",
+    "--disable-slash-commands",
+    "--print-timeout 60s"
+  ],
+  "warning": "--mode plan has no effect while slash command expansion is disabled.",
+  "scope": "Direct CLI inference verified by PM; does not verify managed skill/MCP/write integration. Prompt requested no tools/file access. No claim that plan mode was effective."
+}

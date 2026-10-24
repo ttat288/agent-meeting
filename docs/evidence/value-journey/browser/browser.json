@@ -1,0 +1,805 @@
+{
+  "recordedAt": "2026-10-24T07:50:39.760Z",
+  "fixture": true,
+  "modelCalls": 0,
+  "calls": [
+    "probe",
+    "task",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "probe",
+    "task",
+    "task",
+    "task",
+    "task"
+  ],
+  "geometry": [
+    {
+      "lang": "vi",
+      "colorScheme": "light",
+      "width": 375,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 325,
+      "buttonWidth": 299,
+      "hasRecovery": true,
+      "text": "Chưa thể hoàn thành thao tác\n\nTruy cập model chưa được xác nhận, không khả dụng hoặc đã hết hạn. Kiểm tra lại hồ sơ đã chọn trước khi thử lại.\n\nHồ sơ: Opus / Claude Code\n\nKiểm tra gọi CLI thật và có thể tốn phí. Không sửa yêu cầu hoặc tự chạy lại task.\n\nKiểm tra truy cập hồ sơ đã chọn (gọi CLI thật)\nXem trong Quản trị",
+      "focusWithin": true
+    },
+    {
+      "lang": "vi",
+      "colorScheme": "light",
+      "width": 768,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 710,
+      "buttonWidth": 342.203125,
+      "hasRecovery": true,
+      "text": "Chưa thể hoàn thành thao tác\n\nTruy cập model chưa được xác nhận, không khả dụng hoặc đã hết hạn. Kiểm tra lại hồ sơ đã chọn trước khi thử lại.\n\nHồ sơ: Opus / Claude Code\n\nKiểm tra gọi CLI thật và có thể tốn phí. Không sửa yêu cầu hoặc tự chạy lại task.\n\nKiểm tra truy cập hồ sơ đã chọn (gọi CLI thật)\nXem trong Quản trị",
+      "focusWithin": true
+    },
+    {
+      "lang": "vi",
+      "colorScheme": "light",
+      "width": 1280,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 1046,
+      "buttonWidth": 342.203125,
+      "hasRecovery": true,
+      "text": "Chưa thể hoàn thành thao tác\n\nTruy cập model chưa được xác nhận, không khả dụng hoặc đã hết hạn. Kiểm tra lại hồ sơ đã chọn trước khi thử lại.\n\nHồ sơ: Opus / Claude Code\n\nKiểm tra gọi CLI thật và có thể tốn phí. Không sửa yêu cầu hoặc tự chạy lại task.\n\nKiểm tra truy cập hồ sơ đã chọn (gọi CLI thật)\nXem trong Quản trị",
+      "focusWithin": true
+    },
+    {
+      "lang": "vi",
+      "colorScheme": "dark",
+      "width": 375,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 325,
+      "buttonWidth": 299,
+      "hasRecovery": true,
+      "text": "Chưa thể hoàn thành thao tác\n\nTruy cập model chưa được xác nhận, không khả dụng hoặc đã hết hạn. Kiểm tra lại hồ sơ đã chọn trước khi thử lại.\n\nHồ sơ: Opus / Claude Code\n\nKiểm tra gọi CLI thật và có thể tốn phí. Không sửa yêu cầu hoặc tự chạy lại task.\n\nKiểm tra truy cập hồ sơ đã chọn (gọi CLI thật)\nXem trong Quản trị",
+      "focusWithin": true
+    },
+    {
+      "lang": "vi",
+      "colorScheme": "dark",
+      "width": 768,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 710,
+      "buttonWidth": 342.203125,
+      "hasRecovery": true,
+      "text": "Chưa thể hoàn thành thao tác\n\nTruy cập model chưa được xác nhận, không khả dụng hoặc đã hết hạn. Kiểm tra lại hồ sơ đã chọn trước khi thử lại.\n\nHồ sơ: Opus / Claude Code\n\nKiểm tra gọi CLI thật và có thể tốn phí. Không sửa yêu cầu hoặc tự chạy lại task.\n\nKiểm tra truy cập hồ sơ đã chọn (gọi CLI thật)\nXem trong Quản trị",
+      "focusWithin": true
+    },
+    {
+      "lang": "vi",
+      "colorScheme": "dark",
+      "width": 1280,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 1046,
+      "buttonWidth": 342.203125,
+      "hasRecovery": true,
+      "text": "Chưa thể hoàn thành thao tác\n\nTruy cập model chưa được xác nhận, không khả dụng hoặc đã hết hạn. Kiểm tra lại hồ sơ đã chọn trước khi thử lại.\n\nHồ sơ: Opus / Claude Code\n\nKiểm tra gọi CLI thật và có thể tốn phí. Không sửa yêu cầu hoặc tự chạy lại task.\n\nKiểm tra truy cập hồ sơ đã chọn (gọi CLI thật)\nXem trong Quản trị",
+      "focusWithin": true
+    },
+    {
+      "lang": "en",
+      "colorScheme": "light",
+      "width": 375,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 325,
+      "buttonWidth": 299,
+      "hasRecovery": true,
+      "text": "Unable to complete this action\n\nModel access is unverified, unavailable or expired; probe the selected profile before retrying\n\nProfile: Opus / Claude Code\n\nThe check invokes the CLI and may incur cost. It does not change requirements or rerun the task.\n\nProbe selected profile access (invokes the CLI)\nInspect in Administration",
+      "focusWithin": true
+    },
+    {
+      "lang": "en",
+      "colorScheme": "light",
+      "width": 768,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 710,
+      "buttonWidth": 346.90625,
+      "hasRecovery": true,
+      "text": "Unable to complete this action\n\nModel access is unverified, unavailable or expired; probe the selected profile before retrying\n\nProfile: Opus / Claude Code\n\nThe check invokes the CLI and may incur cost. It does not change requirements or rerun the task.\n\nProbe selected profile access (invokes the CLI)\nInspect in Administration",
+      "focusWithin": true
+    },
+    {
+      "lang": "en",
+      "colorScheme": "light",
+      "width": 1280,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 1046,
+      "buttonWidth": 346.90625,
+      "hasRecovery": true,
+      "text": "Unable to complete this action\n\nModel access is unverified, unavailable or expired; probe the selected profile before retrying\n\nProfile: Opus / Claude Code\n\nThe check invokes the CLI and may incur cost. It does not change requirements or rerun the task.\n\nProbe selected profile access (invokes the CLI)\nInspect in Administration",
+      "focusWithin": true
+    },
+    {
+      "lang": "en",
+      "colorScheme": "dark",
+      "width": 375,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 325,
+      "buttonWidth": 299,
+      "hasRecovery": true,
+      "text": "Unable to complete this action\n\nModel access is unverified, unavailable or expired; probe the selected profile before retrying\n\nProfile: Opus / Claude Code\n\nThe check invokes the CLI and may incur cost. It does not change requirements or rerun the task.\n\nProbe selected profile access (invokes the CLI)\nInspect in Administration",
+      "focusWithin": true
+    },
+    {
+      "lang": "en",
+      "colorScheme": "dark",
+      "width": 768,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 710,
+      "buttonWidth": 346.90625,
+      "hasRecovery": true,
+      "text": "Unable to complete this action\n\nModel access is unverified, unavailable or expired; probe the selected profile before retrying\n\nProfile: Opus / Claude Code\n\nThe check invokes the CLI and may incur cost. It does not change requirements or rerun the task.\n\nProbe selected profile access (invokes the CLI)\nInspect in Administration",
+      "focusWithin": true
+    },
+    {
+      "lang": "en",
+      "colorScheme": "dark",
+      "width": 1280,
+      "overflow": false,
+      "role": "alert",
+      "boxWidth": 1046,
+      "buttonWidth": 346.90625,
+      "hasRecovery": true,
+      "text": "Unable to complete this action\n\nModel access is unverified, unavailable or expired; probe the selected profile before retrying\n\nProfile: Opus / Claude Code\n\nThe check invokes the CLI and may incur cost. It does not change requirements or rerun the task.\n\nProbe selected profile access (invokes the CLI)\nInspect in Administration",
+      "focusWithin": true
+    }
+  ],
+  "pageErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)",
+    "Failed to load resource: the server responded with a status of 409 (Conflict)"
+  ],
+  "taskId": "meeting-2ce7e88ce3f5d91994be6879c7914baf",
+  "requirementRevision": 2,
+  "status": "integrated",
+  "runs": [
+    {
+      "id": "c7ebb9dd-a441-4572-aadc-c0962a0bd6c4",
+      "status": "failed",
+      "skillEvidence": {
+        "catalog": "local",
+        "entries": [
+          {
+            "id": "task-rules",
+            "name": "task-rules",
+            "description": "Task handoff rules",
+            "required": true,
+            "version": null,
+            "sha256": "01373de81cada2179e3936e7cb6ba164f605e0d758f045013fcebed1a9da3997",
+            "bytes": 131,
+            "resources": [],
+            "unavailableResources": []
+          }
+        ],
+        "supplied": [
+          {
+            "id": "task-rules",
+            "sha256": "01373de81cada2179e3936e7cb6ba164f605e0d758f045013fcebed1a9da3997"
+          }
+        ],
+        "tools": [],
+        "applied": "not-observed"
+      }
+    },
+    {
+      "id": "6ceb682b-a3d2-4d0e-b3e1-76a0ca305900",
+      "status": "integrated",
+      "retryContext": {
+        "fromRunId": "c7ebb9dd-a441-4572-aadc-c0962a0bd6c4",
+        "checkCount": 1,
+        "bytes": 1511,
+        "sha256": "3573af443760b7369ae4f460b1a70705d33acd28bd3cefd153dd410c1a8be4ad",
+        "truncated": true,
+        "sensitiveOutputOmitted": false
+      },
+      "skillEvidence": {
+        "catalog": "local",
+        "entries": [
+          {
+            "id": "task-rules",
+            "name": "task-rules",
+            "description": "Task handoff rules",
+            "required": true,
+            "version": null,
+            "sha256": "01373de81cada2179e3936e7cb6ba164f605e0d758f045013fcebed1a9da3997",
+            "bytes": 131,
+            "resources": [],
+            "unavailableResources": []
+          }
+        ],
+        "supplied": [
+          {
+            "id": "task-rules",
+            "sha256": "01373de81cada2179e3936e7cb6ba164f605e0d758f045013fcebed1a9da3997"
+          }
+        ],
+        "tools": [],
+        "applied": "not-observed"
+      }
+    }
+  ],
+  "checks": [
+    {
+      "command": [
+        "/usr/bin/node",
+        "--max-old-space-size=256",
+        "--test",
+        "--test-timeout=20000",
+        "test/csv-cell.test.js"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "cancelled": false,
+      "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.361783\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.190048\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 0.103224\n  type: 'test'\n  ...\n# Subtest: quotes line feed\nok 4 - quotes line feed\n  ---\n  duration_ms: 0.094238\n  type: 'test'\n  ...\n# Subtest: quotes carriage return\nok 5 - quotes carriage return\n  ---\n  duration_ms: 0.104275\n  type: 'test'\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.118784\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.122328\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.10175\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 8\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 123.152543\n",
+      "elapsedMs": 224,
+      "checkedAt": "2026-10-24T07:50:35.124Z"
+    }
+  ],
+  "historicalHandoff": {
+    "schema": "agent-meeting/handoff@1",
+    "task": {
+      "id": "meeting-2ce7e88ce3f5d91994be6879c7914baf",
+      "context": "Fix CSV cell escaping for commas, embedded double quotes and CR/LF; preserve plain, empty, numeric and Unicode cells. Change only csv-cell.js; keep independent tests unchanged.",
+      "goal": "Fix CSV escaping",
+      "purpose": "execute",
+      "topology": "local",
+      "management": "managed",
+      "acceptance": [
+        "keeps plain cells",
+        "quotes delimiter",
+        "escapes embedded double quotes",
+        "quotes line feed",
+        "quotes carriage return",
+        "keeps empty cells",
+        "keeps unicode",
+        "converts zero"
+      ],
+      "dependencies": [],
+      "writePaths": [
+        "csv-cell.js"
+      ],
+      "testFiles": [
+        "test/csv-cell.test.js"
+      ],
+      "sources": [],
+      "facts": [],
+      "unknowns": [],
+      "requirementRevision": 2,
+      "status": "failed",
+      "createdAt": "2026-10-24T07:50:26.944Z",
+      "origin": {
+        "kind": "meeting-action",
+        "number": 1,
+        "timestamp": 1792828226944,
+        "roomCreatedAt": 1792828226907,
+        "messageIndex": 1,
+        "message": "CONCLUSION: Preserve CSV cells.\nTASK: Dev | Fix CSV escaping | today",
+        "context": "Fix CSV cell escaping for commas, embedded double quotes and CR/LF; preserve plain, empty, numeric and Unicode cells. Change only csv-cell.js; keep independent tests unchanged."
+      },
+      "owner": "Dev",
+      "sourceCurrent": true,
+      "reportedProgress": {
+        "status": "todo",
+        "note": "",
+        "updatedAt": null,
+        "updatedBy": null
+      },
+      "workspace": "/tmp/am-skill-browser-tI8mVP/source",
+      "skillPolicy": {
+        "catalog": "local",
+        "required": [
+          "task-rules"
+        ],
+        "optional": [],
+        "tools": []
+      },
+      "skillSnapshot": {
+        "schema": "agent-meeting/task-skills@1",
+        "root": "/tmp/am-skill-browser-tI8mVP/source/.agents/skills",
+        "catalog": "local",
+        "entries": [
+          {
+            "id": "task-rules",
+            "name": "task-rules",
+            "description": "Task handoff rules",
+            "required": true,
+            "version": null,
+            "sha256": "01373de81cada2179e3936e7cb6ba164f605e0d758f045013fcebed1a9da3997",
+            "bytes": 131,
+            "resources": [],
+            "unavailableResources": []
+          }
+        ]
+      }
+    },
+    "requirementRevision": 2,
+    "currentRequirementRevision": 3,
+    "requirementsCurrent": false,
+    "runId": "6ceb682b-a3d2-4d0e-b3e1-76a0ca305900",
+    "status": "integrated",
+    "configRevision": 2,
+    "baseRevision": "7119b3ed591ca7a1bd844dcf627b4e3e7197f421",
+    "actualModel": "fixture-csv",
+    "runtime": "claude",
+    "changes": [
+      {
+        "file": "csv-cell.js",
+        "before": "9a38503b21f51c83e9e4fcf6eaf1bfad764d7304a3d466deea4a3b48d4e25e38",
+        "after": "882c54cb9a0664e132a9f9ddbbd462b17640217367359e52fad153625bcb39c0"
+      }
+    ],
+    "verification": [
+      {
+        "command": [
+          "/usr/bin/node",
+          "--max-old-space-size=256",
+          "--test",
+          "--test-timeout=20000",
+          "test/csv-cell.test.js"
+        ],
+        "exitCode": 0,
+        "timeout": false,
+        "cancelled": false,
+        "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.40568\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.205719\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 0.100839\n  type: 'test'\n  ...\n# Subtest: quotes line feed\nok 4 - quotes line feed\n  ---\n  duration_ms: 0.094618\n  type: 'test'\n  ...\n# Subtest: quotes carriage return\nok 5 - quotes carriage return\n  ---\n  duration_ms: 0.093257\n  type: 'test'\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.089635\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.080162\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.084377\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 8\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 125.343495\n",
+        "elapsedMs": 228,
+        "checkedAt": "2026-10-24T07:50:34.802Z"
+      }
+    ],
+    "integrationVerification": [
+      {
+        "command": [
+          "/usr/bin/node",
+          "--max-old-space-size=256",
+          "--test",
+          "--test-timeout=20000",
+          "test/csv-cell.test.js"
+        ],
+        "exitCode": 0,
+        "timeout": false,
+        "cancelled": false,
+        "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.361783\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.190048\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 0.103224\n  type: 'test'\n  ...\n# Subtest: quotes line feed\nok 4 - quotes line feed\n  ---\n  duration_ms: 0.094238\n  type: 'test'\n  ...\n# Subtest: quotes carriage return\nok 5 - quotes carriage return\n  ---\n  duration_ms: 0.104275\n  type: 'test'\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.118784\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.122328\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.10175\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 8\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 123.152543\n",
+        "elapsedMs": 224,
+        "checkedAt": "2026-10-24T07:50:35.124Z"
+      }
+    ],
+    "costUsd": null,
+    "skillEvidence": {
+      "catalog": "local",
+      "entries": [
+        {
+          "id": "task-rules",
+          "name": "task-rules",
+          "description": "Task handoff rules",
+          "required": true,
+          "version": null,
+          "sha256": "01373de81cada2179e3936e7cb6ba164f605e0d758f045013fcebed1a9da3997",
+          "bytes": 131,
+          "resources": [],
+          "unavailableResources": []
+        }
+      ],
+      "supplied": [
+        {
+          "id": "task-rules",
+          "sha256": "01373de81cada2179e3936e7cb6ba164f605e0d758f045013fcebed1a9da3997"
+        }
+      ],
+      "tools": [],
+      "applied": "not-observed"
+    },
+    "limitations": [
+      "Single-file automatic integration",
+      "Filesystem write isolation only",
+      "Historical run requirements differ from the current task; this evidence does not accept its current requirements",
+      "Skill supply is observed; semantic application and model tool use are not established by supply metadata"
+    ]
+  },
+  "historicalGeometry": [
+    {
+      "lang": "vi",
+      "colorScheme": "light",
+      "width": 375,
+      "overflow": false,
+      "staleRefreshControls": 0
+    },
+    {
+      "lang": "vi",
+      "colorScheme": "light",
+      "width": 768,
+      "overflow": false,
+      "staleRefreshControls": 0
+    },
+    {
+      "lang": "vi",
+      "colorScheme": "light",
+      "width": 1280,
+      "overflow": false,
+      "staleRefreshControls": 0
+    },
+    {
+      "lang": "vi",
+      "colorScheme": "dark",
+      "width": 375,
+      "overflow": false,
+      "staleRefreshControls": 0
+    },
+    {
+      "lang": "vi",
+      "colorScheme": "dark",
+      "width": 768,
+      "overflow": false,
+      "staleRefreshControls": 0
+    },
+    {
+      "lang": "vi",
+      "colorScheme": "dark",
+      "width": 1280,
+      "overflow": false,
+      "staleRefreshControls": 0
+    },
+    {
+      "lang": "en",
+      "colorScheme": "light",
+      "width": 375,
+      "overflow": false,
+      "staleRefreshControls": 0
+    },
+    {
+      "lang": "en",
+      "colorScheme": "light",
+      "width": 768,
+      "overflow": false,
+      "staleRefreshControls": 0
+    },
+    {
+      "lang": "en",
+      "colorScheme": "light",
+      "width": 1280,
+      "overflow": false,
+      "staleRefreshControls": 0
+    },
+    {
+      "lang": "en",
+      "colorScheme": "dark",
+      "width": 375,
+      "overflow": false,
+      "staleRefreshControls": 0
+    },
+    {
+      "lang": "en",
+      "colorScheme": "dark",
+      "width": 768,
+      "overflow": false,
+      "staleRefreshControls": 0
+    },
+    {
+      "lang": "en",
+      "colorScheme": "dark",
+      "width": 1280,
+      "overflow": false,
+      "staleRefreshControls": 0
+    }
+  ],
+  "identityGeometry": [
+    {
+      "identity": "unknown",
+      "lang": "vi",
+      "colorScheme": "light",
+      "width": 375,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "unknown",
+      "lang": "vi",
+      "colorScheme": "light",
+      "width": 768,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "unknown",
+      "lang": "vi",
+      "colorScheme": "light",
+      "width": 1280,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "unknown",
+      "lang": "vi",
+      "colorScheme": "dark",
+      "width": 375,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "unknown",
+      "lang": "vi",
+      "colorScheme": "dark",
+      "width": 768,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "unknown",
+      "lang": "vi",
+      "colorScheme": "dark",
+      "width": 1280,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "unknown",
+      "lang": "en",
+      "colorScheme": "light",
+      "width": 375,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "unknown",
+      "lang": "en",
+      "colorScheme": "light",
+      "width": 768,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "unknown",
+      "lang": "en",
+      "colorScheme": "light",
+      "width": 1280,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "unknown",
+      "lang": "en",
+      "colorScheme": "dark",
+      "width": 375,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "unknown",
+      "lang": "en",
+      "colorScheme": "dark",
+      "width": 768,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "unknown",
+      "lang": "en",
+      "colorScheme": "dark",
+      "width": 1280,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "different-machine-model",
+      "lang": "vi",
+      "colorScheme": "light",
+      "width": 375,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "different-machine-model",
+      "lang": "vi",
+      "colorScheme": "light",
+      "width": 768,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "different-machine-model",
+      "lang": "vi",
+      "colorScheme": "light",
+      "width": 1280,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "different-machine-model",
+      "lang": "vi",
+      "colorScheme": "dark",
+      "width": 375,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "different-machine-model",
+      "lang": "vi",
+      "colorScheme": "dark",
+      "width": 768,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "different-machine-model",
+      "lang": "vi",
+      "colorScheme": "dark",
+      "width": 1280,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "different-machine-model",
+      "lang": "en",
+      "colorScheme": "light",
+      "width": 375,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "different-machine-model",
+      "lang": "en",
+      "colorScheme": "light",
+      "width": 768,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "different-machine-model",
+      "lang": "en",
+      "colorScheme": "light",
+      "width": 1280,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "different-machine-model",
+      "lang": "en",
+      "colorScheme": "dark",
+      "width": 375,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "different-machine-model",
+      "lang": "en",
+      "colorScheme": "dark",
+      "width": 768,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    },
+    {
+      "identity": "different-machine-model",
+      "lang": "en",
+      "colorScheme": "dark",
+      "width": 1280,
+      "overflow": false,
+      "runCount": 1,
+      "explicitFixtureProbes": 1
+    }
+  ],
+  "legacyRecovery": {
+    "fixture": true,
+    "missingFieldInjected": true,
+    "blockedRunId": "026225fd-f7f9-4d4f-85c3-0c98a3af50e0",
+    "newRunId": "4ad5f81c-8dcd-4cdb-b4b6-cd54ee8b5ce5",
+    "requirementRevision": 4,
+    "taskId": "meeting-2ce7e88ce3f5d91994be6879c7914baf",
+    "status": "integrated",
+    "stateUnchangedOn409": true,
+    "paidProbeOnLegacyError": false
+  },
+  "currentTaskRevision": 4,
+  "navigation": [
+    "reload Execute with no dispatch",
+    "reload Results",
+    "Plan/Back",
+    "Admin runtime/Back",
+    "direct Results hash",
+    "historical warning and downloaded handoff after reconfigure/reload/Back"
+  ],
+  "limits": [
+    "Self-review on scripted model-access/CSV fixture; no human UX or native model acceptance.",
+    "Expiry backdated in both stores, not wall-clock 30 minutes.",
+    "Browser checks required supply without lookup; real MCP calls are covered separately in journey.json.",
+    "Top requirementRevision/runs describe the initial failed-to-integrated pair; later revisions and missing-field recovery are separate historicalGeometry/legacyRecovery records.",
+    "After the first two CSV repair attempts, scripted metadata checks leave already-correct source unchanged; they do not test fresh model repair quality."
+  ]
+}

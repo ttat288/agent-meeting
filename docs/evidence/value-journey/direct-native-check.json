@@ -1,0 +1,24 @@
+{
+  "recordedAt": "2026-10-24T06:26:33.828Z",
+  "reportedStatus": "SUCCESS",
+  "independentTestExitCode": 0,
+  "sourceBase": "1b56f4db04d4135a66fcc329af89332eb21b9d3f",
+  "scopeChangesBeforeInjectingTests": [
+    {
+      "file": "src/server.js",
+      "before": "b3a687951a2fcb8d92ab98c5b8046273b898845461a62e9f4df119531de15d6f",
+      "after": "7e6000549d79b427bdb1e9ac8a7022632907b274b4e8741c17c05de1a4e4fec4"
+    }
+  ],
+  "patchDataTransferRequired": false,
+  "nativeWriteObserved": true,
+  "actualModel": "unknown",
+  "reportIsNotAcceptance": true,
+  "billedCostUsd": null,
+  "limitations": [
+    "One native direct call with file read/edit tools and isolated writable workspace; no machine actual-model identity.",
+    "Independent tests added only after model completion. The source-before snapshot and final contract were supplied; no earlier solution or hidden acceptance tests were provided.",
+    "No structured tool transcript, read isolation, network isolation, command-audit or measured human time; tool usage details in prose remain model-reported.",
+    "Terminal commands were not granted in this worker task; independent tests are owned by PM, as in managed verification."
+  ]
+}

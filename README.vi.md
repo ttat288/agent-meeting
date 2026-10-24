@@ -46,7 +46,7 @@ Quyết định tốt hơn, giảm công điều phối và giảm tiền model 
 Cần **Node.js 18+, Git và trình duyệt**. Không cần `npm install`, database hoặc build. Mở terminal mới, lấy source bản xem trước:
 
 ```bash
-git clone --branch codex/2026-10-22-product-hardening https://github.com/ttat288/agent-meeting.git
+git clone https://github.com/ttat288/agent-meeting.git
 cd agent-meeting
 git checkout f415cf46961ac43301083c4784fb216b68e87ac6
 node bin/cli.js --local --port 3125 --no-open
@@ -72,7 +72,7 @@ Dừng bằng Ctrl+C. Kế hoạch lưu việc local; bản nháp dùng bộ nh�
 
 ## Ranh giới và dữ liệu
 
-- “Xong” tự báo tách khỏi đầu ra đã test và nghiệm thu của người dùng. Managed hiện hỗ trợ tích hợp **một file** có guard trên Linux có bubblewrap hoạt động; cách ly ghi, không cách ly đọc host hoặc mạng.
+- “Xong” tự báo tách khỏi đầu ra đã test và nghiệm thu của người dùng. Managed ghi mã hiện dùng **Claude Code**, hỗ trợ tích hợp **một file** có guard trên Linux có bubblewrap hoạt động. Adapter agy chưa hỗ trợ managed ghi mã. Biên cách ly ghi filesystem không cách ly đọc host hoặc mạng. [Giới hạn adapter và bằng chứng agy trực tiếp local](docs/SHOWCASE.md#managed-execution-boundaries).
 - Worker remote còn thử nghiệm. Tích hợp nhiều file, recovery máy thứ hai và model vận hành dài chưa nghiệm thu. Chưa có launcher PM tự động hoặc trần tiền cứng.
 - Link chủ trì điều khiển phòng; lời mời dùng để xin vào. Trạng thái phòng ở bộ nhớ trừ khi bật persistence. Mở Kế hoạch lưu task/trích đoạn nguồn; admin/work dưới `~/.agent-meeting/`, bản nháp trong local storage trình duyệt. Tin/tệp là đầu vào chưa đáng tin. [Bảo mật](SECURITY.md) · [Mô hình đe dọa](docs/SECURITY-DESIGN.md).
 - Có Anh/Việt, theme sáng/tối và responsive. Kiểm kỹ thuật và ảnh chụp không chứng minh người mới hiểu hoặc người dùng chấp nhận sản phẩm.

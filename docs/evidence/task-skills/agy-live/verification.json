@@ -1,0 +1,70 @@
+{
+  "schema": "agent-meeting/agy-live-verification@1",
+  "startedAt": "2026-10-24T04:46:59Z",
+  "deadline": "2026-10-24T09:30:00Z",
+  "sourceHead": "1b56f4db04d4135a66fcc329af89332eb21b9d3f",
+  "requestedModel": "gemini-3.8-flash-low",
+  "actualModel": "unknown",
+  "full": {
+    "tests": 487,
+    "pass": 487,
+    "fail": 0,
+    "skip": 0,
+    "cancel": 0,
+    "files": 43,
+    "exitCode": 0,
+    "command": "systemd-run --user --scope -q -p MemoryMax=1200M -p MemorySwapMax=0 timeout 900 npm test",
+    "node": "v22.22.1"
+  },
+  "targeted": {
+    "tests": 18,
+    "pass": 18
+  },
+  "red": {
+    "tests": 14,
+    "pass": 12,
+    "fail": 2
+  },
+  "modelCalls": 19,
+  "usage": {
+    "input_tokens": 189905,
+    "output_tokens": 9205,
+    "thinking_tokens": 0,
+    "cache_read_tokens": 0,
+    "total_tokens": 199110
+  },
+  "fixtureJourney": "integrated",
+  "matchedRealModel": {
+    "arms": 3,
+    "lookupRequests": 3,
+    "sourceChecksPerArm": 8,
+    "scope": "PM mediated text protocol; not native MCP"
+  },
+  "nativeManagedModelSkillIntegration": "not verified; agy guards retained",
+  "browser": "no new run; no UI changes, old UI hashes unchanged",
+  "billedCostUsd": null,
+  "pmTokens": null,
+  "changedFromInitial": [
+    "bin/task-skills.js",
+    "docs/evidence/task-skills/ACCEPTANCE.vi.md",
+    "src/task-skills.js",
+    "test/task-skills.test.js",
+    "CHANGELOG.md",
+    "docs/HANDOFF.md",
+    "docs/ROUTING-WORKFLOW.vi.md",
+    "src/cli-discovery.js"
+  ],
+  "unrelatedInitialFilesPreserved": 687,
+  "sourceHashCheck": "passed",
+  "preservationCheck": "passed",
+  "diffCheck": "passed",
+  "endedAt": "2026-10-24T05:02:47Z",
+  "actualSeconds": 948,
+  "endedLocal": "2026-10-24 12:02:47 Asia/Bangkok",
+  "stopReason": "Acceptance for bounded direct-model evidence slice met; stopped early before16:30; no new scope",
+  "liveAgyProcessesRemaining": 0,
+  "artifacts": {
+    "files": 14,
+    "bytesBeforeFinalReceiptWrite": 284375
+  }
+}

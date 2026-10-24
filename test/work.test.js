@@ -136,6 +136,7 @@ test('a closed manager rejects new dispatch, probes and tests instead of restart
  await assert.rejects(work.probe('opus-claude'),/shutting down/);
  await assert.rejects(work.verify('missing'),/shutting down/);
  await assert.rejects(work.integrate('missing'),/shutting down/);
+ assert.throws(()=>work.rebase('missing'),/shutting down/);
  assert.equal(calls,0);await work.close();assert.equal(work.pending.size,0);
 });
 
@@ -153,4 +154,56 @@ for(const sameTimestamp of [false,true])test('newer shared access failure overri
  assert.equal(environment.find(o=>o.profileId==='opus-claude').available,false,'The current shared failure must not be masked by room-local success');
  assert(!routing.recommend(store.read(),{kind:'coding'},environment).candidates.some(c=>c.profileId==='opus-claude'));
  const job=work.createTask(task(source));assert.throws(()=>work.start(job.id,'opus-claude'),/probe/);assert.equal(starts,0);assert.equal(work.read().runs.length,0);
+});
+
+for (const state of ['missing', 'expired', 'failed']) test('access recovery is explicit and preserves task/source when observation is ' + state, async t => {
+ const calls=[];
+ const {source,store,work}=setup(t,async args=>{
+  calls.push(args.prompt.includes('READY')?'probe':'run');
+  if(args.prompt.includes('READY'))return{status:'reported',reportedModel:args.modelId};
+  fs.writeFileSync(path.join(args.workspace,'sum.js'),'module.exports = (a,b) => a+b;\n');
+  return{status:'reported',reportedModel:args.modelId,text:'Scripted sum patch',exitCode:0};
+ });
+ const job=work.createTask(task(source)),before=fs.readFileSync(path.join(source,'sum.js'),'utf8');
+ if(state!=='missing'){
+  await work.probe('opus-claude');
+  const shared=require('../src/routing-tools').observationStore(store),snapshot=shared.read();
+  const alter=o=>state==='expired'?{...o,checkedAt:new Date(Date.now()-31*60000).toISOString()}:{...o,available:false,modelVerified:false,quotaAvailable:false};
+  work.update(d=>{d.observations=d.observations.map(alter);});snapshot.observations=snapshot.observations.map(alter);shared.save(snapshot,snapshot.revision);
+ }
+ const previous=calls.length;
+ assert.throws(()=>work.start(job.id,'opus-claude'),error=>error.status===409&&error.code==='MODEL_ACCESS_REQUIRED');
+ assert.equal(calls.length,previous,'Blocked run cannot probe or dispatch');assert.equal(work.read().runs.length,0);
+ assert.equal(fs.readFileSync(path.join(source,'sum.js'),'utf8'),before);
+ const observed=await work.probe('opus-claude',store.read().revision);assert.equal(observed.modelVerified,true);
+ assert.equal(work.read().runs.length,0,'Explicit access check cannot rerun the task');
+ assert.deepEqual(work.read().tasks[0],job,'Access recovery cannot change task requirements');
+ const run=work.start(job.id,'opus-claude',{expectedConfigRevision:store.read().revision,expectedRequirementRevision:job.requirementRevision});await wait(work);
+ assert.equal(run.taskId,job.id);assert.equal(run.requirementRevision,job.requirementRevision);
+ assert.equal((await work.verify(run.id)).status,'verified');assert.equal((await work.integrate(run.id)).status,'integrated');
+ assert.equal(require(path.join(source,'sum.js'))(2,3),5);
+});
+for(const observed of [false,true])test('routing constraints do not prescribe a paid access probe; observation present='+observed,async t=>{
+ const{source,store,work}=setup(t);if(observed)await work.probe('opus-claude');
+ const config=store.read();config.policy.budget.maxCostTier='low';store.save(config,config.revision);
+ if(observed)await work.probe('opus-claude');
+ const job=work.createTask(task(source));
+ assert.throws(()=>work.start(job.id,'opus-claude'),error=>error.code==='ROUTING_REJECTED'&&!error.message.includes('probe'));
+ assert.equal(work.read().runs.length,0);
+});
+test('disabled delegation cannot prescribe a probe even with missing access evidence',t=>{
+ const{source,store,work}=setup(t),config=store.read();config.policy.allowDelegation=false;store.save(config,config.revision);
+ const job=work.createTask(task(source));assert.throws(()=>work.start(job.id,'opus-claude'),error=>error.code==='ROUTING_REJECTED');assert.equal(work.read().runs.length,0);
+});
+
+test('refresh rejects a replaced canonical source before touching the run workspace', async t => {
+ const {source,work}=setup(t);await work.probe('opus-claude');const job=work.createTask(task(source)),run=work.start(job.id,'opus-claude');await wait(work);
+ const before=work.read(),moved=source+'-moved';fs.renameSync(source,moved);fs.symlinkSync(moved,source);
+ assert.throws(()=>work.rebase(run.id),/Source checkout path changed/);assert.deepEqual(work.read(),before);
+});
+
+test('refresh of a removed task source cannot mutate the task state', async t => {
+ const {source,work}=setup(t);await work.probe('opus-claude');const job=work.createTask(task(source)),run=work.start(job.id,'opus-claude');await wait(work);
+ work.update(d=>{d.tasks[0].sourceCurrent=false;});const before=work.read();
+ assert.throws(()=>work.rebase(run.id),/source is no longer/);assert.deepEqual(work.read(),before);
 });

@@ -1,0 +1,54 @@
+TAP version 13
+# Subtest: integration preserves existing permissions under a restrictive process umask
+not ok 1 - integration preserves existing permissions under a restrictive process umask
+  ---
+  duration_ms: 485.011912
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/work-cancel.test.js:223:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Integration must retain the original mode, not apply the server umask
+    
+    448 !== 492
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 492
+  actual: 448
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/work-cancel.test.js:231:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: failed integration restores both original bytes and permissions under restrictive umask
+not ok 2 - failed integration restores both original bytes and permissions under restrictive umask
+  ---
+  duration_ms: 471.1842
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/work-cancel.test.js:234:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    A restored rollback must also retain the original permissions
+    
+    448 !== 492
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 492
+  actual: 448
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/work-cancel.test.js:243:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1090.285974

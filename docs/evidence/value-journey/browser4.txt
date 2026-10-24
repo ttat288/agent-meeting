@@ -1,0 +1,5 @@
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+1 !== 0
+
+    at main (/home/theo/workspace/agent-meeting/tools/check-task-skills-browser.js:121:12)

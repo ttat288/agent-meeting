@@ -1,0 +1,16 @@
+{
+  "measuredAt": "2026-10-24T07:04:57.141845+00:00",
+  "note": "CLI version/hash measured during the session at the recorded timestamp, not a per-invocation or end-of-session attestation.",
+  "agy": {
+    "executable": "/home/theo/.local/bin/agy",
+    "versionExitCode": 0,
+    "version": "1.4.7\n",
+    "sha256": "40349135371a8ed1f1af1e9f8b741de99174ae9fce6380b96c2d1f543480af7a"
+  },
+  "node": "v22.22.1",
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+  "head": "1b56f4db04d4135a66fcc329af89332eb21b9d3f",
+  "branch": "codex/2026-10-22-product-hardening",
+  "npmRuntimeDependencyChanges": false,
+  "systemRequirementTightening": "Every agy runtime model invocation, including readonly/probes, now requires Linux/bubblewrap; external user-opened CLIs are outside this control."
+}

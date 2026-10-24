@@ -1,0 +1,135 @@
+TAP version 13
+# Subtest: required supply, optional metadata, bounded lookup and duplicate loads have distinct states
+ok 1 - required supply, optional metadata, bounded lookup and duplicate loads have distinct states
+  ---
+  duration_ms: 20.937898
+  type: 'test'
+  ...
+# Subtest: denied tools, unselected skills, undeclared paths, bad arguments and unsupported adapters fail explicitly
+ok 2 - denied tools, unselected skills, undeclared paths, bad arguments and unsupported adapters fail explicitly
+  ---
+  duration_ms: 12.611815
+  type: 'test'
+  ...
+# Subtest: manifest/resource edits and missing files invalidate supply/lookup until an explicit repin
+ok 3 - manifest/resource edits and missing files invalidate supply/lookup until an explicit repin
+  ---
+  duration_ms: 10.761171
+  type: 'test'
+  ...
+# Subtest: symlink catalog/skill/resource redirection is blocked, including changes after pinning
+ok 4 - symlink catalog/skill/resource redirection is blocked, including changes after pinning
+  ---
+  duration_ms: 4.367516
+  type: 'test'
+  ...
+# Subtest: invalid policies, credential-like content and over-limit sources are rejected before dispatch
+ok 5 - invalid policies, credential-like content and over-limit sources are rejected before dispatch
+  ---
+  duration_ms: 9.357538
+  type: 'test'
+  ...
+# Subtest: linked scripts can only be read as data, and missing declared resources stay visibly unavailable
+ok 6 - linked scripts can only be read as data, and missing declared resources stay visibly unavailable
+  ---
+  duration_ms: 12.449915
+  type: 'test'
+  ...
+# Subtest: strict adapter MCP config contains only the fixed task server and explicit granted tools
+ok 7 - strict adapter MCP config contains only the fixed task server and explicit granted tools
+  ---
+  duration_ms: 6.784996
+  type: 'test'
+  ...
+# Subtest: real stdio MCP filters tool discovery and rejects forbidden calls without executing a script
+ok 8 - real stdio MCP filters tool discovery and rejects forbidden calls without executing a script
+  ---
+  duration_ms: 141.832242
+  type: 'test'
+  ...
+# Subtest: sandbox restores explicit /tmp context read-only without granting writes outside the worker copy
+ok 9 - sandbox restores explicit /tmp context read-only without granting writes outside the worker copy
+  ---
+  duration_ms: 90.911475
+  type: 'test'
+  ...
+# Subtest: managed task snapshots supply and grants once per attempt, retries with diagnostics, verifies and integrates
+ok 10 - managed task snapshots supply and grants once per attempt, retries with diagnostics, verifies and integrates
+  ---
+  duration_ms: 1060.515565
+  type: 'test'
+  ...
+# Subtest: irrelevant task has no catalog, skill context, context file or lookup grant
+ok 11 - irrelevant task has no catalog, skill context, context file or lookup grant
+  ---
+  duration_ms: 31.20518
+  type: 'test'
+  ...
+# Subtest: changed ignored skill blocks dispatch/verification without changing the task or silently retrying
+ok 12 - changed ignored skill blocks dispatch/verification without changing the task or silently retrying
+  ---
+  duration_ms: 118.49066
+  type: 'test'
+  ...
+# Subtest: MCP accepts a burst of bounded lines crossing the buffer limit but rejects an oversized line
+not ok 13 - MCP accepts a burst of bounded lines crossing the buffer limit but rejects an oversized line
+  ---
+  duration_ms: 93.328696
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/task-skills.test.js:194:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    1 !== 6
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 6
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/task-skills.test.js:201:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: truncated discovery description is visible through task bootstrap and lookup metadata
+not ok 14 - truncated discovery description is visible through task bootstrap and lookup metadata
+  ---
+  duration_ms: 3.115146
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/task-skills.test.js:207:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + undefined
+    - true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/task-skills.test.js:212:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 12
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1772.846087

@@ -2,6 +2,8 @@
 
 ## Hướng dẫn dự án hiện có
 
+- **Runtime — đính chính 2026-10-24:** Antigravity CLI `agy` (`/home/theo/.local/bin/agy`) khác Gemini CLI `gemini`. `agy models` đã chạy được; repo có receipt `SUCCESS` của agy. Lỗi `UNSUPPORTED_CLIENT`/refresh OAuth `EROFS` của Gemini CLI không chứng minh agy hỏng. `src/runtime.js` hiện chặn riêng agy với task-skill MCP (`taskContextFile`) và `write:true`; đó là giới hạn adapter, không phải CLI không gọi được model. Trước khi báo blocked, xác định đúng executable, chế độ và tầng lỗi; xem `docs/GEMINI-WORKFLOW.vi.md`. Không tự gỡ guard, sửa OAuth hoặc đổi provider/ngân sách; requested model khác actual model đã xác minh.
+
 - Đọc `docs/HANDOFF.md` trước khi sửa mã; giữ các quyết định kiến trúc, bảo mật và quy trình bàn giao trong đó. Đọc `CONTRIBUTING.md`, `SECURITY.md` và `docs/SECURITY-DESIGN.md` khi công việc liên quan.
 - Hướng dẫn này bổ sung cho tài liệu hiện có, không thay thế chúng. Không sửa hoặc hoàn tác thay đổi không liên quan của người dùng. Không commit/push nếu chưa được yêu cầu.
 - Stack hiện tại: Node.js >=18, không dependency runtime ngoài; giao diện `src/ui/` dùng HTML/CSS/JavaScript thuần, không build.
@@ -49,6 +51,8 @@ Kiểm kê ngày 2026-10-21 bao gồm thư mục ẩn, nội dung bị Git ignor
 | `ui-ux-pro-max` | `.agents/skills/ui-ux-pro-max/SKILL.md` | Hướng dẫn thiết kế, tương tác, accessibility, responsive và review UI/UX; bắt buộc đọc khi làm UI/UX theo quy tắc trên. | Skill phục vụ phát triển Agent Meeting; cài local và ignore đúng thư mục này. |
 | `add-lang` | `.local-tools/codegraph/.claude/skills/add-lang/SKILL.md` | Thêm grammar tree-sitter/extractor và kiểm chứng ngôn ngữ cho chính CodeGraph. | Thuộc repo công cụ nhúng, không phải skill của Agent Meeting; chỉ cân nhắc khi được giao phát triển CodeGraph. |
 | `agent-eval` | `.local-tools/codegraph/.claude/skills/agent-eval/SKILL.md` | Benchmark khả năng truy hồi CodeGraph với/không có công cụ trên corpus. | Thuộc CodeGraph; không tự chạy benchmark, thay đổi cài đặt global hoặc các lượt agent trả phí khi phát triển Agent Meeting. |
+
+Đánh giá local ngày2026-10-24: Caveman tại `.local-tools/caveman-eval/SKILL.md`, nguồn `JuliusBrussee/caveman` commit `bae9beaf3aa6dc509f05f3d3ed239c827f6e51bb`, SHA-256 `415d43518f2b1a9498c15a445d4657117b129ee5e81b19454ce348439cc6672b`, Apache-2.0 (LICENSE giữ cùng thư mục). Chỉ lưu text để review/mẫu đối chứng; **không cài vào catalog phát triển/sản phẩm**, không hooks/proxy/global settings và không áp dụng session persistence cho phiên PM. `.local-tools/` đã ignore; không thêm ignore rộng mới. Ba mẫu PM soạn không là model A/B; chưa chứng minh lợi ích nên không chọn Caveman làm mặc định. Chi tiết trong `docs/evidence/task-skills/ACCEPTANCE.vi.md`.
 
 - Trước lần cài này, không có SKILL.md riêng của Agent Meeting, không có AGENTS.md ở gốc, và không có cấu hình `.agents/` hoặc `.codex/` trong repo. `.claude/launch.json` là cấu hình chạy ứng dụng, không đăng ký skill.
 - Hướng dẫn agent có sẵn nằm trong `.local-tools/codegraph/AGENTS.md`, `.local-tools/codegraph/docs/AGENTS.md` và `.local-tools/codegraph/CLAUDE.md` (tham chiếu `@AGENTS.md`). Chúng áp dụng cho CodeGraph, không trở thành chính sách toàn repo Agent Meeting. Tài liệu CodeGraph có nhắc harness `scripts/agent-eval/`, nhưng không liệt kê hai manifest trên thành danh mục skill cho Agent Meeting.
@@ -103,6 +107,7 @@ Codex discovery: [tài liệu chính thức](https://learn.chatgpt.com/docs/buil
 
 ## Workflow chia việc có catalog
 
+- Được chủ động dùng Gemini CLI với ngân sách token rộng trong công việc đã giao. Chỉ khi cân nhắc dùng Gemini mới đọc `docs/GEMINI-WORKFLOW.vi.md` để biết thế mạnh, quyền và cách kiểm chứng.
 - Trước khi giao việc, xác định mục tiêu, nguồn, quyền/tool, workspace/base revision và nghiệm thu. Đọc `docs/ROUTING-WORKFLOW.vi.md`.
 - Tra `node bin/routing.js list_profiles`, `get_profile '{"id":"…"}'`, `recommend_profile '{"task":{…}}'`; cùng nguồn cấu hình với admin, có revision. `check_runtime` chỉ chứng minh executable/version; quyền model cần probe thật. Nguồn mặc định ở `src/defaults/routing.json` và `routing-source.md` là ưu tiên/hypotheses của người dùng, không phải benchmark.
 - Chọn làm trực tiếp hoặc worker theo lợi ích/context/ngân sách; không gọi đủ mọi hãng cho có. Không đổi model âm thầm. Task/handoff phải có ID, mục tiêu, phạm vi, nguồn, facts/unknowns, workspace/base, đầu ra, nghiệm thu, timeout/retry và bằng chứng.

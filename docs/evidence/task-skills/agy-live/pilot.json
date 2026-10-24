@@ -1,0 +1,185 @@
+{
+  "schema": "agent-meeting/live-handoff-comparison@1",
+  "startedAt": "2026-10-24T04:54:45.740Z",
+  "requestedModel": "gemini-3.8-flash-low",
+  "actualModel": "unknown",
+  "fixture": false,
+  "scope": "Direct agy text protocol with PM mediated production lookup; not native MCP or managed agy adapter",
+  "facts": {
+    "taskId": "T-COMM-CSV",
+    "objective": "Fix CSV cell escaping for commas, embedded double quotes and CR/LF; preserve plain, empty, numeric and Unicode cells. Change only csv-cell.js; keep independent tests unchanged.",
+    "scope": "Only csv-cell.js.",
+    "condition": "Retry only if task revision 2 and source hash still match.",
+    "negation": "Do not change independent tests.",
+    "result": "Independent verification failed; not accepted.",
+    "error": "escapes embedded double quotes",
+    "evidence": "run-1/test/csv-cell.test.js",
+    "unknowns": "Actual model identity and billing remain unknown.",
+    "next": "Use the retained test diagnostic, then explicitly Run, Verify and Integrate."
+  },
+  "arms": [
+    {
+      "name": "baseline",
+      "instructionBytes": 80,
+      "instructionSha256": "2616e0dbc8394e5305b16f57586d41ed45c9097f0451ba67c660463bcc5026cb",
+      "sourceHash": "1e8aa88e690b7acefb56ff5acb0391ced00f5feb49e649b971edf912a34a3a06",
+      "testHash": "1980bb1b858d1a7a12470ec1e93c9ef0a83e1ff07b39c250781506d0a04a9fc1",
+      "base": "7a01d9772446634cc5573bd6e713f71df2420fc2",
+      "handoff": "baseline-handoff",
+      "handoffText": "# Handoff Report: Task T-COMM-CSV\n\n### Status & Verification\n- **Status:** Independent verification failed; not accepted.\n- **Completion Requirement:** Completion requires independent verification.\n\n### Changed Files & Scope\n- **Target File:** `csv-cell.js` (Scope: Only `csv-cell.js`)\n- **Negation:** Do not change independent tests.\n\n### Evidence & Diagnostics\n- **Failure Diagnostic:** `escapes embedded double quotes`\n- **Evidence:** `run-1/test/csv-cell.test.js`\n\n### Technical Context & Integrity\n- **Objective:** Fix CSV cell escaping for commas, embedded double quotes and CR/LF; preserve plain, empty, numeric and Unicode cells. Change only `csv-cell.js`; keep independent tests unchanged.\n- **Base Revision:** `7a01d9772446634cc5573bd6e713f71df2420fc2`\n- **Requirement Revision:** 2\n- **Source SHA256:** `1e8aa88e690b7acefb56ff5acb0391ced00f5feb49e649b971edf912a34a3a06`\n- **Retry Condition:** Retry only if task revision 2 and source hash still match.\n- **Unknowns:** Actual model identity and billing remain unknown.\n\n### Next Steps\n- Use the retained test diagnostic, then explicitly Run, Verify and Integrate.\n",
+      "exactFieldCoverage": {
+        "taskId": true,
+        "objective": false,
+        "scope": false,
+        "condition": true,
+        "negation": true,
+        "result": true,
+        "error": true,
+        "evidence": true,
+        "unknowns": true,
+        "next": true,
+        "sourceSha256": true,
+        "requirementRevision": true,
+        "baseRevision": true
+      },
+      "calls": [
+        "baseline-repair-0"
+      ],
+      "requests": [],
+      "patch": {
+        "file": "csv-cell.js",
+        "content": "module.exports = value => {\n  const text = String(value);\n  if (/[,\"\r\n]/.test(text)) {\n    return '\"' + text.replaceAll('\"', '\"\"') + '\"';\n  }\n  return text;\n};\n",
+        "taskId": "T-COMM-CSV",
+        "requirementRevision": 2,
+        "sourceSha256": "1e8aa88e690b7acefb56ff5acb0391ced00f5feb49e649b971edf912a34a3a06",
+        "status": "reported",
+        "unknowns": [
+          "Actual model identity and billing remain unknown."
+        ],
+        "next": "Run independent verification tests against updated csv-cell.js and integrate if verified."
+      },
+      "guard": true,
+      "failed": {
+        "exitCode": 1,
+        "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.337307\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.16187\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nnot ok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 1.295908\n  type: 'test'\n  location: '/tmp/am-agy-20261024-114659/baseline/test/csv-cell.test.js:4:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'say \"hi\"'\n    - '\"say \"\"hi\"\"\"'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: '\"say \"\"hi\"\"\"'\n  actual: 'say \"hi\"'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-agy-20261024-114659/baseline/test/csv-cell.test.js:4:53)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: quotes line feed\nnot ok 4 - quotes line feed\n  ---\n  duration_ms: 0.244907\n  type: 'test'\n  location: '/tmp/am-agy-20261024-114659/baseline/test/csv-cell.test.js:5:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'a\\nb' !== '\"a\\nb\"'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: |-\n    \"a\n    b\"\n  actual: |-\n    a\n    b\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-agy-20261024-114659/baseline/test/csv-cell.test.js:5:39)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: quotes carriage return\nnot ok 5 - quotes carriage return\n  ---\n  duration_ms: 0.217614\n  type: 'test'\n  location: '/tmp/am-agy-20261024-114659/baseline/test/csv-cell.test.js:6:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'a\\rb' !== '\"a\\rb\"'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: '\"a\\rb\"'\n  actual: 'a\\rb'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-agy-20261024-114659/baseline/test/csv-cell.test.js:6:45)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.097109\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.092265\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.147575\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 5\n# fail 3\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 122.660795\n"
+      },
+      "verification": {
+        "exitCode": 1,
+        "output": "TAP version 13\n# /tmp/am-agy-20261024-114659/baseline/candidate/csv-cell.js:3\n#   if (/[,\"\n#       ^\n# SyntaxError: Invalid regular expression: missing /\n#     at wrapSafe (node:internal/modules/cjs/loader:1637:18)\n#     at Module._compile (node:internal/modules/cjs/loader:1679:20)\n#     at Module._extensions..js (node:internal/modules/cjs/loader:1838:10)\n#     at Module.load (node:internal/modules/cjs/loader:1441:32)\n#     at Module._load (node:internal/modules/cjs/loader:1263:12)\n#     at TracingChannel.traceSync (node:diagnostics_channel:328:14)\n#     at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n#     at Module.require (node:internal/modules/cjs/loader:1463:12)\n#     at require (node:internal/modules/helpers:147:16)\n#     at Object.<anonymous> (/tmp/am-agy-20261024-114659/baseline/candidate/test/csv-cell.test.js:1:83)\n# Node.js v22.22.1\n# Subtest: test/csv-cell.test.js\nnot ok 1 - test/csv-cell.test.js\n  ---\n  duration_ms: 180.003279\n  type: 'test'\n  location: '/tmp/am-agy-20261024-114659/baseline/candidate/test/csv-cell.test.js:1:1'\n  failureType: 'testCodeFailure'\n  exitCode: 1\n  signal: ~\n  error: 'test failed'\n  code: 'ERR_TEST_FAILURE'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 195.468674\n"
+      },
+      "integration": null,
+      "elapsedMs": 11459,
+      "outputHash": "1e8aa88e690b7acefb56ff5acb0391ced00f5feb49e649b971edf912a34a3a06"
+    },
+    {
+      "name": "structured",
+      "instructionBytes": 261,
+      "instructionSha256": "b025bc38deda6197980c04af07a3a8a6b8a19532b14e78d12d1b5ed0b6e640d8",
+      "sourceHash": "1e8aa88e690b7acefb56ff5acb0391ced00f5feb49e649b971edf912a34a3a06",
+      "testHash": "1980bb1b858d1a7a12470ec1e93c9ef0a83e1ff07b39c250781506d0a04a9fc1",
+      "base": "60f10e077ab8ac8854805911a4c9d6cea9cb19fb",
+      "handoff": "structured-handoff",
+      "handoffText": "### Task Handoff\n\n- **Task ID**: `T-COMM-CSV`\n- **Objective / Scope**: Fix CSV cell escaping for commas, embedded double quotes and CR/LF; preserve plain, empty, numeric and Unicode cells. Change only `csv-cell.js`; keep independent tests unchanged. Scope is strictly `csv-cell.js`.\n- **Conditions / Negations**:\n  - Condition: Retry only if task revision 2 and source hash still match.\n  - Requirement Revision: `2`\n  - Base Revision: `60f10e077ab8ac8854805911a4c9d6cea9cb19fb`\n  - Source SHA256: `1e8aa88e690b7acefb56ff5acb0391ced00f5feb49e649b971edf912a34a3a06`\n  - Negation: Do not change independent tests.\n- **Result**: Independent verification failed; not accepted.\n- **Error**: `escapes embedded double quotes`\n- **Evidence**: `run-1/test/csv-cell.test.js`\n- **Unknowns**: Actual model identity and billing remain unknown.\n- **Next Step**: Use the retained test diagnostic, then explicitly Run, Verify and Integrate.\n",
+      "exactFieldCoverage": {
+        "taskId": true,
+        "objective": false,
+        "scope": false,
+        "condition": true,
+        "negation": true,
+        "result": true,
+        "error": true,
+        "evidence": true,
+        "unknowns": true,
+        "next": true,
+        "sourceSha256": true,
+        "requirementRevision": true,
+        "baseRevision": true
+      },
+      "calls": [
+        "structured-repair-0"
+      ],
+      "requests": [],
+      "patch": {
+        "file": "csv-cell.js",
+        "content": "module.exports = value => {\n  const text = String(value);\n  if (/[,\"\\r\\n]/.test(text)) {\n    return '\"' + text.replace(/\"/g, '\"\"') + '\"';\n  }\n  return text;\n};\n",
+        "taskId": "T-COMM-CSV",
+        "requirementRevision": 2,
+        "sourceSha256": "1e8aa88e690b7acefb56ff5acb0391ced00f5feb49e649b971edf912a34a3a06",
+        "status": "reported",
+        "unknowns": [
+          "Actual model identity and billing remain unknown."
+        ],
+        "next": "Run, Verify and Integrate."
+      },
+      "guard": true,
+      "failed": {
+        "exitCode": 1,
+        "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.607312\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.215625\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nnot ok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 1.558138\n  type: 'test'\n  location: '/tmp/am-agy-20261024-114659/structured/test/csv-cell.test.js:4:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'say \"hi\"'\n    - '\"say \"\"hi\"\"\"'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: '\"say \"\"hi\"\"\"'\n  actual: 'say \"hi\"'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-agy-20261024-114659/structured/test/csv-cell.test.js:4:53)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: quotes line feed\nnot ok 4 - quotes line feed\n  ---\n  duration_ms: 0.284898\n  type: 'test'\n  location: '/tmp/am-agy-20261024-114659/structured/test/csv-cell.test.js:5:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'a\\nb' !== '\"a\\nb\"'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: |-\n    \"a\n    b\"\n  actual: |-\n    a\n    b\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-agy-20261024-114659/structured/test/csv-cell.test.js:5:39)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: quotes carriage return\nnot ok 5 - quotes carriage return\n  ---\n  duration_ms: 0.277611\n  type: 'test'\n  location: '/tmp/am-agy-20261024-114659/structured/test/csv-cell.test.js:6:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'a\\rb' !== '\"a\\rb\"'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: '\"a\\rb\"'\n  actual: 'a\\rb'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-agy-20261024-114659/structured/test/csv-cell.test.js:6:45)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.115017\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.10189\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.170002\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 5\n# fail 3\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 130.650551\n"
+      },
+      "verification": {
+        "exitCode": 0,
+        "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.868582\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.239243\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 0.120568\n  type: 'test'\n  ...\n# Subtest: quotes line feed\nok 4 - quotes line feed\n  ---\n  duration_ms: 0.111638\n  type: 'test'\n  ...\n# Subtest: quotes carriage return\nok 5 - quotes carriage return\n  ---\n  duration_ms: 0.106628\n  type: 'test'\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.099108\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.094201\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.092488\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 8\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 135.339786\n"
+      },
+      "integration": {
+        "exitCode": 0,
+        "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.383226\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.192451\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 0.104021\n  type: 'test'\n  ...\n# Subtest: quotes line feed\nok 4 - quotes line feed\n  ---\n  duration_ms: 0.095393\n  type: 'test'\n  ...\n# Subtest: quotes carriage return\nok 5 - quotes carriage return\n  ---\n  duration_ms: 0.094332\n  type: 'test'\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.123245\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.088311\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.083113\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 8\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 127.01029\n"
+      },
+      "elapsedMs": 20372,
+      "outputHash": "8155e6c17641c0371e49650ec7aa06e3a7b52ec945f6ff2de657c0c6e2d1810f"
+    },
+    {
+      "name": "caveman",
+      "instructionBytes": 4678,
+      "instructionSha256": "415d43518f2b1a9498c15a445d4657117b129ee5e81b19454ce348439cc6672b",
+      "sourceHash": "1e8aa88e690b7acefb56ff5acb0391ced00f5feb49e649b971edf912a34a3a06",
+      "testHash": "1980bb1b858d1a7a12470ec1e93c9ef0a83e1ff07b39c250781506d0a04a9fc1",
+      "base": "25063ccdbc63c0e2cc6994b52024f8d8713b15ff",
+      "handoff": "caveman-handoff",
+      "handoffText": "Task T-COMM-CSV repair handoff. Independent verification failed; not accepted.\n\nObjective: Fix CSV cell escaping for commas, embedded double quotes and CR/LF; preserve plain, empty, numeric and Unicode cells.\nScope: Only csv-cell.js. Do not change independent tests.\nBase revision: 25063ccdbc63c0e2cc6994b52024f8d8713b15ff\nRequirement revision: 2\nSource SHA-256: 1e8aa88e690b7acefb56ff5acb0391ced00f5feb49e649b971edf912a34a3a06\nRetry condition: Retry only if task revision 2 and source hash still match.\n\nFailure evidence: run-1/test/csv-cell.test.js\nError: \"escapes embedded double quotes\"\nUnknowns: Actual model identity and billing remain unknown.\n\nNext step: Use the retained test diagnostic, then explicitly Run, Verify and Integrate. Change only csv-cell.js. Keep independent tests unchanged.\n",
+      "exactFieldCoverage": {
+        "taskId": true,
+        "objective": false,
+        "scope": true,
+        "condition": true,
+        "negation": true,
+        "result": true,
+        "error": true,
+        "evidence": true,
+        "unknowns": true,
+        "next": true,
+        "sourceSha256": true,
+        "requirementRevision": true,
+        "baseRevision": true
+      },
+      "calls": [
+        "caveman-repair-0"
+      ],
+      "requests": [],
+      "patch": {
+        "file": "csv-cell.js",
+        "content": "module.exports = value => {\n  const text = String(value);\n  if (/[,\"\r\n]/.test(text)) {\n    return '\"' + text.replaceAll('\"', '\"\"') + '\"';\n  }\n  return text;\n};\n",
+        "taskId": "T-COMM-CSV",
+        "requirementRevision": 2,
+        "sourceSha256": "1e8aa88e690b7acefb56ff5acb0391ced00f5feb49e649b971edf912a34a3a06",
+        "status": "reported",
+        "unknowns": [
+          "Actual model identity and billing remain unknown."
+        ],
+        "next": "Run retained tests against updated csv-cell.js, verify all cases pass, then integrate."
+      },
+      "guard": true,
+      "failed": {
+        "exitCode": 1,
+        "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 2.158607\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.341039\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nnot ok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 2.622639\n  type: 'test'\n  location: '/tmp/am-agy-20261024-114659/caveman/test/csv-cell.test.js:4:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'say \"hi\"'\n    - '\"say \"\"hi\"\"\"'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: '\"say \"\"hi\"\"\"'\n  actual: 'say \"hi\"'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-agy-20261024-114659/caveman/test/csv-cell.test.js:4:53)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: quotes line feed\nnot ok 4 - quotes line feed\n  ---\n  duration_ms: 0.410347\n  type: 'test'\n  location: '/tmp/am-agy-20261024-114659/caveman/test/csv-cell.test.js:5:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'a\\nb' !== '\"a\\nb\"'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: |-\n    \"a\n    b\"\n  actual: |-\n    a\n    b\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-agy-20261024-114659/caveman/test/csv-cell.test.js:5:39)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: quotes carriage return\nnot ok 5 - quotes carriage return\n  ---\n  duration_ms: 0.362875\n  type: 'test'\n  location: '/tmp/am-agy-20261024-114659/caveman/test/csv-cell.test.js:6:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'a\\rb' !== '\"a\\rb\"'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: '\"a\\rb\"'\n  actual: 'a\\rb'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-agy-20261024-114659/caveman/test/csv-cell.test.js:6:45)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.123968\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.10291\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.167818\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 5\n# fail 3\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 151.260808\n"
+      },
+      "verification": {
+        "exitCode": 1,
+        "output": "TAP version 13\n# /tmp/am-agy-20261024-114659/caveman/candidate/csv-cell.js:3\n#   if (/[,\"\n#       ^\n# SyntaxError: Invalid regular expression: missing /\n#     at wrapSafe (node:internal/modules/cjs/loader:1637:18)\n#     at Module._compile (node:internal/modules/cjs/loader:1679:20)\n#     at Module._extensions..js (node:internal/modules/cjs/loader:1838:10)\n#     at Module.load (node:internal/modules/cjs/loader:1441:32)\n#     at Module._load (node:internal/modules/cjs/loader:1263:12)\n#     at TracingChannel.traceSync (node:diagnostics_channel:328:14)\n#     at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n#     at Module.require (node:internal/modules/cjs/loader:1463:12)\n#     at require (node:internal/modules/helpers:147:16)\n#     at Object.<anonymous> (/tmp/am-agy-20261024-114659/caveman/candidate/test/csv-cell.test.js:1:83)\n# Node.js v22.22.1\n# Subtest: test/csv-cell.test.js\nnot ok 1 - test/csv-cell.test.js\n  ---\n  duration_ms: 93.850605\n  type: 'test'\n  location: '/tmp/am-agy-20261024-114659/caveman/candidate/test/csv-cell.test.js:1:1'\n  failureType: 'testCodeFailure'\n  exitCode: 1\n  signal: ~\n  error: 'test failed'\n  code: 'ERR_TEST_FAILURE'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 102.301897\n"
+      },
+      "integration": null,
+      "elapsedMs": 17870,
+      "outputHash": "1e8aa88e690b7acefb56ff5acb0391ced00f5feb49e649b971edf912a34a3a06"
+    }
+  ],
+  "endedAt": "2026-10-24T04:55:35.443Z"
+}

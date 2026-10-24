@@ -71,7 +71,7 @@ node tools/try-workflow.js > /tmp/agent-meeting-result.json
 
 Requires Node >=18, Linux and working `/usr/bin/bwrap`. No install/network service or client setup. It fails closed without the sandbox. On the historical pinned preview, use `node --test test/consistency.test.js` instead; that older test does not emit the new comparison report.
 
-Input: `sum.js` subtracts; `test/sum.test.js` asserts `sum(2,3) === 5`. Acceptance shared with direct: fix the result, change only `sum.js`, preserve test bytes. Both deterministic arms receive the same known patch and access to Node/test, without restricting a real baseline CLI's tools. This is a machinery comparison; the strong **model** baseline remains blocked/unrun in this session, not replaced by this fixture.
+Input: `sum.js` subtracts; `test/sum.test.js` asserts `sum(2,3) === 5`. Acceptance shared with direct: fix the result, change only `sum.js`, preserve test bytes. Both deterministic arms receive the same known patch and access to Node/test, without restricting a real baseline CLI's tools. This is a machinery comparison. No strong **model** baseline was completed for that recorded fixture session; this fixture does not replace one. The later local direct-agy check is separate and remains an unpublished development result.
 
 | Step | Observable result |
 |---|---|
@@ -121,6 +121,10 @@ The earlier ENDED failure left only about 24 px of transcript with three long ta
 These checks establish the recorded behavior, not user acceptance of the overall design, model quality, annotation accuracy or real remote-worker reliability. The demo does not show managed execution or integration. Their scope and limits remain in [implementation status](IMPLEMENTATION-STATUS.vi.md).
 
 ## Managed execution boundaries
+
+**Code-writing adapter: Claude Code.** The agy adapter rejects managed writing. The unpublished local development check on 2026-10-24 exercised direct agy native file tools, retained failed candidates and PM corrections, and found that product runs remained blocked by missing machine model identity. Direct CLI capability is not native managed integration; no net coordination or billing saving was demonstrated. [English results and reproducible evidence](evidence/value-journey/README.md). This does not change the source or meaning of the older discussion media and deterministic fixture above.
+
+In the current local source, every agy model invocation through the runtime, including read-only tasks and probes, requires Linux/bubblewrap. A real fixture showed the CLI plan flags alone still allowed editing; the mandatory filesystem boundary prevented the same edit. This is stricter than the historical pinned preview. It adds no agy writing or task-skill MCP support. [Runtime/security details](../SECURITY.md).
 
 The code fixture is a developer/API check, not an interactive browser tutorial. Managed execution requires Linux and working `/usr/bin/bwrap`; missing isolation fails closed. It supports guarded single-file integration, independent Node tests, cancellation and rollback conflict checks. Write isolation does not isolate host reads or network. The web writer deadline is 120 seconds and each Node check is limited to 30 seconds; cancellation/escalation can add two seconds.
 

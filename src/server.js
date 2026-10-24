@@ -565,7 +565,22 @@ function createApp(cfg = {}) {
           if (/^work\/runs\/[\w-]+\/(artifact|handoff)$/.test(action) && req.method === 'GET') {
             const parts = action.split('/'), state = work.read(), run = state.runs.find(r => r.id === parts[2]), task = run && state.tasks.find(t => t.id === run.taskId);
             if (!run) return json(404, { error: 'Run not found' });
-            if (parts[3] === 'handoff') return json(200, { schema: 'agent-meeting/handoff@1', task, runId: run.id, status: run.status, configRevision: run.configRevision, baseRevision: run.baseRevision, actualModel: run.reportedModel, runtime: run.adapter, changes: run.changes, verification: run.evidence, integrationVerification: run.integrationEvidence || [], usage: run.usage, costUsd: run.costUsd, limitations: ['Single-file automatic integration', 'Filesystem write isolation only', ...(run.status !== 'integrated' ? ['Not accepted as completed'] : [])] });
+            if (parts[3] === 'handoff') {
+              // Evidence belongs to the requirements captured at dispatch, even
+              // after the live task has been edited. Never reconstruct a legacy
+              // snapshot from present-day criteria.
+              const executedTask = run.requirementSnapshot || null;
+              const requirementRevision = run.requirementRevision ?? null;
+              const currentRequirementRevision = task?.requirementRevision ?? null;
+              const requirementsCurrent = executedTask && requirementRevision !== null && currentRequirementRevision !== null
+                ? requirementRevision === currentRequirementRevision : null;
+              return json(200, { schema: 'agent-meeting/handoff@1', task: executedTask, requirementRevision, currentRequirementRevision, requirementsCurrent,
+                runId: run.id, status: run.status, configRevision: run.configRevision, baseRevision: run.baseRevision, actualModel: run.reportedModel, runtime: run.adapter, changes: run.changes, verification: run.evidence, integrationVerification: run.integrationEvidence || [], usage: run.usage, costUsd: run.costUsd, ...(run.skillEvidence ? { skillEvidence: run.skillEvidence } : {}),
+                limitations: ['Single-file automatic integration', 'Filesystem write isolation only',
+                  ...(!executedTask ? ['Historical requirement snapshot is unavailable; current criteria are not substituted'] : []),
+                  ...(requirementsCurrent === false ? ['Historical run requirements differ from the current task; this evidence does not accept its current requirements'] : []),
+                  ...(run.skillEvidence ? ['Skill supply is observed; semantic application and model tool use are not established by supply metadata'] : []), ...(run.status !== 'integrated' ? ['Not accepted as completed'] : [])] });
+            }
             const file = u.searchParams.get('path'), change = run.changes.find(c => c.file === file);
             if (!change?.after) return json(404, { error: 'Changed file bytes are unavailable' });
             const bytes = fs.readFileSync(safeFile(run.workspace, file));
@@ -580,6 +595,7 @@ function createApp(cfg = {}) {
             const task = work.read().tasks.find(t => t.id === body.taskId);
             if (!task || task.purpose !== 'execute' || task.topology === 'local' || task.management === 'invited') return json(409, { error: 'A remote managed execution task is required' });
             work.assertCurrent(task.id);
+            if (task.skillPolicy) return json(409, { code: 'SKILL_REMOTE_UNSUPPORTED', error: 'Task skill supply and lookup are supported only by local managed runs; remote execution cannot apply this policy' });
             const config = configStore.read(), profile = config.profiles.find(p => p.id === body.profileId), model = profile && config.models.find(x => x.id === profile.modelId);
             if (!profile?.enabled || !model?.enabled || model.verification !== 'verified') return json(409, { error: 'Enable and verify the selected model/profile first' });
             const host = remoteFor().read().hosts.find(h => h.id === body.hostId);

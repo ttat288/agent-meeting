@@ -1,0 +1,11 @@
+{
+  "modelSourceSha256": "7ae3760a4c62bd121443ac822b84735642b40cd66dda06e9626b0951d30ac576",
+  "correctedSourceSha256": "a123ac3a89eaacd57bb0358f6748ba022f589dd35c195357497fd1ec5409c829",
+  "file": "src/server.js",
+  "find": "run.requirementRevision ?? historicalTask?.requirementRevision ?? null",
+  "replace": "run.requirementRevision ?? null",
+  "reason": "The explicit contract leaves a missing run revision unknown; native repair inferred it from the snapshot. A post-hoc independent edge test reproduced this omission.",
+  "operatorManualEdits": 1,
+  "modelCallsForCorrection": 0,
+  "sourceIntegratedByProduct": false
+}

@@ -1,0 +1,149 @@
+TAP version 13
+# Subtest: handoff retains the executed requirements after reconfiguration and restart
+not ok 1 - handoff retains the executed requirements after reconfiguration and restart
+  ---
+  duration_ms: 649.258161
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/work-handoff.test.js:56:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Old evidence must not be attached to new acceptance
+    + actual - expected
+    
+      [
+    +   'A new requirement has never been verified'
+    -   'Review the historical reference'
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'Review the historical reference'
+  actual:
+    0: 'A new requirement has never been verified'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/work-handoff.test.js:63:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: current and failed handoffs keep run identity and do not imply completion
+not ok 2 - current and failed handoffs keep run identity and do not imply completion
+  ---
+  duration_ms: 54.628452
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/work-handoff.test.js:75:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + undefined
+    - true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/work-handoff.test.js:78:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: legacy run without a requirement snapshot never borrows present-day criteria
+not ok 3 - legacy run without a requirement snapshot never borrows present-day criteria
+  ---
+  duration_ms: 63.443797
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/work-handoff.test.js:88:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + {
+    +   acceptance: [
+    +     'Unrelated later criteria'
+    +   ],
+    +   createdAt: '2026-10-24T06:05:02.093Z',
+    +   dependencies: [],
+    +   facts: [
+    +     'Do not claim later acceptance has passed'
+    +   ],
+    +   goal: 'Review evidence against its original reference',
+    +   id: '9576fb33-a63a-4d81-bf7f-2b2e23a6cc05',
+    +   management: 'managed',
+    +   purpose: 'execute',
+    +   requirementRevision: 2,
+    +   sources: [
+    +     'reference.md revision one'
+    +   ],
+    +   status: 'ready',
+    +   testFiles: [
+    +     'test/reference.test.js'
+    +   ],
+    +   topology: 'local',
+    +   unknowns: [],
+    +   workspace: '/tmp/am-handoff-history-Ch7eU4/source',
+    +   writePaths: []
+    + }
+    - null
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: ~
+  actual:
+    goal: 'Review evidence against its original reference'
+    purpose: 'execute'
+    management: 'managed'
+    workspace: '/tmp/am-handoff-history-Ch7eU4/source'
+    acceptance:
+      0: 'Unrelated later criteria'
+    sources:
+      0: 'reference.md revision one'
+    facts:
+      0: 'Do not claim later acceptance has passed'
+    writePaths:
+    testFiles:
+      0: 'test/reference.test.js'
+    topology: 'local'
+    dependencies:
+    unknowns:
+    id: '9576fb33-a63a-4d81-bf7f-2b2e23a6cc05'
+    requirementRevision: 2
+    status: 'ready'
+    createdAt: '2026-10-24T06:05:02.093Z'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/work-handoff.test.js:93:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: a historical snapshot is exportable when the current task is unavailable
+not ok 4 - a historical snapshot is exportable when the current task is unavailable
+  ---
+  duration_ms: 59.332711
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/work-handoff.test.js:99:1'
+  failureType: 'testCodeFailure'
+  error: "Cannot read properties of undefined (reading 'id')"
+  code: 'ERR_TEST_FAILURE'
+  name: 'TypeError'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/work-handoff.test.js:103:29)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 0
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 967.561738

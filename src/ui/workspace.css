@@ -72,6 +72,7 @@
 .ws-pill[data-status=failed],.ws-pill[data-status=stale],.ws-pill[data-status=interrupted] { background:var(--warn-soft); border-color:var(--warn); color:var(--ink); }
 .ws-error { border:1px solid var(--bad); background:var(--bad-soft); padding:var(--space-3); margin:0 0 var(--space-4); overflow-wrap:anywhere; }
 .ws-warning { border-left:3px solid var(--warn); background:var(--warn-soft); padding:var(--space-3); margin:var(--space-3) 0; }
+.ws-error .ws-actions .btn { white-space:normal; text-align:center; }
 .ws-error:focus { outline:2px solid var(--bad); outline-offset:3px; }
 .ws-models { display:grid; grid-template-columns:220px minmax(0,1fr); gap:var(--space-4); }
 .ws-model-list { display:grid; align-content:start; }

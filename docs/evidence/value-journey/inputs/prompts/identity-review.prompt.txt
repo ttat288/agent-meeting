@@ -1,0 +1,128 @@
+Task VALUE-IDENTITY-UI-REVIEW. Independent read-only review. DO NOT call tools, commands, RunCommand, task_boundary or file operations. All relevant source follows; respond directly with substantive text and only reproducible findings. Observed real native agy file edit passed independent tests but managed probe available=true/quotaAvailable=true/reportedModel=unknown/modelVerified=false. Product Run correctly blocks without machine identity. Old task recovery text told user to check CLI access; new message must distinguish identity unknown vs different identity, tell user to inspect model reporting/mapping before probing again, retain explicit paid-check warning and no automatic Run/retry/probe/profile change. Failure/unavailable/quota false/stale config remain generic or separate. Check branching, false-success/focus/VI-EN/security. No guard change, settings/OAuth/provider change or new dependency. No invented feature request. Timeout180s retry0.
+  function errorBox(container, error, fieldId, takeFocus = true) {
+    container.querySelector('.ws-access-recovery')?.remove();
+    container.querySelector('.ws-error')?.remove();
+    const box = node('div', { class: 'ws-error', role: 'alert', tabindex: '-1' }, node('strong', {}, t('Chưa thể hoàn thành thao tác', 'Unable to complete this action')), node('p', {}, friendlyError(error.message)));
+    if (fieldId) { const input = $(fieldId); for (let parent = input?.parentElement; parent; parent = parent.parentElement) if (parent.tagName === 'DETAILS') parent.open = true; input?.setAttribute('aria-invalid', 'true'); box.append(button(t('Kiểm tra trường nhập', 'Check this field'), () => input?.focus())); }
+    if (error.configConflict) box.append(button(t('Tải lại cấu hình', 'Reload configuration'), load));
+    if (error.code === 'MODEL_ACCESS_REQUIRED' && error.executionProfile) {
+      box.className = 'ws-error ws-access-recovery';
+      const selected = error.executionProfile;
+      box.append(node('p', {}, t('Hồ sơ: ', 'Profile: ') + selected.label));
+      box.append(node('p', {}, t('Kiểm tra gọi CLI thật và có thể tốn phí. Không sửa yêu cầu hoặc tự chạy lại task.', 'The check invokes the CLI and may incur cost. It does not change requirements or rerun the task.')));
+      const probe = button(t('Kiểm tra truy cập hồ sơ đã chọn (gọi CLI thật)', 'Probe selected profile access (invokes the CLI)'), () => action(probe, container, async () => {
+        const active = document.activeElement;
+        probe.textContent = t('Đang kiểm tra truy cập model…', 'Probing model access…');
+        const observed = await api('/runtime/probe', { profileId: selected.id, expectedConfigRevision: selected.configRevision });
+        if (observed.stale) throw new Error(t('Cấu hình đã đổi. Làm mới rồi kiểm tra hồ sơ hiện tại; task chưa chạy lại.', 'Configuration changed. Refresh and review the current profile; the task has not rerun.'));
+        if (observed.available !== true || observed.modelVerified !== true || observed.quotaAvailable !== true) {
+          let message = t('Chưa xác nhận được truy cập model. Mở Quản trị để xem quan sát và kiểm tra CLI/quyền trước khi thử lại.', 'Model access could not be confirmed. Open Administration to inspect the observation and check CLI access before retrying.');
+          if (observed.available === true && observed.quotaAvailable === true && observed.modelVerified !== true) {
+            const mismatch = typeof observed.reportedModel === 'string' && observed.reportedModel.trim() && observed.reportedModel !== 'unknown';
+            message = t('Chưa xác nhận được truy cập model. ', 'Model access could not be confirmed. ') + (mismatch
+              ? t('CLI đã phản hồi nhưng báo model khác. Kiểm tra ánh xạ hồ sơ trong Quản trị trước khi kiểm tra lại; chưa có phiên chạy mới.', 'CLI responded, but reported a different model. Check the profile mapping in Administration before probing again; no new run has started.')
+              : t('CLI đã phản hồi nhưng không báo model thực. Xem thông tin model của runtime trong Quản trị trước khi kiểm tra lại; chưa có phiên chạy mới.', 'CLI responded, but did not report the actual model. Inspect runtime model reporting in Administration before probing again; no new run has started.'));
+          }
+          const failed = new Error(message);
+          failed.code = 'MODEL_ACCESS_REQUIRED'; failed.executionProfile = selected; throw failed;
+        }
+        if (!box.isConnected) return;
+        box.className = 'ws-warning ws-access-recovery'; box.setAttribute('role', 'status');
+        box.replaceChildren(node('p', {}, t('Đã xác nhận truy cập cho ', 'Access confirmed for ') + selected.label + '. ' + t('Kiểm tra lại task và bấm Chạy khi sẵn sàng; chưa có phiên chạy mới.', 'Review the task and press Run when ready; no new run has started.')));
+        if (!container.closest('[hidden]') && (document.activeElement === active || document.activeElement === document.body)) box.focus();
+      }, { preserveFocus: true }));
+      box.append(node('div', { class: 'ws-actions' }, probe, node('a', { class: 'btn ghost', href: meetingUrl + '/admin?lang=' + lang + '&section=runtime&view=execute' }, t('Xem trong Quản trị', 'Inspect in Administration'))));
+    }
+
+    container.prepend(box); if (takeFocus) box.focus();
+  }
+  async function action(btn, container, fn, { preserveFocus = false } = {}) {
+    btn.disabled = true;
+    container.setAttribute('aria-busy', 'true');
+    renderSyncStatus();
+    try { await fn(); } catch (e) { if (container.isConnected && btn.isConnected && !btn.closest('[hidden]')) errorBox(container, e, undefined, !preserveFocus || document.activeElement === btn || document.activeElement === document.body); else notify(t('Chưa nhận được kết quả thao tác trước: ', 'Previous action result unavailable: ') + friendlyError(e.message)); }
+    finally { btn.disabled = false; container.removeAttribute('aria-busy'); renderSyncStatus(); }
+  }
+
+TESTS
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+const source=fs.readFileSync(path.join(__dirname,'../src/ui/workspace.js'),'utf8');
+function fixture(){
+ const calls=[];let resolve,reject;
+ const document={body:{},activeElement:null};document.activeElement=document.body;
+ class Element{
+  constructor(tag,attrs={},...children){this.tag=tag;this.attrs=attrs;this.className=attrs.class||'';this.children=children.flat();this.isConnected=true;this.disabled=false;}
+  append(...children){this.children.push(...children);}
+  prepend(child){this.children.unshift(child);child.parent=this;}
+  querySelector(selector){const cls=selector.slice(1);for(const c of this.children){if(c&&typeof c==='object'){if(c.className?.split(' ').includes(cls))return c;const nested=c.querySelector?.(selector);if(nested)return nested;}}return null;}
+  setAttribute(name,value){this.attrs[name]=value;}
+  removeAttribute(name){delete this.attrs[name];}
+  replaceChildren(...children){this.children=children;}
+  remove(){this.isConnected=false;if(this.parent)this.parent.children=this.parent.children.filter(c=>c!==this);}
+  focus(){document.activeElement=this;}
+  closest(){return this.hidden?{}:null;}
+ }
+ const node=(tag,attrs,...children)=>new Element(tag,attrs,...children),buttons=[];
+ const context=vm.createContext({document,node,button:(label,click)=>{const b=node('button',{},label);b.click=click;buttons.push(b);return b;},t:(vi,en)=>en,lang:'en',meetingUrl:'/m/fixture_host',friendlyError:text=>text,renderSyncStatus:()=>{},load:()=>{},notify:()=>{},$:()=>null,
+  api:(endpoint,body)=>{calls.push({endpoint,body});return new Promise((yes,no)=>{resolve=yes;reject=no;});}});
+ const start=source.indexOf('  function errorBox('),end=source.indexOf('  function checkedAction(',start);assert(start>=0&&end>start);vm.runInContext(source.slice(start,end),context);
+ const card=node('article'),selected={id:'profile-a',label:'Selected fixture profile',configRevision:7};
+ const fail=(code='MODEL_ACCESS_REQUIRED')=>context.errorBox(card,{message:'Blocked',code,executionProfile:selected});
+ const text=e=>typeof e==='string'?e:(e?.children||[]).map(text).join(' ');
+ return{calls,context,document,card,buttons,fail,selected,text,resolve:value=>resolve(value),reject:error=>reject(error)};
+}
+const confirmed={available:true,modelVerified:true,quotaAvailable:true};
+test('access error offers an explicit paid CLI check and admin return without probing on render',()=>{
+ const f=fixture();f.fail();assert.equal(f.calls.length,0);assert.equal(f.buttons.length,1);assert.match(f.text(f.card),/may incur cost/);assert.match(f.text(f.card),/Selected fixture profile/);
+ const link=f.card.children[0].children.at(-1).children[1];assert.equal(link.attrs.href,'/m/fixture_host/admin?lang=en&section=runtime&view=execute');assert.equal(f.card.children[0].attrs.role,'alert');
+});
+test('successful explicit probe keeps the captured config/profile and never reruns or reloads task data',async()=>{
+ const f=fixture();f.fail();const probe=f.buttons[0],pending=probe.click();assert.equal(probe.disabled,true);assert.equal(probe.textContent,'Probing model access…');assert.equal(f.calls.length,1);assert.equal(f.calls[0].endpoint,'/runtime/probe');assert.equal(f.calls[0].body.profileId,'profile-a');assert.equal(f.calls[0].body.expectedConfigRevision,7);
+ f.resolve(confirmed);await pending;assert.equal(f.calls.length,1);assert.match(f.text(f.card),/no new run has started/);assert.equal(f.card.children[0].attrs.role,'status');assert.equal(probe.disabled,false);
+});
+for(const observed of [{...confirmed,modelVerified:false},{...confirmed,quotaAvailable:false},{...confirmed,available:false}])test('unsuccessful probe retains recovery and cannot announce confirmed access: '+JSON.stringify(observed),async()=>{
+ const f=fixture();f.fail();const pending=f.buttons[0].click();f.resolve(observed);await pending;
+ assert.equal(f.calls.length,1);assert.equal(f.card.children[0].attrs.role,'alert');assert.match(f.text(f.card),/could not be confirmed/);assert.doesNotMatch(f.text(f.card),/Access confirmed/);assert.match(f.text(f.card),/Probe selected profile/);
+});
+test('a late probe for an old configuration cannot announce success or rerun',async()=>{
+ const f=fixture();f.fail();const pending=f.buttons[0].click();f.resolve({...confirmed,stale:true});await pending;assert.equal(f.calls.length,1);assert.match(f.text(f.card),/Configuration changed/);assert.doesNotMatch(f.text(f.card),/Access confirmed/);
+});
+for(const changed of ['outside-focus','hidden-view','detached'])test('probe completion preserves newer interaction: '+changed,async()=>{
+ const f=fixture();f.fail();const box=f.card.children[0],pending=f.buttons[0].click(),outside={};
+ if(changed==='outside-focus')f.document.activeElement=outside;
+ if(changed==='hidden-view'){f.card.hidden=true;f.document.activeElement=outside;}
+ if(changed==='detached'){box.isConnected=false;f.document.activeElement=outside;}
+ f.resolve(confirmed);await pending;assert.equal(f.document.activeElement,outside);assert.equal(f.calls.length,1);
+});
+test('routing and revision errors do not offer a model probe',()=>{
+ for(const code of ['ROUTING_REJECTED','CONFIG_CONFLICT',null]){const f=fixture();f.fail(code);assert.equal(f.buttons.length,0);assert.equal(f.calls.length,0);}
+});
+
+test('a failed late probe does not move focus away from a newer input',async()=>{
+ const f=fixture();f.fail();const pending=f.buttons[0].click(),input={};f.document.activeElement=input;f.resolve({...confirmed,available:false});await pending;
+ assert.equal(f.document.activeElement,input);assert.match(f.text(f.card),/could not be confirmed/);assert.equal(f.calls.length,1);
+});
+test('a rejected probe request preserves newer input focus and cannot rerun',async()=>{
+ const f=fixture();f.fail();const pending=f.buttons[0].click(),input={};f.document.activeElement=input;f.reject(new Error('Controlled network failure'));await pending;
+ assert.equal(f.document.activeElement,input);assert.match(f.text(f.card),/Controlled network failure/);assert.equal(f.calls.length,1);
+});
+
+test('a repeated expiry replaces the previous access confirmation instead of showing contradictory states',async()=>{
+ const f=fixture();f.fail();const pending=f.buttons[0].click();f.resolve(confirmed);await pending;assert.match(f.text(f.card),/Access confirmed/);
+ f.fail();assert.equal(f.card.children.length,1);assert.equal(f.card.children[0].attrs.role,'alert');assert.doesNotMatch(f.text(f.card),/Access confirmed/);
+});
+
+test('a responding CLI without machine identity points to model reporting instead of CLI access repair', async () => {
+ const f=fixture();f.fail();const pending=f.buttons[0].click();f.resolve({...confirmed,modelVerified:false,reportedModel:'unknown'});await pending;
+ assert.match(f.text(f.card),/CLI responded, but did not report the actual model/);
+ assert.match(f.text(f.card),/before probing again/);assert.match(f.text(f.card),/no new run has started/);
+ assert.doesNotMatch(f.text(f.card),/check CLI access/);assert.equal(f.card.children[0].attrs.role,'alert');assert.equal(f.calls.length,1);
+});
+
+test('a responding CLI with another identity points to the profile mapping', async () => {
+ const f=fixture();f.fail();const pending=f.buttons[0].click();f.resolve({...confirmed,modelVerified:false,reportedModel:'different-machine-model'});await pending;
+ assert.match(f.text(f.card),/CLI responded, but reported a different model/);
+ assert.match(f.text(f.card),/profile mapping/);assert.doesNotMatch(f.text(f.card),/did not report the actual model/);
+ assert.equal(f.card.children[0].attrs.role,'alert');assert.equal(f.calls.length,1);
+});

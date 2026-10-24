@@ -1,0 +1,274 @@
+{
+  "schema": "agent-meeting/access-recovery@1",
+  "recordedAt": "2026-10-23T13:33:46.566Z",
+  "fixture": true,
+  "nativeModelCalls": 0,
+  "baseline": false,
+  "node": "v22.22.1",
+  "goal": "Fix CSV cell escaping for commas, embedded double quotes and CR/LF; preserve plain, empty, numeric and Unicode cells. Change only csv-cell.js; keep independent tests unchanged.",
+  "acceptance": [
+    "keeps plain cells",
+    "quotes delimiter",
+    "escapes embedded double quotes",
+    "quotes line feed",
+    "quotes carriage return",
+    "keeps empty cells",
+    "keeps unicode",
+    "converts zero"
+  ],
+  "http": [
+    {
+      "endpoint": "start",
+      "status": 200,
+      "elapsedMs": 64.77604900000006,
+      "requestBodyBytes": 202,
+      "responseBodyBytes": 11
+    },
+    {
+      "endpoint": "say",
+      "status": 200,
+      "elapsedMs": 5.472854999999981,
+      "requestBodyBytes": 124,
+      "responseBodyBytes": 11
+    },
+    {
+      "endpoint": "work",
+      "status": 200,
+      "elapsedMs": 6.5096460000002025,
+      "requestBodyBytes": 0,
+      "responseBodyBytes": 2555
+    },
+    {
+      "endpoint": "work/tasks/meeting-2a865749c979471e505efd0f639f1842/configure",
+      "status": 200,
+      "elapsedMs": 12.353612000000112,
+      "requestBodyBytes": 365,
+      "responseBodyBytes": 1317
+    },
+    {
+      "endpoint": "runtime/probe",
+      "status": 200,
+      "elapsedMs": 8.619041999999808,
+      "requestBodyBytes": 54,
+      "responseBodyBytes": 324
+    },
+    {
+      "endpoint": "work/tasks/meeting-2a865749c979471e505efd0f639f1842/run",
+      "status": 202,
+      "elapsedMs": 135.45215099999996,
+      "requestBodyBytes": 86,
+      "responseBodyBytes": 20486
+    },
+    {
+      "endpoint": "work",
+      "status": 200,
+      "elapsedMs": 4.697794000000158,
+      "requestBodyBytes": 0,
+      "responseBodyBytes": 26652
+    },
+    {
+      "endpoint": "work/runs/f568d421-b794-4354-a249-08fd4bb7612a/verify",
+      "status": 200,
+      "elapsedMs": 303.572318,
+      "requestBodyBytes": 2,
+      "responseBodyBytes": 25312
+    },
+    {
+      "endpoint": "work/tasks/meeting-2a865749c979471e505efd0f639f1842/run",
+      "status": 409,
+      "elapsedMs": 15.55993999999987,
+      "requestBodyBytes": 86,
+      "responseBodyBytes": 137
+    },
+    {
+      "endpoint": "runtime/probe",
+      "status": 200,
+      "elapsedMs": 8.146741999999904,
+      "requestBodyBytes": 54,
+      "responseBodyBytes": 373
+    },
+    {
+      "endpoint": "work/tasks/meeting-2a865749c979471e505efd0f639f1842/run",
+      "status": 409,
+      "elapsedMs": 13.783866999999873,
+      "requestBodyBytes": 86,
+      "responseBodyBytes": 137
+    },
+    {
+      "endpoint": "work",
+      "status": 200,
+      "elapsedMs": 3.420269999999846,
+      "requestBodyBytes": 0,
+      "responseBodyBytes": 31218
+    },
+    {
+      "endpoint": "work",
+      "status": 200,
+      "elapsedMs": 8.484946000000036,
+      "requestBodyBytes": 0,
+      "responseBodyBytes": 31218
+    },
+    {
+      "endpoint": "runtime/probe",
+      "status": 200,
+      "elapsedMs": 8.241352000000006,
+      "requestBodyBytes": 54,
+      "responseBodyBytes": 324
+    },
+    {
+      "endpoint": "work",
+      "status": 200,
+      "elapsedMs": 4.607033000000001,
+      "requestBodyBytes": 0,
+      "responseBodyBytes": 31169
+    },
+    {
+      "endpoint": "work/tasks/meeting-2a865749c979471e505efd0f639f1842/run",
+      "status": 202,
+      "elapsedMs": 135.79320399999983,
+      "requestBodyBytes": 86,
+      "responseBodyBytes": 20707
+    },
+    {
+      "endpoint": "work",
+      "status": 200,
+      "elapsedMs": 5.453721999999971,
+      "requestBodyBytes": 0,
+      "responseBodyBytes": 52780
+    },
+    {
+      "endpoint": "work",
+      "status": 200,
+      "elapsedMs": 6.236748000000034,
+      "requestBodyBytes": 0,
+      "responseBodyBytes": 52780
+    },
+    {
+      "endpoint": "work/runs/5a24d848-0617-42c2-9b6f-7be8b090d74e/verify",
+      "status": 200,
+      "elapsedMs": 283.60372299999995,
+      "requestBodyBytes": 2,
+      "responseBodyBytes": 22521
+    },
+    {
+      "endpoint": "work/runs/5a24d848-0617-42c2-9b6f-7be8b090d74e/integrate",
+      "status": 200,
+      "elapsedMs": 299.092635,
+      "requestBodyBytes": 2,
+      "responseBodyBytes": 23848
+    },
+    {
+      "endpoint": "work",
+      "status": 200,
+      "elapsedMs": 7.024459000000206,
+      "requestBodyBytes": 0,
+      "responseBodyBytes": 55611
+    }
+  ],
+  "calls": [
+    {
+      "kind": "probe",
+      "at": "2026-10-23T13:33:47.677Z"
+    },
+    {
+      "kind": "task",
+      "at": "2026-10-23T13:33:47.705Z"
+    },
+    {
+      "kind": "probe",
+      "at": "2026-10-23T13:33:48.148Z"
+    },
+    {
+      "kind": "probe",
+      "at": "2026-10-23T13:33:48.186Z"
+    },
+    {
+      "kind": "task",
+      "at": "2026-10-23T13:33:48.218Z"
+    }
+  ],
+  "sourceHashes": {
+    "src/work.js": "54e8f93cc0fdbf4152b523823c8ae49ab405474bd490f4f76afaddd27bd5d3d3",
+    "src/server.js": "fb021ebf152ab76bced7420f30c1bdaa4b90b014a77c222421d0631662a77652",
+    "src/ui/workspace.js": "d593cabb40bc99a08d497949b4bde1df3241b1cfe33927ec4f4005a4a699e2c2",
+    "src/ui/workspace.css": "6a292a58fc075832646807817458ca656e38b7759fc4e2a4317c987246cf6bc9"
+  },
+  "modelTokens": null,
+  "billedCostUsd": null,
+  "humanTimeMs": null,
+  "inputHashes": {
+    "csv-cell.js": "9a38503b21f51c83e9e4fcf6eaf1bfad764d7304a3d466deea4a3b48d4e25e38",
+    "test/csv-cell.test.js": "1980bb1b858d1a7a12470ec1e93c9ef0a83e1ff07b39c250781506d0a04a9fc1"
+  },
+  "direct": {
+    "elapsedMs": 950.2710969999998,
+    "processes": 4,
+    "attempts": 2,
+    "manualDiagnosticTransfers": 0,
+    "readinessProbes": 0,
+    "outputHashes": {
+      "csv-cell.js": "882c54cb9a0664e132a9f9ddbbd462b17640217367359e52fad153625bcb39c0",
+      "test/csv-cell.test.js": "1980bb1b858d1a7a12470ec1e93c9ef0a83e1ff07b39c250781506d0a04a9fc1"
+    },
+    "finalCheck": {
+      "exitCode": 0,
+      "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 2.10858\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.315369\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 0.149034\n  type: 'test'\n  ...\n# Subtest: quotes line feed\nok 4 - quotes line feed\n  ---\n  duration_ms: 0.122681\n  type: 'test'\n  ...\n# Subtest: quotes carriage return\nok 5 - quotes carriage return\n  ---\n  duration_ms: 0.106605\n  type: 'test'\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.102143\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.110491\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.103213\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 8\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 150.567938\n"
+    }
+  },
+  "blocked": {
+    "error": "Model access is unverified, unavailable or expired; probe the selected profile before retrying",
+    "code": "MODEL_ACCESS_REQUIRED"
+  },
+  "managed": {
+    "elapsedMs": 1366.2770200000002,
+    "status": "integrated",
+    "taskId": "meeting-2a865749c979471e505efd0f639f1842",
+    "requirementRevision": 2,
+    "sourceMessageIndex": 1,
+    "firstRunId": "f568d421-b794-4354-a249-08fd4bb7612a",
+    "retryRunId": "5a24d848-0617-42c2-9b6f-7be8b090d74e",
+    "retryContext": {
+      "fromRunId": "f568d421-b794-4354-a249-08fd4bb7612a",
+      "checkCount": 1,
+      "bytes": 1509,
+      "sha256": "214c091978fbc237e9bedc01874e391c0fca7437537f873417a0e046de3475b7",
+      "truncated": true,
+      "sensitiveOutputOmitted": false
+    },
+    "attempts": 2,
+    "probes": 3,
+    "manualDiagnosticTransfers": 0,
+    "configurationsAfterInitialSave": 0,
+    "restartPreserved": true,
+    "outputHashes": {
+      "csv-cell.js": "882c54cb9a0664e132a9f9ddbbd462b17640217367359e52fad153625bcb39c0",
+      "test/csv-cell.test.js": "1980bb1b858d1a7a12470ec1e93c9ef0a83e1ff07b39c250781506d0a04a9fc1"
+    },
+    "integratedCheck": {
+      "command": [
+        "/usr/bin/node",
+        "--max-old-space-size=256",
+        "--test",
+        "--test-timeout=20000",
+        "test/csv-cell.test.js"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "cancelled": false,
+      "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.579326\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.23859\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 0.116997\n  type: 'test'\n  ...\n# Subtest: quotes line feed\nok 4 - quotes line feed\n  ---\n  duration_ms: 0.105652\n  type: 'test'\n  ...\n# Subtest: quotes carriage return\nok 5 - quotes carriage return\n  ---\n  duration_ms: 0.109665\n  type: 'test'\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.102172\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.090278\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.117958\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 8\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 136.992297\n",
+      "elapsedMs": 255,
+      "checkedAt": "2026-10-23T13:33:48.910Z"
+    },
+    "promptBytes": [
+      1263,
+      3060
+    ]
+  },
+  "limits": [
+    "Direct is a deterministic Node subprocess participant, not a native coding CLI/model benchmark.",
+    "Both managed API arms already recover with an explicit probe; browser evidence measures the UI navigation gap.",
+    "Expiry here is backdated; it does not establish wall-clock TTL behavior.",
+    "One direct-first sample; timer scopes differ, no statistical or human-time claim.",
+    "No model tokens/billing/semantic quality/human UX acceptance; body bytes omit headers, transport, CPU, development and maintenance."
+  ]
+}

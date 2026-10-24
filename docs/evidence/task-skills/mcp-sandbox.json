@@ -1,0 +1,88 @@
+{
+  "recordedAt": "2026-10-24T03:08:23.397Z",
+  "fixture": true,
+  "nativeModelCalls": 0,
+  "method": "Real task-skills stdio process under production bubblewrap write boundary; /tmp task context and original selected catalog mounted read-only; independent worker copy writable",
+  "status": "passed",
+  "responses": [
+    {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "result": {
+        "protocolVersion": "2025-03-26",
+        "capabilities": {
+          "tools": {}
+        },
+        "serverInfo": {
+          "name": "task-skills",
+          "version": "1.0.0"
+        },
+        "instructions": "Read-only task skills. Selection and supply do not prove semantic compliance."
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": 2,
+      "result": {
+        "tools": [
+          {
+            "name": "skill_load",
+            "description": "Load a selected skill or its declared text resource once, with a pinned hash. Does not execute scripts or grant tools.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "resource": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id"
+              ],
+              "additionalProperties": false
+            },
+            "annotations": {
+              "readOnlyHint": true,
+              "destructiveHint": false,
+              "openWorldHint": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": 3,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"taskId\":\"T-MCP-SANDBOX\",\"requirementRevision\":1,\"id\":\"csv-guide\",\"resource\":\"references/rules.md\",\"sha256\":\"fe1cfbb3b4e35fed194099ecb81a1c7d7a26e204d3e469997b432b9b4817a10c\",\"state\":\"supplied\",\"trust\":\"untrusted-skill-resource; no new permissions\",\"text\":\"Double embedded quotes. Do not change tests.\"}"
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "id": 4,
+      "result": {
+        "isError": true,
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"code\":\"SKILL_TOOL_DENIED\",\"error\":\"Tool not granted for this task; ask the host to change the task policy, then explicitly Run again\"}"
+          }
+        ]
+      }
+    }
+  ],
+  "exitCode": 0,
+  "stderr": "",
+  "boundary": "filesystem-write",
+  "limits": [
+    "Does not invoke a native model CLI or establish its permission/tool selection semantics.",
+    "Filesystem write isolation only; host read/network remain available."
+  ]
+}

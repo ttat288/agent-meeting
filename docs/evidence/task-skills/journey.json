@@ -1,0 +1,591 @@
+{
+  "schema": "agent-meeting/skill-journey-evidence@1",
+  "recordedAt": "2026-10-24T02:57:47.563Z",
+  "fixture": true,
+  "arms": [
+    {
+      "baseline": true,
+      "appRoot": "/home/theo/workspace/agent-meeting/.local-tools/task-skills-baseline",
+      "taskId": "meeting-640667b4c78df039da719aac947400f7",
+      "requirementRevision": 3,
+      "configuredRevision": 2,
+      "attempts": 2,
+      "elapsedMs": 1335.552612,
+      "guideBodyManualTransfers": 2,
+      "discoveryCommands": 4,
+      "diagnosticManualTransfers": 0,
+      "calls": [
+        {
+          "promptBytes": 1604,
+          "skillContextFile": false
+        },
+        {
+          "promptBytes": 3415,
+          "skillContextFile": false
+        }
+      ],
+      "lookups": [],
+      "http": [
+        {
+          "endpoint": "start",
+          "status": 200,
+          "requestBytes": 202,
+          "responseBytes": 11,
+          "elapsedMs": 68.250707
+        },
+        {
+          "endpoint": "say",
+          "status": 200,
+          "requestBytes": 84,
+          "responseBytes": 11,
+          "elapsedMs": 4.842721000000012
+        },
+        {
+          "endpoint": "work",
+          "status": 200,
+          "requestBytes": 0,
+          "responseBytes": 2475,
+          "elapsedMs": 5.898651000000001
+        },
+        {
+          "endpoint": "work/tasks/meeting-640667b4c78df039da719aac947400f7/configure",
+          "status": 200,
+          "requestBytes": 481,
+          "responseBytes": 1285,
+          "elapsedMs": 7.513678999999996
+        },
+        {
+          "endpoint": "work/tasks/meeting-640667b4c78df039da719aac947400f7/configure",
+          "status": 200,
+          "requestBytes": 414,
+          "responseBytes": 1666,
+          "elapsedMs": 4.635648000000003
+        },
+        {
+          "endpoint": "runtime/probe",
+          "status": 200,
+          "requestBytes": 27,
+          "responseBytes": 324,
+          "elapsedMs": 5.652592999999996
+        },
+        {
+          "endpoint": "work/tasks/meeting-640667b4c78df039da719aac947400f7/run",
+          "status": 202,
+          "requestBytes": 86,
+          "responseBytes": 20952,
+          "elapsedMs": 119.04600000000002
+        },
+        {
+          "endpoint": "work",
+          "status": 200,
+          "requestBytes": 0,
+          "responseBytes": 27427,
+          "elapsedMs": 7.220166000000006
+        },
+        {
+          "endpoint": "work/runs/39ef258e-82a8-41a0-94f6-fef57862907d/verify",
+          "status": 200,
+          "requestBytes": 2,
+          "responseBytes": 25833,
+          "elapsedMs": 287.983443
+        },
+        {
+          "endpoint": "work",
+          "status": 200,
+          "requestBytes": 0,
+          "responseBytes": 31998,
+          "elapsedMs": 9.230807000000027
+        },
+        {
+          "endpoint": "work/tasks/meeting-640667b4c78df039da719aac947400f7/run",
+          "status": 202,
+          "requestBytes": 86,
+          "responseBytes": 21173,
+          "elapsedMs": 116.50343600000008
+        },
+        {
+          "endpoint": "work",
+          "status": 200,
+          "requestBytes": 0,
+          "responseBytes": 54076,
+          "elapsedMs": 7.018749000000071
+        },
+        {
+          "endpoint": "work/runs/60913012-c6d5-46a3-b510-210d75c5dfbe/verify",
+          "status": 200,
+          "requestBytes": 2,
+          "responseBytes": 23087,
+          "elapsedMs": 327.14574600000014
+        },
+        {
+          "endpoint": "work/runs/60913012-c6d5-46a3-b510-210d75c5dfbe/integrate",
+          "status": 200,
+          "requestBytes": 2,
+          "responseBytes": 24415,
+          "elapsedMs": 332.98768100000007
+        },
+        {
+          "endpoint": "work/runs/60913012-c6d5-46a3-b510-210d75c5dfbe/handoff",
+          "status": 200,
+          "requestBytes": 0,
+          "responseBytes": 4754,
+          "elapsedMs": 6.350866000000224
+        }
+      ],
+      "status": "integrated",
+      "inputHashes": {
+        "csv-cell.js": "9a38503b21f51c83e9e4fcf6eaf1bfad764d7304a3d466deea4a3b48d4e25e38",
+        "test/csv-cell.test.js": "1980bb1b858d1a7a12470ec1e93c9ef0a83e1ff07b39c250781506d0a04a9fc1"
+      },
+      "outputHashes": {
+        "csv-cell.js": "882c54cb9a0664e132a9f9ddbbd462b17640217367359e52fad153625bcb39c0",
+        "test/csv-cell.test.js": "1980bb1b858d1a7a12470ec1e93c9ef0a83e1ff07b39c250781506d0a04a9fc1"
+      },
+      "checks": [
+        {
+          "command": [
+            "/usr/bin/node",
+            "--max-old-space-size=256",
+            "--test",
+            "--test-timeout=20000",
+            "test/csv-cell.test.js"
+          ],
+          "exitCode": 0,
+          "timeout": false,
+          "cancelled": false,
+          "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.623863\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.239431\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 0.117343\n  type: 'test'\n  ...\n# Subtest: quotes line feed\nok 4 - quotes line feed\n  ---\n  duration_ms: 0.106628\n  type: 'test'\n  ...\n# Subtest: quotes carriage return\nok 5 - quotes carriage return\n  ---\n  duration_ms: 0.107489\n  type: 'test'\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.137054\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.132216\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.136025\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 8\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 159.334028\n",
+          "elapsedMs": 278,
+          "checkedAt": "2026-10-24T02:57:45.362Z"
+        }
+      ],
+      "supplied": null,
+      "restartPreserved": true,
+      "modelCalls": 0,
+      "modelTokens": null,
+      "billedCostUsd": null
+    },
+    {
+      "baseline": false,
+      "appRoot": "/home/theo/workspace/agent-meeting",
+      "taskId": "meeting-cb810787c0c26ef986c65b830b728b08",
+      "requirementRevision": 2,
+      "configuredRevision": 2,
+      "attempts": 2,
+      "elapsedMs": 1407.49068,
+      "guideBodyManualTransfers": 0,
+      "discoveryCommands": 0,
+      "diagnosticManualTransfers": 0,
+      "calls": [
+        {
+          "promptBytes": 2880,
+          "skillContextFile": true
+        },
+        {
+          "promptBytes": 4689,
+          "skillContextFile": true
+        }
+      ],
+      "lookups": [
+        {
+          "responses": [
+            {
+              "jsonrpc": "2.0",
+              "id": 1,
+              "result": {
+                "protocolVersion": "2025-03-26",
+                "capabilities": {
+                  "tools": {}
+                },
+                "serverInfo": {
+                  "name": "task-skills",
+                  "version": "1.0.0"
+                },
+                "instructions": "Read-only task skills. Selection and supply do not prove semantic compliance."
+              }
+            },
+            {
+              "jsonrpc": "2.0",
+              "id": 2,
+              "result": {
+                "tools": [
+                  {
+                    "name": "skill_load",
+                    "description": "Load a selected skill or its declared text resource once, with a pinned hash. Does not execute scripts or grant tools.",
+                    "inputSchema": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "resource": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "annotations": {
+                      "readOnlyHint": true,
+                      "destructiveHint": false,
+                      "openWorldHint": false
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "jsonrpc": "2.0",
+              "id": 3,
+              "result": {
+                "isError": true,
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "{\"code\":\"SKILL_TOOL_DENIED\",\"error\":\"Tool not granted for this task; ask the host to change the task policy, then explicitly Run again\"}"
+                  }
+                ]
+              }
+            },
+            {
+              "jsonrpc": "2.0",
+              "id": 4,
+              "result": {
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "{\"taskId\":\"meeting-cb810787c0c26ef986c65b830b728b08\",\"requirementRevision\":2,\"id\":\"csv-guide\",\"resource\":\"references/csv.md\",\"sha256\":\"18e79ec15a78a90b1e065d5d17e6b658bb2a17a46e97713be999abeca41a8725\",\"state\":\"supplied\",\"trust\":\"untrusted-skill-resource; no new permissions\",\"text\":\"Quote cells containing comma, double quote, CR or LF. Double embedded double quotes. Preserve Unicode, plain, empty and numeric cells. Do not change tests.\\n\"}"
+                  }
+                ]
+              }
+            },
+            {
+              "jsonrpc": "2.0",
+              "id": 5,
+              "result": {
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "{\"taskId\":\"meeting-cb810787c0c26ef986c65b830b728b08\",\"requirementRevision\":2,\"id\":\"csv-guide\",\"resource\":\"references/csv.md\",\"sha256\":\"18e79ec15a78a90b1e065d5d17e6b658bb2a17a46e97713be999abeca41a8725\",\"state\":\"already-loaded\"}"
+                  }
+                ]
+              }
+            },
+            {
+              "jsonrpc": "2.0",
+              "id": 6,
+              "result": {
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "{\"taskId\":\"meeting-cb810787c0c26ef986c65b830b728b08\",\"requirementRevision\":2,\"id\":\"task-rules\",\"resource\":null,\"sha256\":\"85d4b9462fe7218bca8a692c099b8fc7a97c6b5dacf8683acb69824993ae3744\",\"state\":\"already-supplied\"}"
+                  }
+                ]
+              }
+            }
+          ],
+          "requestBytes": 596,
+          "responseBytes": 2085,
+          "schemaBytes": 654
+        },
+        {
+          "responses": [
+            {
+              "jsonrpc": "2.0",
+              "id": 1,
+              "result": {
+                "protocolVersion": "2025-03-26",
+                "capabilities": {
+                  "tools": {}
+                },
+                "serverInfo": {
+                  "name": "task-skills",
+                  "version": "1.0.0"
+                },
+                "instructions": "Read-only task skills. Selection and supply do not prove semantic compliance."
+              }
+            },
+            {
+              "jsonrpc": "2.0",
+              "id": 2,
+              "result": {
+                "tools": [
+                  {
+                    "name": "skill_load",
+                    "description": "Load a selected skill or its declared text resource once, with a pinned hash. Does not execute scripts or grant tools.",
+                    "inputSchema": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "resource": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "annotations": {
+                      "readOnlyHint": true,
+                      "destructiveHint": false,
+                      "openWorldHint": false
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "jsonrpc": "2.0",
+              "id": 3,
+              "result": {
+                "isError": true,
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "{\"code\":\"SKILL_TOOL_DENIED\",\"error\":\"Tool not granted for this task; ask the host to change the task policy, then explicitly Run again\"}"
+                  }
+                ]
+              }
+            },
+            {
+              "jsonrpc": "2.0",
+              "id": 4,
+              "result": {
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "{\"taskId\":\"meeting-cb810787c0c26ef986c65b830b728b08\",\"requirementRevision\":2,\"id\":\"csv-guide\",\"resource\":\"references/csv.md\",\"sha256\":\"18e79ec15a78a90b1e065d5d17e6b658bb2a17a46e97713be999abeca41a8725\",\"state\":\"supplied\",\"trust\":\"untrusted-skill-resource; no new permissions\",\"text\":\"Quote cells containing comma, double quote, CR or LF. Double embedded double quotes. Preserve Unicode, plain, empty and numeric cells. Do not change tests.\\n\"}"
+                  }
+                ]
+              }
+            },
+            {
+              "jsonrpc": "2.0",
+              "id": 5,
+              "result": {
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "{\"taskId\":\"meeting-cb810787c0c26ef986c65b830b728b08\",\"requirementRevision\":2,\"id\":\"csv-guide\",\"resource\":\"references/csv.md\",\"sha256\":\"18e79ec15a78a90b1e065d5d17e6b658bb2a17a46e97713be999abeca41a8725\",\"state\":\"already-loaded\"}"
+                  }
+                ]
+              }
+            },
+            {
+              "jsonrpc": "2.0",
+              "id": 6,
+              "result": {
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "{\"taskId\":\"meeting-cb810787c0c26ef986c65b830b728b08\",\"requirementRevision\":2,\"id\":\"task-rules\",\"resource\":null,\"sha256\":\"85d4b9462fe7218bca8a692c099b8fc7a97c6b5dacf8683acb69824993ae3744\",\"state\":\"already-supplied\"}"
+                  }
+                ]
+              }
+            }
+          ],
+          "requestBytes": 596,
+          "responseBytes": 2085,
+          "schemaBytes": 654
+        }
+      ],
+      "http": [
+        {
+          "endpoint": "start",
+          "status": 200,
+          "requestBytes": 202,
+          "responseBytes": 11,
+          "elapsedMs": 5.6350579999998445
+        },
+        {
+          "endpoint": "say",
+          "status": 200,
+          "requestBytes": 84,
+          "responseBytes": 11,
+          "elapsedMs": 2.8332510000000184
+        },
+        {
+          "endpoint": "work",
+          "status": 200,
+          "requestBytes": 0,
+          "responseBytes": 2475,
+          "elapsedMs": 3.3631969999999
+        },
+        {
+          "endpoint": "work/tasks/meeting-cb810787c0c26ef986c65b830b728b08/configure",
+          "status": 200,
+          "requestBytes": 480,
+          "responseBytes": 2177,
+          "elapsedMs": 5.530566000000135
+        },
+        {
+          "endpoint": "runtime/probe",
+          "status": 200,
+          "requestBytes": 27,
+          "responseBytes": 324,
+          "elapsedMs": 4.353684999999814
+        },
+        {
+          "endpoint": "work/tasks/meeting-cb810787c0c26ef986c65b830b728b08/run",
+          "status": 202,
+          "requestBytes": 86,
+          "responseBytes": 22297,
+          "elapsedMs": 233.79829300000006
+        },
+        {
+          "endpoint": "work",
+          "status": 200,
+          "requestBytes": 0,
+          "responseBytes": 29283,
+          "elapsedMs": 3.92216899999994
+        },
+        {
+          "endpoint": "work/runs/79005782-aa3a-44ff-b3ab-8b4e4224039c/verify",
+          "status": 200,
+          "requestBytes": 2,
+          "responseBytes": 27171,
+          "elapsedMs": 280.694894
+        },
+        {
+          "endpoint": "work",
+          "status": 200,
+          "requestBytes": 0,
+          "responseBytes": 33847,
+          "elapsedMs": 5.289694999999938
+        },
+        {
+          "endpoint": "work/tasks/meeting-cb810787c0c26ef986c65b830b728b08/run",
+          "status": 202,
+          "requestBytes": 86,
+          "responseBytes": 22518,
+          "elapsedMs": 236.353568
+        },
+        {
+          "endpoint": "work",
+          "status": 200,
+          "requestBytes": 0,
+          "responseBytes": 57270,
+          "elapsedMs": 6.4696060000001125
+        },
+        {
+          "endpoint": "work/runs/1e633763-c6a3-4a37-80a6-2ca5a40b87e1/verify",
+          "status": 200,
+          "requestBytes": 2,
+          "responseBytes": 24432,
+          "elapsedMs": 297.52850100000023
+        },
+        {
+          "endpoint": "work/runs/1e633763-c6a3-4a37-80a6-2ca5a40b87e1/integrate",
+          "status": 200,
+          "requestBytes": 2,
+          "responseBytes": 25760,
+          "elapsedMs": 307.3275709999998
+        },
+        {
+          "endpoint": "work/runs/1e633763-c6a3-4a37-80a6-2ca5a40b87e1/handoff",
+          "status": 200,
+          "requestBytes": 0,
+          "responseBytes": 6208,
+          "elapsedMs": 5.422861000000012
+        }
+      ],
+      "status": "integrated",
+      "inputHashes": {
+        "csv-cell.js": "9a38503b21f51c83e9e4fcf6eaf1bfad764d7304a3d466deea4a3b48d4e25e38",
+        "test/csv-cell.test.js": "1980bb1b858d1a7a12470ec1e93c9ef0a83e1ff07b39c250781506d0a04a9fc1"
+      },
+      "outputHashes": {
+        "csv-cell.js": "882c54cb9a0664e132a9f9ddbbd462b17640217367359e52fad153625bcb39c0",
+        "test/csv-cell.test.js": "1980bb1b858d1a7a12470ec1e93c9ef0a83e1ff07b39c250781506d0a04a9fc1"
+      },
+      "checks": [
+        {
+          "command": [
+            "/usr/bin/node",
+            "--max-old-space-size=256",
+            "--test",
+            "--test-timeout=20000",
+            "test/csv-cell.test.js"
+          ],
+          "exitCode": 0,
+          "timeout": false,
+          "cancelled": false,
+          "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.796562\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.247382\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 0.121982\n  type: 'test'\n  ...\n# Subtest: quotes line feed\nok 4 - quotes line feed\n  ---\n  duration_ms: 0.108826\n  type: 'test'\n  ...\n# Subtest: quotes carriage return\nok 5 - quotes carriage return\n  ---\n  duration_ms: 0.108854\n  type: 'test'\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.113687\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.096734\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.094242\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 8\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 142.796347\n",
+          "elapsedMs": 254,
+          "checkedAt": "2026-10-24T02:57:46.802Z"
+        }
+      ],
+      "supplied": {
+        "catalog": "local",
+        "entries": [
+          {
+            "id": "task-rules",
+            "name": "task-rules",
+            "description": "Required task handoff and scope rules",
+            "required": true,
+            "version": "1",
+            "sha256": "85d4b9462fe7218bca8a692c099b8fc7a97c6b5dacf8683acb69824993ae3744",
+            "bytes": 213,
+            "resources": [],
+            "unavailableResources": []
+          },
+          {
+            "id": "csv-guide",
+            "name": "csv-guide",
+            "description": "CSV escaping reference; load only for CSV tasks",
+            "required": false,
+            "version": "1",
+            "sha256": "f42c786b97c2733bec63d58bccc3926828698f9f77b33a29d58a7a02b596066c",
+            "bytes": 171,
+            "resources": [
+              {
+                "path": "references/csv.md",
+                "sha256": "18e79ec15a78a90b1e065d5d17e6b658bb2a17a46e97713be999abeca41a8725",
+                "bytes": 156
+              }
+            ],
+            "unavailableResources": []
+          }
+        ],
+        "supplied": [
+          {
+            "id": "task-rules",
+            "sha256": "85d4b9462fe7218bca8a692c099b8fc7a97c6b5dacf8683acb69824993ae3744"
+          }
+        ],
+        "tools": [
+          "skill_load"
+        ],
+        "applied": "not-observed"
+      },
+      "restartPreserved": true,
+      "modelCalls": 0,
+      "modelTokens": null,
+      "billedCostUsd": null
+    }
+  ],
+  "direct": {
+    "elapsedMs": 718.9823149999997,
+    "processes": 4,
+    "diagnosticManualTransfers": 0,
+    "outputHashes": {
+      "csv-cell.js": "882c54cb9a0664e132a9f9ddbbd462b17640217367359e52fad153625bcb39c0",
+      "test/csv-cell.test.js": "1980bb1b858d1a7a12470ec1e93c9ef0a83e1ff07b39c250781506d0a04a9fc1"
+    },
+    "check": {
+      "exitCode": 0,
+      "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.723932\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.320388\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 0.12695\n  type: 'test'\n  ...\n# Subtest: quotes line feed\nok 4 - quotes line feed\n  ---\n  duration_ms: 0.114503\n  type: 'test'\n  ...\n# Subtest: quotes carriage return\nok 5 - quotes carriage return\n  ---\n  duration_ms: 0.11484\n  type: 'test'\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.15799\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.172838\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.102405\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 8\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 149.877532\n"
+    },
+    "guideRequirement": "CSV rules supplied directly to the scripted participant; no routing/catalog wrapper"
+  },
+  "limitations": [
+    "Scripted patch selection and MCP calls, not model reasoning or agent tool choice.",
+    "Same CSV bytes and 8 acceptance checks. Sequential single samples; elapsed scopes differ.",
+    "Guide-body transfers count protocol operations, not measured human effort.",
+    "Bytes are UTF-8 request/output estimates, not tokens or billing. No human UX acceptance."
+  ]
+}

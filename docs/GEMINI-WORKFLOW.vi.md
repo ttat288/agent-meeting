@@ -1,0 +1,37 @@
+# Dùng Gemini CLI theo nhu cầu
+
+Chỉ đọc tài liệu này khi cân nhắc hoặc chuẩn bị gọi Gemini CLI; không cần nạp trong phiên không dùng Gemini.
+
+## Bằng chứng phát triển mới — 2026-10-24, local
+
+Ca kiểm giá trị đã dùng đúng `/home/theo/.local/bin/agy`, requested `gemini-3.8-flash-low`; machine actual model vẫn unknown. CLI version/hash đo trong ca lúc14:04 là1.4.7; không nhận đó là attestation binary của mọi lượt trước. Direct native file tools đã sửa `src/server.js` trong bản sao có bwrap ghi riêng. Bản đối chứng che checkout thật và output arm trước, dùng Git objects riêng. Có candidate thiếu warning trong field hợp đồng và candidate suy revision từ snapshot; giữ cả fail. PM chuyển chẩn đoán/clarify, rồi sửa thêm một dòng ở candidate direct; không nhận worker report là acceptance. Đây không là native managed integration hoặc bằng chứng agy task-skill MCP.
+
+Explicit probe thật đầu ca và probe mới sau TTL đều có CLI phản hồi nhưng `reportedModel: unknown`, `modelVerified: false`; Run sản phẩm vẫn409. Probe cũ đã hết hạn trong ca nên đã kiểm mới để không nhầm expiry với identity. Không fake observation hoặc sửa guards: `agy write:true` và task-context MCP trong adapter sản phẩm vẫn bị chặn. Native CLI file edit có thể hoạt động trong phép thử phát triển, nhưng không tự trở thành adapter/quyền sản phẩm đã nghiệm thu. Không sửa OAuth/settings global hoặc gọi executable `gemini` để thay thế.
+
+Nguồn, failures, prompts/hash, usage/cache/overhead, native read barrier, source/package/browser và giới hạn tại [value-journey/ACCEPTANCE](evidence/value-journey/ACCEPTANCE.vi.md). Chưa chứng minh lợi ích ròng, billing savings hoặc human UX; không suy cache/bytes thành chi phí.
+
+**Siết read-only sau kiểm thật:** exact CLI flags của `buildArgs(agy, write:false)` vẫn sửa được file fixture. Mọi lượt agy model qua `runtime.runCli` nay bắt buộc Linux/bwrap, kể cả read-only/probe; `write:false` mount workspace chỉ đọc, thiếu boundary từ chối trước spawn. Cùng prompt qua default runtime không truyền isolate giữ file/EROFS. Đây là siết biên filesystem, không mở writing/MCP adapter và không nhận plan flag là cơ chế bảo vệ. Chỉ giới hạn ghi filesystem; không cách ly đọc host/mạng hoặc điều khiển tool server bên ngoài.
+
+## Lịch sử đính chính runtime — 2026-10-24
+
+**Probe trực tiếp mới của PM:** `/home/theo/.local/bin/agy`, requested `gemini-3.8-flash-low`, exit 0, `status: SUCCESS`, response `ANTIGRAVITY_OK`, CLI duration 5.1067s. Đã xác minh inference trực tiếp, không còn chỉ dựa vào lời user. Usage CLI báo 13087 input + 6 output = 13093 tokens; actual model không có machine field nên vẫn unknown. Cảnh báo CLI: `--mode plan has no effect while slash command expansion is disabled`; không nhận plan mode có hiệu lực với tổ hợp flag này. Prompt yêu cầu không dùng tool/file; không suy probe thành nghiệm thu adapter skill/MCP/write. Receipt đã bỏ conversation ID: `docs/evidence/task-skills/agy-probe.json`. Các câu “không gọi inference mới” bên dưới mô tả lượt đính chính trước, đã được probe này bổ sung.
+
+- **Không đồng nhất `gemini` và `agy`.** Phiên kiểm tra này xác nhận `/home/theo/.local/bin/agy --help` và `agy models` chạy được, danh sách có `gemini-3.8-flash-low`. Không gọi inference mới trong lần kiểm tra/ghi chú này.
+- User báo phép thử trực tiếp `gemini-3.8-flash-low` trả `SUCCESS` và `ANTIGRAVITY_OK`. Bằng chứng độc lập đã có trong repo: `docs/evidence/shift-20261022/readonly-audit/agy-receipt.sanitized.json` có `status: SUCCESS`; `docs/evidence/routing-implementation/B2-SCOUT.json` ghi requested `gemini-3.8-flash-low`, exit0/status reported, reported model unknown. Không biến requested ID hoặc lời tự nhận của model thành actual identity.
+- `docs/evidence/task-skills/gemini.json` là thất bại của **Gemini CLI riêng**: `UNSUPPORTED_CLIENT`, kèm refresh OAuth bị mount chỉ đọc chặn. Không áp kết luận đó cho Antigravity CLI.
+- Tầng tích hợp: `src/task-skills.js::prepare` chặn mọi task có `skillPolicy` khi adapter không phải Claude (`SKILL_TOOLS_UNSUPPORTED`). Ngoài ra, `src/runtime.js` chặn `taskContextFile` với lỗi `Task skill MCP is unsupported by this adapter`, và `write:true` với `agy write mode is not verified; use read-only plan tasks`. Đây là giới hạn sản phẩm; không chứng minh CLI `agy` hoặc model Gemini không dùng được cho scout/review trực tiếp.
+- Cách xử lý lần sau: kiểm đúng CLI/help/models và evidence hiện có; dùng đường trực tiếp hoặc plan/read-only khi phù hợp và đã có quyền/ngân sách; chỉ gọi probe model có giới hạn khi thực sự thiếu bằng chứng. Báo cụ thể CLI/auth/provider hay adapter/policy bị chặn, kèm requested/actual/unknown. Không lặp lỗi Gemini terminal, tự sửa OAuth/settings global, mở guard sản phẩm hoặc đổi provider trả phí chỉ để đạt thành công.
+
+- **Quyền Gemini CLI — cập nhật theo người dùng ngày 2026-10-24:** được chủ động gọi Gemini CLI để hỗ trợ công việc dự án; người dùng cho biết đây là tài khoản có ngân sách token dồi dào nhất và cho phép dùng rộng rãi khi hữu ích. Quyền này thay giới hạn không gọi model/thêm agent của ca trước đối với worker Gemini CLI; không tự mở quyền cho provider khác, OAuth/settings global hoặc commit/push/merge/release. Không cần xin duyệt lại từng lượt Gemini trong phạm vi công việc đã giao; vẫn giới hạn timeout/retry và không lặp vô ích.
+- **Dùng Gemini đúng việc:** catalog hiện gợi ý đọc nhiều code/log/tài liệu, lọc và trích xuất requirements, lập bản đồ file/module liên quan, tổng hợp bằng chứng có nguồn; phân tích screenshot/PDF/đa phương thức khi runtime thực sự hỗ trợ. Có thể giao coding nhỏ có scope/test rõ. Đây là ưu tiên từ nguồn người dùng, chưa phải benchmark; PM kiểm chứng kết quả, không kết luận root cause/kiến trúc chỉ từ bản tóm tắt. Xem `src/defaults/routing.json` và `src/defaults/routing-source.md`.
+- Phân biệt **Gemini CLI** với model: quyền mới không xác nhận đang dùng Flash hay model ID nào. Kiểm executable/model/quyền thực tế trước khi giao; không lấy tên mẫu trong catalog làm model đã xác minh. Profile mặc định `flash-gemini` đang disabled/unverified và chưa có adapter managed Gemini; không tự bật profile hoặc xây adapter chỉ vì được phép dùng CLI trực tiếp. Quyền model không đồng nghĩa quyền ghi cây nguồn; worker ghi mã vẫn theo biên workspace bên dưới.
+
+**Bài học PM từ ca task-skills:** trước khi báo cần giám đốc sửa runtime/auth, phải kiểm đường `agy` đã có và bằng chứng trong repo. Dùng CLI trực tiếp trong quyền phát triển không đòi triển khai adapter sản phẩm trước. Nếu đổi executable/model được yêu cầu, nêu rõ thay đổi và kiểm quyền tương ứng; không tự chuyển provider khác. Receipt lịch sử có `SUCCESS` nhưng cũng có `denied_actions: command`: chỉ chứng minh có phản hồi model, không chứng minh command/review đã hoàn tất. Phản hồi `ANTIGRAVITY_OK` hiện do người dùng báo; không nhận là probe mới do PM chạy trong lượt đính chính này.
+
+## Cách giao và kiểm chứng
+
+Theo `docs/ROUTING-WORKFLOW.vi.md`: xác định mục tiêu, nguồn, workspace/base, phạm vi, đầu ra, nghiệm thu và timeout/retry. Đầu ra cần facts/evidence/hypotheses/unknowns; PM tự kiểm bằng source/test phù hợp. Không gọi chỉ để tiêu hết quota, không mặc định mọi việc phải qua Gemini.
+
+## Truy hồi context
+
+Nếu đã biết đường dẫn tài liệu thì đọc trực tiếp phần cần dùng. Khi chưa biết vị trí code/quan hệ, có thể dùng CodeGraph nếu CLI/tool và index thực sự sẵn sàng; dùng truy vấn hẹp và giới hạn output, không đọc lại đoạn đã nhận. Không coi source công cụ có trên đĩa là runtime đã cài hoặc benchmark tiết kiệm context. Fallback tìm bằng `rg` rồi đọc phần liên quan.

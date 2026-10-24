@@ -1,0 +1,28 @@
+TAP version 13
+# Subtest: integration rollback preserves a concurrent source permission change for manual reconciliation
+ok 1 - integration rollback preserves a concurrent source permission change for manual reconciliation
+  ---
+  duration_ms: 2288.678735
+  type: 'test'
+  ...
+# Subtest: integration preserves existing permissions under a restrictive process umask
+ok 2 - integration preserves existing permissions under a restrictive process umask
+  ---
+  duration_ms: 464.697054
+  type: 'test'
+  ...
+# Subtest: failed integration restores both original bytes and permissions under restrictive umask
+ok 3 - failed integration restores both original bytes and permissions under restrictive umask
+  ---
+  duration_ms: 457.740859
+  type: 'test'
+  ...
+1..3
+# tests 3
+# suites 0
+# pass 3
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3335.354

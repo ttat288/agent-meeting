@@ -1,7 +1,6 @@
 'use strict';
 // Bounded, read-only discovery. No network, model invocation or configuration writes.
 const fs = require('fs'), path = require('path');
-const conn = require('./connect');
 const crypto = require('crypto');
 const ID = /^[a-z0-9][a-z0-9-]{0,63}$/;
 const MAX_FILE = 65536, MAX_SHOW = 32000;
@@ -31,7 +30,9 @@ function manifest(text) {
   };
   const name = scalar('name'), description = scalar('description');
   if (!ID.test(name) || !description) throw Error('Missing valid name/description');
-  return { name, description: [...description].slice(0, 600).join('') };
+  const characters = [...description];
+  return { name, description: characters.slice(0, 600).join(''),
+    ...(characters.length > 600 ? { descriptionTruncated: true } : {}) };
 }
 function location(options) {
   return path.resolve(options.dir || (options.local ? path.join(process.cwd(), '.agents', 'skills') : path.join(__dirname, 'skills')));
@@ -105,6 +106,7 @@ function showSkill(id, options = {}) {
   return text;
 }
 function doctor() {
+  const conn = require('./connect');
   let room = 'missing';
   try {
     const c = JSON.parse(read(conn.roomsPath()));

@@ -1,0 +1,63 @@
+TAP version 13
+# Subtest: handoff retains the executed requirements after reconfiguration and restart
+not ok 1 - handoff retains the executed requirements after reconfiguration and restart
+  ---
+  duration_ms: 648.047762
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/work-handoff.test.js:47:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Old evidence must not be attached to new acceptance
+    + actual - expected
+    
+      [
+    +   'A new requirement has never been verified'
+    -   'Review the historical reference'
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0: 'Review the historical reference'
+  actual:
+    0: 'A new requirement has never been verified'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/work-handoff.test.js:54:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: current and failed handoffs keep run identity and do not imply completion
+not ok 2 - current and failed handoffs keep run identity and do not imply completion
+  ---
+  duration_ms: 58.534103
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/work-handoff.test.js:66:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + undefined
+    - true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/work-handoff.test.js:69:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 849.894588

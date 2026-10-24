@@ -1,0 +1,125 @@
+{
+  "schema": "agent-meeting/handoff-style-fixture@1",
+  "recordedAt": "2026-10-24T02:58:33.848Z",
+  "fixture": true,
+  "authorship": "PM-authored examples and deterministic downstream patch selection. No independent model runs, no inference that the styles caused the outcomes.",
+  "facts": {
+    "taskId": "T-COMM-CSV",
+    "objective": "Fix CSV cell escaping for commas, embedded double quotes and CR/LF; preserve plain, empty, numeric and Unicode cells. Change only csv-cell.js; keep independent tests unchanged.",
+    "scope": "Only csv-cell.js.",
+    "condition": "Retry only if task revision 2 and source hash still match.",
+    "negation": "Do not change independent tests.",
+    "result": "Independent verification failed; not accepted.",
+    "error": "escapes embedded double quotes",
+    "evidence": "run-1/test/csv-cell.test.js",
+    "unknowns": "Actual model identity and billing remain unknown.",
+    "next": "Use the retained test diagnostic, then explicitly Run, Verify and Integrate."
+  },
+  "caveman": {
+    "commit": "bae9beaf3aa6dc509f05f3d3ed239c827f6e51bb",
+    "sources": {
+      "plugins/caveman/skills/caveman/SKILL.md": {
+        "bytes": 4678,
+        "sha256": "415d43518f2b1a9498c15a445d4657117b129ee5e81b19454ce348439cc6672b"
+      },
+      "LICENSE": {
+        "bytes": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      }
+    },
+    "license": "Apache-2.0",
+    "installation": "Text-only evaluation under ignored .local-tools; no hooks/proxy/global skill installation",
+    "reviewedLimits": [
+      "Voice instructions only; no reasoning or tool-permission guarantees.",
+      "Preserves negations and literal payloads; plain prose exceptions include security warnings and persisted external artifacts.",
+      "Session persistence is unsuitable as an implicit product default."
+    ]
+  },
+  "cases": [
+    {
+      "name": "current-style",
+      "text": "I have finished checking the first attempted repair for task T-COMM-CSV. The objective remains: Fix CSV cell escaping for commas, embedded double quotes and CR/LF; preserve plain, empty, numeric and Unicode cells. Change only csv-cell.js; keep independent tests unchanged.\nThe assigned scope is: Only csv-cell.js.\nPlease keep the following condition in mind before retrying: Retry only if task revision 2 and source hash still match.\nDo not change independent tests.\nThe result of the check is: Independent verification failed; not accepted.\nThe failing assertion is exactly: escapes embedded double quotes\nYou can find the retained evidence at run-1/test/csv-cell.test.js.\nThe remaining uncertainty is: Actual model identity and billing remain unknown.\nThe next action is: Use the retained test diagnostic, then explicitly Run, Verify and Integrate.",
+      "instructionSha256": "2616e0dbc8394e5305b16f57586d41ed45c9097f0451ba67c660463bcc5026cb",
+      "instructionBytes": 80,
+      "inputBytes": 650,
+      "outputBytes": 850,
+      "knownPayloadBytes": 1580,
+      "assessment": {
+        "missingFields": [],
+        "alteredLiteralPayload": false,
+        "negationsIntact": true
+      },
+      "simulatedClarificationTurns": 0,
+      "manualDiagnosticTransfersAfterHandoff": 0,
+      "failureExitCode": 1,
+      "recoveryExitCode": 0,
+      "outputSha256": "882c54cb9a0664e132a9f9ddbbd462b17640217367359e52fad153625bcb39c0",
+      "recoveryEvidence": {
+        "exitCode": 0,
+        "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.472826\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.201757\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 0.10924\n  type: 'test'\n  ...\n# Subtest: quotes line feed\nok 4 - quotes line feed\n  ---\n  duration_ms: 0.092523\n  type: 'test'\n  ...\n# Subtest: quotes carriage return\nok 5 - quotes carriage return\n  ---\n  duration_ms: 0.099879\n  type: 'test'\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.08879\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.086578\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.080169\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 8\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 117.588755\n"
+      }
+    },
+    {
+      "name": "concise-structured",
+      "text": "taskId: T-COMM-CSV\nobjective: Fix CSV cell escaping for commas, embedded double quotes and CR/LF; preserve plain, empty, numeric and Unicode cells. Change only csv-cell.js; keep independent tests unchanged.\nscope: Only csv-cell.js.\ncondition: Retry only if task revision 2 and source hash still match.\nnegation: Do not change independent tests.\nresult: Independent verification failed; not accepted.\nerror: escapes embedded double quotes\nevidence: run-1/test/csv-cell.test.js\nunknowns: Actual model identity and billing remain unknown.\nnext: Use the retained test diagnostic, then explicitly Run, Verify and Integrate.",
+      "instructionSha256": "b025bc38deda6197980c04af07a3a8a6b8a19532b14e78d12d1b5ed0b6e640d8",
+      "instructionBytes": 261,
+      "inputBytes": 650,
+      "outputBytes": 618,
+      "knownPayloadBytes": 1529,
+      "assessment": {
+        "missingFields": [],
+        "alteredLiteralPayload": false,
+        "negationsIntact": true
+      },
+      "simulatedClarificationTurns": 0,
+      "manualDiagnosticTransfersAfterHandoff": 0,
+      "failureExitCode": 1,
+      "recoveryExitCode": 0,
+      "outputSha256": "882c54cb9a0664e132a9f9ddbbd462b17640217367359e52fad153625bcb39c0",
+      "recoveryEvidence": {
+        "exitCode": 0,
+        "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.351439\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.183374\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 0.103119\n  type: 'test'\n  ...\n# Subtest: quotes line feed\nok 4 - quotes line feed\n  ---\n  duration_ms: 0.091557\n  type: 'test'\n  ...\n# Subtest: quotes carriage return\nok 5 - quotes carriage return\n  ---\n  duration_ms: 0.09457\n  type: 'test'\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.096128\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.085448\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.081896\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 8\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 117.799583\n"
+      }
+    },
+    {
+      "name": "caveman-source-informed",
+      "text": "T-COMM-CSV: Independent verification failed; not accepted.\nescapes embedded double quotes\nFix CSV cell escaping for commas, embedded double quotes and CR/LF; preserve plain, empty, numeric and Unicode cells. Change only csv-cell.js; keep independent tests unchanged.\nOnly csv-cell.js.\nRetry only if task revision 2 and source hash still match.\nDo not change independent tests.\nEvidence: run-1/test/csv-cell.test.js\nActual model identity and billing remain unknown.\nUse the retained test diagnostic, then explicitly Run, Verify and Integrate.",
+      "instructionSha256": "415d43518f2b1a9498c15a445d4657117b129ee5e81b19454ce348439cc6672b",
+      "instructionBytes": 4678,
+      "inputBytes": 650,
+      "outputBytes": 541,
+      "knownPayloadBytes": 5869,
+      "assessment": {
+        "missingFields": [],
+        "alteredLiteralPayload": false,
+        "negationsIntact": true
+      },
+      "simulatedClarificationTurns": 0,
+      "manualDiagnosticTransfersAfterHandoff": 0,
+      "failureExitCode": 1,
+      "recoveryExitCode": 0,
+      "outputSha256": "882c54cb9a0664e132a9f9ddbbd462b17640217367359e52fad153625bcb39c0",
+      "recoveryEvidence": {
+        "exitCode": 0,
+        "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.37731\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.186068\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 0.101673\n  type: 'test'\n  ...\n# Subtest: quotes line feed\nok 4 - quotes line feed\n  ---\n  duration_ms: 0.090576\n  type: 'test'\n  ...\n# Subtest: quotes carriage return\nok 5 - quotes carriage return\n  ---\n  duration_ms: 0.092731\n  type: 'test'\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.089026\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.078452\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.076787\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 8\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 115.416901\n"
+      }
+    }
+  ],
+  "negativeControl": {
+    "missingFields": [
+      "negation"
+    ],
+    "alteredLiteralPayload": false,
+    "negationsIntact": false
+  },
+  "modelTokens": null,
+  "billedCostUsd": null,
+  "humanTimeMs": null,
+  "decision": "Keep the short structured task handoff rule; do not install Caveman as a product default. Net token/billing or quality gain has not been demonstrated.",
+  "limits": [
+    "Single task and authored samples. Zero simulated clarification turns is not measured human/model behavior.",
+    "Counts UTF-8 payload bytes only; hidden prompts, schema/transport, reasoning, retries and orchestration excluded here. Journey evidence reports wrapper costs separately.",
+    "No live Gemini comparison: auth/client blocked before inference. No semantic efficacy or billing conclusion."
+  ]
+}

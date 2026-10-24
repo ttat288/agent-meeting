@@ -19,13 +19,29 @@ function checkRuntime(adapter) {
   return { adapter, executable: r.status === 0, version: r.status === 0 ? r.stdout.trim().slice(0, 200) : null,
     access: 'unknown', checkedAt, resume: false, cancel: true, processTools: adapter === 'claude' };
 }
-function buildArgs(adapter, { modelId, prompt, write = false, readOnlyTools = false }) {
+function contextConfig(file) {
+  if (!file) return { config: { mcpServers: {} }, tools: [], readOnlyPaths: [] };
+  if (!path.isAbsolute(file) || fs.realpathSync(file) !== file) throw new Error('Canonical task context file required');
+  const stat = fs.lstatSync(file);
+  if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 512 * 1024) throw new Error('Invalid task context file');
+  const context = JSON.parse(fs.readFileSync(file, 'utf8'));
+  const lookup = require('./task-skills').createLookup(context);
+  return { config: { mcpServers: { task_skills: { command: process.execPath, args: [path.join(__dirname, '..', 'bin', 'task-skills.js'), file] } } },
+    tools: lookup.tools.map(t => 'mcp__task_skills__' + t.name), readOnlyPaths: [file, context.snapshot.root] };
+}
+function buildArgs(adapter, { modelId, prompt, write = false, readOnlyTools = false, taskContextFile, taskSkillMode = false }) {
   if (!ADAPTERS.includes(adapter)) throw new Error('Unsupported adapter');
   if (typeof modelId !== 'string' || !/^[a-zA-Z0-9][\w.:-]{0,120}$/.test(modelId)) throw new Error('Explicit model ID required');
   if (typeof prompt !== 'string' || !prompt.trim() || Buffer.byteLength(prompt) > MAX_PROMPT_BYTES) throw new Error('Invalid prompt');
-  if (adapter === 'claude') return ['--print', '--model', modelId, '--output-format', 'json', '--no-session-persistence',
-    '--permission-mode', write ? 'auto' : 'plan', '--permission-prompts', 'none', '--strict-mcp-config', '--mcp-config', '{"mcpServers":{}}',
-    '--tools', write ? 'Read,Edit,Write,Glob,Grep' : readOnlyTools ? 'Read,Glob,Grep' : ''];
+  if (adapter === 'claude') {
+    const context = contextConfig(taskContextFile);
+    return ['--print', '--model', modelId, '--output-format', 'json', '--no-session-persistence',
+      '--permission-mode', write ? 'auto' : 'plan', '--permission-prompts', 'none', '--strict-mcp-config', '--mcp-config', JSON.stringify(context.config),
+      '--tools', write ? 'Read,Edit,Write,Glob,Grep' : readOnlyTools ? 'Read,Glob,Grep' : '',
+      ...(taskSkillMode || taskContextFile ? ['--setting-sources', '', '--settings', '{"disableAllHooks":true}', '--disable-slash-commands'] : []),
+      ...(context.tools.length ? ['--allowedTools', context.tools.join(',')] : [])];
+  }
+  if (taskContextFile) throw new Error('Task skill MCP is unsupported by this adapter');
   if (write) throw new Error('agy write mode is not verified; use read-only plan tasks');
   return ['--print', prompt, '--model', modelId, '--output-format', 'json', '--mode', 'plan', '--sandbox', '--disable-slash-commands'];
 }
@@ -55,7 +71,10 @@ function runCli(options) {
   if (!Number.isInteger(timeoutMs) || timeoutMs < 100 || timeoutMs > 600000) throw new Error('Invalid timeout');
   if (!workspace || !fs.statSync(workspace).isDirectory()) throw new Error('Workspace required');
   const cwd = fs.realpathSync(workspace), started = Date.now();
-  const wrapped = options.write || options.isolate ? require('./execution-sandbox').wrapExecution(bin, args, { workspace: cwd, write: options.write === true }) : null;
+  // agy's plan flag is ineffective with slash expansion disabled. Its native
+  // file tools can still edit, so even read-only tasks/probes need a real boundary.
+  const wrapped = options.write || options.isolate || options.taskContextFile || adapter === 'agy' ? require('./execution-sandbox').wrapExecution(bin, args, { workspace: cwd, write: options.write === true,
+    readOnlyPaths: contextConfig(options.taskContextFile).readOnlyPaths }) : null;
   if (wrapped) bin = wrapped.bin;
   return new Promise(resolve => {
     let stdout = '', stderr = '', stdoutBytes = 0, reason = null, finished = false, closed;

@@ -1,0 +1,8 @@
+{
+  "localLinksChecked": 91,
+  "issues": [],
+  "remoteAvailabilityVerified": false,
+  "remoteFailure": "Git TLS certificate verification failed; GitHub API fallback inaccessible; no bypass/auth/global settings repair",
+  "pinnedSourceReachableFromLocalMergedHead": true,
+  "documentationOnlyDeltaAfterFinalRuntimeTests": true
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "baseline-recovery",
+    "harnessFenceParserIssue": true,
+    "requirementRevision": "revision2",
+    "revisionGuardPassed": false,
+    "inspectionOnly": true,
+    "verification": {
+      "exitCode": 1,
+      "output": "TAP version 13\n# /tmp/am-agy-20261024-114659/baseline-recovery-inspection/csv-cell.js:3\n#   if (/[,\"\n#       ^\n# SyntaxError: Invalid regular expression: missing /\n#     at wrapSafe (node:internal/modules/cjs/loader:1637:18)\n#     at Module._compile (node:internal/modules/cjs/loader:1679:20)\n#     at Module._extensions..js (node:internal/modules/cjs/loader:1838:10)\n#     at Module.load (node:internal/modules/cjs/loader:1441:32)\n#     at Module._load (node:internal/modules/cjs/loader:1263:12)\n#     at TracingChannel.traceSync (node:diagnostics_channel:328:14)\n#     at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n#     at Module.require (node:internal/modules/cjs/loader:1463:12)\n#     at require (node:internal/modules/helpers:147:16)\n#     at Object.<anonymous> (/tmp/am-agy-20261024-114659/baseline-recovery-inspection/test/csv-cell.test.js:1:83)\n# Node.js v22.22.1\n# Subtest: test/csv-cell.test.js\nnot ok 1 - test/csv-cell.test.js\n  ---\n  duration_ms: 108.288722\n  type: 'test'\n  location: '/tmp/am-agy-20261024-114659/baseline-recovery-inspection/test/csv-cell.test.js:1:1'\n  failureType: 'testCodeFailure'\n  exitCode: 1\n  signal: ~\n  error: 'test failed'\n  code: 'ERR_TEST_FAILURE'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 119.64781\n"
+    },
+    "integrated": false
+  },
+  {
+    "id": "caveman-recovery",
+    "harnessFenceParserIssue": true,
+    "requirementRevision": "revision2",
+    "revisionGuardPassed": false,
+    "inspectionOnly": true,
+    "verification": {
+      "exitCode": 1,
+      "output": "TAP version 13\n# /tmp/am-agy-20261024-114659/caveman-recovery-inspection/csv-cell.js:3\n#   if (/[,\"\n#       ^\n# SyntaxError: Invalid regular expression: missing /\n#     at wrapSafe (node:internal/modules/cjs/loader:1637:18)\n#     at Module._compile (node:internal/modules/cjs/loader:1679:20)\n#     at Module._extensions..js (node:internal/modules/cjs/loader:1838:10)\n#     at Module.load (node:internal/modules/cjs/loader:1441:32)\n#     at Module._load (node:internal/modules/cjs/loader:1263:12)\n#     at TracingChannel.traceSync (node:diagnostics_channel:328:14)\n#     at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)\n#     at Module.require (node:internal/modules/cjs/loader:1463:12)\n#     at require (node:internal/modules/helpers:147:16)\n#     at Object.<anonymous> (/tmp/am-agy-20261024-114659/caveman-recovery-inspection/test/csv-cell.test.js:1:83)\n# Node.js v22.22.1\n# Subtest: test/csv-cell.test.js\nnot ok 1 - test/csv-cell.test.js\n  ---\n  duration_ms: 95.686588\n  type: 'test'\n  location: '/tmp/am-agy-20261024-114659/caveman-recovery-inspection/test/csv-cell.test.js:1:1'\n  failureType: 'testCodeFailure'\n  exitCode: 1\n  signal: ~\n  error: 'test failed'\n  code: 'ERR_TEST_FAILURE'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 104.066785\n"
+    },
+    "integrated": false
+  }
+]

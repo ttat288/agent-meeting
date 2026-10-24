@@ -1,0 +1,9 @@
+{
+  "originalSha256": "1ad3a5976397c273724edd22c647ab7abacb69e968b41c1fd04f78babd728b1e",
+  "currentSha256": "55c79c748aa990c2ce499d90dd0fd7fffaeb439a7a5ecf8001c15b82d6cb9d68",
+  "onlyDelta": "Two-line explanation and forced filesystem boundary for agy, including read-only/probes",
+  "reversePatchMatchesT0": true,
+  "writeModeStillRejected": true,
+  "taskContextStillRejected": true,
+  "guardTightenedNotRelaxed": true
+}

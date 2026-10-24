@@ -1,0 +1,118 @@
+TAP version 13
+# Subtest: discovery: bundled skill and local search/page/show work without room or home writes
+ok 1 - discovery: bundled skill and local search/page/show work without room or home writes
+  ---
+  duration_ms: 641.348009
+  type: 'test'
+  ...
+# Subtest: catalog rejects traversal, links, excessive output and malformed manifests
+ok 2 - catalog rejects traversal, links, excessive output and malformed manifests
+  ---
+  duration_ms: 474.924733
+  type: 'test'
+  ...
+# Subtest: doctor redacts room secrets and does not claim live connection or model permission
+ok 3 - doctor redacts room secrets and does not claim live connection or model permission
+  ---
+  duration_ms: 154.904081
+  type: 'test'
+  ...
+# Subtest: graph searches declared resource paths, reads only selected resources, and refreshes source hash
+ok 4 - graph searches declared resource paths, reads only selected resources, and refreshes source hash
+  ---
+  duration_ms: 242.520279
+  type: 'test'
+  ...
+# Subtest: required supply, optional metadata, bounded lookup and duplicate loads have distinct states
+ok 5 - required supply, optional metadata, bounded lookup and duplicate loads have distinct states
+  ---
+  duration_ms: 14.271897
+  type: 'test'
+  ...
+# Subtest: denied tools, unselected skills, undeclared paths, bad arguments and unsupported adapters fail explicitly
+ok 6 - denied tools, unselected skills, undeclared paths, bad arguments and unsupported adapters fail explicitly
+  ---
+  duration_ms: 7.215747
+  type: 'test'
+  ...
+# Subtest: manifest/resource edits and missing files invalidate supply/lookup until an explicit repin
+ok 7 - manifest/resource edits and missing files invalidate supply/lookup until an explicit repin
+  ---
+  duration_ms: 6.224457
+  type: 'test'
+  ...
+# Subtest: symlink catalog/skill/resource redirection is blocked, including changes after pinning
+ok 8 - symlink catalog/skill/resource redirection is blocked, including changes after pinning
+  ---
+  duration_ms: 2.637186
+  type: 'test'
+  ...
+# Subtest: invalid policies, credential-like content and over-limit sources are rejected before dispatch
+ok 9 - invalid policies, credential-like content and over-limit sources are rejected before dispatch
+  ---
+  duration_ms: 4.248894
+  type: 'test'
+  ...
+# Subtest: linked scripts can only be read as data, and missing declared resources stay visibly unavailable
+ok 10 - linked scripts can only be read as data, and missing declared resources stay visibly unavailable
+  ---
+  duration_ms: 5.935401
+  type: 'test'
+  ...
+# Subtest: strict adapter MCP config contains only the fixed task server and explicit granted tools
+ok 11 - strict adapter MCP config contains only the fixed task server and explicit granted tools
+  ---
+  duration_ms: 2.641136
+  type: 'test'
+  ...
+# Subtest: real stdio MCP filters tool discovery and rejects forbidden calls without executing a script
+ok 12 - real stdio MCP filters tool discovery and rejects forbidden calls without executing a script
+  ---
+  duration_ms: 101.762694
+  type: 'test'
+  ...
+# Subtest: sandbox restores explicit /tmp context read-only without granting writes outside the worker copy
+ok 13 - sandbox restores explicit /tmp context read-only without granting writes outside the worker copy
+  ---
+  duration_ms: 90.408946
+  type: 'test'
+  ...
+# Subtest: managed task snapshots supply and grants once per attempt, retries with diagnostics, verifies and integrates
+ok 14 - managed task snapshots supply and grants once per attempt, retries with diagnostics, verifies and integrates
+  ---
+  duration_ms: 1235.58984
+  type: 'test'
+  ...
+# Subtest: irrelevant task has no catalog, skill context, context file or lookup grant
+ok 15 - irrelevant task has no catalog, skill context, context file or lookup grant
+  ---
+  duration_ms: 33.409491
+  type: 'test'
+  ...
+# Subtest: changed ignored skill blocks dispatch/verification without changing the task or silently retrying
+ok 16 - changed ignored skill blocks dispatch/verification without changing the task or silently retrying
+  ---
+  duration_ms: 118.761302
+  type: 'test'
+  ...
+# Subtest: MCP accepts a burst of bounded lines crossing the buffer limit but rejects an oversized line
+ok 17 - MCP accepts a burst of bounded lines crossing the buffer limit but rejects an oversized line
+  ---
+  duration_ms: 179.977812
+  type: 'test'
+  ...
+# Subtest: truncated discovery description is visible through task bootstrap and lookup metadata
+ok 18 - truncated discovery description is visible through task bootstrap and lookup metadata
+  ---
+  duration_ms: 3.512659
+  type: 'test'
+  ...
+1..18
+# tests 18
+# suites 0
+# pass 18
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1958.300429

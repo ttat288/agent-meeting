@@ -1,0 +1,257 @@
+{
+  "recordedAt": "2026-10-24T06:03:21.455Z",
+  "taskId": "cdc70c1b-8cc8-49a2-95c5-8ad54cc9dc58",
+  "source": "/tmp/am-value-20261024-125904/baseline-source",
+  "head": "1b56f4db04d4135a66fcc329af89332eb21b9d3f",
+  "unprobed": {
+    "status": 409,
+    "body": {
+      "error": "Model access is unverified, unavailable or expired; probe the selected profile before retrying",
+      "code": "MODEL_ACCESS_REQUIRED"
+    }
+  },
+  "probe": {
+    "status": 200,
+    "body": {
+      "profileId": "flash-gemini",
+      "runtimeId": "agy",
+      "adapter": "agy",
+      "configRevision": 2,
+      "providerModelId": "gemini-3.8-flash-low",
+      "requestedModel": "gemini-3.8-flash-low",
+      "reportedModel": "unknown",
+      "available": true,
+      "modelVerified": false,
+      "quotaAvailable": true,
+      "checkedAt": "2026-10-24T06:03:21.438Z",
+      "tools": [],
+      "permissions": [],
+      "error": null
+    }
+  },
+  "afterProbe": {
+    "status": 409,
+    "body": {
+      "error": "Model access is unverified, unavailable or expired; probe the selected profile before retrying",
+      "code": "MODEL_ACCESS_REQUIRED"
+    }
+  },
+  "state": {
+    "schema": "agent-meeting/work@1",
+    "revision": 4,
+    "tasks": [
+      {
+        "goal": "Fix historical run handoff provenance in src/server.js. Return a minimal exact find/replace edit as JSON data; do not write files. The handoff for an earlier integrated run currently exports later task acceptance and sources after configuration changes. Preserve the old evidence and clearly distinguish its requirements from current requirements.",
+        "purpose": "execute",
+        "management": "managed",
+        "topology": "local",
+        "workspace": "/tmp/am-value-20261024-125904/baseline-source",
+        "acceptance": [
+          "Handoff uses the executed requirement snapshot, never current task criteria for old evidence.",
+          "Expose the run requirement revision, current requirement revision and a true/false/null currentness indication.",
+          "A missing legacy snapshot stays explicitly unknown, with a limitation.",
+          "Historical integrated status remains historical; later task stays ready/unverified.",
+          "No guard, model policy, UI, OAuth or global settings changes. Return JSON {edits:[{find,replace}],reason,evidence,unknowns,nextStep}. No tools or commands; all relevant source is supplied."
+        ],
+        "writePaths": [],
+        "testFiles": [],
+        "sources": [
+          "src/server.js sha256:b3a687951a2fcb8d92ab98c5b8046273b898845461a62e9f4df119531de15d6f",
+          "src/work.js sha256:8bc2ab5bfee461d79919d7213e606e6048f521c9318e50338e2892b4cbcb9fef",
+          "docs/ROUTING-WORKFLOW.vi.md",
+          "docs/CONSISTENCY-JOURNEYS.vi.md"
+        ],
+        "facts": [
+          "Source contract: docs/ROUTING-WORKFLOW.vi.md steps 6-8 and docs/CONSISTENCY-JOURNEYS.vi.md UC04: reported does not mean verified; only tested integrated source completes the requirements of that attempt. A task may be reconfigured later. Handoff must truthfully identify which task requirements the evidence supports; preserve original references/facts and distinguish historical vs current criteria. Missing legacy requirement snapshot must be unknown, never replaced by later requirements.",
+          "          if (/^work\\/runs\\/[\\w-]+\\/(artifact|handoff)$/.test(action) && req.method === 'GET') {\n            const parts = action.split('/'), state = work.read(), run = state.runs.find(r => r.id === parts[2]), task = run && state.tasks.find(t => t.id === run.taskId);\n            if (!run) return json(404, { error: 'Run not found' });\n            if (parts[3] === 'handoff') return json(200, { schema: 'agent-meeting/handoff@1', task, runId: run.id, status: run.status, configRevision: run.configRevision, baseRevision: run.baseRevision, actualModel: run.reportedModel, runtime: run.adapter, changes: run.changes, verification: run.evidence, integrationVerification: run.integrationEvidence || [], usage: run.usage, costUsd: run.costUsd, ...(run.skillEvidence ? { skillEvidence: run.skillEvidence } : {}), limitations: ['Single-file automatic integration', 'Filesystem write isolation only', ...(run.skillEvidence ? ['Skill supply is observed; semantic application and model tool use are not established by supply metadata'] : []), ...(run.status !== 'integrated' ? ['Not accepted as completed'] : [])] });\n            const file = u.searchParams.get('path'), change = run.changes.find(c => c.file === file);\n            if (!change?.after) return json(404, { error: 'Changed file bytes are unavailable' });\n            const bytes = fs.readFileSync(safeFile(run.workspace, file));\n            if (crypto.createHash('sha256').update(bytes).digest('hex') !== change.after) return json(409, { error: 'Workspace artifact changed' });\n            return send(200, 'application/octet-stream', bytes, { 'content-disposition': 'attachment; filename=\"result.bin\"; filename*=UTF-8\\'\\'' + encodeURIComponent(path.basename(file)), 'content-security-policy': 'sandbox', 'cache-control': 'no-store' });\n          }\n",
+          "  createTask(input) {\n    const d = checkTask(copy(input));\n    delete d.skillSnapshot;\n    if (d.skillPolicy) d.skillSnapshot = taskSkills.pin(d);\n    const task = { ...d, id: crypto.randomUUID(), requirementRevision: 1, status: d.purpose === 'execute' ? 'ready' : 'planned', createdAt: new Date().toISOString() };\n    this.update(state => {\n      if (state.tasks.length >= 1000) throw failure('Task history is full; export and archive before creating more');\n      if (task.dependencies.some(id => !state.tasks.some(t => t.id === id))) throw failure('Unknown dependency');\n      state.tasks.push(task);\n    }); return task;\n  }\n  // Meeting owns conversation/manual reports; work owns execution requirements and evidence.\n  // The original action timestamp survives carry/restore; numbers alone are not identities.\n  syncRoom(room) {\n    const state = this.read(), before = JSON.stringify(state);\n    if (state.sessionCreatedAt > room.createdAt) return state;\n    state.sessionCreatedAt = room.createdAt;\n    for (const task of state.tasks) if (task.origin?.kind === 'meeting-action') task.sourceCurrent = false;\n    for (const action of room.actions) {\n      const linked = state.tasks.find(t => t.origin?.kind === 'meeting-action' && t.origin.number === action.n && t.origin.timestamp === action.t);\n      const id = linked?.id || 'meeting-' + hash(room.hostKey + ':' + action.n + ':' + action.t).slice(0, 32);\n      let task = state.tasks.find(t => t.id === id);\n      const context = room.context || task?.context || task?.origin?.context || room.carry?.context || '';\n      if (task && task.context === undefined) task.context = task.origin?.context || context;\n      if (!task) {\n        if (state.tasks.length >= 1000) throw failure('Task history is full; export and archive before creating more');\n        const message = action.sourceMessageIndex !== undefined\n          ? action.sourceRoomCreatedAt === room.createdAt ? room.log.find(m => m.i === action.sourceMessageIndex) : null\n          : [...room.log].reverse().find(m => m.t === action.t && ['host','chat'].includes(m.type) && m.text.includes(action.task));\n        task = { id, context, goal: action.task, purpose: 'plan', topology: 'local', management: 'invited', acceptance: [], dependencies: [], writePaths: [], testFiles: [], sources: [], facts: [], unknowns: [], requirementRevision: 1, status: 'planned', createdAt: new Date(action.t).toISOString(),\n          origin: { kind: 'meeting-action', number: action.n, timestamp: action.t, roomCreatedAt: action.sourceRoomCreatedAt || room.createdAt, messageIndex: message?.i ?? null, message: message?.text || '', context: room.context || room.carry?.context || '' } };\n        state.tasks.push(task);\n      } else if (task.goal !== action.task || task.owner !== undefined && task.owner !== action.owner || task.context !== undefined && task.context !== context) {\n        task.goal = action.task; task.context = context; task.requirementRevision++;\n        task.status = state.runs.some(r => r.taskId === id) ? 'stale' : 'planned';\n      }\n      task.owner = action.owner; task.sourceCurrent = true;\n      task.reportedProgress = { status: action.status, note: action.note, updatedAt: action.updatedAt, updatedBy: action.updatedBy };\n    }\n    if (JSON.stringify(state) !== before) this.store.save(state, state.revision);\n    return this.read();\n  }\n  assertCurrent(taskId, revision) {\n    this.refreshSource?.();\n    const task = this.read().tasks.find(t => t.id === taskId);\n    if (!task) throw failure('Task not found', 404);\n    if (task.sourceCurrent === false) throw failure('Task source is no longer in this meeting; review the current plan', 409);\n    if (revision !== undefined && task.requirementRevision !== revision) throw failure('Requirement revision changed; the old result cannot be accepted', 409);\n    return task;\n  }\n  configureTask(id, input) {\n    const tas",
+          "k = this.assertCurrent(id);\n    if (task.requirementRevision !== input.expectedRevision) throw failure('Task changed; reload before saving this draft', 409);\n    const state = this.read();\n    if (state.runs.some(r => r.taskId === id && ['running','verifying','integrating','interrupted'].includes(r.status))) throw failure('Cancel or reconcile the existing run before changing execution requirements', 409);\n    const next = copy(task);\n    for (const key of ['risk','purpose','topology','management','acceptance','dependencies','writePaths','testFiles','sources','facts','unknowns','workspace','baseRevision','skillPolicy']) if (input[key] !== undefined) next[key] = copy(input[key]);\n    checkTask(next);\n    if (input.skillPolicy !== undefined) next.skillSnapshot = taskSkills.pin(next);\n    else if (next.skillPolicy) taskSkills.assertCurrent(next);\n    if (next.dependencies.some(dep => dep === id || !state.tasks.some(t => t.id === dep))) throw failure('Unknown or self dependency');\n    // Reject cycles, including those introduced by editing an existing plan.\n    const reaches = (dep, seen = new Set()) => dep === id || !seen.has(dep) && (seen.add(dep), (state.tasks.find(t => t.id === dep)?.dependencies || []).some(x => reaches(x, seen)));\n    if (next.dependencies.some(dep => reaches(dep))) throw failure('Dependency cycle');\n    next.requirementRevision++; next.status = next.purpose === 'execute' ? 'ready' : 'planned';\n    this.update(d => { d.tasks[d.tasks.findIndex(t => t.id === id)] = next; });\n    return next;\n  }\n"
+        ],
+        "dependencies": [],
+        "unknowns": [],
+        "id": "cdc70c1b-8cc8-49a2-95c5-8ad54cc9dc58",
+        "requirementRevision": 1,
+        "status": "ready",
+        "createdAt": "2026-10-24T06:03:14.507Z"
+      }
+    ],
+    "runs": [],
+    "observations": [
+      {
+        "profileId": "flash-gemini",
+        "runtimeId": "agy",
+        "adapter": "agy",
+        "configRevision": 2,
+        "providerModelId": "gemini-3.8-flash-low",
+        "requestedModel": "gemini-3.8-flash-low",
+        "reportedModel": "unknown",
+        "available": true,
+        "modelVerified": false,
+        "quotaAvailable": true,
+        "checkedAt": "2026-10-24T06:03:21.438Z",
+        "tools": [],
+        "permissions": [],
+        "error": null
+      }
+    ],
+    "sessionCreatedAt": 1792821794429,
+    "metrics": {
+      "schema": "agent-meeting/evaluation@1",
+      "summary": {
+        "attempts": 0,
+        "tasks": 0,
+        "retryAttempts": 0,
+        "statuses": {
+          "queued": 0,
+          "leased": 0,
+          "lost": 0,
+          "running": 0,
+          "reported": 0,
+          "verifying": 0,
+          "verified": 0,
+          "integrating": 0,
+          "integrated": 0,
+          "failed": 0,
+          "cancelled": 0,
+          "timeout": 0,
+          "output-limit": 0,
+          "rejected": 0,
+          "interrupted": 0,
+          "unknown": 0
+        },
+        "independentlyVerifiedRuns": 0,
+        "acceptedRuns": 0,
+        "acceptedTasks": 0,
+        "acceptanceRate": null,
+        "costUsd": null,
+        "knownCostUsd": null,
+        "unknownCostRuns": 0,
+        "elapsedMs": null,
+        "knownElapsedMs": null,
+        "unknownElapsedRuns": 0,
+        "averageElapsedMs": null,
+        "usage": {
+          "input": null,
+          "output": null,
+          "total": null,
+          "cachedInput": null,
+          "reasoning": null
+        },
+        "unknownUsageRuns": {
+          "input": 0,
+          "output": 0,
+          "total": 0,
+          "cachedInput": 0,
+          "reasoning": 0
+        }
+      },
+      "byTask": [],
+      "byModel": [],
+      "byRuntime": [],
+      "items": [],
+      "totals": {
+        "byTask": 0,
+        "byModel": 0,
+        "byRuntime": 0,
+        "items": 0
+      },
+      "truncated": false,
+      "limit": 20,
+      "maxBytes": 65536,
+      "interpretation": "descriptive-only; no automatic model ranking or causal claim"
+    },
+    "session": {
+      "createdAt": 1792821794429,
+      "state": "LIVE",
+      "context": "Fix historical run handoff provenance in src/server.js. Return a minimal exact find/replace edit as JSON data; do not write files. The handoff for an earlier integrated run currently exports later task acceptance and sources after configuration changes. Preserve the old evidence and clearly distinguish its requirements from current requirements.",
+      "decisions": []
+    }
+  },
+  "http": [
+    {
+      "endpoint": "start",
+      "status": 200,
+      "requestBytes": 373,
+      "responseBytes": 11,
+      "elapsedMs": 66
+    },
+    {
+      "endpoint": "config",
+      "status": 200,
+      "requestBytes": 0,
+      "responseBytes": 17325,
+      "elapsedMs": 3
+    },
+    {
+      "endpoint": "config",
+      "status": 200,
+      "requestBytes": 17391,
+      "responseBytes": 17359,
+      "elapsedMs": 5
+    },
+    {
+      "endpoint": "work/tasks",
+      "status": 201,
+      "requestBytes": 9175,
+      "responseBytes": 9331,
+      "elapsedMs": 5
+    },
+    {
+      "endpoint": "work/tasks/cdc70c1b-8cc8-49a2-95c5-8ad54cc9dc58/run",
+      "status": 409,
+      "requestBytes": 28,
+      "responseBytes": 137,
+      "elapsedMs": 11
+    },
+    {
+      "endpoint": "runtime/probe",
+      "status": 200,
+      "requestBytes": 28,
+      "responseBytes": 329,
+      "elapsedMs": 6921
+    },
+    {
+      "endpoint": "work/tasks/cdc70c1b-8cc8-49a2-95c5-8ad54cc9dc58/run",
+      "status": 409,
+      "requestBytes": 28,
+      "responseBytes": 137,
+      "elapsedMs": 10
+    },
+    {
+      "endpoint": "work",
+      "status": 200,
+      "requestBytes": 0,
+      "responseBytes": 11162,
+      "elapsedMs": 3
+    }
+  ],
+  "calls": [
+    {
+      "kind": "access-probe",
+      "elapsedMs": 6910,
+      "requestedModel": "gemini-3.8-flash-low",
+      "adapter": "agy",
+      "valid": true,
+      "reportedModel": "unknown",
+      "text": "READY\n",
+      "usage": {
+        "input_tokens": 7790,
+        "output_tokens": 1,
+        "thinking_tokens": 0,
+        "cache_read_tokens": 0,
+        "total_tokens": 7791
+      },
+      "costUsd": null,
+      "permissionDenials": 0,
+      "error": null,
+      "exitCode": 0,
+      "status": "reported",
+      "workspace": "/tmp/am-value-20261024-125904/managed-work/0a9db9b442fe972b36b30d9607a6544940178d90000a50c3136bd0fed3d5d39e/probes/e5ac5b4f-ee3d-4c2d-b631-333a66c16bc3"
+    }
+  ],
+  "actualModel": "unknown",
+  "nativeManagedTaskInference": 0,
+  "guardUnchanged": true,
+  "configScope": "isolated /tmp, not global",
+  "comparison": "same read-only patch-as-data task; direct output requires PM application and tests"
+}

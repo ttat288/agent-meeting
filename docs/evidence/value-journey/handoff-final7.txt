@@ -1,0 +1,52 @@
+TAP version 13
+# Subtest: handoff retains the executed requirements after reconfiguration and restart
+ok 1 - handoff retains the executed requirements after reconfiguration and restart
+  ---
+  duration_ms: 724.872531
+  type: 'test'
+  ...
+# Subtest: current and failed handoffs keep run identity and do not imply completion
+ok 2 - current and failed handoffs keep run identity and do not imply completion
+  ---
+  duration_ms: 54.931147
+  type: 'test'
+  ...
+# Subtest: legacy run without a requirement snapshot never borrows present-day criteria
+ok 3 - legacy run without a requirement snapshot never borrows present-day criteria
+  ---
+  duration_ms: 54.542235
+  type: 'test'
+  ...
+# Subtest: a historical snapshot is exportable when the current task is unavailable
+ok 4 - a historical snapshot is exportable when the current task is unavailable
+  ---
+  duration_ms: 47.011828
+  type: 'test'
+  ...
+# Subtest: refreshing a historical run cannot change the newer task or erase old evidence
+ok 5 - refreshing a historical run cannot change the newer task or erase old evidence
+  ---
+  duration_ms: 288.19183
+  type: 'test'
+  ...
+# Subtest: a missing source checkout leaves refresh state intact and can recover after restoration
+ok 6 - a missing source checkout leaves refresh state intact and can recover after restoration
+  ---
+  duration_ms: 534.36222
+  type: 'test'
+  ...
+# Subtest: missing run revision remains unknown even if the historical snapshot has a revision
+ok 7 - missing run revision remains unknown even if the historical snapshot has a revision
+  ---
+  duration_ms: 43.800927
+  type: 'test'
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1878.877428

@@ -53,7 +53,7 @@
       try { result = await response.json(); } catch { result = {}; }
       if (!response.ok) {
         const error = new Error(response.status === 409 && endpoint.startsWith('/config') ? t('Cấu hình đã thay đổi ở nơi khác. Bản đang sửa được giữ lại. Tải lại cấu hình để lấy revision mới; thao tác này bỏ bản đang sửa.', 'Configuration changed elsewhere. Your draft is retained. Reload configuration to get the new revision; this discards your draft.') : result.error || result.message || t('Yêu cầu thất bại', 'Request failed') + ' (' + response.status + ')');
-        error.status = response.status; error.configConflict = response.status === 409 && endpoint.startsWith('/config');
+        error.status = response.status; error.code = result.code; error.configConflict = response.status === 409 && endpoint.startsWith('/config');
         throw error;
       }
       if (endpoint === '/work' && data === undefined) { metrics = result.metrics; metricsError = null; window.dispatchEvent(new CustomEvent('am-work-state', { detail: result })); }
@@ -67,6 +67,8 @@
       'Runtime reported permission denials': 'CLI đã từ chối một thao tác. Kiểm tra quyền CLI và phạm vi task trước khi thử lại.',
       'Acceptance criteria required': 'Cần ít nhất một tiêu chí nghiệm thu.',
       'Runtime access is unverified or routing constraints reject this task; probe the profile first': 'Chưa xác nhận quyền truy cập runtime hoặc task không đáp ứng quy tắc chia việc. Vào Quản trị → Agent & runtime để kiểm tra hồ sơ.',
+      'Model access is unverified, unavailable or expired; probe the selected profile before retrying': 'Truy cập model chưa được xác nhận, không khả dụng hoặc đã hết hạn. Kiểm tra lại hồ sơ đã chọn trước khi thử lại.',
+      'Routing constraints reject this task; review task requirements and routing policy before retrying': 'Task không đáp ứng quy tắc chia việc. Kiểm tra yêu cầu task và chính sách trước khi thử lại; probe không sửa các điều kiện này.',
       'Task changed; reload before saving this draft': 'Task đã thay đổi. Bản nháp được giữ theo revision cũ; làm mới để xem yêu cầu hiện tại.',
       'Task changed; refresh before running this task': 'Yêu cầu của task đã đổi. Xem cập nhật trước khi chọn hồ sơ và chạy lại.',
       'Cancel or reconcile the existing run before changing execution requirements': 'Hủy hoặc xử lý phiên chạy hiện tại trước khi sửa yêu cầu.',
@@ -80,22 +82,58 @@
       'Base revision changed': 'Base revision đã thay đổi. Kiểm tra lại checkout nguồn.',
       'Source checkout path changed': 'Đường dẫn checkout nguồn đã đổi. Kiểm tra thư mục thật trước khi tích hợp.',
       'Configuration changed; refresh before selecting an execution profile': 'Cấu hình đã đổi. Bấm Làm mới để xem và chọn hồ sơ chạy hiện tại.',
-      'Configuration changed; reload before probing this profile': 'Cấu hình đã đổi. Giữ lại nội dung cần dùng rồi tải lại trang để xem ánh xạ hiện tại trước khi probe.'
+      'Configuration changed; reload before probing this profile': 'Cấu hình đã đổi. Giữ lại nội dung cần dùng rồi tải lại trang để xem ánh xạ hiện tại trước khi probe.',
+      'Skill source changed; review it and save the task policy again before an explicit Run': 'Nguồn skill đã đổi. Kiểm tra nguồn và lưu lại chính sách skill của task qua API chủ trì trước khi chủ động Chạy.',
+      'Skill or declared resource is missing, blocked or too large; repair the local catalog and save the task policy again': 'Skill hoặc tài liệu đã khai báo bị thiếu, bị chặn hoặc quá lớn. Sửa catalog local rồi lưu lại chính sách skill qua API chủ trì.',
+      'Run requirement revision is unavailable; review the current task and start a new attempt': 'Không xác định được revision yêu cầu của lần chạy cũ. Kiểm tra task hiện tại rồi chủ động tạo lần chạy mới.',
+      'Task skill policy is supported only by managed Claude; select a supported profile': 'Chính sách skill của task chỉ hỗ trợ Claude do ứng dụng quản lý. Chọn hồ sơ được hỗ trợ.',
+      'Task skills are not supported by managed team/swap runners; use a direct local managed run': 'Team/chuyển runtime chưa hỗ trợ skill theo task. Dùng lần chạy local do ứng dụng trực tiếp quản lý.',
+      'Task plus required skills exceed the runtime prompt limit; narrow the task skill policy': 'Task cùng skill bắt buộc vượt giới hạn context. Thu hẹp chính sách skill qua API chủ trì trước khi Chạy.'
     };
     return lang === 'vi' && translations[message] || message;
   }
-  function errorBox(container, error, fieldId) {
+  function errorBox(container, error, fieldId, takeFocus = true) {
+    container.querySelector('.ws-access-recovery')?.remove();
     container.querySelector('.ws-error')?.remove();
     const box = node('div', { class: 'ws-error', role: 'alert', tabindex: '-1' }, node('strong', {}, t('Chưa thể hoàn thành thao tác', 'Unable to complete this action')), node('p', {}, friendlyError(error.message)));
     if (fieldId) { const input = $(fieldId); for (let parent = input?.parentElement; parent; parent = parent.parentElement) if (parent.tagName === 'DETAILS') parent.open = true; input?.setAttribute('aria-invalid', 'true'); box.append(button(t('Kiểm tra trường nhập', 'Check this field'), () => input?.focus())); }
     if (error.configConflict) box.append(button(t('Tải lại cấu hình', 'Reload configuration'), load));
-    container.prepend(box); box.focus();
+    if (error.code === 'MODEL_ACCESS_REQUIRED' && error.executionProfile) {
+      box.className = 'ws-error ws-access-recovery';
+      const selected = error.executionProfile;
+      box.append(node('p', {}, t('Hồ sơ: ', 'Profile: ') + selected.label));
+      box.append(node('p', {}, t('Kiểm tra gọi CLI thật và có thể tốn phí. Không sửa yêu cầu hoặc tự chạy lại task.', 'The check invokes the CLI and may incur cost. It does not change requirements or rerun the task.')));
+      const probe = button(t('Kiểm tra truy cập hồ sơ đã chọn (gọi CLI thật)', 'Probe selected profile access (invokes the CLI)'), () => action(probe, container, async () => {
+        const active = document.activeElement;
+        probe.textContent = t('Đang kiểm tra truy cập model…', 'Probing model access…');
+        const observed = await api('/runtime/probe', { profileId: selected.id, expectedConfigRevision: selected.configRevision });
+        if (observed.stale) throw new Error(t('Cấu hình đã đổi. Làm mới rồi kiểm tra hồ sơ hiện tại; task chưa chạy lại.', 'Configuration changed. Refresh and review the current profile; the task has not rerun.'));
+        if (observed.available !== true || observed.modelVerified !== true || observed.quotaAvailable !== true) {
+          let message = t('Chưa xác nhận được truy cập model. Mở Quản trị để xem quan sát và kiểm tra CLI/quyền trước khi thử lại.', 'Model access could not be confirmed. Open Administration to inspect the observation and check CLI access before retrying.');
+          if (observed.available === true && observed.quotaAvailable === true && observed.modelVerified !== true) {
+            const mismatch = typeof observed.reportedModel === 'string' && observed.reportedModel.trim() && observed.reportedModel !== 'unknown';
+            message = t('Chưa xác nhận được truy cập model. ', 'Model access could not be confirmed. ') + (mismatch
+              ? t('CLI đã phản hồi nhưng báo model khác. Kiểm tra ánh xạ hồ sơ trong Quản trị trước khi kiểm tra lại; chưa có phiên chạy mới.', 'CLI responded, but reported a different model. Check the profile mapping in Administration before probing again; no new run has started.')
+              : t('CLI đã phản hồi nhưng không báo model thực. Xem thông tin model của runtime trong Quản trị trước khi kiểm tra lại; chưa có phiên chạy mới.', 'CLI responded, but did not report the actual model. Inspect runtime model reporting in Administration before probing again; no new run has started.'));
+          }
+          const failed = new Error(message);
+          failed.code = 'MODEL_ACCESS_REQUIRED'; failed.executionProfile = selected; throw failed;
+        }
+        if (!box.isConnected) return;
+        box.className = 'ws-warning ws-access-recovery'; box.setAttribute('role', 'status');
+        box.replaceChildren(node('p', {}, t('Đã xác nhận truy cập cho ', 'Access confirmed for ') + selected.label + '. ' + t('Kiểm tra lại task và bấm Chạy khi sẵn sàng; chưa có phiên chạy mới.', 'Review the task and press Run when ready; no new run has started.')));
+        if (!container.closest('[hidden]') && (document.activeElement === active || document.activeElement === document.body)) box.focus();
+      }, { preserveFocus: true }));
+      box.append(node('div', { class: 'ws-actions' }, probe, node('a', { class: 'btn ghost', href: meetingUrl + '/admin?lang=' + lang + '&section=runtime&view=execute' }, t('Xem trong Quản trị', 'Inspect in Administration'))));
+    }
+
+    container.prepend(box); if (takeFocus) box.focus();
   }
-  async function action(btn, container, fn) {
+  async function action(btn, container, fn, { preserveFocus = false } = {}) {
     btn.disabled = true;
     container.setAttribute('aria-busy', 'true');
     renderSyncStatus();
-    try { await fn(); } catch (e) { if (container.isConnected && btn.isConnected && !btn.closest('[hidden]')) errorBox(container, e); else notify(t('Chưa nhận được kết quả thao tác trước: ', 'Previous action result unavailable: ') + friendlyError(e.message)); }
+    try { await fn(); } catch (e) { if (container.isConnected && btn.isConnected && !btn.closest('[hidden]')) errorBox(container, e, undefined, !preserveFocus || document.activeElement === btn || document.activeElement === document.body); else notify(t('Chưa nhận được kết quả thao tác trước: ', 'Previous action result unavailable: ') + friendlyError(e.message)); }
     finally { btn.disabled = false; container.removeAttribute('aria-busy'); renderSyncStatus(); }
   }
   function checkedAction(btn, container, run, operation) {
@@ -326,7 +364,10 @@
           const controls = node('div', { class: 'ws-run-controls' });
           const run = button(t('Chạy trong workspace riêng', 'Run in isolated workspace'), () => action(run, card, async () => {
             if (!val(profileId)) { errorBox(card, new Error(t('Chọn hồ sơ chạy trước.', 'Select an execution profile first.')), profileId); return; }
-            await api('/work/tasks/' + encodeURIComponent(task.id) + '/run', { profileId: val(profileId), expectedConfigRevision: configRevision, expectedRequirementRevision: task.requirementRevision }); acceptWork(await api('/work')); renderTaskList(); notify(t('Đã gửi yêu cầu chạy.', 'Run requested.'));
+            const selected = { id: val(profileId), label: profiles.find(p => p.id === val(profileId))?.label || val(profileId), configRevision };
+            try { await api('/work/tasks/' + encodeURIComponent(task.id) + '/run', { profileId: selected.id, expectedConfigRevision: configRevision, expectedRequirementRevision: task.requirementRevision }); }
+            catch (error) { error.executionProfile = selected; throw error; }
+            acceptWork(await api('/work')); renderTaskList(); notify(t('Đã gửi yêu cầu chạy.', 'Run requested.'));
           }), true);
           const existingResult = runs.some(r => r.requirementRevision === task.requirementRevision && !['failed','cancelled','timeout','output-limit','rejected'].includes(r.status));
           run.disabled = !profiles.length || runs.some(activeRun) || existingResult;
@@ -371,7 +412,7 @@
         const downloads = node('div', { class: 'ws-actions' }, node('a', { class: 'btn ghost', href: base + '/work/runs/' + encodeURIComponent(run.id) + '/handoff', download: 'handoff.json' }, t('Tải bản bàn giao', 'Download handoff')));
         for (const change of run.changes || []) if (change.after) downloads.append(node('a', { class: 'btn ghost', href: base + '/work/runs/' + encodeURIComponent(run.id) + '/artifact?path=' + encodeURIComponent(change.file) }, t('Tải kết quả: ', 'Download result: ') + change.file));
         const details = disclosure(t('Bằng chứng và tệp bàn giao', 'Evidence and handoff files'), node('p', { class: 'ws-meta' }, run.id + ' · ' + (run.profileId || '') + ' · ' + (run.reportedModel || run.actualModel || t('Model chưa biết', 'Model unknown'))), downloads);
-        if (['reported', 'verified'].includes(run.status)) {
+        if (['reported', 'verified'].includes(run.status) && task.sourceCurrent !== false && run.requirementRevision === task.requirementRevision) {
           const rebase = button(t('Cập nhật nguồn và kiểm chứng lại', 'Refresh source and verify again'), () => action(rebase, runView, async () => { await api('/work/runs/' + encodeURIComponent(run.id) + '/rebase', {}); acceptWork(await api('/work')); renderTaskList(); })); details.append(rebase);
         }
 

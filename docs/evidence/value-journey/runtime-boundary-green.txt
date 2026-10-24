@@ -1,0 +1,136 @@
+TAP version 13
+# Subtest: bubblewrap write boundary available or fails closed with explicit error
+ok 1 - bubblewrap write boundary available or fails closed with explicit error
+  ---
+  duration_ms: 12.910736
+  type: 'test'
+  ...
+# Subtest: writes inside workspace succeed; outside and symlink escapes fail; scratch cleans up
+ok 2 - writes inside workspace succeed; outside and symlink escapes fail; scratch cleans up
+  ---
+  duration_ms: 121.188311
+  type: 'test'
+  ...
+# Subtest: read-only execution rejects workspace writes; logs are isolated and settings/auth readonly
+ok 3 - read-only execution rejects workspace writes; logs are isolated and settings/auth readonly
+  ---
+  duration_ms: 120.32703
+  type: 'test'
+  ...
+# Subtest: refuses broad workspace and malformed command options
+ok 4 - refuses broad workspace and malformed command options
+  ---
+  duration_ms: 26.951829
+  type: 'test'
+  ...
+# Subtest: runtime cancelled drains group escalation when its parent exits before a silent grandchild
+ok 5 - runtime cancelled drains group escalation when its parent exits before a silent grandchild
+  ---
+  duration_ms: 2395.705115
+  type: 'test'
+  ...
+# Subtest: runtime timeout drains group escalation when its parent exits before a silent grandchild
+ok 6 - runtime timeout drains group escalation when its parent exits before a silent grandchild
+  ---
+  duration_ms: 7194.236588
+  type: 'test'
+  ...
+# Subtest: adapter arguments require an explicit safe provider ID and bounded nonempty prompt
+ok 7 - adapter arguments require an explicit safe provider ID and bounded nonempty prompt
+  ---
+  duration_ms: 3.934839
+  type: 'test'
+  ...
+# Subtest: agy receives the entire prompt as one literal argv value and rejects writes
+ok 8 - agy receives the entire prompt as one literal argv value and rejects writes
+  ---
+  duration_ms: 0.423822
+  type: 'test'
+  ...
+# Subtest: Claude keeps prompt out of flags, isolates MCP, and limits write tool scope
+ok 9 - Claude keeps prompt out of flags, isolates MCP, and limits write tool scope
+  ---
+  duration_ms: 0.235957
+  type: 'test'
+  ...
+# Subtest: malformed JSON and nonobject JSON always fail without throwing
+ok 10 - malformed JSON and nonobject JSON always fail without throwing
+  ---
+  duration_ms: 0.574016
+  type: 'test'
+  ...
+# Subtest: runtime error variants and missing output cannot become successful reports
+ok 11 - runtime error variants and missing output cannot become successful reports
+  ---
+  duration_ms: 0.429878
+  type: 'test'
+  ...
+# Subtest: Claude envelope preserves machine model, usage, cost and a permission-denial diagnostic
+ok 12 - Claude envelope preserves machine model, usage, cost and a permission-denial diagnostic
+  ---
+  duration_ms: 0.202672
+  type: 'test'
+  ...
+# Subtest: runtime billing and model evidence stay unknown when inconsistent
+ok 13 - runtime billing and model evidence stay unknown when inconsistent
+  ---
+  duration_ms: 0.465137
+  type: 'test'
+  ...
+# Subtest: agy success keeps self-identified prose model unknown and bounds model output
+ok 14 - agy success keeps self-identified prose model unknown and bounds model output
+  ---
+  duration_ms: 1.08164
+  type: 'test'
+  ...
+# Subtest: runCli sends Claude prompt verbatim on stdin, uses shell false and never claims verified
+ok 15 - runCli sends Claude prompt verbatim on stdin, uses shell false and never claims verified
+  ---
+  duration_ms: 4.526487
+  type: 'test'
+  ...
+# Subtest: runtime reports preserve Vietnamese and emoji across arbitrary UTF-8 stream boundaries
+ok 16 - runtime reports preserve Vietnamese and emoji across arbitrary UTF-8 stream boundaries
+  ---
+  duration_ms: 3.454308
+  type: 'test'
+  ...
+# Subtest: UTF-8 stream decoding retains the one-MiB output byte cap
+ok 17 - UTF-8 stream decoding retains the one-MiB output byte cap
+  ---
+  duration_ms: 2014.287812
+  type: 'test'
+  ...
+# Subtest: runCli rejects nonzero exit, malformed result, and permission denial despite positive success JSON
+ok 18 - runCli rejects nonzero exit, malformed result, and permission denial despite positive success JSON
+  ---
+  duration_ms: 4.38208
+  type: 'test'
+  ...
+# Subtest: agy SUCCESS with denied_actions is a permission failure, not a completed report
+ok 19 - agy SUCCESS with denied_actions is a permission failure, not a completed report
+  ---
+  duration_ms: 0.560221
+  type: 'test'
+  ...
+# Subtest: agy read-only model calls always request a filesystem write boundary
+ok 20 - agy read-only model calls always request a filesystem write boundary
+  ---
+  duration_ms: 0.48757
+  type: 'test'
+  ...
+# Subtest: agy probes fail closed before process launch when the filesystem boundary is unavailable
+ok 21 - agy probes fail closed before process launch when the filesystem boundary is unavailable
+  ---
+  duration_ms: 1.109192
+  type: 'test'
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9770.161905

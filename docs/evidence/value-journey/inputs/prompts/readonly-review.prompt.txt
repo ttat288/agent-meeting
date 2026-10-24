@@ -1,0 +1,415 @@
+Task VALUE-AGY-READONLY-REVIEW. Independent read-only review. Do not invoke tools, commands, RunCommand, task_boundary or file operations; respond directly from supplied source. A real controlled fixture using exact buildArgs(agy,write:false) flags (--mode plan --sandbox --disable-slash-commands) edited probe.txt BEFORE→AFTER, despite the plan request. The outer experimental sandbox allowed writes only to the disposable fixture so no real user files were exposed. Current fix forces wrapExecution for every agy runCli model call including readonly/probe, passes write: options.write===true (false for those calls), and fails closed before spawn without a working boundary. Existing agy write:true and taskContextFile rejection are preserved. After fix the same prompt through default runCli with NO isolate option left the file BEFORE and reported EROFS. The model prose misattributes the protection to execution mode; PM attributes it to the filesystem boundary. Review concrete regression/bypass in the patch, cancellation/cleanup and tests. Do not claim read/network/MCP-server isolation or broaden to unobserved providers; no new adapter or permissions. Known compatibility tightening: agy read-only/probe now needs Linux/bwrap; external user-opened CLIs are outside control. Timeout180s retry0.
+
+SOURCE src/runtime.js
+'use strict';
+// Built-in adapters only. Configuration never supplies a shell command or executable.
+const { spawn, spawnSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+const ADAPTERS = Object.freeze(['claude', 'agy']);
+const MAX_PROMPT_BYTES = 128 * 1024;
+function executable(adapter) {
+  if (adapter === 'claude') return require('./connect').findCli('claude');
+  if (adapter !== 'agy') return null;
+  const r = spawnSync(process.platform === 'win32' ? 'where' : 'which', ['agy'], { encoding: 'utf8', timeout: 3000 });
+  return r.status === 0 ? r.stdout.trim().split(/\r?\n/)[0] : null;
+}
+function checkRuntime(adapter) {
+  if (!ADAPTERS.includes(adapter)) throw new Error('Unsupported adapter');
+  const bin = executable(adapter), checkedAt = new Date().toISOString();
+  if (!bin) return { adapter, executable: false, version: null, access: 'unknown', checkedAt, resume: false };
+  const r = spawnSync(bin, ['--version'], { encoding: 'utf8', timeout: 5000, maxBuffer: 8192 });
+  return { adapter, executable: r.status === 0, version: r.status === 0 ? r.stdout.trim().slice(0, 200) : null,
+    access: 'unknown', checkedAt, resume: false, cancel: true, processTools: adapter === 'claude' };
+}
+function contextConfig(file) {
+  if (!file) return { config: { mcpServers: {} }, tools: [], readOnlyPaths: [] };
+  if (!path.isAbsolute(file) || fs.realpathSync(file) !== file) throw new Error('Canonical task context file required');
+  const stat = fs.lstatSync(file);
+  if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 512 * 1024) throw new Error('Invalid task context file');
+  const context = JSON.parse(fs.readFileSync(file, 'utf8'));
+  const lookup = require('./task-skills').createLookup(context);
+  return { config: { mcpServers: { task_skills: { command: process.execPath, args: [path.join(__dirname, '..', 'bin', 'task-skills.js'), file] } } },
+    tools: lookup.tools.map(t => 'mcp__task_skills__' + t.name), readOnlyPaths: [file, context.snapshot.root] };
+}
+function buildArgs(adapter, { modelId, prompt, write = false, readOnlyTools = false, taskContextFile, taskSkillMode = false }) {
+  if (!ADAPTERS.includes(adapter)) throw new Error('Unsupported adapter');
+  if (typeof modelId !== 'string' || !/^[a-zA-Z0-9][\w.:-]{0,120}$/.test(modelId)) throw new Error('Explicit model ID required');
+  if (typeof prompt !== 'string' || !prompt.trim() || Buffer.byteLength(prompt) > MAX_PROMPT_BYTES) throw new Error('Invalid prompt');
+  if (adapter === 'claude') {
+    const context = contextConfig(taskContextFile);
+    return ['--print', '--model', modelId, '--output-format', 'json', '--no-session-persistence',
+      '--permission-mode', write ? 'auto' : 'plan', '--permission-prompts', 'none', '--strict-mcp-config', '--mcp-config', JSON.stringify(context.config),
+      '--tools', write ? 'Read,Edit,Write,Glob,Grep' : readOnlyTools ? 'Read,Glob,Grep' : '',
+      ...(taskSkillMode || taskContextFile ? ['--setting-sources', '', '--settings', '{"disableAllHooks":true}', '--disable-slash-commands'] : []),
+      ...(context.tools.length ? ['--allowedTools', context.tools.join(',')] : [])];
+  }
+  if (taskContextFile) throw new Error('Task skill MCP is unsupported by this adapter');
+  if (write) throw new Error('agy write mode is not verified; use read-only plan tasks');
+  return ['--print', prompt, '--model', modelId, '--output-format', 'json', '--mode', 'plan', '--sandbox', '--disable-slash-commands'];
+}
+function parseOutput(adapter, stdout) {
+  let obj;
+  try { obj = JSON.parse(stdout); } catch { return { valid: false, reportedModel: 'unknown', text: '', usage: null, error: 'Invalid runtime JSON' }; }
+  if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return { valid: false, reportedModel: 'unknown', text: '', usage: null, error: 'Runtime result must be an object' };
+  const text = String(obj.result ?? obj.response ?? obj.text ?? '');
+  // An explicit nonempty error field overrides any success marker.
+  const hasError = obj.error != null && obj.error !== false && String(obj.error).trim().length > 0;
+  const success = !hasError && (adapter === 'agy' ? obj.status === 'SUCCESS' && text.trim().length > 0 : obj.type === 'result' && obj.subtype === 'success' && !obj.is_error && text.trim().length > 0);
+  const models = obj.modelUsage && typeof obj.modelUsage === 'object' ? Object.keys(obj.modelUsage) : [];
+  const permissionDenials = (Array.isArray(obj.permission_denials) ? obj.permission_denials.length : 0)
+    + (adapter === 'agy' && Array.isArray(obj.denied_actions) ? obj.denied_actions.length : 0);
+  // agy response contracts vary. Only machine fields count; prose self-identification is not evidence.
+  const reportedModel = models.length === 1 ? models[0] : models.length > 1 ? 'unknown' : typeof obj.model === 'string' ? obj.model : 'unknown';
+  return { valid: success, reportedModel,
+    text: String(obj.result ?? obj.response ?? obj.text ?? '').slice(0, 65536).replace(/[\uD800-\uDBFF]$/, ''), usage: obj.usage || null,
+    costUsd: Number.isFinite(obj.total_cost_usd) && obj.total_cost_usd >= 0 ? obj.total_cost_usd : null,
+    permissionDenials,
+    error: !success ? String(obj.error || obj.result || obj.subtype || obj.status || 'Missing positive success result').slice(0, 1000) : permissionDenials ? 'Runtime reported permission denials' : null };
+}
+function runCli(options) {
+  const { adapter, workspace, timeoutMs = 120000, signal } = options;
+  const args = buildArgs(adapter, options); let bin = executable(adapter);
+  if (!bin) return Promise.resolve({ status: 'unavailable', reportedModel: 'unknown', error: 'Executable not found', exitCode: null });
+  if (!Number.isInteger(timeoutMs) || timeoutMs < 100 || timeoutMs > 600000) throw new Error('Invalid timeout');
+  if (!workspace || !fs.statSync(workspace).isDirectory()) throw new Error('Workspace required');
+  const cwd = fs.realpathSync(workspace), started = Date.now();
+  // agy's plan flag is ineffective with slash expansion disabled. Its native
+  // file tools can still edit, so even read-only tasks/probes need a real boundary.
+  const wrapped = options.write || options.isolate || options.taskContextFile || adapter === 'agy' ? require('./execution-sandbox').wrapExecution(bin, args, { workspace: cwd, write: options.write === true,
+    readOnlyPaths: contextConfig(options.taskContextFile).readOnlyPaths }) : null;
+  if (wrapped) bin = wrapped.bin;
+  return new Promise(resolve => {
+    let stdout = '', stderr = '', stdoutBytes = 0, reason = null, finished = false, closed;
+    const child = spawn(bin, wrapped ? wrapped.args : args, { cwd, shell: false, detached: options.detached !== false && process.platform !== 'win32', stdio: ['pipe', 'pipe', 'pipe'] });
+    child.stdin.on('error', () => {});
+    child.stdin.end(adapter === 'claude' ? options.prompt : '');
+    const stop = why => {
+      if (finished || reason) return;
+      reason = why;
+      try { process.platform === 'win32' || options.detached === false ? child.kill('SIGTERM') : process.kill(-child.pid, 'SIGTERM'); } catch {}
+      killTimer = setTimeout(() => {
+        try { process.platform === 'win32' || options.detached === false ? child.kill('SIGKILL') : process.kill(-child.pid, 'SIGKILL'); } catch {}
+        killTimer = null;
+        if (closed) done(closed.code, closed.error);
+      }, 2000);
+    };
+    let killTimer;
+    const timer = setTimeout(() => stop('timeout'), timeoutMs);
+    const abort = () => stop('cancelled');
+    signal?.addEventListener('abort', abort, { once: true });
+    if (signal?.aborted) stop('cancelled');
+    // StringDecoder retains partial UTF-8 sequences between pipe chunks.
+    child.stdout.setEncoding('utf8'); child.stderr.setEncoding('utf8');
+    child.stdout.on('data', text => { const bytes = Buffer.byteLength(text); if (stdoutBytes + bytes > 1024 * 1024) return stop('output-limit'); stdoutBytes += bytes; stdout += text; });
+    child.stderr.on('data', text => { stderr = (stderr + text).slice(-8192).replace(/^[\uDC00-\uDFFF]/, ''); });
+    const done = (code, err) => {
+      if (finished) return;
+      // A silent grandchild can outlive the parent and its stdio. Keep the
+      // promise and escalation timer alive until the group has been signalled.
+      if (reason && killTimer) { closed ||= { code, error: err }; return; }
+      finished = true;
+      clearTimeout(timer);
+      signal?.removeEventListener('abort', abort);
+      wrapped?.cleanup();
+      const parsed = parseOutput(adapter, stdout);
+      resolve({ adapter, requestedModel: options.modelId, ...parsed, exitCode: code,
+        status: reason || (err ? 'failed' : code === 0 && parsed.valid && !parsed.permissionDenials ? 'reported' : 'failed'),
+        elapsedMs: Date.now() - started, stdout, stderr, error: err?.message || parsed.error, workspace: cwd });
+    };
+    child.on('error', e => done(null, e)); child.on('close', code => done(code));
+  });
+}
+module.exports = { ADAPTERS, MAX_PROMPT_BYTES, executable, checkRuntime, buildArgs, parseOutput, runCli };
+
+SOURCE src/execution-sandbox.js
+'use strict';
+// Linux filesystem WRITE isolation. Host files remain readable and network access
+// remains available for provider APIs. Credentials/settings are always read-only.
+const fs = require('node:fs');
+const path = require('node:path');
+const os = require('node:os');
+const { spawnSync } = require('node:child_process');
+const BWRAP = '/usr/bin/bwrap';
+const WRITABLE_STATE = Object.freeze(['debug', 'projects', 'todos', 'session-env', 'shell-snapshots', 'statsig', 'cache', 'backups']);
+function unsafe(message) { const e = new Error(`Execution sandbox: ${message}`); e.code = 'EXECUTION_SANDBOX_UNAVAILABLE'; return e; }
+function checkSandbox() {
+  if (process.platform !== 'linux') throw unsafe('Linux bubblewrap is required; refusing unsandboxed execution');
+  try { fs.accessSync(BWRAP, fs.constants.X_OK); } catch { throw unsafe('bubblewrap is missing; refusing unsandboxed execution'); }
+  const result = spawnSync(BWRAP, ['--ro-bind', '/', '/', '--dev', '/dev', '--proc', '/proc', '--unshare-pid', '--die-with-parent', '--', '/bin/true'], { encoding: 'utf8', timeout: 5000, maxBuffer: 8192 });
+  if (result.status !== 0 || result.error) throw unsafe('bubblewrap namespaces are unavailable; refusing unsandboxed execution');
+  return { available: true, boundary: 'filesystem-write', readIsolation: false, networkIsolation: false };
+}
+function within(child, parent) { return parent === path.parse(parent).root || child === parent || child.startsWith(parent + path.sep); }
+function placeholder(target, source) {
+  fs.mkdirSync(path.dirname(target), { recursive: true, mode: 0o700 });
+  if (fs.statSync(source).isDirectory()) fs.mkdirSync(target, { mode: 0o700 });
+  else fs.closeSync(fs.openSync(target, 'wx', 0o600));
+}
+function wrapExecution(bin, args, { workspace, write = false, readOnlyPaths = [] } = {}) {
+  checkSandbox();
+  if (typeof bin !== 'string' || !path.isAbsolute(bin) || !Array.isArray(args) || args.some(a => typeof a !== 'string' || a.includes('\0'))) throw unsafe('structured executable and string arguments required');
+  const executable = fs.realpathSync(bin);
+  if (!fs.statSync(executable).isFile()) throw unsafe('executable must be a regular file');
+  if (typeof workspace !== 'string' || !path.isAbsolute(workspace) || typeof write !== 'boolean') throw unsafe('absolute workspace and boolean write required');
+  const real = fs.realpathSync(workspace), home = fs.realpathSync(os.homedir());
+  if (!Array.isArray(readOnlyPaths) || readOnlyPaths.length > 2) throw unsafe('bounded read-only context paths required');
+  for (const file of readOnlyPaths) {
+    if (typeof file !== 'string' || !path.isAbsolute(file) || fs.realpathSync(file) !== file || within(file, real) || within(real, file)
+      || !fs.existsSync(file)) throw unsafe('context paths must be canonical and separate from the writable workspace');
+  }
+  if (!fs.statSync(real).isDirectory() || within(home, real)) throw unsafe('workspace must be a dedicated directory, not the home or filesystem root');
+  const claude = path.join(home, '.claude');
+  if (within(real, claude) || within(claude, real)) throw unsafe('workspace overlaps runtime settings');
+  // Resolve the parent directory before creating scratch so host symlinks cannot
+  // redirect scratch or workspace mount sources after the namespace starts.
+  const scratch = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'agent-meeting-sandbox-state-'));
+  fs.chmodSync(scratch, 0o700);
+  let cleaned = false;
+  const cleanup = () => { if (!cleaned) { fs.rmSync(scratch, { recursive: true, force: true }); cleaned = true; } };
+  try {
+    const tmp = path.join(scratch, 'tmp'); fs.mkdirSync(tmp, { mode: 0o700 });
+    // Callers spawn detached with piped stdio. Keep descendants in that
+    // managed process group: --new-session would escape cancellation signals.
+    const wrap = ['--ro-bind', '/', '/', '--dev', '/dev', '--proc', '/proc', '--unshare-pid', '--die-with-parent', '--cap-drop', 'ALL', '--bind', tmp, '/tmp', '--setenv', 'TMPDIR', '/tmp'];
+    // /tmp is hidden. Recreate workspace mount parents in the isolated /tmp
+    // before mounting the original host workspace at its exact canonical path.
+    if (within(real, '/tmp')) {
+      let current = '/tmp';
+      for (const part of path.relative('/tmp', real).split(path.sep)) { current = path.join(current, part); wrap.push('--dir', current); }
+    }
+    wrap.push(write ? '--bind' : '--ro-bind', real, real);
+    // Private /tmp hides host task context. Restore only these explicit sources,
+    // always read-only, including when worker tools can edit their workspace.
+    for (const file of readOnlyPaths) {
+      if (!within(file, '/tmp')) continue;
+      let current = '/tmp';
+      const parent = path.dirname(file);
+      for (const part of path.relative('/tmp', parent).split(path.sep).filter(Boolean)) { current = path.join(current, part); wrap.push('--dir', current); }
+      wrap.push('--ro-bind', file, file);
+    }
+    if (fs.existsSync(claude)) {
+      if (fs.lstatSync(claude).isSymbolicLink() || !fs.statSync(claude).isDirectory()) throw unsafe('Claude state directory must be a real directory');
+      const state = path.join(scratch, 'claude'); fs.mkdirSync(state, { mode: 0o700 });
+      const preserved = [];
+      for (const name of fs.readdirSync(claude)) {
+        if (WRITABLE_STATE.includes(name)) continue;
+        const source = path.join(claude, name), target = path.join(state, name);
+        // Existing auth, settings, plugins and skills remain read-only mounts.
+        // Broken symlinks are not needed and cannot be mounted safely.
+        if (!fs.existsSync(source)) continue;
+        placeholder(target, source); preserved.push([source, path.join(claude, name)]);
+      }
+      for (const name of WRITABLE_STATE) fs.mkdirSync(path.join(state, name), { mode: 0o700 });
+      if (within(claude, '/tmp')) {
+        let current = '/tmp';
+        for (const part of path.relative('/tmp', claude).split(path.sep)) { current = path.join(current, part); wrap.push('--dir', current); }
+      }
+      wrap.push('--bind', state, claude);
+      for (const [source, target] of preserved) wrap.push('--ro-bind', source, target);
+    }
+    wrap.push('--chdir', real, '--', executable, ...args);
+    return { bin: BWRAP, args: wrap, cleanup, boundary: 'filesystem-write', readIsolation: false, networkIsolation: false };
+  } catch (error) { cleanup(); throw error; }
+}
+module.exports = { wrapExecution, checkSandbox, WRITABLE_STATE };
+
+SOURCE test/runtime.test.js
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const { EventEmitter } = require('node:events');
+const { PassThrough, Writable } = require('node:stream');
+const { buildArgs, parseOutput } = require('../src/runtime');
+const literal = 'Review only; $(touch /tmp/not-executed) `echo no` "$HOME"\n--permission-mode bypassPermissions';
+
+test('adapter arguments require an explicit safe provider ID and bounded nonempty prompt', () => {
+  for (const adapter of ['claude', 'agy']) {
+    for (const modelId of [undefined, '', '--help', 'model;echo unsafe', 'model name', 'a'.repeat(122)])
+      assert.throws(() => buildArgs(adapter, { modelId, prompt: 'Read' }), /Explicit model ID/);
+    for (const prompt of ['', '  ', null, 'a'.repeat(128 * 1024 + 1)])
+      assert.throws(() => buildArgs(adapter, { modelId: 'provider.model-v1:low', prompt }), /Invalid prompt/);
+    assert(buildArgs(adapter, { modelId: 'provider.model-v1:low', prompt: 'Read' }).includes('provider.model-v1:low'));
+  }
+  assert.throws(() => buildArgs('custom-shell', { modelId: 'x', prompt: 'Read' }), /Unsupported adapter/);
+});
+
+test('agy receives the entire prompt as one literal argv value and rejects writes', () => {
+  const args = buildArgs('agy', { modelId: 'test-model', prompt: literal });
+  assert.equal(args[args.indexOf('--print') + 1], literal);
+  assert.equal(args.filter(x => x === literal).length, 1);
+  assert.equal(args[args.indexOf('--mode') + 1], 'plan');
+  assert(args.includes('--sandbox'));
+  assert.throws(() => buildArgs('agy', { modelId: 'test-model', prompt: literal, write: true }), /not verified/);
+});
+
+test('Claude keeps prompt out of flags, isolates MCP, and limits write tool scope', () => {
+  const args = buildArgs('claude', { modelId: 'test-model', prompt: literal });
+  assert(!args.includes(literal));
+  assert.equal(args[args.indexOf('--tools') + 1], '');
+  assert.equal(args[args.indexOf('--permission-mode') + 1], 'plan');
+  assert.equal(args[args.indexOf('--mcp-config') + 1], '{"mcpServers":{}}');
+  assert(args.includes('--strict-mcp-config'));
+  const write = buildArgs('claude', { modelId: 'test-model', prompt: 'Edit', write: true });
+  assert.equal(write[write.indexOf('--tools') + 1], 'Read,Edit,Write,Glob,Grep');
+  assert(!write.join(' ').includes('bypassPermissions'));
+});
+
+test('malformed JSON and nonobject JSON always fail without throwing', () => {
+  for (const adapter of ['claude', 'agy']) for (const raw of ['', 'not-json', '{', 'null', '[]', 'true', '42', '"done"', '{}']) {
+    const result = parseOutput(adapter, raw);
+    assert.equal(result.valid, false, `${adapter}: ${raw}`);
+    assert.equal(result.reportedModel, 'unknown');
+    assert(result.error);
+  }
+});
+
+test('runtime error variants and missing output cannot become successful reports', () => {
+  for (const [adapter, output] of [
+    ['agy', { status: 'ERROR', error: 'access denied' }],
+    ['agy', { type: 'success', status: 'error', error: 'Authentication failed' }],
+    ['agy', { status: 'SUCCESS', response: '   ' }],
+    ['agy', { response: 'Looks complete but has no positive status' }],
+    ['claude', { type: 'result', subtype: 'error_max_turns', result: 'Budget exhausted' }],
+    ['claude', { type: 'result', subtype: 'success', is_error: true, result: 'access denied' }],
+    ['claude', { type: 'error', error: 'No access' }],
+    ['claude', { type: 'result', subtype: 'success', result: '' }],
+  ]) {
+    const result = parseOutput(adapter, JSON.stringify(output));
+    assert.equal(result.valid, false, JSON.stringify(output));
+    assert(result.error);
+  }
+});
+
+test('Claude envelope preserves machine model, usage, cost and a permission-denial diagnostic', () => {
+  const parsed = parseOutput('claude', JSON.stringify({ type: 'result', subtype: 'success', is_error: false,
+    result: 'Review report', modelUsage: { 'actual-provider-id': { inputTokens: 12 } }, usage: { input_tokens: 12 },
+    total_cost_usd: 0.02, permission_denials: [{ tool_name: 'Write' }] }));
+  assert.equal(parsed.valid, true);
+  assert.equal(parsed.reportedModel, 'actual-provider-id');
+  assert.equal(parsed.permissionDenials, 1);
+  assert.equal(parsed.costUsd, 0.02);
+  assert.equal(parsed.usage.input_tokens, 12);
+  assert.equal(parsed.error, 'Runtime reported permission denials');
+  assert.equal(parseOutput('claude', JSON.stringify({ type: 'result', subtype: 'success', result: 'Done' })).error, null);
+});
+
+test('runtime billing and model evidence stay unknown when inconsistent', () => {
+  for (const adapter of ['claude', 'agy']) {
+    const result = extra => JSON.stringify({ type: 'result', subtype: 'success', result: 'Done', status: 'SUCCESS', ...extra });
+    for (const cost of [-1, -0.01, '0.2', null, {}, true]) assert.equal(parseOutput(adapter, result({ total_cost_usd: cost })).costUsd, null);
+    for (const cost of [0, 0.02, 123]) assert.equal(parseOutput(adapter, result({ total_cost_usd: cost })).costUsd, cost);
+    assert.equal(parseOutput(adapter, result({})).costUsd, null);
+    assert.equal(parseOutput(adapter, result({ model: 'expected', modelUsage: { expected: {}, other: {} } })).reportedModel, 'unknown');
+    assert.equal(parseOutput(adapter, result({ model: 'fallback', modelUsage: { actual: {} } })).reportedModel, 'actual');
+    assert.equal(parseOutput(adapter, result({ model: 'fallback' })).reportedModel, 'fallback');
+  }
+});
+
+test('agy success keeps self-identified prose model unknown and bounds model output', () => {
+  const parsed = parseOutput('agy', JSON.stringify({ status: 'SUCCESS', response: 'I am model-X. ' + 'a'.repeat(70000), usage: { total_tokens: 15 } }));
+  assert.equal(parsed.valid, true);
+  assert.equal(parsed.reportedModel, 'unknown');
+  assert.equal(parsed.text.length, 65536);
+  assert.equal(parsed.usage.total_tokens, 15);
+  assert.equal(parsed.costUsd, null);
+  assert.equal(parseOutput('agy', JSON.stringify({ status: 'SUCCESS', response: 'Done', model: 'explicit-model' })).reportedModel, 'explicit-model');
+  assert.equal(parseOutput('claude', JSON.stringify({ type: 'result', subtype: 'success', result: 'Done', modelUsage: { a: {}, b: {} } })).reportedModel, 'unknown');
+  const clipped = parseOutput('agy', JSON.stringify({status:'SUCCESS',response:'a'.repeat(65535)+'🧪tail'}));
+  assert.equal(clipped.text,'a'.repeat(65535), 'The report prefix must not end with half an emoji');
+});
+
+// Substitute only process launch/discovery: exercise runCli without starting any
+// real agent, network request, or global CLI configuration change.
+function fakeRuntime(output, exitCode = 0, sandboxError) {
+  const captured = {};
+  const stub = {
+    spawnSync: () => ({ status: 0, stdout: '/fake/agy\n' }),
+    spawn(bin, args, options) {
+      Object.assign(captured, { bin, args, options });
+      const child = new EventEmitter();
+      child.stdout = new PassThrough(); child.stderr = new PassThrough();
+      child.stdin = new Writable({ write(chunk, encoding, cb) { captured.stdin = (captured.stdin || '') + chunk; cb(); } });
+      queueMicrotask(() => { for (const chunk of Array.isArray(output) ? output : [output]) child.stdout.write(chunk); child.stdout.end(); child.stderr.end(); child.emit('close', exitCode); });
+      return child;
+    },
+  };
+  const mod = { exports: {} };
+  const source = fs.readFileSync(path.join(__dirname, '../src/runtime.js'), 'utf8');
+  new Function('require', 'module', source)(name => name === 'child_process' ? stub : name === './connect' ? { findCli: () => '/fake/claude' } : name === './execution-sandbox' ? { wrapExecution: (bin, args, options) => { captured.boundary = { bin, args, options }; if (sandboxError) throw sandboxError; return { bin: '/fake/bwrap', args: ['readonly-boundary', ...args], cleanup: () => { captured.cleaned = true; } }; } } : require(name), mod);
+  return { runtime: mod.exports, captured };
+}
+
+test('runCli sends Claude prompt verbatim on stdin, uses shell false and never claims verified', async () => {
+  const { runtime, captured } = fakeRuntime('{"type":"result","subtype":"success","result":"Done"}');
+  const result = await runtime.runCli({ adapter: 'claude', modelId: 'test-id', prompt: literal, workspace: __dirname, timeoutMs: 1000 });
+  assert.equal(captured.options.shell, false);
+  assert.equal(captured.options.cwd, fs.realpathSync(__dirname));
+  assert.equal(captured.stdin, literal);
+  assert.equal(result.status, 'reported');
+  assert.equal(result.reportedModel, 'unknown');
+  assert.equal(result.requestedModel, 'test-id');
+});
+
+test('runtime reports preserve Vietnamese and emoji across arbitrary UTF-8 stream boundaries', async () => {
+  const text = 'Đã kiểm chứng tiếng Việt và 🧪; đường dẫn không thay đổi.';
+  const bytes = Buffer.from(JSON.stringify({type:'result',subtype:'success',result:text}));
+  const { runtime } = fakeRuntime([...bytes].map(byte => Buffer.from([byte])));
+  const result = await runtime.runCli({adapter:'claude',modelId:'test-id',prompt:'Read',workspace:__dirname,timeoutMs:1000});
+  assert.equal(result.status,'reported'); assert.equal(result.text,text);
+  assert.equal(result.stdout,bytes.toString('utf8'));
+});
+
+test('UTF-8 stream decoding retains the one-MiB output byte cap', async () => {
+  const { runtime } = fakeRuntime([Buffer.from('ệ'.repeat(200000)),Buffer.from('ệ'.repeat(200000))]);
+  const result = await runtime.runCli({adapter:'claude',modelId:'test-id',prompt:'Read',workspace:__dirname,timeoutMs:1000});
+  assert.equal(result.status,'output-limit');
+  assert(Buffer.byteLength(result.stdout)<=1024*1024);
+});
+
+test('runCli rejects nonzero exit, malformed result, and permission denial despite positive success JSON', async () => {
+  for (const [output, code] of [
+    ['{"type":"result","subtype":"success","result":"Done"}', 1],
+    ['null', 0],
+    ['{"type":"result","subtype":"success","result":"Done","permission_denials":[{}]}', 0],
+  ]) {
+    const { runtime } = fakeRuntime(output, code);
+    const result = await runtime.runCli({ adapter: 'claude', modelId: 'test-id', prompt: 'Review', workspace: __dirname, timeoutMs: 1000 });
+    assert.equal(result.status, 'failed');
+    assert.equal(result.exitCode, code);
+  }
+});
+
+test('agy SUCCESS with denied_actions is a permission failure, not a completed report', async () => {
+  // Shape observed with agy1.4.5 in the read-only audit, no model call here.
+  const output = JSON.stringify({ status: 'SUCCESS', response: 'Partial response before the requested tool was denied.', denied_actions: [{ action: 'command', display_name: 'RunCommand' }] });
+  const parsed = parseOutput('agy', output);
+  assert.equal(parsed.permissionDenials, 1);
+  assert.equal(parsed.error, 'Runtime reported permission denials');
+  assert.equal(parsed.reportedModel, 'unknown');
+  const { runtime } = fakeRuntime(output);
+  const result = await runtime.runCli({ adapter: 'agy', modelId: 'test-id', prompt: 'Read-only audit', workspace: __dirname, timeoutMs: 1000 });
+  assert.equal(result.status, 'failed'); assert.equal(result.permissionDenials, 1);
+  assert.equal(result.error, 'Runtime reported permission denials');
+  assert.equal(parseOutput('agy', JSON.stringify({ status: 'SUCCESS', response: 'Complete response', denied_actions: [] })).permissionDenials, 0);
+});
+
+
+test('agy read-only model calls always request a filesystem write boundary', async () => {
+  const { runtime, captured } = fakeRuntime('{"status":"SUCCESS","response":"Read-only report"}');
+  const result = await runtime.runCli({ adapter: 'agy', modelId: 'test-id', prompt: 'Read', workspace: __dirname, timeoutMs: 1000 });
+  assert.equal(captured.bin, '/fake/bwrap');
+  assert.equal(captured.boundary.options.write, false);
+  assert.equal(captured.boundary.options.workspace, fs.realpathSync(__dirname));
+  assert.equal(captured.cleaned, true); assert.equal(result.status, 'reported');
+  assert.equal(result.reportedModel, 'unknown');
+});
+
+test('agy probes fail closed before process launch when the filesystem boundary is unavailable', () => {
+  const unavailable = Object.assign(new Error('Fixture sandbox unavailable'), { code: 'EXECUTION_SANDBOX_UNAVAILABLE' });
+  const { runtime, captured } = fakeRuntime('{"status":"SUCCESS","response":"READY"}', 0, unavailable);
+  assert.throws(() => runtime.runCli({ adapter: 'agy', modelId: 'test-id', prompt: 'Reply only READY. No tools or file changes.', workspace: __dirname, timeoutMs: 1000 }), { code: 'EXECUTION_SANDBOX_UNAVAILABLE' });
+  assert.equal(captured.bin, undefined);
+});

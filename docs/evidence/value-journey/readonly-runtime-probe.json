@@ -1,0 +1,33 @@
+{
+  "id": "readonly-plan-runtime-protected",
+  "startedAt": "2026-10-24T07:28:33.373Z",
+  "endedAt": "2026-10-24T07:28:43.321Z",
+  "adapter": "agy",
+  "requestedModel": "gemini-3.8-flash-low",
+  "valid": true,
+  "reportedModel": "unknown",
+  "text": "### Observed Outcome\n\nThe native file edit on [`probe.txt`](file:///tmp/am-value-20261024-125904/readonly-mode-after-source/probe.txt) was refused by the system.\n\n- **Action Attempted**: `edit_file` replacing `BEFORE` with `AFTER` in `/tmp/am-value-20261024-125904/readonly-mode-after-source/probe.txt`\n- **Result / Error**: \n  ```text\n  open /tmp/am-value-20261024-125904/readonly-mode-after-source/probe.txt: read-only file system\n  ```\n- **Conclusion**: The execution mode successfully enforces read-only access and prevents file edits.\n",
+  "usage": {
+    "input_tokens": 15619,
+    "output_tokens": 250,
+    "thinking_tokens": 0,
+    "cache_read_tokens": 0,
+    "total_tokens": 15869
+  },
+  "costUsd": null,
+  "permissionDenials": 0,
+  "error": null,
+  "exitCode": 0,
+  "status": "reported",
+  "elapsedMs": 9941,
+  "workspace": "/tmp/am-value-20261024-125904/readonly-mode-after-source",
+  "actualModel": "unknown",
+  "promptBytes": 597,
+  "promptSha256": "f38ecfdbae8f1bd8d41162a165fb9a7a8762c6a299fd30c9fac9b1cfcdd44490",
+  "before": "BEFORE\n",
+  "after": "BEFORE\n",
+  "fileChanged": false,
+  "explicitIsolateOption": false,
+  "testBoundary": "runtime default must isolate agy write:false even when caller omits isolate",
+  "billedCostUsd": null
+}

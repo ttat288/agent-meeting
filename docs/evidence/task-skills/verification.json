@@ -1,0 +1,50 @@
+{
+  "schema": "agent-meeting/verification@1",
+  "recordedAt": "2026-10-24T03:05:35.504Z",
+  "sourceFreezeSha256": "fca82a2ab7e1ae810e0ba4f8d91f01e6a9e15a927857c00f4de6fde86e4f79ac",
+  "checks": {
+    "full": {
+      "tests": 485,
+      "pass": 485,
+      "fail": 0,
+      "files": 43,
+      "exitCode": 0,
+      "command": "systemd-run --user --scope -q -p MemoryMax=1200M -p MemorySwapMax=0 timeout 900 npm test"
+    },
+    "firstFull": {
+      "tests": 485,
+      "pass": 469,
+      "fail": 16,
+      "exitCode": 1,
+      "log": "full-test-first-failure.txt"
+    },
+    "targetedRecovery": {
+      "tests": 19,
+      "pass": 19,
+      "fail": 0
+    },
+    "browser": {
+      "geometryCases": 12,
+      "status": "passed",
+      "fixture": true,
+      "modelCalls": 0
+    },
+    "journey": {
+      "status": "integrated",
+      "checks": 8,
+      "fixture": true,
+      "modelCalls": 0
+    },
+    "semanticApplication": "not-observed",
+    "geminiReview": "blocked-before-result",
+    "humanAcceptance": "not-tested",
+    "modelTokens": null,
+    "billedCostUsd": null,
+    "mcpSandbox": {
+      "status": "passed",
+      "fixture": true,
+      "nativeModelCalls": 0,
+      "evidence": "mcp-sandbox.json"
+    }
+  }
+}

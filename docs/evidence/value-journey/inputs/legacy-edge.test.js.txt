@@ -1,0 +1,140 @@
+'use strict';
+const test = require('node:test'), assert = require('node:assert/strict');
+const fs = require('node:fs'), path = require('node:path'), os = require('node:os');
+const { execFileSync } = require('node:child_process');
+const { createApp } = require('../src/server');
+
+// A controlled participant exercises real task/run/persistence/HTTP behavior.
+// It is not model evidence. The task is a read-only review of a reference file.
+async function setup(t) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'am-handoff-history-'));
+  const source = path.join(root, 'source'); fs.mkdirSync(path.join(source, 'test'), { recursive: true });
+  fs.writeFileSync(path.join(source, 'reference.md'), 'Historical evidence must retain the reviewed requirements.\n');
+  fs.writeFileSync(path.join(source, 'test/reference.test.js'), "require('node:test')('reference retained',()=>require('node:assert/strict').match(require('node:fs').readFileSync('reference.md','utf8'),/Historical evidence/));\n");
+  execFileSync('git', ['init', '-q', source]); execFileSync('git', ['-C', source, 'add', '.']);
+  execFileSync('git', ['-C', source, '-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '-qm', 'fixture']);
+  const config = { configDir: path.join(root, 'config'), workDir: path.join(root, 'work'), dataDir: path.join(root, 'rooms'), runCli: async args => ({ status: 'reported', reportedModel: args.modelId, text: 'Controlled review participant; not an AI invocation', exitCode: 0 }) };
+  const host = 'host_handoff_history_1234'; let app, base;
+  const boot = async restore => {
+    app = createApp(config); await new Promise(resolve => app.server.listen(0, '127.0.0.1', resolve));
+    base = 'http://127.0.0.1:' + app.server.address().port;
+    if (restore) assert(app.restore(host)); else app.create({ hostKey: host, id: 'agent_handoff_history_1234', fixed: true });
+  };
+  t.after(async () => { await app?.close(); fs.rmSync(root, { recursive: true, force: true }); });
+  await boot(false);
+  const request = async (endpoint, body, status = 200) => {
+    const response = await fetch(`${base}/api/host/${host}/${endpoint}`, body === undefined ? {} : { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+    const result = await response.json(); assert.equal(response.status, status, JSON.stringify(result)); return result;
+  };
+  await request('start', { context: 'Review historical handoff evidence', agenda: [] });
+  const c = app.configStore.read(), m = c.models.find(m => m.id === 'opus');
+  Object.assign(m, { enabled: true, providerModelId: 'fixture-review', verification: 'verified', source: { ...m.source, checkedAt: new Date().toISOString(), confidence: 'user-configured' } });
+  c.profiles.find(p => p.id === 'opus-claude').enabled = true; app.configStore.save(c, c.revision);
+  await request('runtime/probe', { profileId: 'opus-claude' });
+  const job = await request('work/tasks', { goal: 'Review evidence against its original reference', purpose: 'execute', management: 'managed', workspace: source, acceptance: ['Review the historical reference'], sources: ['reference.md revision one'], facts: ['Do not claim later acceptance has passed'], writePaths: [], testFiles: ['test/reference.test.js'] }, 201);
+  const start = async task => {
+    const run = await request(`work/tasks/${task.id}/run`, { profileId: 'opus-claude', expectedRequirementRevision: task.requirementRevision }, 202);
+    for (let i = 0; i < 100; i++) {
+      const current = (await request('work')).runs.find(r => r.id === run.id);
+      if (current.status !== 'running') { assert.equal(current.status, 'reported', current.error); return current; }
+      await new Promise(resolve => setTimeout(resolve, 5));
+    }
+    throw Error('Controlled participant did not settle');
+  };
+  return { request, job, start, source, root, app: () => app, restart: async mutate => {
+    await app.close();
+    if (mutate) {
+      const workKey = require('node:crypto').createHash('sha256').update(host).digest('hex');
+      const file = path.join(root, 'work', workKey, 'config.json');
+      const state = JSON.parse(fs.readFileSync(file, 'utf8')); mutate(state);
+      fs.writeFileSync(file, JSON.stringify(state), { mode: 0o600 });
+    }
+    await boot(true);
+  } };
+}
+
+test('handoff retains the executed requirements after reconfiguration and restart', async t => {
+  const f = await setup(t), run = await f.start(f.job);
+  assert.equal((await f.request(`work/runs/${run.id}/verify`, {})).status, 'verified');
+  assert.equal((await f.request(`work/runs/${run.id}/integrate`, {})).status, 'integrated');
+  const changed = await f.request(`work/tasks/${f.job.id}/configure`, { expectedRevision: f.job.requirementRevision, acceptance: ['A new requirement has never been verified'], sources: ['reference.md revision two'], facts: ['New context'] });
+  await f.restart();
+  const handoff = await f.request(`work/runs/${run.id}/handoff`);
+  assert.deepEqual(handoff.task.acceptance, f.job.acceptance, 'Old evidence must not be attached to new acceptance');
+  assert.deepEqual(handoff.task.sources, f.job.sources); assert.deepEqual(handoff.task.facts, f.job.facts);
+  assert.equal(handoff.task.requirementRevision, run.requirementRevision);
+  assert.equal(handoff.requirementRevision, run.requirementRevision);
+  assert.equal(handoff.currentRequirementRevision, changed.requirementRevision);
+  assert.equal(handoff.requirementsCurrent, false);
+  assert.equal(handoff.status, 'integrated', 'Historical integration is preserved without accepting the new task');
+  assert(handoff.limitations.some(x => /requirements.*differ/i.test(x)));
+  const state = await f.request('work'); assert.equal(state.tasks[0].status, 'ready'); assert.equal(state.runs.length, 1);
+  assert.equal(state.runs[0].integrationEvidence[0].exitCode, 0);
+});
+
+test('current and failed handoffs keep run identity and do not imply completion', async t => {
+  const f = await setup(t), run = await f.start(f.job);
+  const current = await f.request(`work/runs/${run.id}/handoff`);
+  assert.equal(current.requirementsCurrent, true); assert.equal(current.requirementRevision, f.job.requirementRevision);
+  assert.equal(current.currentRequirementRevision, f.job.requirementRevision); assert.deepEqual(current.task.acceptance, f.job.acceptance);
+  assert(current.limitations.includes('Not accepted as completed'));
+  // A source reference changes before independent verification: real test fails.
+  fs.writeFileSync(path.join(run.workspace, 'reference.md'), 'Different reference\n');
+  const rejected = await f.request(`work/runs/${run.id}/verify`, {}, 409); assert.match(rejected.error, /Workspace changed/);
+  assert.equal((await f.request(`work/runs/${run.id}/handoff`)).status, 'reported');
+});
+
+
+test('legacy run without a requirement snapshot never borrows present-day criteria', async t => {
+  const f = await setup(t), run = await f.start(f.job);
+  await f.request(`work/tasks/${f.job.id}/configure`, { expectedRevision: f.job.requirementRevision, acceptance: ['Unrelated later criteria'] });
+  await f.restart(state => { delete state.runs[0].requirementSnapshot; });
+  const handoff = await f.request(`work/runs/${run.id}/handoff`);
+  assert.equal(handoff.task, null); assert.equal(handoff.requirementRevision, run.requirementRevision);
+  assert.equal(handoff.requirementsCurrent, null);
+  assert(handoff.limitations.some(x => /snapshot.*(?:unavailable|missing|unknown)/i.test(x)));
+  assert(!JSON.stringify(handoff).includes('Unrelated later criteria'));
+});
+
+test('a historical snapshot is exportable when the current task is unavailable', async t => {
+  const f = await setup(t), run = await f.start(f.job);
+  await f.restart(state => { state.tasks = []; });
+  const handoff = await f.request(`work/runs/${run.id}/handoff`);
+  assert.equal(handoff.task.id, f.job.id); assert.deepEqual(handoff.task.acceptance, f.job.acceptance);
+  assert.equal(handoff.currentRequirementRevision, null); assert.equal(handoff.requirementsCurrent, null);
+});
+
+test('refreshing a historical run cannot change the newer task or erase old evidence', async t => {
+  const f = await setup(t), run = await f.start(f.job);
+  assert.equal((await f.request(`work/runs/${run.id}/verify`, {})).status, 'verified');
+  const revised = await f.request(`work/tasks/${f.job.id}/configure`, { expectedRevision: f.job.requirementRevision, acceptance: ['A newer requirement, still ready'] });
+  const before = await f.request('work');
+  const rejected = await f.request(`work/runs/${run.id}/rebase`, {}, 409);
+  assert.match(rejected.error, /Requirement revision changed/);
+  const after = await f.request('work');
+  assert.deepEqual(after, before); assert.equal(after.tasks[0].status, revised.status);
+  assert.equal(after.runs[0].evidence[0].exitCode, 0);
+});
+
+test('a missing source checkout leaves refresh state intact and can recover after restoration', async t => {
+  const f = await setup(t), run = await f.start(f.job), moved = f.source + '-temporarily-unavailable';
+  const before = await f.request('work'); fs.renameSync(f.source, moved);
+  try {
+    const unavailable = await f.request(`work/runs/${run.id}/rebase`, {}, 400);
+    assert.equal(unavailable.code, 'ENOENT'); assert.deepEqual(await f.request('work'), before);
+  } finally { fs.renameSync(moved, f.source); }
+  assert.equal((await f.request(`work/runs/${run.id}/rebase`, {})).status, 'reported');
+  assert.equal((await f.request(`work/runs/${run.id}/verify`, {})).status, 'verified');
+  assert.equal((await f.request(`work/runs/${run.id}/integrate`, {})).status, 'integrated');
+  assert.equal((await f.request('work')).tasks[0].status, 'done');
+});
+
+test('missing run revision remains unknown even if the historical snapshot has a revision', async t => {
+  const f = await setup(t), run = await f.start(f.job);
+  await f.restart(state => { delete state.runs[0].requirementRevision; });
+  const handoff = await f.request(`work/runs/${run.id}/handoff`);
+  assert.equal(handoff.task.requirementRevision, f.job.requirementRevision);
+  assert.equal(handoff.requirementRevision, null, 'Do not synthesize a missing run revision from another record');
+  assert.equal(handoff.currentRequirementRevision, f.job.requirementRevision);
+  assert.equal(handoff.requirementsCurrent, null);
+});

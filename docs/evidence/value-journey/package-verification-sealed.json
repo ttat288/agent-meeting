@@ -1,0 +1,20 @@
+{
+  "filename": "/tmp/am-value-20261024-125904/package-sealed/agent-meeting-3.5.0.tgz",
+  "sha256": "ce03f45142337d31a1bb027f5c43eadbce15eba1b16d2e7c1d0dde0c7e4efa1f",
+  "fileCount": 70,
+  "onlyDeltaFrom95TestedPackage": [
+    "CHANGELOG.md"
+  ],
+  "allExecutableRuntimeAssetsAndReadmesMatch95TestedPackage": true,
+  "testEvidenceReuse": "95 checks executed on package-final; after a documentation-only CHANGELOG change, sealed package code/assets/README hashes are identical, so tests were not pointlessly repeated.",
+  "sourceMatches": {
+    "src/runtime.js": true,
+    "src/work.js": true,
+    "src/server.js": true,
+    "src/ui/workspace.js": true,
+    "README.md": true,
+    "README.vi.md": true,
+    "CHANGELOG.md": true
+  },
+  "published": false
+}

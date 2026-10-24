@@ -1,0 +1,54 @@
+TAP version 13
+# Subtest: a responding CLI without machine identity points to model reporting instead of CLI access repair
+not ok 1 - a responding CLI without machine identity points to model reporting instead of CLI access repair
+  ---
+  duration_ms: 6.2475
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/ui-access-recovery.test.js:69:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /CLI responded, but did not report the actual model/. Input:
+    
+    'Unable to complete this action Model access could not be confirmed. Open Administration to inspect the observation and check CLI access before retrying. Profile: Selected fixture profile The check invokes the CLI and may incur cost. It does not change requirements or rerun the task. Probe selected profile access (invokes the CLI) Inspect in Administration'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: 'Unable to complete this action Model access could not be confirmed. Open Administration to inspect the observation and check CLI access before retrying. Profile: Selected fixture profile The check invokes the CLI and may incur cost. It does not change requirements or rerun the task. Probe selected profile access (invokes the CLI) Inspect in Administration'
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/ui-access-recovery.test.js:71:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: a responding CLI with another identity points to the profile mapping
+not ok 2 - a responding CLI with another identity points to the profile mapping
+  ---
+  duration_ms: 0.815701
+  type: 'test'
+  location: '/home/theo/workspace/agent-meeting/test/ui-access-recovery.test.js:76:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /CLI responded, but reported a different model/. Input:
+    
+    'Unable to complete this action Model access could not be confirmed. Open Administration to inspect the observation and check CLI access before retrying. Profile: Selected fixture profile The check invokes the CLI and may incur cost. It does not change requirements or rerun the task. Probe selected profile access (invokes the CLI) Inspect in Administration'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: 'Unable to complete this action Model access could not be confirmed. Open Administration to inspect the observation and check CLI access before retrying. Profile: Selected fixture profile The check invokes the CLI and may incur cost. It does not change requirements or rerun the task. Probe selected profile access (invokes the CLI) Inspect in Administration'
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (/home/theo/workspace/agent-meeting/test/ui-access-recovery.test.js:78:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 0
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 137.050401

@@ -1,0 +1,19 @@
+{
+  "filename": "/tmp/am-value-20261024-125904/package-final/agent-meeting-3.5.0.tgz",
+  "sha256": "6a33bc4efa4d5f11ed16f9cde80c5fb636882e1eac3726bdc379375c01dbb464",
+  "fileCount": 70,
+  "packedSize": 385232,
+  "unpackedSize": 1008625,
+  "published": false,
+  "sourceMatches": {
+    "src/server.js": true,
+    "src/work.js": true,
+    "src/ui/workspace.js": true,
+    "src/runtime.js": true,
+    "README.md": true,
+    "README.vi.md": true,
+    "CHANGELOG.md": true
+  },
+  "independentTestsCopiedAfterExtraction": true,
+  "targetedChecks": 95
+}

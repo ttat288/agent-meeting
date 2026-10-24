@@ -1,0 +1,34 @@
+TAP version 13
+# Subtest: handoff retains the executed requirements after reconfiguration and restart
+ok 1 - handoff retains the executed requirements after reconfiguration and restart
+  ---
+  duration_ms: 641.170928
+  type: 'test'
+  ...
+# Subtest: current and failed handoffs keep run identity and do not imply completion
+ok 2 - current and failed handoffs keep run identity and do not imply completion
+  ---
+  duration_ms: 53.468544
+  type: 'test'
+  ...
+# Subtest: legacy run without a requirement snapshot never borrows present-day criteria
+ok 3 - legacy run without a requirement snapshot never borrows present-day criteria
+  ---
+  duration_ms: 53.951348
+  type: 'test'
+  ...
+# Subtest: a historical snapshot is exportable when the current task is unavailable
+ok 4 - a historical snapshot is exportable when the current task is unavailable
+  ---
+  duration_ms: 48.559986
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 942.212321

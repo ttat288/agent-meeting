@@ -35,6 +35,10 @@ Chi tiết, mô hình đe doạ và lý do: [docs/SECURITY-DESIGN.md](docs/SECUR
 
 ## Routing/workspace thử nghiệm (chưa release)
 
+- Mọi lượt model agy qua `runtime.runCli`, kể cả read-only/probe, cần Linux/bwrap và workspace được mount chỉ đọc khi `write:false`; thiếu biên thì từ chối trước spawn. `--mode plan` cùng disable-slash không ngăn native file edit trong phép thử thật, nên flag không thay thế biên filesystem. Giữ guard cấm agy managed writing/task-context MCP; không mở quyền mới. Biên này không cách ly đọc host hoặc mạng và không kiểm soát CLI ngoài do người dùng tự mở.
+
+- Task skill policy chỉ hỗ trợ direct local managed Claude, được host cấu hình qua task API/CAS. Skill không cấp quyền tool; MCP lookup riêng chỉ đọc selected/pinned manifest/resource và không thực thi script. Không thêm tool vào conversation MCP/connect allowlist, không thừa hưởng MCP global hoặc nhận executable từ task. Manifest/resource đổi chặn supply/lookup/verification/integration cho policy đó; policy mới cần Save + Run tường minh. Supply receipt không chứng minh tuân thủ ngữ nghĩa hoặc model đã dùng tool. Không kiểm soát CLI ngoài đã join; xem [phạm vi và giới hạn](docs/ROUTING-WORKFLOW.vi.md#skill-và-tool-theo-task--local-chưa-release-2026-10-24).
+
 - `/m/<hostKey>/workspace|admin` và cấu hình/thực thi yêu cầu quyền chủ trì. API mới chỉ nhận điều khiển local, kể cả khi bật `--remote-host`; mã mời hoặc token worker không cấp quyền admin.
 - Lookup MCP riêng (`bin/routing.js --stdio`) chỉ đọc, có giới hạn; không thêm execution vào `connect.ALLOWED` hoặc tool hội thoại.
 - Lưu admin/task/run là thao tác ghi bền vững độc lập với `--data-dir` của phòng cũ: mặc định dưới `~/.agent-meeting/config` và `work`, thư mục 700/tệp 600, atomic/CAS/backup. Không đưa credential vào catalog. Chỉ token hash worker được giữ ở coordinator.

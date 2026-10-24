@@ -1,0 +1,9 @@
+{
+  "src/work.js": "54e8f93cc0fdbf4152b523823c8ae49ab405474bd490f4f76afaddd27bd5d3d3",
+  "src/server.js": "fb021ebf152ab76bced7420f30c1bdaa4b90b014a77c222421d0631662a77652",
+  "src/ui/workspace.js": "c8bb192161979cf84b8c4ff1e89069b6a1df79f85c5ad1981f65614e4f5a9f1b",
+  "src/ui/workspace.css": "6a292a58fc075832646807817458ca656e38b7759fc4e2a4317c987246cf6bc9",
+  "test/work.test.js": "997cdd60fde0688de808e2781dcc0555d584b7f07dd56a2dc4e207e2d034737e",
+  "test/ui-access-recovery.test.js": "05937af30538d596773611b343a73800034cd88b99e93851d3a1fbd92e4d0e84",
+  "tools/check-access-recovery.js": "318b1d9298c808feab8200a54cd188f99970c98d2defe70a779d9665c1787523"
+}

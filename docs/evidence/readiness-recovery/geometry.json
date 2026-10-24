@@ -1,0 +1,338 @@
+[
+  {
+    "boxScrollWidth": 308,
+    "boxWidth": 308,
+    "buttons": [
+      {
+        "bg": "rgb(255, 255, 255)",
+        "fg": "rgb(55, 65, 81)",
+        "height": 56,
+        "right": 322,
+        "text": "Probe selected profile access (invokes the CLI)",
+        "width": 284,
+        "x": 38
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "fg": "rgb(55, 65, 81)",
+        "height": 44,
+        "right": 227.1171875,
+        "text": "Inspect in Administration",
+        "width": 189.1171875,
+        "x": 38
+      }
+    ],
+    "lang": "en",
+    "pageWidth": 375,
+    "theme": "light",
+    "width": 375
+  },
+  {
+    "boxScrollWidth": 693,
+    "boxWidth": 693,
+    "buttons": [
+      {
+        "bg": "rgb(255, 255, 255)",
+        "fg": "rgb(55, 65, 81)",
+        "height": 36,
+        "right": 367.9375,
+        "text": "Probe selected profile access (invokes the CLI)",
+        "width": 325.9375,
+        "x": 42
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "fg": "rgb(55, 65, 81)",
+        "height": 36,
+        "right": 565.0546875,
+        "text": "Inspect in Administration",
+        "width": 189.1171875,
+        "x": 375.9375
+      }
+    ],
+    "lang": "en",
+    "pageWidth": 768,
+    "theme": "light",
+    "width": 768
+  },
+  {
+    "boxScrollWidth": 1044,
+    "boxWidth": 1044,
+    "buttons": [
+      {
+        "bg": "rgb(255, 255, 255)",
+        "fg": "rgb(55, 65, 81)",
+        "height": 36,
+        "right": 455.9375,
+        "text": "Probe selected profile access (invokes the CLI)",
+        "width": 325.9375,
+        "x": 130
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "fg": "rgb(55, 65, 81)",
+        "height": 36,
+        "right": 653.0546875,
+        "text": "Inspect in Administration",
+        "width": 189.1171875,
+        "x": 463.9375
+      }
+    ],
+    "lang": "en",
+    "pageWidth": 1280,
+    "theme": "light",
+    "width": 1280
+  },
+  {
+    "boxScrollWidth": 308,
+    "boxWidth": 308,
+    "buttons": [
+      {
+        "bg": "rgb(20, 24, 33)",
+        "fg": "rgb(196, 201, 212)",
+        "height": 56,
+        "right": 322,
+        "text": "Probe selected profile access (invokes the CLI)",
+        "width": 284,
+        "x": 38
+      },
+      {
+        "bg": "rgb(20, 24, 33)",
+        "fg": "rgb(196, 201, 212)",
+        "height": 44,
+        "right": 227.1171875,
+        "text": "Inspect in Administration",
+        "width": 189.1171875,
+        "x": 38
+      }
+    ],
+    "lang": "en",
+    "pageWidth": 375,
+    "theme": "dark",
+    "width": 375
+  },
+  {
+    "boxScrollWidth": 693,
+    "boxWidth": 693,
+    "buttons": [
+      {
+        "bg": "rgb(20, 24, 33)",
+        "fg": "rgb(196, 201, 212)",
+        "height": 36,
+        "right": 367.9375,
+        "text": "Probe selected profile access (invokes the CLI)",
+        "width": 325.9375,
+        "x": 42
+      },
+      {
+        "bg": "rgb(20, 24, 33)",
+        "fg": "rgb(196, 201, 212)",
+        "height": 36,
+        "right": 565.0546875,
+        "text": "Inspect in Administration",
+        "width": 189.1171875,
+        "x": 375.9375
+      }
+    ],
+    "lang": "en",
+    "pageWidth": 768,
+    "theme": "dark",
+    "width": 768
+  },
+  {
+    "boxScrollWidth": 1044,
+    "boxWidth": 1044,
+    "buttons": [
+      {
+        "bg": "rgb(20, 24, 33)",
+        "fg": "rgb(196, 201, 212)",
+        "height": 36,
+        "right": 455.9375,
+        "text": "Probe selected profile access (invokes the CLI)",
+        "width": 325.9375,
+        "x": 130
+      },
+      {
+        "bg": "rgb(20, 24, 33)",
+        "fg": "rgb(196, 201, 212)",
+        "height": 36,
+        "right": 653.0546875,
+        "text": "Inspect in Administration",
+        "width": 189.1171875,
+        "x": 463.9375
+      }
+    ],
+    "lang": "en",
+    "pageWidth": 1280,
+    "theme": "dark",
+    "width": 1280
+  },
+  {
+    "boxScrollWidth": 308,
+    "boxWidth": 308,
+    "buttons": [
+      {
+        "bg": "rgb(255, 255, 255)",
+        "fg": "rgb(55, 65, 81)",
+        "height": 56,
+        "right": 322,
+        "text": "Kiểm tra truy cập hồ sơ đã chọn (gọi CLI thật)",
+        "width": 284,
+        "x": 38
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "fg": "rgb(55, 65, 81)",
+        "height": 44,
+        "right": 189.0859375,
+        "text": "Xem trong Quản trị",
+        "width": 151.0859375,
+        "x": 38
+      }
+    ],
+    "lang": "vi",
+    "pageWidth": 375,
+    "theme": "light",
+    "width": 375
+  },
+  {
+    "boxScrollWidth": 693,
+    "boxWidth": 693,
+    "buttons": [
+      {
+        "bg": "rgb(255, 255, 255)",
+        "fg": "rgb(55, 65, 81)",
+        "height": 36,
+        "right": 357.71875,
+        "text": "Kiểm tra truy cập hồ sơ đã chọn (gọi CLI thật)",
+        "width": 315.71875,
+        "x": 42
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "fg": "rgb(55, 65, 81)",
+        "height": 36,
+        "right": 516.8046875,
+        "text": "Xem trong Quản trị",
+        "width": 151.0859375,
+        "x": 365.71875
+      }
+    ],
+    "lang": "vi",
+    "pageWidth": 768,
+    "theme": "light",
+    "width": 768
+  },
+  {
+    "boxScrollWidth": 1044,
+    "boxWidth": 1044,
+    "buttons": [
+      {
+        "bg": "rgb(255, 255, 255)",
+        "fg": "rgb(55, 65, 81)",
+        "height": 36,
+        "right": 445.71875,
+        "text": "Kiểm tra truy cập hồ sơ đã chọn (gọi CLI thật)",
+        "width": 315.71875,
+        "x": 130
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "fg": "rgb(55, 65, 81)",
+        "height": 36,
+        "right": 604.8046875,
+        "text": "Xem trong Quản trị",
+        "width": 151.0859375,
+        "x": 453.71875
+      }
+    ],
+    "lang": "vi",
+    "pageWidth": 1280,
+    "theme": "light",
+    "width": 1280
+  },
+  {
+    "boxScrollWidth": 308,
+    "boxWidth": 308,
+    "buttons": [
+      {
+        "bg": "rgb(20, 24, 33)",
+        "fg": "rgb(196, 201, 212)",
+        "height": 56,
+        "right": 322,
+        "text": "Kiểm tra truy cập hồ sơ đã chọn (gọi CLI thật)",
+        "width": 284,
+        "x": 38
+      },
+      {
+        "bg": "rgb(20, 24, 33)",
+        "fg": "rgb(196, 201, 212)",
+        "height": 44,
+        "right": 189.0859375,
+        "text": "Xem trong Quản trị",
+        "width": 151.0859375,
+        "x": 38
+      }
+    ],
+    "lang": "vi",
+    "pageWidth": 375,
+    "theme": "dark",
+    "width": 375
+  },
+  {
+    "boxScrollWidth": 693,
+    "boxWidth": 693,
+    "buttons": [
+      {
+        "bg": "rgb(20, 24, 33)",
+        "fg": "rgb(196, 201, 212)",
+        "height": 36,
+        "right": 357.71875,
+        "text": "Kiểm tra truy cập hồ sơ đã chọn (gọi CLI thật)",
+        "width": 315.71875,
+        "x": 42
+      },
+      {
+        "bg": "rgb(20, 24, 33)",
+        "fg": "rgb(196, 201, 212)",
+        "height": 36,
+        "right": 516.8046875,
+        "text": "Xem trong Quản trị",
+        "width": 151.0859375,
+        "x": 365.71875
+      }
+    ],
+    "lang": "vi",
+    "pageWidth": 768,
+    "theme": "dark",
+    "width": 768
+  },
+  {
+    "boxScrollWidth": 1044,
+    "boxWidth": 1044,
+    "buttons": [
+      {
+        "bg": "rgb(20, 24, 33)",
+        "fg": "rgb(196, 201, 212)",
+        "height": 36,
+        "right": 445.71875,
+        "text": "Kiểm tra truy cập hồ sơ đã chọn (gọi CLI thật)",
+        "width": 315.71875,
+        "x": 130
+      },
+      {
+        "bg": "rgb(20, 24, 33)",
+        "fg": "rgb(196, 201, 212)",
+        "height": 36,
+        "right": 604.8046875,
+        "text": "Xem trong Quản trị",
+        "width": 151.0859375,
+        "x": 453.71875
+      }
+    ],
+    "lang": "vi",
+    "pageWidth": 1280,
+    "theme": "dark",
+    "width": 1280
+  }
+]

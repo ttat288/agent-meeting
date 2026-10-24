@@ -1,0 +1,140 @@
+TAP version 13
+# Subtest: access recovery is explicit and preserves task/source when observation is missing
+not ok 1 - access recovery is explicit and preserves task/source when observation is missing
+  ---
+  duration_ms: 47.260667
+  type: 'test'
+  location: '/tmp/am-access-continued/baseline/test/work.test.js:158:55'
+  failureType: 'testCodeFailure'
+  error: |-
+    The validation function is expected to return "true". Received false
+    
+    Caught error:
+    
+    Error: Runtime access is unverified or routing constraints reject this task; probe the profile first
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    TestContext.<anonymous> (/tmp/am-access-continued/baseline/test/work.test.js:174:9)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.start (node:internal/test_runner/test:944:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+  ...
+# Subtest: access recovery is explicit and preserves task/source when observation is expired
+not ok 2 - access recovery is explicit and preserves task/source when observation is expired
+  ---
+  duration_ms: 32.453255
+  type: 'test'
+  location: '/tmp/am-access-continued/baseline/test/work.test.js:158:55'
+  failureType: 'testCodeFailure'
+  error: |-
+    The validation function is expected to return "true". Received false
+    
+    Caught error:
+    
+    Error: Runtime access is unverified or routing constraints reject this task; probe the profile first
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    TestContext.<anonymous> (/tmp/am-access-continued/baseline/test/work.test.js:174:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: access recovery is explicit and preserves task/source when observation is failed
+not ok 3 - access recovery is explicit and preserves task/source when observation is failed
+  ---
+  duration_ms: 29.191792
+  type: 'test'
+  location: '/tmp/am-access-continued/baseline/test/work.test.js:158:55'
+  failureType: 'testCodeFailure'
+  error: |-
+    The validation function is expected to return "true". Received false
+    
+    Caught error:
+    
+    Error: Runtime access is unverified or routing constraints reject this task; probe the profile first
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    TestContext.<anonymous> (/tmp/am-access-continued/baseline/test/work.test.js:174:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: routing constraints do not prescribe a paid access probe; observation present=false
+not ok 4 - routing constraints do not prescribe a paid access probe; observation present=false
+  ---
+  duration_ms: 26.991223
+  type: 'test'
+  location: '/tmp/am-access-continued/baseline/test/work.test.js:185:36'
+  failureType: 'testCodeFailure'
+  error: |-
+    The validation function is expected to return "true". Received false
+    
+    Caught error:
+    
+    Error: Runtime access is unverified or routing constraints reject this task; probe the profile first
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    TestContext.<anonymous> (/tmp/am-access-continued/baseline/test/work.test.js:190:9)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: routing constraints do not prescribe a paid access probe; observation present=true
+not ok 5 - routing constraints do not prescribe a paid access probe; observation present=true
+  ---
+  duration_ms: 29.550634
+  type: 'test'
+  location: '/tmp/am-access-continued/baseline/test/work.test.js:185:36'
+  failureType: 'testCodeFailure'
+  error: |-
+    The validation function is expected to return "true". Received false
+    
+    Caught error:
+    
+    Error: Runtime access is unverified or routing constraints reject this task; probe the profile first
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    TestContext.<anonymous> (/tmp/am-access-continued/baseline/test/work.test.js:190:9)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: disabled delegation cannot prescribe a probe even with missing access evidence
+not ok 6 - disabled delegation cannot prescribe a probe even with missing access evidence
+  ---
+  duration_ms: 38.330622
+  type: 'test'
+  location: '/tmp/am-access-continued/baseline/test/work.test.js:193:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The validation function is expected to return "true". Received false
+    
+    Caught error:
+    
+    Error: Runtime access is unverified or routing constraints reject this task; probe the profile first
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    TestContext.<anonymous> (/tmp/am-access-continued/baseline/test/work.test.js:195:49)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 0
+# fail 6
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 423.173195

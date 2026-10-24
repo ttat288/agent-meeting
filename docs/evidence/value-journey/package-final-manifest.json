@@ -1,0 +1,366 @@
+[
+  {
+    "id": "agent-meeting@3.5.0",
+    "name": "agent-meeting",
+    "version": "3.5.0",
+    "size": 385232,
+    "unpackedSize": 1008625,
+    "shasum": "0f544b77fe3422b6c65fd442691309019d44ccfa",
+    "integrity": "sha512-ogSkDCSck2cRi9vKuEvKRDORZpaLWXX8AbdP2oLpYnC3pkQ/gjt/oYXRDa62EoFUl569lqmm+SJXH5k1Wia5zA==",
+    "filename": "agent-meeting-3.5.0.tgz",
+    "files": [
+      {
+        "path": "CHANGELOG.md",
+        "size": 43548,
+        "mode": 420
+      },
+      {
+        "path": "LICENSE",
+        "size": 1064,
+        "mode": 420
+      },
+      {
+        "path": "README.md",
+        "size": 6430,
+        "mode": 420
+      },
+      {
+        "path": "README.vi.md",
+        "size": 7457,
+        "mode": 420
+      },
+      {
+        "path": "assets/brand/app-16.png",
+        "size": 374,
+        "mode": 420
+      },
+      {
+        "path": "assets/brand/app-24.png",
+        "size": 530,
+        "mode": 420
+      },
+      {
+        "path": "assets/brand/app-32.png",
+        "size": 629,
+        "mode": 420
+      },
+      {
+        "path": "assets/brand/app-48.png",
+        "size": 956,
+        "mode": 420
+      },
+      {
+        "path": "assets/brand/app-64.png",
+        "size": 1204,
+        "mode": 420
+      },
+      {
+        "path": "assets/brand/app-128.png",
+        "size": 2543,
+        "mode": 420
+      },
+      {
+        "path": "assets/brand/app-256.png",
+        "size": 5882,
+        "mode": 420
+      },
+      {
+        "path": "assets/brand/app-512.png",
+        "size": 14564,
+        "mode": 420
+      },
+      {
+        "path": "assets/brand/app-1024.png",
+        "size": 40186,
+        "mode": 420
+      },
+      {
+        "path": "assets/brand/app.icns",
+        "size": 65446,
+        "mode": 420
+      },
+      {
+        "path": "assets/brand/app.ico",
+        "size": 12236,
+        "mode": 420
+      },
+      {
+        "path": "assets/brand/app.svg",
+        "size": 569,
+        "mode": 420
+      },
+      {
+        "path": "assets/brand/legacy-icon.svg",
+        "size": 333,
+        "mode": 420
+      },
+      {
+        "path": "assets/brand/mark-inverse.svg",
+        "size": 501,
+        "mode": 420
+      },
+      {
+        "path": "assets/brand/mark-mono.svg",
+        "size": 501,
+        "mode": 420
+      },
+      {
+        "path": "assets/brand/mark.svg",
+        "size": 501,
+        "mode": 420
+      },
+      {
+        "path": "assets/brand/wordmark.svg",
+        "size": 740,
+        "mode": 420
+      },
+      {
+        "path": "assets/icon.svg",
+        "size": 569,
+        "mode": 420
+      },
+      {
+        "path": "bin/cli.js",
+        "size": 19414,
+        "mode": 493
+      },
+      {
+        "path": "bin/pm.js",
+        "size": 372,
+        "mode": 420
+      },
+      {
+        "path": "bin/routing.js",
+        "size": 1856,
+        "mode": 420
+      },
+      {
+        "path": "bin/task-skills.js",
+        "size": 2040,
+        "mode": 420
+      },
+      {
+        "path": "bin/team.js",
+        "size": 240,
+        "mode": 420
+      },
+      {
+        "path": "bin/worker.js",
+        "size": 1340,
+        "mode": 420
+      },
+      {
+        "path": "package.json",
+        "size": 1150,
+        "mode": 420
+      },
+      {
+        "path": "scripts/demo-bots.js",
+        "size": 9053,
+        "mode": 420
+      },
+      {
+        "path": "scripts/install-linux.sh",
+        "size": 318,
+        "mode": 493
+      },
+      {
+        "path": "scripts/test.js",
+        "size": 992,
+        "mode": 420
+      },
+      {
+        "path": "src/bridge.js",
+        "size": 9485,
+        "mode": 420
+      },
+      {
+        "path": "src/brief.js",
+        "size": 27641,
+        "mode": 420
+      },
+      {
+        "path": "src/cli-discovery.js",
+        "size": 8735,
+        "mode": 420
+      },
+      {
+        "path": "src/config-store.js",
+        "size": 5706,
+        "mode": 420
+      },
+      {
+        "path": "src/connect.js",
+        "size": 10911,
+        "mode": 420
+      },
+      {
+        "path": "src/defaults/routing-source.md",
+        "size": 16835,
+        "mode": 420
+      },
+      {
+        "path": "src/defaults/routing.json",
+        "size": 21253,
+        "mode": 420
+      },
+      {
+        "path": "src/desktop-install.js",
+        "size": 17589,
+        "mode": 420
+      },
+      {
+        "path": "src/evaluation.js",
+        "size": 9722,
+        "mode": 420
+      },
+      {
+        "path": "src/execution-sandbox.js",
+        "size": 6489,
+        "mode": 420
+      },
+      {
+        "path": "src/meeting.js",
+        "size": 84170,
+        "mode": 420
+      },
+      {
+        "path": "src/minutes.js",
+        "size": 9791,
+        "mode": 420
+      },
+      {
+        "path": "src/operator-client.js",
+        "size": 2182,
+        "mode": 420
+      },
+      {
+        "path": "src/pm.js",
+        "size": 19278,
+        "mode": 420
+      },
+      {
+        "path": "src/remote.js",
+        "size": 15088,
+        "mode": 420
+      },
+      {
+        "path": "src/retention.js",
+        "size": 1333,
+        "mode": 420
+      },
+      {
+        "path": "src/routing-tools.js",
+        "size": 3163,
+        "mode": 420
+      },
+      {
+        "path": "src/routing.js",
+        "size": 13319,
+        "mode": 420
+      },
+      {
+        "path": "src/runtime.js",
+        "size": 9035,
+        "mode": 420
+      },
+      {
+        "path": "src/server.js",
+        "size": 63635,
+        "mode": 420
+      },
+      {
+        "path": "src/session-child.js",
+        "size": 2491,
+        "mode": 420
+      },
+      {
+        "path": "src/session-supervisor.js",
+        "size": 4426,
+        "mode": 420
+      },
+      {
+        "path": "src/skills/agent-meeting/references/cli.md",
+        "size": 1827,
+        "mode": 420
+      },
+      {
+        "path": "src/skills/agent-meeting/SKILL.md",
+        "size": 1811,
+        "mode": 420
+      },
+      {
+        "path": "src/task-skills.js",
+        "size": 10009,
+        "mode": 420
+      },
+      {
+        "path": "src/team.js",
+        "size": 29582,
+        "mode": 420
+      },
+      {
+        "path": "src/tunnel.js",
+        "size": 3393,
+        "mode": 420
+      },
+      {
+        "path": "src/ui/app.css",
+        "size": 41268,
+        "mode": 420
+      },
+      {
+        "path": "src/ui/app.js",
+        "size": 74767,
+        "mode": 420
+      },
+      {
+        "path": "src/ui/favicon.svg",
+        "size": 569,
+        "mode": 420
+      },
+      {
+        "path": "src/ui/i18n.js",
+        "size": 42610,
+        "mode": 420
+      },
+      {
+        "path": "src/ui/index.html",
+        "size": 15906,
+        "mode": 420
+      },
+      {
+        "path": "src/ui/pm-ui.js",
+        "size": 18265,
+        "mode": 420
+      },
+      {
+        "path": "src/ui/workspace.css",
+        "size": 11844,
+        "mode": 420
+      },
+      {
+        "path": "src/ui/workspace.html",
+        "size": 1047,
+        "mode": 420
+      },
+      {
+        "path": "src/ui/workspace.js",
+        "size": 94761,
+        "mode": 420
+      },
+      {
+        "path": "src/work.js",
+        "size": 40706,
+        "mode": 420
+      },
+      {
+        "path": "src/worker.js",
+        "size": 14445,
+        "mode": 420
+      }
+    ],
+    "entryCount": 70,
+    "bundled": []
+  }
+]

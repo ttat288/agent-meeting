@@ -1,5 +1,13 @@
 # Hành trình thống nhất — hợp đồng v1 (2026-10-21)
 
+## J44 — skill/tool theo task (đích trước kiểm browser, 2026-10-24)
+
+Khoảng trống source: `skills list/show/inspect` chỉ đọc riêng; `WorkManager.start` chưa cấp skill và Claude managed khóa MCP rỗng. Lát cắt dùng task host API hiện có, không thêm screen/editor/catalog toàn cục: host lưu `skillPolicy` required/optional và grant lookup riêng → task requirementRevision + hash nguồn → explicit Run cấp required một lần, optional metadata → MCP chỉ đọc nạp đúng resource → reported → failed checks/explicit retry → verified → integrate/test source. Task không liên quan không nạp catalog/guide. Skill không cấp quyền script, available/selected/supplied không chứng minh applied/compliant.
+
+S04 giữ task/config/draft; policy hiện chỉnh qua API host local, UI chưa có editor. S05 dùng alert lỗi nguồn stale/missing/unsupported và giữ cùng task/run; không dùng lỗi skill để gợi ý paid probe hoặc tự Run. S06 handoff kèm supply/hash/grant và applied=not-observed. S07 giữ nguyên cấu hình runtime. Remote và team/swap chưa hỗ trợ policy, phải chặn rõ; CLI ngoài đã join không được kiểm soát context/tool bởi policy này.
+
+Ma trận: policy required/optional/none; lookup allowed/denied/missing/stale/traversal/symlink/duplicate; fail→retry giữ ID/revision/evidence; nguồn ignored đổi chặn run/verify/integrate; thay policy là revision mới và không tự dispatch. Browser trên source tích hợp khép readiness expiry→failed probe→success probe→explicit Run→failed check→retry→verified→integrated, Back/reload/deep link, VI/EN và width/theme phù hợp. Policy mới kiểm API/MCP fixture; không nhận editor/human acceptance/model efficacy. Đối chiếu cùng CSV/8 checks và ba handoff cùng facts; chỉ tính bytes nếu không có token thật.
+
 ## Hiện trạng đã quan sát trước sửa
 
 Browser trên preview 3117: phòng LOBBY có bối cảnh/mời agent; workspace có ô mục tiêu rỗng và một task riêng; admin có catalog revision 3. Phòng không biết task UUID; workspace không biết nguồn VIỆC. Đây là baseline lỗi, không phải nghiệm thu.
@@ -197,3 +205,38 @@ J42 (notification burst, sửa regression khi rà cuối): source953225b dành c
 **Lỗi tích hợp tìm khi QA locale:** nút VI→EN tại URL không còn `lang` chỉ replace đúng URL hiện tại, không reload; browser vẫn VI tới khi reload tay. Đích chọn ngôn ngữ luôn đưa lựa chọn rõ vào query, giữ params/hash khác và dùng được khi localStorage bị chặn. S03–07 giữ view/ID/run; không thêm điều khiển hoặc thay design system. Kiểm hai chiều/reload/Back và3red→green actual i18n tests.
 
 **QA guard bổ sung trong J43:** task.workspace giữ nguyên nhưng directory được chuyển qua symlink tới đường dẫn canonical khác, HEAD/bytes vẫn giống: bản đầu vẫn carry lỗi cũ. Đích chỉ carry khi canonical source path cũng khớp, cùng các guard đã chốt. Ca real Git/Node đỏ→xanh; không gọi guard này là filesystem transaction hoặc bảo vệ mọi race/inode replacement.
+
+## UC03 — phục hồi quan sát truy cập tại task (2026-10-23)
+
+S05 vẫn dùng cùng task/run/config: Run bị chặn vì quan sát thiếu/hết hạn/không xác nhận → cảnh báo role=alert, tên profile và nút probe có nêu gọi CLI thật/có thể tốn phí → người dùng chủ động probe → trạng thái xác nhận, chưa chạy task → người dùng chủ động Run → S06 verify→integrate. Không tự probe khi đọc trang/Back/reload, không tự retry. Lỗi routing/quyền/revision hoặc interrupted giữ guard trước dispatch; lỗi routing không gợi ý probe. Có link Admin runtime/return execute để đọc quan sát hoặc sửa cấu hình hiện có. Không thêm màn/kho dữ liệu.
+
+Bổ sung J06/J07/J10: observation expired→block giữ run count/source/task revision; probe thất bại→không run/không reported; probe thành công→explicit Run; cấu hình đổi trong khi probe→không áp dụng; chuyển view/nhập khi chờ→không mất draft/focus; Back/reload/deep link giữ UUID/evidence và không dispatch. Fixture/subprocess/HTTP/browser là self-review; model/human acceptance ghi riêng trong evidence/readiness-recovery.
+
+## J44 — Handoff giữ yêu cầu đã chạy; tích hợp và rollback giữ quyền file (2026-10-24)
+
+Quan sát bằng API thật trên source local: run v1 đã integrated, sau Configure acceptance/sources/facts v2 rồi restart, handoff tải về vẫn gắn evidence v1 với task v2. S06 đã có cảnh báo yêu cầu cũ nhưng JSON tải về mâu thuẫn. Đích giữ screen pool/flow hiện có UC04/S06 → tải handoff → đọc đúng snapshot của run; không thêm màn hay thao tác. `task` trong handoff là `run.requirementSnapshot` hoặc null với dữ liệu cũ thiếu snapshot; không suy từ task hiện tại. `requirementRevision`, `currentRequirementRevision`, `requirementsCurrent` tách lịch sử khỏi yêu cầu hiện tại; currentness null nếu thiếu snapshot/task/revision, false có limitation giải thích. Không sửa status lịch sử hoặc nghiệm thu task mới.
+
+Ma trận: current/reconfigured/restart; legacy thiếu snapshot; current task không còn; workspace sửa trước verify bị chặn. Browser nguồn tích hợp: repeated access expiry→probe fail→probe success→Run→failed check→retry→verify→integrate, sau đó đổi requirement→reload/Back→warning cũ và handoff khớp. VI/EN×light/dark×375/768/1280; không auto probe/dispatch. Fixture/self-review không là native model hoặc human acceptance.
+
+Quan sát độc lập trong cùng recovery: original0754 dưới process umask0077 trở thành0700 sau atomic integration; rollback trả bytes nhưng quyền vẫn0700 dù báo restored. Đích tạo temp riêng tư rồi chmod đúng permission bits trước rename, cả tích hợp và rollback. Test success/fail dưới umask077 và conflict do external chmod/symlink giữ nguyên; không bỏ source guard hoặc kill escalation. Không nhận đã bảo toàn ACL/xattr/ownership hoặc hỗ trợ Windows permission semantics từ ca Linux này.
+
+J44 bổ sung sau lỗi thực: Rebase run reported/verified của revision cũ trả200 và đổi task mới từ ready thành verifying; source bị đổi canonical path hoặc task rời hội thoại cũng không bị chặn. Đích UC04/S06 giữ bằng chứng lịch sử, không hiện source refresh cho run cũ/nguồn không còn; API kiểm open/current requirement/current source/canonical path trước chép file hoặc sửa state. Current run vẫn rebase→reported→verify→integrate; closed/stale/removed/redirected phải từ chối và giữ state/workspace. Browser kiểm nút có ở reported hiện tại, mất sau Configure; API trực tiếp vẫn409 và reload không tự chạy.
+
+## J45 — Probe có phản hồi nhưng thiếu/khác model identity (đích trước sửa, 2026-10-24)
+
+Quan sát thật: native agy sửa file và direct tests đạt, explicit probe qua runtime có available/quota true nhưng reportedModel unknown/modelVerified false. Run bị chặn đúng guard. S05 access recovery hiện chỉ nói kiểm CLI/quyền rồi thử lại, không nêu tầng identity; có thể dẫn người vận hành sửa auth hoặc lặp paid probe sai nguyên nhân. Không coi đây là CLI hỏng, không nới identity guard.
+
+Đích giữ S05/S07 và button/link hiện có: sau probe với CLI phản hồi nhưng model chưa được xác nhận, phân biệt actual model không được báo với model báo lại khác mapping. Chỉ dẫn xem model reporting/mapping trong Administration trước khi probe lại; nêu chưa có run. Failure/quota/CLI unavailable vẫn theo lỗi truy cập chung; stale config giữ riêng. Không tự probe/retry/đổi profile/model hoặc vô hiệu khả năng explicit retry.
+
+Ma trận: real probe receipt làm căn cứ, API/browser dùng participant scripted tạo cùng trạng thái identity-unknown và mismatch, không nhận fixture là lần inference mới. Unknown/mismatch không được hiện access confirmed; lỗi rolealert giữ task/draft/profile/focus và0task call. Explicit recovery sau đó mới probe→Run; VI/EN/light/dark/375/768/1280, Back/reload và metadata task/run giữ nguyên. Không thay schema/CSP/token theme hoặc thêm màn.
+
+J44 bổ sung từ ca legacy (fixture tương thích, chưa có người dùng thật mất field): metadata đã giữ missing run revision là unknown, nhưng `assertCurrent(..., undefined)` của verify/rebase lại bỏ fence vì tham số client vốn tùy chọn. API cho old legacy attempt đổi state task mới trước khi integrate bị guard khác chặn. Đích mọi mutator của run phải có revision số nguyên dương đã biết trước khi dùng current-task fence; missing/invalid từ chối409 với hướng dẫn review task và explicit Run mới. Không suy run revision từ snapshot hoặc tự sửa kho. Test API verify/rebase/integrate không đổi state/evidence khi thiếu revision; attempt mới cùng task ID phục hồi tới source test/integrated. Giữ tương thích client cũ không gửi optional expectedRevision khi Run task hợp lệ.
+
+
+## J46 — Read-only agy cần biên filesystem thật, 2026-10-24
+
+Rà provider limit README: `--mode plan` đi cùng disable-slash vốn cảnh báo không hiệu lực. Phép thử thật bằng đúng buildArgs(write:false) trong fixture ngoài được mount ghi đã đổi BEFORE→AFTER bằng native file tool. Host luôn được outer sandbox bảo vệ; chưa có incident người dùng thật. Runtime cũ chỉ wrap khi write/isolate/taskContextFile, nên không được coi plan flag là biên read-only.
+
+Đích không thêm màn hình/quyền hay adapter: mọi model call agy qua runtime, cả probe/read-only, bắt buộc wrapExecution(write:false). Thiếu Linux/bwrap/namespace từ chối trước spawn, giữ guard write:true và task-context MCP, giữ group cancellation/cleanup. Mọi giao diện model-free/invited vẫn giữ phạm vi cũ. Same prompt qua default runtime bỏ isolate phải không đổi file; SDK report không thay kiểm file. Không claim read/network/tool-server isolation; CLI người dùng tự mở ngoài control.
+
+Ma trận: real CLI before-file-edit/after-EROFS; fake-process spy bắt wrapper/writefalse/cleanup và sandbox unavailable→0spawn; full runtime/cancel/boundary; full source và package khớp hashes, browser nguồn tích hợp cùng UI bytes. VI/EN README nêu managed writing Claude Code; current local agy probes/read-only đòi Linux/bwrap, khác pin lịch sử. Link/anchor local và commit ancestry được kiểm; remote fetch TLS fail ghi unverified, không sửa CA/global auth hoặc bypass. Không tạo demo native managed khi identity vẫn unknown.

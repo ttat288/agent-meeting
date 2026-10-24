@@ -1,0 +1,31 @@
+{
+  "recordedAt": "2026-10-24T08:22:48.956738+00:00",
+  "head": "1b56f4db04d4135a66fcc329af89332eb21b9d3f",
+  "localChangesIncluded": true,
+  "sha256": {
+    "src/server.js": "a7c6616f376b80d56419acf6a6025873177bc405a77d756474441cc1c2434900",
+    "src/work.js": "369ff105b0c61b91d7394920788a6eda940f7c90e2022d8cfa2373e1412c85be",
+    "src/ui/workspace.js": "61f48b6305f8eda747e006985cc58cef441a21dc597136e517d886761457008d",
+    "src/ui/workspace.css": "6a292a58fc075832646807817458ca656e38b7759fc4e2a4317c987246cf6bc9",
+    "src/runtime.js": "55c79c748aa990c2ce499d90dd0fd7fffaeb439a7a5ecf8001c15b82d6cb9d68",
+    "src/execution-sandbox.js": "971a2a1b908fd7447208f4ad94d5f1d8a7c3febf9f8593e69eec6c2cc95fc2a7",
+    "src/task-skills.js": "99cd1726758c6e2000bf043a438cb4111d9071ccf82f3559c103b390b1ea499b",
+    "src/cli-discovery.js": "44f80478898efb3871d9d2c70d40cf5d7e92f8a104aa50d142e7ca41038cf7c2",
+    "bin/task-skills.js": "8f21951ff763a627a49a0ae7b976b9ee655ab4f811c1cea97e2c50fd1578567b",
+    "test/work-handoff.test.js": "ae924bedfded27aa3f8c0d42d3a4d7b7682f8b8aed97f5e3f67953509c023dd0",
+    "test/work-cancel.test.js": "048dfc8a3fcbf9e749eb7d2f311bc8d785f3c76baf5eaea5631edaef10ed03ea",
+    "test/work.test.js": "f0ba93bfdb424af5f0c8e090de31203ba5d213b9c96e272d70ceae02b1eb48c4",
+    "test/ui-access-recovery.test.js": "64bfcc36a8805e9173bede3aaf4a50462e068b5b55b5e6c3cbf165303ce1f37f",
+    "test/runtime.test.js": "bc0fe6526ffd94843834c64e124ac84c8c2f7165cf589681644b63449a5c3cae",
+    "test/runtime-cancel.test.js": "c7364e02ccb58c0795a6f5192a3a928e8dca1388c0e1bd9b45cb6ed08a0b8cd3",
+    "test/execution-sandbox.test.js": "8e9697b8e3520c75ba5b5794838b51394f6fe8ac6f57a9039316a39ca26f8add",
+    "tools/check-value-journey.js": "a8cf117310c4b82d52c374258df9049af6d1e5e4f749c21c557f4e9e01dfdc6a",
+    "tools/check-task-skills-browser.js": "f8f96a1809dc1e850e8f4dd0ec48bd39937acc8699b1c14b017687a7d977d021",
+    "package.json": "aef9614b72d7dc98b38883b705e34f1e7adfe198d8e25308b6cb0812dc6e5949",
+    "README.md": "48e76b143797d28a0a578148f481f1e812705286a39ae86e1735da9457e78ccc",
+    "README.vi.md": "ed748e0a6ff389387d964d5e40bb5872c1b944d8e8f358979c2113c98407ab56",
+    "CHANGELOG.md": "fa140a4a9193384abdc3566f89a49671e05eb8bad1cf21773cc36960d760b89c",
+    "SECURITY.md": "bc697c3807f93111fd1b74cee9266365df88600df3851928a552b32146143c39",
+    "docs/SHOWCASE.md": "88f0784c71c4e9cb5407b2eaae5c36bba8f55b2242be50dd045f44fab5d8e1b6"
+  }
+}

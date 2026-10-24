@@ -219,3 +219,26 @@ test('verification sandbox blocks test writes and cannot remain verifying', asyn
   assert.equal(result.status, 'failed'); assert.match(result.error, /Independent verification failed/); assert.match(result.evidence[0].output, /EROFS|read-only file system/);
   assert.equal(work.read().tasks[0].status, 'failed'); assert.equal(work.active.size, 0);
 });
+
+test('integration preserves existing permissions under a restrictive process umask', { skip: process.platform === 'win32' }, async t => {
+  const { work, source } = setup(t), file = path.join(source, 'sum.js');
+  fs.chmodSync(file, 0o754);
+  assert.equal((await work.verify('run')).status, 'verified');
+  const originalMask = process.umask(0o077);
+  let result;
+  try { result = await work.integrate('run'); } finally { process.umask(originalMask); }
+  assert.equal(result.status, 'integrated');
+  assert.equal(fs.statSync(file).mode & 0o777, 0o754, 'Integration must retain the original mode, not apply the server umask');
+});
+
+test('failed integration restores both original bytes and permissions under restrictive umask', { skip: process.platform === 'win32' }, async t => {
+  const { work, source } = setup(t, "require('node:test')('context',()=>{if(require('node:path').basename(process.cwd())==='source')throw Error('integration-only failure');});\n"), file = path.join(source, 'sum.js');
+  const original = fs.readFileSync(file); fs.chmodSync(file, 0o754);
+  assert.equal((await work.verify('run')).status, 'verified');
+  const originalMask = process.umask(0o077);
+  let result;
+  try { result = await work.integrate('run'); } finally { process.umask(originalMask); }
+  assert.equal(result.status, 'failed'); assert.equal(result.rollback, 'restored');
+  assert.deepEqual(fs.readFileSync(file), original);
+  assert.equal(fs.statSync(file).mode & 0o777, 0o754, 'A restored rollback must also retain the original permissions');
+});

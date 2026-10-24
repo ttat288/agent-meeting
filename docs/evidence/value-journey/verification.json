@@ -1,0 +1,109 @@
+{
+  "recordedAt": "2026-10-24T15:26:31.274460+07:00",
+  "t0": "2026-10-24T12:59:04+07:00",
+  "deadline": "2026-10-24T16:30:00+07:00",
+  "fourOutputs": "real handoff task and failures; direct native/data/product comparisons; six fixes and recovery; final source/package/browser/review/README evidence",
+  "full": {
+    "startedAt": "2026-10-24T07:38:24.637748+00:00",
+    "endedAt": "2026-10-24T07:40:13.002942+00:00",
+    "elapsedSeconds": 108.3652241230011,
+    "exitCode": 0,
+    "memoryMax": "1200M",
+    "swapMax": 0,
+    "timeoutSeconds": 900,
+    "tests": 504,
+    "pass": 504,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "files": 44
+  },
+  "apiHandoffChecks": 9,
+  "targetedChecks": 74,
+  "browser": {
+    "fixture": true,
+    "modelCalls": 0,
+    "readinessCases": 12,
+    "identityCases": 24,
+    "historicalCases": 12,
+    "legacyRecovery": {
+      "fixture": true,
+      "missingFieldInjected": true,
+      "blockedRunId": "026225fd-f7f9-4d4f-85c3-0c98a3af50e0",
+      "newRunId": "4ad5f81c-8dcd-4cdb-b4b6-cd54ee8b5ce5",
+      "requirementRevision": 4,
+      "taskId": "meeting-2ce7e88ce3f5d91994be6879c7914baf",
+      "status": "integrated",
+      "stateUnchangedOn409": true,
+      "paidProbeOnLegacyError": false
+    }
+  },
+  "requestedModel": "gemini-3.8-flash-low",
+  "actualModel": "unknown",
+  "realCliCalls": 19,
+  "usage": {
+    "input_tokens": 690090,
+    "output_tokens": 21712,
+    "thinking_tokens": 0,
+    "cache_read_tokens": 2770449,
+    "total_tokens": 711802
+  },
+  "humanAcceptance": false,
+  "netValueOrBillingSavingsProven": false,
+  "wowFactorProven": false,
+  "ciNode18And20Verified": false,
+  "sourceFreeze": "source-freeze.json",
+  "preservation": "preservation.json",
+  "targetedChecksBeforeReadonlyGuard": 74,
+  "runtimeBoundaryChecks": 21,
+  "guardsTightenedNotRelaxed": true,
+  "runtimeGuardPreservation": "runtime-guard-preservation.json",
+  "remoteFreshCloneVerified": false,
+  "readmeLinkCheck": "readme-link-check.json",
+  "packageTested": {
+    "filename": "/tmp/am-value-20261024-125904/package-final/agent-meeting-3.5.0.tgz",
+    "sha256": "6a33bc4efa4d5f11ed16f9cde80c5fb636882e1eac3726bdc379375c01dbb464",
+    "fileCount": 70,
+    "packedSize": 385232,
+    "unpackedSize": 1008625,
+    "published": false,
+    "sourceMatches": {
+      "src/server.js": true,
+      "src/work.js": true,
+      "src/ui/workspace.js": true,
+      "src/runtime.js": true,
+      "README.md": true,
+      "README.vi.md": true,
+      "CHANGELOG.md": true
+    },
+    "independentTestsCopiedAfterExtraction": true,
+    "targetedChecks": 95
+  },
+  "packageSealed": {
+    "filename": "/tmp/am-value-20261024-125904/package-sealed/agent-meeting-3.5.0.tgz",
+    "sha256": "ce03f45142337d31a1bb027f5c43eadbce15eba1b16d2e7c1d0dde0c7e4efa1f",
+    "fileCount": 70,
+    "onlyDeltaFrom95TestedPackage": [
+      "CHANGELOG.md"
+    ],
+    "allExecutableRuntimeAssetsAndReadmesMatch95TestedPackage": true,
+    "testEvidenceReuse": "95 checks executed on package-final; after a documentation-only CHANGELOG change, sealed package code/assets/README hashes are identical, so tests were not pointlessly repeated.",
+    "sourceMatches": {
+      "src/runtime.js": true,
+      "src/work.js": true,
+      "src/server.js": true,
+      "src/ui/workspace.js": true,
+      "README.md": true,
+      "README.vi.md": true,
+      "CHANGELOG.md": true
+    },
+    "published": false
+  },
+  "sdkReportedTurnCounter": 19,
+  "sdkInternalModelRequestCount": null,
+  "freshRemoteCloneVerified": false,
+  "endedAt": "2026-10-24T15:26:31.274460+07:00",
+  "elapsedSessionSeconds": 8847,
+  "stoppedBeforeDeadline": true,
+  "stopReason": "Four required outputs closed; historical handoff, umask, stale/source recovery, identity recovery, legacy mutator and physical readonly boundary independently checked. No remaining reproduced important defect in affected scope. Unverified identity/managed adapter/value/human acceptance are explicit limits; no artificial model/test/backlog work to fill time."
+}

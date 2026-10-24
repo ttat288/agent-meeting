@@ -1,0 +1,21 @@
+{
+  "recordedAt": "2026-10-24T06:10:22.804Z",
+  "patchSha256": "9cd41c8627d5f5413634abe7f900d60bad8df43d8d17cc10a20e790e82f2e281",
+  "syntax": {
+    "exitCode": 0,
+    "output": ""
+  },
+  "tests": {
+    "exitCode": 0,
+    "output": "TAP version 13\n# Subtest: handoff retains the executed requirements after reconfiguration and restart\nok 1 - handoff retains the executed requirements after reconfiguration and restart\n  ---\n  duration_ms: 705.740843\n  type: 'test'\n  ...\n# Subtest: current and failed handoffs keep run identity and do not imply completion\nok 2 - current and failed handoffs keep run identity and do not imply completion\n  ---\n  duration_ms: 70.736319\n  type: 'test'\n  ...\n# Subtest: legacy run without a requirement snapshot never borrows present-day criteria\nok 3 - legacy run without a requirement snapshot never borrows present-day criteria\n  ---\n  duration_ms: 70.074251\n  type: 'test'\n  ...\n# Subtest: a historical snapshot is exportable when the current task is unavailable\nok 4 - a historical snapshot is exportable when the current task is unavailable\n  ---\n  duration_ms: 49.681609\n  type: 'test'\n  ...\n1..4\n# tests 4\n# suites 0\n# pass 4\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 1035.263835\n"
+  },
+  "status": "candidate-passed",
+  "operatorWork": [
+    "PM parsed output fence",
+    "PM required exact unique source match",
+    "PM applied edit to isolated candidate",
+    "PM copied hidden acceptance tests after model completion",
+    "PM executed independent syntax and HTTP journey tests"
+  ],
+  "modelWrite": false
+}

@@ -1,0 +1,8 @@
+locator.waitFor: Error: strict mode violation: getByText('This result belongs to an older requirement and cannot be accepted for the current revision.', { exact: true }) resolved to 2 elements:
+    1) <p class="ws-warning">This result belongs to an older requirement and c…</p> aka getByRole('paragraph').filter({ hasText: 'This result belongs to an' })
+    2) <p class="ws-warning">This result belongs to an older requirement and c…</p> aka getByText('This result belongs to an').nth(1)
+
+Call log:
+[2m  - waiting for getByText('This result belongs to an older requirement and cannot be accepted for the current revision.', { exact: true }) to be visible[22m
+
+    at main (/home/theo/workspace/agent-meeting/tools/check-task-skills-browser.js:100:139)

@@ -1,0 +1,1014 @@
+{
+  "schema": "agent-meeting/work@1",
+  "revision": 8,
+  "tasks": [
+    {
+      "id": "meeting-d396140f45e38abbcf65b88e2008fb84",
+      "context": "Fix CSV cell escaping for commas, embedded double quotes and CR/LF; preserve plain, empty, numeric and Unicode cells. Change only csv-cell.js; keep independent tests unchanged.",
+      "goal": "Fix CSV cell escaping",
+      "purpose": "execute",
+      "topology": "local",
+      "management": "managed",
+      "acceptance": [
+        "keeps plain cells",
+        "quotes delimiter",
+        "escapes embedded double quotes",
+        "quotes line feed",
+        "quotes carriage return",
+        "keeps empty cells",
+        "keeps unicode",
+        "converts zero"
+      ],
+      "dependencies": [],
+      "writePaths": [
+        "csv-cell.js"
+      ],
+      "testFiles": [
+        "test/csv-cell.test.js"
+      ],
+      "sources": [],
+      "facts": [],
+      "unknowns": [],
+      "requirementRevision": 2,
+      "status": "failed",
+      "createdAt": "2026-10-23T13:34:30.532Z",
+      "origin": {
+        "kind": "meeting-action",
+        "number": 1,
+        "timestamp": 1792762470532,
+        "roomCreatedAt": 1792762470439,
+        "messageIndex": 1,
+        "message": "CONCLUSION: Export CSV cells without corrupting quotes or line breaks.\nTASK: Dev | Fix CSV cell escaping | today",
+        "context": "Fix CSV cell escaping for commas, embedded double quotes and CR/LF; preserve plain, empty, numeric and Unicode cells. Change only csv-cell.js; keep independent tests unchanged."
+      },
+      "owner": "Dev",
+      "sourceCurrent": true,
+      "reportedProgress": {
+        "status": "todo",
+        "note": "",
+        "updatedAt": null,
+        "updatedBy": null
+      },
+      "workspace": "/tmp/am-access-continued/preview/source"
+    }
+  ],
+  "runs": [
+    {
+      "id": "1f6ee6ff-986f-4dac-96bf-fd017d20b4e5",
+      "taskId": "meeting-d396140f45e38abbcf65b88e2008fb84",
+      "requirementSnapshot": {
+        "id": "meeting-d396140f45e38abbcf65b88e2008fb84",
+        "context": "Fix CSV cell escaping for commas, embedded double quotes and CR/LF; preserve plain, empty, numeric and Unicode cells. Change only csv-cell.js; keep independent tests unchanged.",
+        "goal": "Fix CSV cell escaping",
+        "purpose": "execute",
+        "topology": "local",
+        "management": "managed",
+        "acceptance": [
+          "keeps plain cells",
+          "quotes delimiter",
+          "escapes embedded double quotes",
+          "quotes line feed",
+          "quotes carriage return",
+          "keeps empty cells",
+          "keeps unicode",
+          "converts zero"
+        ],
+        "dependencies": [],
+        "writePaths": [
+          "csv-cell.js"
+        ],
+        "testFiles": [
+          "test/csv-cell.test.js"
+        ],
+        "sources": [],
+        "facts": [],
+        "unknowns": [],
+        "requirementRevision": 2,
+        "status": "ready",
+        "createdAt": "2026-10-23T13:34:30.532Z",
+        "origin": {
+          "kind": "meeting-action",
+          "number": 1,
+          "timestamp": 1792762470532,
+          "roomCreatedAt": 1792762470439,
+          "messageIndex": 1,
+          "message": "CONCLUSION: Export CSV cells without corrupting quotes or line breaks.\nTASK: Dev | Fix CSV cell escaping | today",
+          "context": "Fix CSV cell escaping for commas, embedded double quotes and CR/LF; preserve plain, empty, numeric and Unicode cells. Change only csv-cell.js; keep independent tests unchanged."
+        },
+        "owner": "Dev",
+        "sourceCurrent": true,
+        "reportedProgress": {
+          "status": "todo",
+          "note": "",
+          "updatedAt": null,
+          "updatedBy": null
+        },
+        "workspace": "/tmp/am-access-continued/preview/source"
+      },
+      "requirementRevision": 2,
+      "status": "failed",
+      "source": "/tmp/am-access-continued/preview/source",
+      "workspace": "/tmp/am-access-continued/preview/work/cf0bbeb7e3ba22988aacfa70a54abea7d762162139884cc7b19e0dcadafb6b89/runs/1f6ee6ff-986f-4dac-96bf-fd017d20b4e5/workspace",
+      "baseRevision": "9d965af1539be89cda1445e7d436298ff9a9277a",
+      "configRevision": 2,
+      "configSnapshot": {
+        "schema": "agent-meeting/routing@1",
+        "revision": 2,
+        "models": [
+          {
+            "id": "flash",
+            "label": "Gemini Flash",
+            "provider": "google",
+            "providerModelId": null,
+            "enabled": false,
+            "verification": "unverified",
+            "capabilities": [
+              "large-context",
+              "extraction",
+              "multimodal",
+              "small-coding"
+            ],
+            "roles": [
+              "scout",
+              "analyst"
+            ],
+            "costTier": "low",
+            "modalities": [
+              "text",
+              "image",
+              "video",
+              "audio",
+              "pdf"
+            ],
+            "strengths": [
+              "Application logs, server logs, stack traces, error reports.",
+              "T\u00e0i li\u1ec7u k\u1ef9 thu\u1eadt, PDF, specification, API documentation.",
+              "Issue descriptions, pull request descriptions, release notes.",
+              "Repository metadata v\u00e0 n\u1ed9i dung file \u0111\u01b0\u1ee3c cung c\u1ea5p.",
+              "M\u00f4 t\u1ea3 \u1ea3nh ch\u1ee5p m\u00e0n h\u00ecnh, giao di\u1ec7n UI v\u00e0 th\u00f4ng b\u00e1o l\u1ed7i.",
+              "Ph\u00e2n t\u00edch \u1ea3nh tr\u01b0\u1edbc v\u00e0 sau khi thay \u0111\u1ed5i giao di\u1ec7n.",
+              "\u0110\u1ecdc n\u1ed9i dung t\u00e0i li\u1ec7u c\u00f3 h\u00ecnh \u1ea3nh, b\u1ea3ng bi\u1ec3u.",
+              "Ph\u00e2n t\u00edch video, di\u1ec5n bi\u1ebfn theo timestamp v\u00e0 c\u00e1c frame quan tr\u1ecdng.",
+              "Requirements, constraints, entities, API endpoints.",
+              "L\u1ed7i l\u1eb7p l\u1ea1i, s\u1ef1 ki\u1ec7n b\u1ea5t th\u01b0\u1eddng, chu\u1ed7i s\u1ef1 ki\u1ec7n trong log.",
+              "Danh s\u00e1ch file, module, dependency c\u00f3 li\u00ean quan.",
+              "Nh\u1eefng th\u00f4ng tin c\u00f2n thi\u1ebfu \u0111\u1ec3 gi\u1ea3i quy\u1ebft v\u1ea5n \u0111\u1ec1.",
+              "Lo\u1ea1i b\u1ecf n\u1ed9i dung tr\u00f9ng l\u1eb7p nh\u01b0ng gi\u1eef l\u1ea1i c\u00e1c s\u1ef1 ki\u1ec7n ri\u00eang bi\u1ec7t.",
+              "Ph\u00e2n nh\u00f3m theo ch\u1ee7 \u0111\u1ec1, th\u1eddi gian, th\u00e0nh ph\u1ea7n ho\u1eb7c m\u1ee9c \u0111\u1ed9 nghi\u00eam tr\u1ecdng.",
+              "T\u1ea1o b\u1ea3n t\u00f3m t\u1eaft c\u00f3 tr\u00edch d\u1eabn ngu\u1ed3n.",
+              "\u0110\u1ec1 xu\u1ea5t c\u00e1c v\u1ecb tr\u00ed c\u1ea7n \u0111\u1ecdc s\u00e2u h\u01a1n.",
+              "H\u01b0\u1edbng \u0111\u1ebfn t\u1ed1c \u0111\u1ed9 v\u00e0 hi\u1ec7u qu\u1ea3 chi ph\u00ed.",
+              "H\u1ed7 tr\u1ee3 text, image, video, audio v\u00e0 PDF.",
+              "Context window l\u1edbn, thu\u1eadn l\u1ee3i cho vi\u1ec7c x\u1eed l\u00fd t\u00e0i li\u1ec7u v\u00e0 d\u1eef li\u1ec7u d\u00e0i.",
+              "C\u00f3 th\u1ec3 l\u00e0m coding v\u00e0 agent workflow, kh\u00f4ng ch\u1ec9 t\u00f3m t\u1eaft n\u1ed9i dung."
+            ],
+            "limitations": [
+              "Quy\u1ebft \u0111\u1ecbnh ki\u1ebfn tr\u00fac c\u00f3 \u1ea3nh h\u01b0\u1edfng r\u1ed9ng khi ch\u01b0a \u0111\u1ee7 b\u1eb1ng ch\u1ee9ng.",
+              "K\u1ebft lu\u1eadn root cause ch\u1ec9 d\u1ef1a tr\u00ean b\u1ea3n t\u00f3m t\u1eaft.",
+              "Th\u1ef1c hi\u1ec7n m\u1ed9t thay \u0111\u1ed5i l\u1edbn tr\u00ean repository khi ch\u01b0a n\u1eafm dependency v\u00e0 y\u00eau c\u1ea7u ki\u1ec3m th\u1eed.",
+              "Ra quy\u1ebft \u0111\u1ecbnh quan tr\u1ecdng d\u1ef1a tr\u00ean ph\u00e2n t\u00edch h\u00ecnh \u1ea3nh ch\u01b0a \u0111\u01b0\u1ee3c \u0111\u1ed1i chi\u1ebfu b\u1eb1ng d\u1eef li\u1ec7u kh\u00e1c."
+            ],
+            "outputContract": [
+              "Facts: th\u00f4ng tin quan s\u00e1t \u0111\u01b0\u1ee3c tr\u1ef1c ti\u1ebfp.",
+              "Evidence: tr\u00edch d\u1eabn, ngu\u1ed3n v\u00e0 v\u1ecb tr\u00ed c\u1ee7a th\u00f4ng tin.",
+              "Hypotheses: gi\u1ea3 thuy\u1ebft, kh\u00f4ng tr\u00ecnh b\u00e0y nh\u01b0 s\u1ef1 th\u1eadt.",
+              "Unknowns: th\u00f4ng tin c\u00f2n thi\u1ebfu.",
+              "Next steps: b\u01b0\u1edbc \u0111i\u1ec1u tra ti\u1ebfp theo."
+            ],
+            "source": {
+              "kind": "user-supplied",
+              "path": "src/defaults/routing-source.md",
+              "lines": [
+                19,
+                82
+              ],
+              "checkedAt": null,
+              "confidence": "hypothesis",
+              "references": [
+                "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash"
+              ]
+            }
+          },
+          {
+            "id": "astra",
+            "label": "GPT Astra",
+            "provider": "openai",
+            "providerModelId": null,
+            "enabled": false,
+            "verification": "unverified",
+            "capabilities": [
+              "coding",
+              "execution",
+              "coordination",
+              "verification"
+            ],
+            "roles": [
+              "executor",
+              "coordinator"
+            ],
+            "costTier": "high",
+            "modalities": [
+              "text"
+            ],
+            "strengths": [
+              "\u0110\u1ecdc codebase v\u00e0 x\u00e1c \u0111\u1ecbnh v\u00f9ng c\u1ea7n thay \u0111\u1ed5i.",
+              "Tri\u1ec3n khai feature li\u00ean quan nhi\u1ec1u file.",
+              "Ch\u1ea1y command, build, test, linter v\u00e0 ki\u1ec3m tra k\u1ebft qu\u1ea3.",
+              "Debug theo v\u00f2ng l\u1eb7p quan s\u00e1t, s\u1eeda \u0111\u1ed5i v\u00e0 x\u00e1c minh.",
+              "Browser automation v\u00e0 computer use khi tool t\u01b0\u01a1ng \u1ee9ng \u0111\u01b0\u1ee3c c\u1ea5p.",
+              "Truy c\u1eadp t\u00e0i li\u1ec7u tr\u1ef1c tuy\u1ebfn, \u0111\u1ed1i chi\u1ebfu API v\u00e0 ki\u1ec3m tra giao di\u1ec7n.",
+              "Thao t\u00e1c tr\u00ean m\u00f4i tr\u01b0\u1eddng th\u1ef1c thi ho\u1eb7c sandbox.",
+              "Thu th\u1eadp k\u1ebft qu\u1ea3 t\u1eeb c\u00e1c tool v\u00e0 chuy\u1ec3n th\u00e0nh h\u00e0nh \u0111\u1ed9ng ti\u1ebfp theo.",
+              "Chia nhi\u1ec7m v\u1ee5 l\u1edbn th\u00e0nh c\u00e1c subtask \u0111\u1ed9c l\u1eadp.",
+              "X\u00e1c \u0111\u1ecbnh th\u1ee9 t\u1ef1 ph\u1ee5 thu\u1ed9c gi\u1eefa c\u00e1c subtask.",
+              "T\u1ed5ng h\u1ee3p k\u1ebft qu\u1ea3 t\u1eeb c\u00e1c agent kh\u00e1c.",
+              "Ph\u00e1t hi\u1ec7n k\u1ebft qu\u1ea3 m\u00e2u thu\u1eabn v\u00e0 y\u00eau c\u1ea7u x\u00e1c minh.",
+              "L\u1ed7i ch\u1ec9 t\u00e1i hi\u1ec7n \u0111\u01b0\u1ee3c khi ch\u1ea1y \u1ee9ng d\u1ee5ng.",
+              "Ki\u1ec3m tra m\u1ed9t quy tr\u00ecnh end-to-end.",
+              "S\u1eeda l\u1ed7i c\u1ea7n nhi\u1ec1u v\u00f2ng ch\u1ea1y th\u1eed.",
+              "X\u00e1c minh h\u00e0nh vi th\u1ef1c t\u1ebf kh\u00e1c v\u1edbi m\u00f4 t\u1ea3 trong t\u00e0i li\u1ec7u.",
+              "K\u1ebft h\u1ee3p c\u00e1c ph\u1ea7n vi\u1ec7c c\u1ee7a nhi\u1ec1u agent.",
+              "Ki\u1ec3m tra t\u00ednh nh\u1ea5t qu\u00e1n gi\u1eefa c\u00e1c module.",
+              "Ch\u1ea1y c\u00e1c ki\u1ec3m th\u1eed th\u00edch h\u1ee3p.",
+              "T\u1ed5ng h\u1ee3p k\u1ebft qu\u1ea3 th\u1ef1c thi v\u00e0 nh\u1eefng v\u1ea5n \u0111\u1ec1 ch\u01b0a gi\u1ea3i quy\u1ebft.",
+              "Reasoning, software engineering, browser/computer use v\u00e0 c\u00f4ng vi\u1ec7c nhi\u1ec1u b\u01b0\u1edbc.",
+              "K\u1ebft h\u1ee3p model v\u1edbi m\u00f4i tr\u01b0\u1eddng th\u1ef1c thi, tool v\u00e0 v\u00f2ng l\u1eb7p ph\u1ea3n h\u1ed3i.",
+              "Harness Codex h\u1ed7 tr\u1ee3 qu\u1ea3n l\u00fd tr\u1ea1ng th\u00e1i, thu th\u1eadp context, sandbox, approval, context compaction v\u00e0 ph\u1ed1i h\u1ee3p subagent t\u00f9y c\u1ea5u h\u00ecnh."
+            ],
+            "limitations": [
+              "X\u1eed l\u00fd h\u00e0ng lo\u1ea1t n\u1ed9i dung \u0111\u01a1n gi\u1ea3n n\u1ebfu Flash \u0111\u00e1p \u1ee9ng \u0111\u1ee7 ch\u1ea5t l\u01b0\u1ee3ng.",
+              "\u0110\u01b0a ra k\u1ebft lu\u1eadn r\u1eb1ng code ho\u1ea1t \u0111\u1ed9ng ch\u1ec9 v\u00ec \u0111\u00e3 vi\u1ebft xong code.",
+              "Ti\u1ebfn h\u00e0nh thay \u0111\u1ed5i nguy hi\u1ec3m ho\u1eb7c kh\u00f4ng th\u1ec3 \u0111\u1ea3o ng\u01b0\u1ee3c m\u00e0 kh\u00f4ng \u0111\u01b0\u1ee3c cho ph\u00e9p.",
+              "T\u1ef1 nh\u1eadn \u0111\u00e3 ch\u1ea1y test, browser ho\u1eb7c shell n\u1ebfu kh\u00f4ng th\u1ef1c s\u1ef1 c\u00f3 k\u1ebft qu\u1ea3 t\u01b0\u01a1ng \u1ee9ng."
+            ],
+            "outputContract": [
+              "Files changed.",
+              "C\u00e1c thay \u0111\u1ed5i ch\u00ednh v\u00e0 l\u00fd do.",
+              "Commands th\u1ef1c s\u1ef1 \u0111\u00e3 ch\u1ea1y.",
+              "Test results th\u1ef1c t\u1ebf.",
+              "C\u00e1c v\u1ea5n \u0111\u1ec1 c\u00f2n t\u1ed3n t\u1ea1i.",
+              "Nh\u1eefng gi\u1ea3 \u0111\u1ecbnh ho\u1eb7c \u0111i\u1ec3m c\u1ea7n con ng\u01b0\u1eddi x\u00e1c nh\u1eadn."
+            ],
+            "source": {
+              "kind": "user-supplied",
+              "path": "src/defaults/routing-source.md",
+              "lines": [
+                83,
+                151
+              ],
+              "checkedAt": null,
+              "confidence": "hypothesis",
+              "references": [
+                "https://developers.openai.com/api/docs/models/gpt-6-astra",
+                "https://developers.openai.com/api/docs/guides/agents-api/overview"
+              ]
+            }
+          },
+          {
+            "id": "opus",
+            "label": "Claude Opus",
+            "provider": "anthropic",
+            "providerModelId": "fixture-csv",
+            "enabled": true,
+            "verification": "verified",
+            "capabilities": [
+              "deep-reasoning",
+              "investigation",
+              "refactoring",
+              "review"
+            ],
+            "roles": [
+              "investigator",
+              "reviewer"
+            ],
+            "costTier": "high",
+            "modalities": [
+              "text"
+            ],
+            "strengths": [
+              "Root-cause analysis.",
+              "Bug c\u00f3 nhi\u1ec1u nguy\u00ean nh\u00e2n ti\u1ec1m n\u0103ng.",
+              "Race conditions, state inconsistency v\u00e0 l\u1ed7i ph\u1ee5 thu\u1ed9c th\u1ee9 t\u1ef1.",
+              "C\u00e1c v\u1ea5n \u0111\u1ec1 xuy\u00ean nhi\u1ec1u module ho\u1eb7c nhi\u1ec1u t\u1ea7ng ki\u1ebfn tr\u00fac.",
+              "L\u1ea7n theo lu\u1ed3ng d\u1eef li\u1ec7u xuy\u00ean qua c\u00e1c module.",
+              "Ph\u00e2n t\u00edch call graph v\u00e0 dependency.",
+              "T\u00ecm nguy\u00ean nh\u00e2n g\u1ed1c tr\u01b0\u1edbc khi \u0111\u1ec1 xu\u1ea5t s\u1eeda code.",
+              "\u0110\u00e1nh gi\u00e1 \u1ea3nh h\u01b0\u1edfng \u0111\u1ebfn c\u00e1c th\u00e0nh ph\u1ea7n li\u00ean quan.",
+              "Refactoring nhi\u1ec1u file.",
+              "T\u00e1ch module ho\u1eb7c tr\u00e1ch nhi\u1ec7m.",
+              "Thay \u0111\u1ed5i state management, API integration ho\u1eb7c business logic.",
+              "\u0110\u00e1nh gi\u00e1 backward compatibility v\u00e0 regression risk.",
+              "Review implementation do Astra ho\u1eb7c agent kh\u00e1c th\u1ef1c hi\u1ec7n.",
+              "T\u00ecm bug logic, edge cases v\u00e0 thay \u0111\u1ed5i ngo\u00e0i ph\u1ea1m vi.",
+              "Ki\u1ec3m tra requirement coverage.",
+              "\u0110\u1ed1i chi\u1ebfu implementation v\u1edbi specification v\u00e0 b\u1eb1ng ch\u1ee9ng.",
+              "So s\u00e1nh c\u00e1c ph\u01b0\u01a1ng \u00e1n ki\u1ebfn tr\u00fac.",
+              "X\u00e1c \u0111\u1ecbnh trade-off.",
+              "\u0110\u1ec1 xu\u1ea5t th\u1ee9 t\u1ef1 tri\u1ec3n khai.",
+              "X\u00e1c \u0111\u1ecbnh c\u00e1c gi\u1ea3 \u0111\u1ecbnh c\u1ea7n ki\u1ec3m ch\u1ee9ng tr\u01b0\u1edbc khi s\u1eeda.",
+              "Thay \u0111\u1ed5i l\u1edbn trong repository.",
+              "Debug c\u1ea7n nhi\u1ec1u v\u00f2ng \u0111\u1ecdc v\u00e0 x\u00e1c minh.",
+              "C\u00f4ng vi\u1ec7c c\u1ea7n ph\u1ed1i h\u1ee3p c\u00e1c subagent khi l\u1ee3i \u00edch l\u1edbn h\u01a1n chi ph\u00ed \u0111i\u1ec1u ph\u1ed1i.",
+              "Coding agent cho c\u00e1c t\u00e1c v\u1ee5 d\u00e0i v\u00e0 codebase l\u1edbn.",
+              "Ph\u00e2n t\u00edch nguy\u00ean nh\u00e2n tr\u01b0\u1edbc khi s\u1eeda.",
+              "Refactoring, code review v\u00e0 reasoning qua nhi\u1ec1u b\u01b0\u1edbc.",
+              "C\u00f3 th\u1ec3 ph\u1ed1i h\u1ee3p subagent v\u00e0 duy tr\u00ec workflow d\u00e0i h\u1ea1n th\u00f4ng qua c\u00e1c t\u00ednh n\u0103ng c\u1ee7a m\u00f4i tr\u01b0\u1eddng ph\u00f9 h\u1ee3p."
+            ],
+            "limitations": [
+              "M\u1ecdi t\u00e1c v\u1ee5 \u0111\u1ecdc d\u1eef li\u1ec7u \u0111\u01a1n gi\u1ea3n.",
+              "C\u00f4ng vi\u1ec7c tr\u00edch xu\u1ea5t ho\u1eb7c ph\u00e2n lo\u1ea1i s\u1ed1 l\u01b0\u1ee3ng l\u1edbn n\u1ebfu model r\u1ebb h\u01a1n \u0111\u00e1p \u1ee9ng \u0111\u1ee7 y\u00eau c\u1ea7u.",
+              "Nh\u1eefng thay \u0111\u1ed5i c\u00f3 th\u1ec3 \u0111\u01b0\u1ee3c gi\u1ea3i quy\u1ebft b\u1eb1ng m\u1ed9t thao t\u00e1c x\u00e1c \u0111\u1ecbnh v\u00e0 ki\u1ec3m ch\u1ee9ng tr\u1ef1c ti\u1ebfp.",
+              "C\u00f4ng vi\u1ec7c \u0111\u01b0\u1ee3c cho l\u00e0 \u0111\u00e3 ho\u00e0n th\u00e0nh ch\u1ec9 d\u1ef1a tr\u00ean l\u1eddi kh\u1eb3ng \u0111\u1ecbnh c\u1ee7a agent, kh\u00f4ng c\u00f3 b\u1eb1ng ch\u1ee9ng th\u1ef1c thi."
+            ],
+            "outputContract": [
+              "Root cause \u0111\u00e3 x\u00e1c minh.",
+              "Root cause c\u00f2n l\u00e0 gi\u1ea3 thuy\u1ebft.",
+              "B\u1eb1ng ch\u1ee9ng \u1ee7ng h\u1ed9 v\u00e0 ph\u1ea3n b\u00e1c.",
+              "Nh\u1eefng file v\u00e0 module c\u00f3 li\u00ean quan.",
+              "Ph\u01b0\u01a1ng \u00e1n s\u1eeda t\u1ed1i thi\u1ec3u.",
+              "Regression risk v\u00e0 ki\u1ec3m th\u1eed c\u1ea7n th\u1ef1c hi\u1ec7n."
+            ],
+            "source": {
+              "kind": "user-supplied",
+              "path": "src/defaults/routing-source.md",
+              "lines": [
+                152,
+                225
+              ],
+              "checkedAt": "2026-10-23T13:34:30.437Z",
+              "confidence": "user-configured",
+              "references": [
+                "https://www.anthropic.com/claude/opus",
+                "https://docs.anthropic.com/en/docs/claude-code/getting-started"
+              ]
+            }
+          }
+        ],
+        "runtimes": [
+          {
+            "id": "gemini-cli",
+            "label": "Gemini CLI",
+            "capabilities": [
+              "text-input"
+            ],
+            "availability": "unknown",
+            "source": {
+              "kind": "user-supplied",
+              "checkedAt": null,
+              "confidence": "hypothesis"
+            }
+          },
+          {
+            "id": "codex",
+            "label": "Codex",
+            "capabilities": [
+              "text-input",
+              "shell",
+              "browser",
+              "sandbox",
+              "resume",
+              "cancel"
+            ],
+            "availability": "unknown",
+            "source": {
+              "kind": "user-supplied",
+              "checkedAt": null,
+              "confidence": "hypothesis"
+            }
+          },
+          {
+            "id": "claude-code",
+            "label": "Claude Code",
+            "capabilities": [
+              "text-input",
+              "shell",
+              "subagents",
+              "resume",
+              "cancel"
+            ],
+            "availability": "unknown",
+            "source": {
+              "kind": "user-supplied",
+              "checkedAt": null,
+              "confidence": "hypothesis"
+            }
+          },
+          {
+            "id": "agy",
+            "label": "Antigravity CLI (agy)",
+            "capabilities": [
+              "extraction",
+              "read-only-plan"
+            ],
+            "source": {
+              "kind": "implementation",
+              "path": "src/runtime.js",
+              "checkedAt": "2026-10-21T00:00:00Z",
+              "confidence": "documented",
+              "references": [
+                "docs/evidence/routing-implementation/B2-SCOUT.json"
+              ]
+            },
+            "resume": false,
+            "cancel": true,
+            "write": false
+          }
+        ],
+        "profiles": [
+          {
+            "id": "flash-gemini",
+            "label": "Flash / Gemini CLI",
+            "modelId": "flash",
+            "runtimeId": "gemini-cli",
+            "enabled": false,
+            "roles": [
+              "scout",
+              "analyst"
+            ]
+          },
+          {
+            "id": "astra-codex",
+            "label": "Astra / Codex",
+            "modelId": "astra",
+            "runtimeId": "codex",
+            "enabled": false,
+            "roles": [
+              "executor",
+              "coordinator"
+            ]
+          },
+          {
+            "id": "opus-claude",
+            "label": "Opus / Claude Code",
+            "modelId": "opus",
+            "runtimeId": "claude-code",
+            "enabled": true,
+            "roles": [
+              "investigator",
+              "reviewer"
+            ]
+          }
+        ],
+        "policy": {
+          "leadProfileId": "astra-codex",
+          "maxCandidates": 3,
+          "allowDelegation": true,
+          "budget": {
+            "maxCostTier": null
+          },
+          "reviewRequiredFor": [
+            "architecture",
+            "important-data",
+            "unreproduced",
+            "large-scope",
+            "conflicting-results",
+            "cannot-verify",
+            "high-error-cost"
+          ],
+          "retainContext": true,
+          "noSilentFallback": true,
+          "requireEvidence": true,
+          "noConcurrentOverlappingWrites": true,
+          "principles": [],
+          "matrix": [
+            "| Lo\u1ea1i c\u00f4ng vi\u1ec7c | Agent ch\u00ednh | Agent h\u1ed7 tr\u1ee3 khi c\u1ea7n |",
+            "| \u0110\u1ecdc kh\u1ed1i l\u01b0\u1ee3ng l\u1edbn logs | Gemini Flash | Claude Opus \u0111\u1ec3 \u0111i\u1ec1u tra s\u00e2u |",
+            "| Ph\u00e2n t\u00edch PDF, t\u00e0i li\u1ec7u d\u00e0i | Gemini Flash | Astra ho\u1eb7c Opus \u0111\u1ec3 \u0111\u00e1nh gi\u00e1 k\u1ef9 thu\u1eadt |",
+            "| M\u00f4 t\u1ea3 screenshot, UI, video | Gemini Flash | Astra \u0111\u1ec3 thao t\u00e1c browser, ki\u1ec3m ch\u1ee9ng UI |",
+            "| Tr\u00edch xu\u1ea5t requirements v\u00e0 d\u1eef li\u1ec7u | Gemini Flash | Opus \u0111\u1ec3 ph\u00e2n t\u00edch m\u00e2u thu\u1eabn quan tr\u1ecdng |",
+            "| Coding feature th\u00f4ng th\u01b0\u1eddng | Astra + Codex | Gemini Flash \u0111\u1ec3 chu\u1ea9n b\u1ecb context |",
+            "| Ch\u1ea1y build, test, s\u1eeda l\u1ed7i qua nhi\u1ec1u v\u00f2ng | Astra + Codex | Opus n\u1ebfu ch\u01b0a t\u00ecm \u0111\u01b0\u1ee3c nguy\u00ean nh\u00e2n |",
+            "| Debug xuy\u00ean nhi\u1ec1u module | Claude Opus + Claude Code | Gemini Flash thu th\u1eadp b\u1eb1ng ch\u1ee9ng, Astra t\u00e1i hi\u1ec7n l\u1ed7i |",
+            "| Refactoring ph\u1ea1m vi l\u1edbn | Claude Opus + Claude Code | Astra ch\u1ea1y ki\u1ec3m th\u1eed v\u00e0 x\u00e1c minh |",
+            "| Review code \u0111\u1ed9c l\u1eadp | Claude Opus | Astra ho\u1eb7c m\u00f4i tr\u01b0\u1eddng CI \u0111\u1ec3 th\u1ef1c thi test |",
+            "| Browser/computer-use workflow | Astra + Codex | Gemini Flash ph\u00e2n t\u00edch \u1ea3nh v\u00e0 k\u1ebft qu\u1ea3 |",
+            "| T\u1ed5ng h\u1ee3p c\u00f4ng vi\u1ec7c nhi\u1ec1u agent | Astra n\u1ebfu \u0111\u01b0\u1ee3c giao vai tr\u00f2 \u0111i\u1ec1u ph\u1ed1i | Opus review c\u00e1c quy\u1ebft \u0111\u1ecbnh r\u1ee7i ro cao |"
+          ],
+          "workflow": [
+            "analyze-input",
+            "filter-required-capabilities-and-access",
+            "retain-direct-or-rank",
+            "handoff-with-original-evidence",
+            "independent-review-when-required",
+            "verify-acceptance-before-complete"
+          ],
+          "completionStates": [
+            "verified",
+            "implemented-unverified",
+            "blocked",
+            "human-decision"
+          ],
+          "qualityRules": [
+            "1. Kh\u00f4ng xem model n\u00e0o l\u00e0 t\u1ed1t nh\u1ea5t cho m\u1ecdi nhi\u1ec7m v\u1ee5.",
+            "2. Kh\u00f4ng nh\u1ea7m n\u0103ng l\u1ef1c model v\u1edbi n\u0103ng l\u1ef1c c\u1ee7a harness.",
+            "3. Kh\u00f4ng gi\u1ea3 \u0111\u1ecbnh harness c\u00f3 tool ho\u1eb7c quy\u1ec1n ch\u01b0a \u0111\u01b0\u1ee3c c\u1ea5p.",
+            "4. Kh\u00f4ng coi b\u1ea3n t\u00f3m t\u1eaft thay th\u1ebf ho\u00e0n to\u00e0n d\u1eef li\u1ec7u g\u1ed1c.",
+            "5. Kh\u00f4ng coi output c\u1ee7a agent l\u00e0 b\u1eb1ng ch\u1ee9ng r\u1eb1ng thao t\u00e1c \u0111\u00e3 th\u00e0nh c\u00f4ng.",
+            "6. Kh\u00f4ng \u0111\u1ec3 nhi\u1ec1u agent c\u00f9ng s\u1eeda m\u1ed9t file ho\u1eb7c m\u1ed9t v\u00f9ng code n\u1ebfu ch\u01b0a c\u00f3 c\u01a1 ch\u1ebf ph\u1ed1i h\u1ee3p r\u00f5 r\u00e0ng.",
+            "7. Khi c\u00f3 th\u1ec3, d\u00f9ng test, log, diff v\u00e0 k\u1ebft qu\u1ea3 tool l\u00e0m b\u1eb1ng ch\u1ee9ng.",
+            "8. T\u1ed1i \u01b0u t\u1ed5ng chi ph\u00ed \u0111\u1ec3 ho\u00e0n th\u00e0nh nhi\u1ec7m v\u1ee5, kh\u00f4ng ch\u1ec9 chi ph\u00ed c\u1ee7a m\u1ed9t l\u01b0\u1ee3t g\u1ecdi model.",
+            "9. N\u1ebfu c\u00f3 model ho\u1eb7c c\u00f4ng c\u1ee5 m\u1edbi, \u0111\u00e1nh gi\u00e1 l\u1ea1i n\u0103ng l\u1ef1c theo d\u1eef li\u1ec7u th\u1ef1c t\u1ebf v\u00e0 t\u00e0i li\u1ec7u c\u1eadp nh\u1eadt.",
+            "10. N\u1ebfu kh\u00f4ng \u0111\u1ee7 b\u1eb1ng ch\u1ee9ng \u0111\u1ec3 ch\u1ecdn, ch\u1ea1y m\u1ed9t th\u1eed nghi\u1ec7m nh\u1ecf c\u00f3 ti\u00eau ch\u00ed nghi\u1ec7m thu r\u00f5 r\u00e0ng thay v\u00ec ph\u1ecfng \u0111o\u00e1n."
+          ],
+          "orchestratorChecklist": [
+            "V\u1edbi m\u1ed7i nhi\u1ec7m v\u1ee5 m\u1edbi, h\u00e3y tr\u1ea3 l\u1eddi n\u1ed9i b\u1ed9 c\u00e1c c\u00e2u h\u1ecfi:",
+            "",
+            "1. Nhi\u1ec7m v\u1ee5 c\u1ea7n \u0111\u1ecdc d\u1eef li\u1ec7u, suy lu\u1eadn, th\u1ef1c thi hay x\u00e1c minh?",
+            "2. Agent n\u00e0o \u0111\u00e1p \u1ee9ng t\u1ed1t nh\u1ea5t y\u00eau c\u1ea7u c\u1ed1t l\u00f5i?",
+            "3. C\u00f3 c\u1ea7n agent th\u1ee9 hai kh\u00f4ng? C\u1ee5 th\u1ec3 n\u00f3 b\u1ed5 sung n\u0103ng l\u1ef1c n\u00e0o?",
+            "4. C\u1ea7n truy\u1ec1n d\u1eef li\u1ec7u v\u00e0 b\u1eb1ng ch\u1ee9ng n\u00e0o?",
+            "5. K\u1ebft qu\u1ea3 \u0111\u01b0\u1ee3c x\u00e1c minh b\u1eb1ng c\u00e1ch n\u00e0o?",
+            "6. Khi n\u00e0o ph\u1ea3i d\u1eebng, chuy\u1ec3n giao ho\u1eb7c xin quy\u1ebft \u0111\u1ecbnh t\u1eeb con ng\u01b0\u1eddi?",
+            "",
+            "Sau \u0111\u00f3 t\u1ea1o m\u1ed9t k\u1ebf ho\u1ea1ch th\u1ef1c thi ng\u1eafn g\u1ecdn, ph\u00e2n c\u00f4ng agent, n\u00eau r\u00f5 \u0111\u1ea7u ra c\u1ea7n nh\u1eadn v\u00e0 \u0111i\u1ec1u ki\u1ec7n nghi\u1ec7m thu.",
+            "",
+            "Kh\u00f4ng c\u1ed1 s\u1eed d\u1ee5ng \u0111\u1ee7 ba agent. H\u00e3y s\u1eed d\u1ee5ng \u0111\u00fang agent, \u0111\u00fang nhi\u1ec7m v\u1ee5, \u0111\u00fang th\u1eddi \u0111i\u1ec3m."
+          ],
+          "objectiveRules": [
+            "B\u1ea1n l\u00e0 AI Orchestrator, ch\u1ecbu tr\u00e1ch nhi\u1ec7m ph\u00e2n c\u00f4ng c\u00f4ng vi\u1ec7c cho ba h\u1ec7 th\u1ed1ng AI theo th\u1ebf m\u1ea1nh th\u1ef1c t\u1ebf c\u1ee7a t\u1eebng h\u1ec7 th\u1ed1ng.",
+            "",
+            "M\u1ee5c ti\u00eau:",
+            "- Ch\u1ecdn agent ph\u00f9 h\u1ee3p nh\u1ea5t cho t\u1eebng lo\u1ea1i nhi\u1ec7m v\u1ee5.",
+            "- T\u1ed1i \u01b0u ch\u1ea5t l\u01b0\u1ee3ng k\u1ebft qu\u1ea3, chi ph\u00ed, th\u1eddi gian v\u00e0 kh\u1ea3 n\u0103ng ki\u1ec3m ch\u1ee9ng.",
+            "- T\u1eadn d\u1ee5ng model chi ph\u00ed th\u1ea5p cho nh\u1eefng vi\u1ec7c kh\u00f4ng c\u1ea7n reasoning cao c\u1ea5p.",
+            "- D\u00e0nh model m\u1ea1nh cho nhi\u1ec7m v\u1ee5 kh\u00f3, c\u00f3 nhi\u1ec1u ph\u1ee5 thu\u1ed9c ho\u1eb7c c\u1ea7n quy\u1ebft \u0111\u1ecbnh quan tr\u1ecdng.",
+            "- Ch\u1ec9 ph\u1ed1i h\u1ee3p nhi\u1ec1u agent khi c\u00f3 l\u1ee3i \u00edch r\u00f5 r\u00e0ng. Kh\u00f4ng b\u1eaft bu\u1ed9c nhi\u1ec7m v\u1ee5 n\u00e0o c\u0169ng ph\u1ea3i \u0111i qua c\u1ea3 ba agent.",
+            "- B\u1ea3o to\u00e0n b\u1eb1ng ch\u1ee9ng g\u1ed1c khi truy\u1ec1n th\u00f4ng tin gi\u1eefa c\u00e1c agent, tr\u00e1nh l\u1ed7i do t\u00f3m t\u1eaft ho\u1eb7c di\u1ec5n gi\u1ea3i sai.",
+            "",
+            "Kh\u00f4ng ph\u00e2n c\u00f4ng d\u1ef1a tr\u00ean nh\u00e3n \"model m\u1ea1nh nh\u1ea5t\". Ph\u00e2n c\u00f4ng d\u1ef1a tr\u00ean b\u1ea3n ch\u1ea5t nhi\u1ec7m v\u1ee5, n\u0103ng l\u1ef1c c\u1ea7n thi\u1ebft, c\u00f4ng c\u1ee5 th\u1ef1c s\u1ef1 kh\u1ea3 d\u1ee5ng v\u00e0 chi ph\u00ed th\u1ef1c hi\u1ec7n."
+          ],
+          "handoffRules": [
+            "### B\u01b0\u1edbc 1: Ph\u00e2n t\u00edch \u0111\u1ea7u v\u00e0o",
+            "",
+            "Tr\u01b0\u1edbc khi g\u1ecdi agent, x\u00e1c \u0111\u1ecbnh:",
+            "- M\u1ee5c ti\u00eau cu\u1ed1i c\u00f9ng.",
+            "- D\u1eef li\u1ec7u s\u1eb5n c\u00f3.",
+            "- Nh\u1eefng c\u00f4ng c\u1ee5 c\u1ea7n s\u1eed d\u1ee5ng.",
+            "- M\u1ee9c \u0111\u1ed9 kh\u00f3 v\u00e0 h\u1eadu qu\u1ea3 n\u1ebfu sai.",
+            "- \u0110i\u1ec1u ki\u1ec7n nghi\u1ec7m thu.",
+            "- C\u00e1c ph\u1ea7n vi\u1ec7c \u0111\u1ed9c l\u1eadp v\u00e0 ph\u1ee5 thu\u1ed9c nhau.",
+            "",
+            "Kh\u00f4ng ph\u00e2n c\u00f4ng ch\u1ec9 d\u1ef1a tr\u00ean m\u00f4 t\u1ea3 ng\u1eafn n\u1ebfu nhi\u1ec7m v\u1ee5 th\u1ef1c t\u1ebf c\u1ea7n ki\u1ec3m tra repository ho\u1eb7c d\u1eef li\u1ec7u ngu\u1ed3n.",
+            "",
+            "### B\u01b0\u1edbc 2: Ch\u1ecdn agent theo n\u0103ng l\u1ef1c c\u1ea7n thi\u1ebft",
+            "",
+            "- C\u1ea7n \u0111\u1ecdc, l\u1ecdc v\u00e0 c\u1ea5u tr\u00fac h\u00f3a d\u1eef li\u1ec7u l\u1edbn ho\u1eb7c \u0111a ph\u01b0\u01a1ng th\u1ee9c: \u01b0u ti\u00ean Gemini Flash.",
+            "- C\u1ea7n th\u1ef1c thi nhi\u1ec1u b\u01b0\u1edbc, thao t\u00e1c tool, vi\u1ebft code v\u00e0 x\u00e1c minh trong m\u00f4i tr\u01b0\u1eddng ch\u1ea1y: \u01b0u ti\u00ean Astra + Codex.",
+            "- C\u1ea7n suy lu\u1eadn s\u00e2u v\u1ec1 codebase, \u0111i\u1ec1u tra nguy\u00ean nh\u00e2n ho\u1eb7c review kh\u00f3: \u01b0u ti\u00ean Opus + Claude Code.",
+            "",
+            "N\u1ebfu m\u1ed9t agent c\u00f3 th\u1ec3 x\u1eed l\u00fd tr\u1ecdn nhi\u1ec7m v\u1ee5 v\u1edbi ch\u1ea5t l\u01b0\u1ee3ng t\u1ed1t v\u00e0 chi ph\u00ed h\u1ee3p l\u00fd, kh\u00f4ng c\u1ea7n chuy\u1ec3n qua agent kh\u00e1c.",
+            "",
+            "### B\u01b0\u1edbc 3: Truy\u1ec1n giao nhi\u1ec7m v\u1ee5",
+            "",
+            "M\u1ed7i l\u1ea7n handoff ph\u1ea3i truy\u1ec1n:",
+            "- M\u1ee5c ti\u00eau v\u00e0 ph\u1ea1m vi.",
+            "- D\u1eef li\u1ec7u \u0111\u1ea7u v\u00e0o ho\u1eb7c v\u1ecb tr\u00ed ngu\u1ed3n.",
+            "- Facts v\u00e0 b\u1eb1ng ch\u1ee9ng \u0111\u00e3 thu th\u1eadp.",
+            "- Nh\u1eefng gi\u1ea3 thuy\u1ebft ch\u01b0a x\u00e1c nh\u1eadn.",
+            "- Nh\u1eefng g\u00ec \u0111\u00e3 th\u1ef1c hi\u1ec7n.",
+            "- K\u1ebft qu\u1ea3 ki\u1ec3m th\u1eed th\u1ef1c t\u1ebf.",
+            "- Nh\u1eefng c\u00e2u h\u1ecfi c\u1ea7n agent ti\u1ebfp theo tr\u1ea3 l\u1eddi.",
+            "",
+            "Kh\u00f4ng truy\u1ec1n ri\u00eang m\u1ed9t b\u1ea3n t\u00f3m t\u1eaft thi\u1ebfu tr\u00edch d\u1eabn khi agent ti\u1ebfp theo c\u1ea7n ra quy\u1ebft \u0111\u1ecbnh k\u1ef9 thu\u1eadt.",
+            "",
+            "### B\u01b0\u1edbc 4: X\u00e1c minh \u0111\u1ed9c l\u1eadp khi c\u1ea7n",
+            "",
+            "Y\u00eau c\u1ea7u agent th\u1ee9 hai ki\u1ec3m tra khi:",
+            "- Quy\u1ebft \u0111\u1ecbnh \u1ea3nh h\u01b0\u1edfng \u0111\u1ebfn ki\u1ebfn tr\u00fac ho\u1eb7c d\u1eef li\u1ec7u quan tr\u1ecdng.",
+            "- L\u1ed7i ch\u01b0a \u0111\u01b0\u1ee3c t\u00e1i hi\u1ec7n.",
+            "- Thay \u0111\u1ed5i ph\u1ea1m vi l\u1edbn.",
+            "- Hai agent c\u00f3 k\u1ebft lu\u1eadn m\u00e2u thu\u1eabn.",
+            "- Agent th\u1ef1c thi kh\u00f4ng c\u00f3 kh\u1ea3 n\u0103ng ki\u1ec3m ch\u1ee9ng k\u1ebft qu\u1ea3.",
+            "- Chi ph\u00ed c\u1ee7a m\u1ed9t sai s\u00f3t l\u1edbn h\u01a1n chi ph\u00ed review.",
+            "",
+            "Kh\u00f4ng y\u00eau c\u1ea7u hai agent \u0111\u1ed9c l\u1eadp l\u00e0m c\u00f9ng m\u1ed9t vi\u1ec7c nh\u1ecf n\u1ebfu kh\u00f4ng c\u00f3 l\u00fd do r\u00f5 r\u00e0ng.",
+            "",
+            "### B\u01b0\u1edbc 5: T\u1ed5ng k\u1ebft",
+            "",
+            "Ch\u1ec9 tuy\u00ean b\u1ed1 ho\u00e0n th\u00e0nh khi \u0111i\u1ec1u ki\u1ec7n nghi\u1ec7m thu \u0111\u01b0\u1ee3c \u0111\u00e1p \u1ee9ng.",
+            "",
+            "Ph\u00e2n bi\u1ec7t r\u00f5:",
+            "- Ho\u00e0n th\u00e0nh v\u00e0 \u0111\u00e3 x\u00e1c minh.",
+            "- \u0110\u00e3 tri\u1ec3n khai nh\u01b0ng ch\u01b0a x\u00e1c minh \u0111\u1ea7y \u0111\u1ee7.",
+            "- Ch\u01b0a ho\u00e0n th\u00e0nh do thi\u1ebfu d\u1eef li\u1ec7u, quy\u1ec1n truy c\u1eadp ho\u1eb7c c\u00f4ng c\u1ee5.",
+            "- C\u1ea7n quy\u1ebft \u0111\u1ecbnh c\u1ee7a con ng\u01b0\u1eddi."
+          ]
+        },
+        "handoff": {
+          "requiredFields": [
+            "objective",
+            "scope",
+            "sources",
+            "facts",
+            "evidence",
+            "hypotheses",
+            "unknowns",
+            "actions",
+            "testResults",
+            "questions",
+            "acceptanceCriteria"
+          ],
+          "preserveOriginalEvidence": true
+        },
+        "source": {
+          "path": "src/defaults/routing-source.md",
+          "sha256": "2111f5d95240131fcfcdbc90135d895cb4bbcde6023205c72d737516c0a8ace5",
+          "status": "user-supplied-unverified",
+          "checkedAt": null
+        }
+      },
+      "decision": {
+        "schema": "agent-meeting/routing@1",
+        "revision": 2,
+        "outcome": "candidates",
+        "candidates": [
+          {
+            "profileId": "opus-claude",
+            "modelId": "opus",
+            "providerModelId": "fixture-csv",
+            "runtimeId": "claude-code",
+            "score": 1,
+            "reasons": [
+              "eligible"
+            ],
+            "checkedAt": "2026-10-23T13:34:30.559Z",
+            "reviewRequired": false,
+            "claimConfidence": "user-configured"
+          }
+        ],
+        "totalEligible": 1,
+        "truncated": false,
+        "rejected": [
+          {
+            "profileId": "flash-gemini",
+            "reasons": [
+              "disabled",
+              "model-unverified",
+              "selection-locked",
+              "environment-unknown"
+            ]
+          },
+          {
+            "profileId": "astra-codex",
+            "reasons": [
+              "disabled",
+              "model-unverified",
+              "selection-locked",
+              "environment-unknown"
+            ]
+          }
+        ],
+        "unknowns": [
+          {
+            "profileId": "flash-gemini",
+            "fields": [
+              "runtime-access",
+              "quota",
+              "tools",
+              "permissions"
+            ]
+          },
+          {
+            "profileId": "astra-codex",
+            "fields": [
+              "runtime-access",
+              "quota",
+              "tools",
+              "permissions"
+            ]
+          }
+        ],
+        "classificationUnknown": true,
+        "review": {
+          "required": false,
+          "reasons": [],
+          "independent": false
+        },
+        "fallback": "explicit-decision-required"
+      },
+      "profileId": "opus-claude",
+      "adapter": "claude",
+      "requestedModel": "fixture-csv",
+      "reportedModel": "fixture-csv",
+      "before": {
+        "csv-cell.js": {
+          "sha256": "9a38503b21f51c83e9e4fcf6eaf1bfad764d7304a3d466deea4a3b48d4e25e38",
+          "size": 41
+        },
+        "test/csv-cell.test.js": {
+          "sha256": "1980bb1b858d1a7a12470ec1e93c9ef0a83e1ff07b39c250781506d0a04a9fc1",
+          "size": 690
+        }
+      },
+      "startedAt": "2026-10-23T13:34:54.201Z",
+      "evidence": [
+        {
+          "command": [
+            "/usr/bin/node",
+            "--max-old-space-size=256",
+            "--test",
+            "--test-timeout=20000",
+            "test/csv-cell.test.js"
+          ],
+          "exitCode": 1,
+          "timeout": false,
+          "cancelled": false,
+          "output": "TAP version 13\n# Subtest: keeps plain cells\nok 1 - keeps plain cells\n  ---\n  duration_ms: 1.84707\n  type: 'test'\n  ...\n# Subtest: quotes delimiter\nok 2 - quotes delimiter\n  ---\n  duration_ms: 0.266236\n  type: 'test'\n  ...\n# Subtest: escapes embedded double quotes\nnot ok 3 - escapes embedded double quotes\n  ---\n  duration_ms: 1.723133\n  type: 'test'\n  location: '/tmp/am-access-continued/preview/work/cf0bbeb7e3ba22988aacfa70a54abea7d762162139884cc7b19e0dcadafb6b89/runs/1f6ee6ff-986f-4dac-96bf-fd017d20b4e5/workspace/test/csv-cell.test.js:4:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    + actual - expected\n    \n    + 'say \"hi\"'\n    - '\"say \"\"hi\"\"\"'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: '\"say \"\"hi\"\"\"'\n  actual: 'say \"hi\"'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-access-continued/preview/work/cf0bbeb7e3ba22988aacfa70a54abea7d762162139884cc7b19e0dcadafb6b89/runs/1f6ee6ff-986f-4dac-96bf-fd017d20b4e5/workspace/test/csv-cell.test.js:4:53)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: quotes line feed\nnot ok 4 - quotes line feed\n  ---\n  duration_ms: 0.333847\n  type: 'test'\n  location: '/tmp/am-access-continued/preview/work/cf0bbeb7e3ba22988aacfa70a54abea7d762162139884cc7b19e0dcadafb6b89/runs/1f6ee6ff-986f-4dac-96bf-fd017d20b4e5/workspace/test/csv-cell.test.js:5:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'a\\nb' !== '\"a\\nb\"'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: |-\n    \"a\n    b\"\n  actual: |-\n    a\n    b\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-access-continued/preview/work/cf0bbeb7e3ba22988aacfa70a54abea7d762162139884cc7b19e0dcadafb6b89/runs/1f6ee6ff-986f-4dac-96bf-fd017d20b4e5/workspace/test/csv-cell.test.js:5:39)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: quotes carriage return\nnot ok 5 - quotes carriage return\n  ---\n  duration_ms: 0.262887\n  type: 'test'\n  location: '/tmp/am-access-continued/preview/work/cf0bbeb7e3ba22988aacfa70a54abea7d762162139884cc7b19e0dcadafb6b89/runs/1f6ee6ff-986f-4dac-96bf-fd017d20b4e5/workspace/test/csv-cell.test.js:6:1'\n  failureType: 'testCodeFailure'\n  error: |-\n    Expected values to be strictly equal:\n    \n    'a\\rb' !== '\"a\\rb\"'\n    \n  code: 'ERR_ASSERTION'\n  name: 'AssertionError'\n  expected: '\"a\\rb\"'\n  actual: 'a\\rb'\n  operator: 'strictEqual'\n  stack: |-\n    TestContext.<anonymous> (/tmp/am-access-continued/preview/work/cf0bbeb7e3ba22988aacfa70a54abea7d762162139884cc7b19e0dcadafb6b89/runs/1f6ee6ff-986f-4dac-96bf-fd017d20b4e5/workspace/test/csv-cell.test.js:6:45)\n    Test.runInAsyncScope (node:async_hooks:214:14)\n    Test.run (node:internal/test_runner/test:1047:25)\n    Test.processPendingSubtests (node:internal/test_runner/test:744:18)\n    Test.postRun (node:internal/test_runner/test:1173:19)\n    Test.run (node:internal/test_runner/test:1101:12)\n    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)\n  ...\n# Subtest: keeps empty cells\nok 6 - keeps empty cells\n  ---\n  duration_ms: 0.134691\n  type: 'test'\n  ...\n# Subtest: keeps unicode\nok 7 - keeps unicode\n  ---\n  duration_ms: 0.109187\n  type: 'test'\n  ...\n# Subtest: converts zero\nok 8 - converts zero\n  ---\n  duration_ms: 0.175749\n  type: 'test'\n  ...\n1..8\n# tests 8\n# suites 0\n# pass 5\n# fail 3\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 160.203209\n",
+          "elapsedMs": 285,
+          "checkedAt": "2026-10-23T13:35:34.614Z"
+        }
+      ],
+      "changes": [
+        {
+          "file": "csv-cell.js",
+          "before": "9a38503b21f51c83e9e4fcf6eaf1bfad764d7304a3d466deea4a3b48d4e25e38",
+          "after": "1e8aa88e690b7acefb56ff5acb0391ced00f5feb49e649b971edf912a34a3a06"
+        }
+      ],
+      "costUsd": null,
+      "report": "Scripted CSV patch selected from supplied diagnostics; not model reasoning.",
+      "exitCode": 0,
+      "finishedAt": "2026-10-23T13:34:54.312Z",
+      "verifiedSnapshot": null,
+      "error": "Independent verification failed"
+    }
+  ],
+  "observations": [
+    {
+      "profileId": "opus-claude",
+      "runtimeId": "claude-code",
+      "adapter": "claude",
+      "configRevision": 2,
+      "providerModelId": "fixture-csv",
+      "requestedModel": "fixture-csv",
+      "reportedModel": "fixture-csv",
+      "available": true,
+      "modelVerified": true,
+      "quotaAvailable": true,
+      "checkedAt": "2026-10-23T13:34:30.559Z",
+      "tools": [],
+      "permissions": [],
+      "error": null
+    }
+  ],
+  "sessionCreatedAt": 1792762470439,
+  "metrics": {
+    "schema": "agent-meeting/evaluation@1",
+    "summary": {
+      "attempts": 1,
+      "tasks": 1,
+      "retryAttempts": 0,
+      "statuses": {
+        "queued": 0,
+        "leased": 0,
+        "lost": 0,
+        "running": 0,
+        "reported": 0,
+        "verifying": 0,
+        "verified": 0,
+        "integrating": 0,
+        "integrated": 0,
+        "failed": 1,
+        "cancelled": 0,
+        "timeout": 0,
+        "output-limit": 0,
+        "rejected": 0,
+        "interrupted": 0,
+        "unknown": 0
+      },
+      "independentlyVerifiedRuns": 0,
+      "acceptedRuns": 0,
+      "acceptedTasks": 0,
+      "acceptanceRate": 0,
+      "costUsd": null,
+      "knownCostUsd": null,
+      "unknownCostRuns": 1,
+      "elapsedMs": null,
+      "knownElapsedMs": null,
+      "unknownElapsedRuns": 1,
+      "averageElapsedMs": null,
+      "usage": {
+        "input": null,
+        "output": null,
+        "total": null,
+        "cachedInput": null,
+        "reasoning": null
+      },
+      "unknownUsageRuns": {
+        "input": 1,
+        "output": 1,
+        "total": 1,
+        "cachedInput": 1,
+        "reasoning": 1
+      }
+    },
+    "byTask": [
+      {
+        "id": "meeting-d396140f45e38abbcf65b88e2008fb84",
+        "attempts": 1,
+        "tasks": 1,
+        "retryAttempts": 0,
+        "statuses": {
+          "queued": 0,
+          "leased": 0,
+          "lost": 0,
+          "running": 0,
+          "reported": 0,
+          "verifying": 0,
+          "verified": 0,
+          "integrating": 0,
+          "integrated": 0,
+          "failed": 1,
+          "cancelled": 0,
+          "timeout": 0,
+          "output-limit": 0,
+          "rejected": 0,
+          "interrupted": 0,
+          "unknown": 0
+        },
+        "independentlyVerifiedRuns": 0,
+        "acceptedRuns": 0,
+        "acceptedTasks": 0,
+        "acceptanceRate": 0,
+        "costUsd": null,
+        "knownCostUsd": null,
+        "unknownCostRuns": 1,
+        "elapsedMs": null,
+        "knownElapsedMs": null,
+        "unknownElapsedRuns": 1,
+        "averageElapsedMs": null,
+        "usage": {
+          "input": null,
+          "output": null,
+          "total": null,
+          "cachedInput": null,
+          "reasoning": null
+        },
+        "unknownUsageRuns": {
+          "input": 1,
+          "output": 1,
+          "total": 1,
+          "cachedInput": 1,
+          "reasoning": 1
+        }
+      }
+    ],
+    "byModel": [
+      {
+        "id": "[\"fixture-csv\",\"fixture-csv\"]",
+        "attempts": 1,
+        "tasks": 1,
+        "retryAttempts": 0,
+        "statuses": {
+          "queued": 0,
+          "leased": 0,
+          "lost": 0,
+          "running": 0,
+          "reported": 0,
+          "verifying": 0,
+          "verified": 0,
+          "integrating": 0,
+          "integrated": 0,
+          "failed": 1,
+          "cancelled": 0,
+          "timeout": 0,
+          "output-limit": 0,
+          "rejected": 0,
+          "interrupted": 0,
+          "unknown": 0
+        },
+        "independentlyVerifiedRuns": 0,
+        "acceptedRuns": 0,
+        "acceptedTasks": 0,
+        "acceptanceRate": 0,
+        "costUsd": null,
+        "knownCostUsd": null,
+        "unknownCostRuns": 1,
+        "elapsedMs": null,
+        "knownElapsedMs": null,
+        "unknownElapsedRuns": 1,
+        "averageElapsedMs": null,
+        "usage": {
+          "input": null,
+          "output": null,
+          "total": null,
+          "cachedInput": null,
+          "reasoning": null
+        },
+        "unknownUsageRuns": {
+          "input": 1,
+          "output": 1,
+          "total": 1,
+          "cachedInput": 1,
+          "reasoning": 1
+        },
+        "requestedModel": "fixture-csv",
+        "actualModel": "fixture-csv"
+      }
+    ],
+    "byRuntime": [
+      {
+        "id": "claude",
+        "attempts": 1,
+        "tasks": 1,
+        "retryAttempts": 0,
+        "statuses": {
+          "queued": 0,
+          "leased": 0,
+          "lost": 0,
+          "running": 0,
+          "reported": 0,
+          "verifying": 0,
+          "verified": 0,
+          "integrating": 0,
+          "integrated": 0,
+          "failed": 1,
+          "cancelled": 0,
+          "timeout": 0,
+          "output-limit": 0,
+          "rejected": 0,
+          "interrupted": 0,
+          "unknown": 0
+        },
+        "independentlyVerifiedRuns": 0,
+        "acceptedRuns": 0,
+        "acceptedTasks": 0,
+        "acceptanceRate": 0,
+        "costUsd": null,
+        "knownCostUsd": null,
+        "unknownCostRuns": 1,
+        "elapsedMs": null,
+        "knownElapsedMs": null,
+        "unknownElapsedRuns": 1,
+        "averageElapsedMs": null,
+        "usage": {
+          "input": null,
+          "output": null,
+          "total": null,
+          "cachedInput": null,
+          "reasoning": null
+        },
+        "unknownUsageRuns": {
+          "input": 1,
+          "output": 1,
+          "total": 1,
+          "cachedInput": 1,
+          "reasoning": 1
+        }
+      }
+    ],
+    "items": [
+      {
+        "id": "1f6ee6ff-986f-4dac-96bf-fd017d20b4e5",
+        "origin": "local",
+        "taskId": "meeting-d396140f45e38abbcf65b88e2008fb84",
+        "status": "failed",
+        "requestedModel": "fixture-csv",
+        "actualModel": "fixture-csv",
+        "runtime": "claude",
+        "configRevision": 2,
+        "requirementRevision": 2,
+        "elapsedMs": null,
+        "usage": {
+          "input": null,
+          "output": null,
+          "total": null,
+          "cachedInput": null,
+          "reasoning": null
+        },
+        "costUsd": null,
+        "independentlyVerified": false,
+        "accepted": false,
+        "evidence": {
+          "runId": "1f6ee6ff-986f-4dac-96bf-fd017d20b4e5",
+          "taskId": "meeting-d396140f45e38abbcf65b88e2008fb84",
+          "configRevision": 2,
+          "verificationCount": 1,
+          "integrationCount": 0
+        }
+      }
+    ],
+    "totals": {
+      "byTask": 1,
+      "byModel": 1,
+      "byRuntime": 1,
+      "items": 1
+    },
+    "truncated": false,
+    "limit": 20,
+    "maxBytes": 65536,
+    "interpretation": "descriptive-only; no automatic model ranking or causal claim"
+  },
+  "session": {
+    "createdAt": 1792762470439,
+    "state": "LIVE",
+    "context": "Fix CSV cell escaping for commas, embedded double quotes and CR/LF; preserve plain, empty, numeric and Unicode cells. Change only csv-cell.js; keep independent tests unchanged.",
+    "decisions": [
+      {
+        "messageIndex": 1,
+        "text": "CONCLUSION: Export CSV cells without corrupting quotes or line breaks.\nTASK: Dev | Fix CSV cell escaping | today",
+        "name": "Ch\u1ee7 tr\u00ec"
+      }
+    ]
+  }
+}

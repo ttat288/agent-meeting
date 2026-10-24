@@ -1,0 +1,454 @@
+TAP version 13
+# Subtest: access error offers an explicit paid CLI check and admin return without probing on render
+ok 1 - access error offers an explicit paid CLI check and admin return without probing on render
+  ---
+  duration_ms: 4.970981
+  type: 'test'
+  ...
+# Subtest: successful explicit probe keeps the captured config/profile and never reruns or reloads task data
+ok 2 - successful explicit probe keeps the captured config/profile and never reruns or reloads task data
+  ---
+  duration_ms: 1.737916
+  type: 'test'
+  ...
+# Subtest: unsuccessful probe retains recovery and cannot announce confirmed access: {"available":true,"modelVerified":false,"quotaAvailable":true}
+ok 3 - unsuccessful probe retains recovery and cannot announce confirmed access: {"available":true,"modelVerified":false,"quotaAvailable":true}
+  ---
+  duration_ms: 0.973676
+  type: 'test'
+  ...
+# Subtest: unsuccessful probe retains recovery and cannot announce confirmed access: {"available":true,"modelVerified":true,"quotaAvailable":false}
+ok 4 - unsuccessful probe retains recovery and cannot announce confirmed access: {"available":true,"modelVerified":true,"quotaAvailable":false}
+  ---
+  duration_ms: 0.946298
+  type: 'test'
+  ...
+# Subtest: unsuccessful probe retains recovery and cannot announce confirmed access: {"available":false,"modelVerified":true,"quotaAvailable":true}
+ok 5 - unsuccessful probe retains recovery and cannot announce confirmed access: {"available":false,"modelVerified":true,"quotaAvailable":true}
+  ---
+  duration_ms: 1.098862
+  type: 'test'
+  ...
+# Subtest: a late probe for an old configuration cannot announce success or rerun
+ok 6 - a late probe for an old configuration cannot announce success or rerun
+  ---
+  duration_ms: 1.041926
+  type: 'test'
+  ...
+# Subtest: probe completion preserves newer interaction: outside-focus
+ok 7 - probe completion preserves newer interaction: outside-focus
+  ---
+  duration_ms: 0.988668
+  type: 'test'
+  ...
+# Subtest: probe completion preserves newer interaction: hidden-view
+ok 8 - probe completion preserves newer interaction: hidden-view
+  ---
+  duration_ms: 1.002754
+  type: 'test'
+  ...
+# Subtest: probe completion preserves newer interaction: detached
+ok 9 - probe completion preserves newer interaction: detached
+  ---
+  duration_ms: 1.469211
+  type: 'test'
+  ...
+# Subtest: routing and revision errors do not offer a model probe
+ok 10 - routing and revision errors do not offer a model probe
+  ---
+  duration_ms: 3.001834
+  type: 'test'
+  ...
+# Subtest: a failed late probe does not move focus away from a newer input
+ok 11 - a failed late probe does not move focus away from a newer input
+  ---
+  duration_ms: 1.454858
+  type: 'test'
+  ...
+# Subtest: a rejected probe request preserves newer input focus and cannot rerun
+ok 12 - a rejected probe request preserves newer input focus and cannot rerun
+  ---
+  duration_ms: 1.142296
+  type: 'test'
+  ...
+# Subtest: a repeated expiry replaces the previous access confirmation instead of showing contradictory states
+ok 13 - a repeated expiry replaces the previous access confirmation instead of showing contradictory states
+  ---
+  duration_ms: 0.735285
+  type: 'test'
+  ...
+# Subtest: a responding CLI without machine identity points to model reporting instead of CLI access repair
+ok 14 - a responding CLI without machine identity points to model reporting instead of CLI access repair
+  ---
+  duration_ms: 0.755507
+  type: 'test'
+  ...
+# Subtest: a responding CLI with another identity points to the profile mapping
+ok 15 - a responding CLI with another identity points to the profile mapping
+  ---
+  duration_ms: 0.858802
+  type: 'test'
+  ...
+# Subtest: already cancelled verification subprocess never starts
+ok 16 - already cancelled verification subprocess never starts
+  ---
+  duration_ms: 6.738761
+  type: 'test'
+  ...
+# Subtest: long Unicode test evidence retains complete characters within its tail budget
+ok 17 - long Unicode test evidence retains complete characters within its tail budget
+  ---
+  duration_ms: 362.310312
+  type: 'test'
+  ...
+# Subtest: aborting runTest stops the test and its process group
+ok 18 - aborting runTest stops the test and its process group
+  ---
+  duration_ms: 2591.080332
+  type: 'test'
+  ...
+# Subtest: verify owns a cancellable controller and cannot publish verified after cancel
+ok 19 - verify owns a cancellable controller and cannot publish verified after cancel
+  ---
+  duration_ms: 2059.36515
+  type: 'test'
+  ...
+# Subtest: closing manager aborts verification and exceptions leave terminal failed state
+ok 20 - closing manager aborts verification and exceptions leave terminal failed state
+  ---
+  duration_ms: 2035.461565
+  type: 'test'
+  ...
+# Subtest: close waits for verification evidence and terminal state before resolving
+ok 21 - close waits for verification evidence and terminal state before resolving
+  ---
+  duration_ms: 2039.835272
+  type: 'test'
+  ...
+# Subtest: close waits for integration rollback before resolving
+ok 22 - close waits for integration rollback before resolving
+  ---
+  duration_ms: 2276.020484
+  type: 'test'
+  ...
+# Subtest: source integration reruns the same tests before marking task done
+ok 23 - source integration reruns the same tests before marking task done
+  ---
+  duration_ms: 476.561415
+  type: 'test'
+  ...
+# Subtest: failing integrated-source tests restore original file and record failure evidence
+ok 24 - failing integrated-source tests restore original file and record failure evidence
+  ---
+  duration_ms: 462.964698
+  type: 'test'
+  ...
+# Subtest: cancelling integration restores original source and does not publish done
+ok 25 - cancelling integration restores original source and does not publish done
+  ---
+  duration_ms: 2291.03926
+  type: 'test'
+  ...
+# Subtest: integration rollback preserves a concurrent source permission change for manual reconciliation
+ok 26 - integration rollback preserves a concurrent source permission change for manual reconciliation
+  ---
+  duration_ms: 2258.427187
+  type: 'test'
+  ...
+# Subtest: integration rollback preserves a concurrently installed symlink even when its bytes match
+ok 27 - integration rollback preserves a concurrently installed symlink even when its bytes match
+  ---
+  duration_ms: 2281.221049
+  type: 'test'
+  ...
+# Subtest: rollback never follows a source-root symlink installed while verification runs
+ok 28 - rollback never follows a source-root symlink installed while verification runs
+  ---
+  duration_ms: 2267.874228
+  type: 'test'
+  ...
+# Subtest: integration rejects a source-root symlink replacement before any source write
+ok 29 - integration rejects a source-root symlink replacement before any source write
+  ---
+  duration_ms: 470.294842
+  type: 'test'
+  ...
+# Subtest: rollback rechecks parent directories before restoring a nested source file
+ok 30 - rollback rechecks parent directories before restoring a nested source file
+  ---
+  duration_ms: 2253.296939
+  type: 'test'
+  ...
+# Subtest: verification failure records real failing test execution and releases the controller
+ok 31 - verification failure records real failing test execution and releases the controller
+  ---
+  duration_ms: 259.332857
+  type: 'test'
+  ...
+# Subtest: verification sandbox blocks test writes and cannot remain verifying
+ok 32 - verification sandbox blocks test writes and cannot remain verifying
+  ---
+  duration_ms: 268.872729
+  type: 'test'
+  ...
+# Subtest: integration preserves existing permissions under a restrictive process umask
+ok 33 - integration preserves existing permissions under a restrictive process umask
+  ---
+  duration_ms: 503.324647
+  type: 'test'
+  ...
+# Subtest: failed integration restores both original bytes and permissions under restrictive umask
+ok 34 - failed integration restores both original bytes and permissions under restrictive umask
+  ---
+  duration_ms: 461.700319
+  type: 'test'
+  ...
+# Subtest: handoff retains the executed requirements after reconfiguration and restart
+ok 35 - handoff retains the executed requirements after reconfiguration and restart
+  ---
+  duration_ms: 896.191953
+  type: 'test'
+  ...
+# Subtest: current and failed handoffs keep run identity and do not imply completion
+ok 36 - current and failed handoffs keep run identity and do not imply completion
+  ---
+  duration_ms: 69.188383
+  type: 'test'
+  ...
+# Subtest: legacy run without a requirement snapshot never borrows present-day criteria
+ok 37 - legacy run without a requirement snapshot never borrows present-day criteria
+  ---
+  duration_ms: 61.304716
+  type: 'test'
+  ...
+# Subtest: a historical snapshot is exportable when the current task is unavailable
+ok 38 - a historical snapshot is exportable when the current task is unavailable
+  ---
+  duration_ms: 54.003415
+  type: 'test'
+  ...
+# Subtest: refreshing a historical run cannot change the newer task or erase old evidence
+ok 39 - refreshing a historical run cannot change the newer task or erase old evidence
+  ---
+  duration_ms: 343.269322
+  type: 'test'
+  ...
+# Subtest: a missing source checkout leaves refresh state intact and can recover after restoration
+ok 40 - a missing source checkout leaves refresh state intact and can recover after restoration
+  ---
+  duration_ms: 602.563362
+  type: 'test'
+  ...
+# Subtest: missing run revision remains unknown even if the historical snapshot has a revision
+ok 41 - missing run revision remains unknown even if the historical snapshot has a revision
+  ---
+  duration_ms: 47.767215
+  type: 'test'
+  ...
+# Subtest: legacy attempts without a revision cannot refresh or verify newer requirements; a new attempt recovers
+ok 42 - legacy attempts without a revision cannot refresh or verify newer requirements; a new attempt recovers
+  ---
+  duration_ms: 660.617296
+  type: 'test'
+  ...
+# Subtest: a verified legacy attempt without revision cannot integrate into the current task
+ok 43 - a verified legacy attempt without revision cannot integrate into the current task
+  ---
+  duration_ms: 311.105716
+  type: 'test'
+  ...
+# Subtest: local run snapshots config, reports then independently tests and integrates one scoped file
+ok 44 - local run snapshots config, reports then independently tests and integrates one scoped file
+  ---
+  duration_ms: 676.887001
+  type: 'test'
+  ...
+# Subtest: unverified access and remote modes cannot launch; stale probe revision rejected
+ok 45 - unverified access and remote modes cannot launch; stale probe revision rejected
+  ---
+  duration_ms: 41.983287
+  type: 'test'
+  ...
+# Subtest: a stale viewed config revision cannot dispatch even after another client refreshes the probe
+ok 46 - a stale viewed config revision cannot dispatch even after another client refreshes the probe
+  ---
+  duration_ms: 43.937887
+  type: 'test'
+  ...
+# Subtest: a stale viewed requirement revision cannot dispatch a changed task
+ok 47 - a stale viewed requirement revision cannot dispatch a changed task
+  ---
+  duration_ms: 26.276578
+  type: 'test'
+  ...
+# Subtest: a profile remap with a fresh probe cannot silently switch the model chosen in an older view
+ok 48 - a profile remap with a fresh probe cannot silently switch the model chosen in an older view
+  ---
+  duration_ms: 48.766148
+  type: 'test'
+  ...
+# Subtest: overlapping probes of one profile and config invoke the runner only once
+ok 49 - overlapping probes of one profile and config invoke the runner only once
+  ---
+  duration_ms: 22.950657
+  type: 'test'
+  ...
+# Subtest: an older probe cannot overwrite a newer config observation when results arrive out of order
+ok 50 - an older probe cannot overwrite a newer config observation when results arrive out of order
+  ---
+  duration_ms: 27.547507
+  type: 'test'
+  ...
+# Subtest: closing the manager aborts and drains an in-flight access probe
+ok 51 - closing the manager aborts and drains an in-flight access probe
+  ---
+  duration_ms: 41.406076
+  type: 'test'
+  ...
+# Subtest: a probe from a stale viewed config cannot invoke a remapped profile
+ok 52 - a probe from a stale viewed config cannot invoke a remapped profile
+  ---
+  duration_ms: 22.418972
+  type: 'test'
+  ...
+# Subtest: a failed probe releases its in-flight entry so an explicit retry can run
+ok 53 - a failed probe releases its in-flight entry so an explicit retry can run
+  ---
+  duration_ms: 19.29172
+  type: 'test'
+  ...
+# Subtest: source dependency changes without HEAD change block integration
+ok 54 - source dependency changes without HEAD change block integration
+  ---
+  duration_ms: 306.945971
+  type: 'test'
+  ...
+# Subtest: worker writes outside scope are rejected and not accepted
+ok 55 - worker writes outside scope are rejected and not accepted
+  ---
+  duration_ms: 34.355089
+  type: 'test'
+  ...
+# Subtest: prototype-named source files survive execution copy and snapshot serialization
+ok 56 - prototype-named source files survive execution copy and snapshot serialization
+  ---
+  duration_ms: 29.642121
+  type: 'test'
+  ...
+# Subtest: prototype-named output cannot disappear from outside-scope rejection
+ok 57 - prototype-named output cannot disappear from outside-scope rejection
+  ---
+  duration_ms: 32.979289
+  type: 'test'
+  ...
+# Subtest: unknown actual model cannot verify, failures and cancellation stay separate
+ok 58 - unknown actual model cannot verify, failures and cancellation stay separate
+  ---
+  duration_ms: 33.948239
+  type: 'test'
+  ...
+# Subtest: validation rejects traversal, symlinks and mutable verification source
+ok 59 - validation rejects traversal, symlinks and mutable verification source
+  ---
+  duration_ms: 15.776353
+  type: 'test'
+  ...
+# Subtest: task budget and independent-review policy cannot be bypassed at dispatch/integration
+ok 60 - task budget and independent-review policy cannot be bypassed at dispatch/integration
+  ---
+  duration_ms: 292.81078
+  type: 'test'
+  ...
+# Subtest: explicit refresh invalidates verification and preserves original config while rebasing unchanged paths
+ok 61 - explicit refresh invalidates verification and preserves original config while rebasing unchanged paths
+  ---
+  duration_ms: 810.133949
+  type: 'test'
+  ...
+# Subtest: protected output files are rejected instead of disappearing from scope checks
+ok 62 - protected output files are rejected instead of disappearing from scope checks
+  ---
+  duration_ms: 33.389438
+  type: 'test'
+  ...
+# Subtest: a closed manager rejects new dispatch, probes and tests instead of restarting work during shutdown
+ok 63 - a closed manager rejects new dispatch, probes and tests instead of restarting work during shutdown
+  ---
+  duration_ms: 15.304787
+  type: 'test'
+  ...
+# Subtest: a persisted probe appears once in the merged environment
+ok 64 - a persisted probe appears once in the merged environment
+  ---
+  duration_ms: 16.271224
+  type: 'test'
+  ...
+# Subtest: newer shared access failure overrides old local success
+ok 65 - newer shared access failure overrides old local success
+  ---
+  duration_ms: 26.49931
+  type: 'test'
+  ...
+# Subtest: newer shared access failure overrides old local success at equal timestamps
+ok 66 - newer shared access failure overrides old local success at equal timestamps
+  ---
+  duration_ms: 26.255214
+  type: 'test'
+  ...
+# Subtest: access recovery is explicit and preserves task/source when observation is missing
+ok 67 - access recovery is explicit and preserves task/source when observation is missing
+  ---
+  duration_ms: 558.047505
+  type: 'test'
+  ...
+# Subtest: access recovery is explicit and preserves task/source when observation is expired
+ok 68 - access recovery is explicit and preserves task/source when observation is expired
+  ---
+  duration_ms: 639.589785
+  type: 'test'
+  ...
+# Subtest: access recovery is explicit and preserves task/source when observation is failed
+ok 69 - access recovery is explicit and preserves task/source when observation is failed
+  ---
+  duration_ms: 508.10971
+  type: 'test'
+  ...
+# Subtest: routing constraints do not prescribe a paid access probe; observation present=false
+ok 70 - routing constraints do not prescribe a paid access probe; observation present=false
+  ---
+  duration_ms: 24.763637
+  type: 'test'
+  ...
+# Subtest: routing constraints do not prescribe a paid access probe; observation present=true
+ok 71 - routing constraints do not prescribe a paid access probe; observation present=true
+  ---
+  duration_ms: 23.804687
+  type: 'test'
+  ...
+# Subtest: disabled delegation cannot prescribe a probe even with missing access evidence
+ok 72 - disabled delegation cannot prescribe a probe even with missing access evidence
+  ---
+  duration_ms: 24.119375
+  type: 'test'
+  ...
+# Subtest: refresh rejects a replaced canonical source before touching the run workspace
+ok 73 - refresh rejects a replaced canonical source before touching the run workspace
+  ---
+  duration_ms: 34.395916
+  type: 'test'
+  ...
+# Subtest: refresh of a removed task source cannot mutate the task state
+ok 74 - refresh of a removed task source cannot mutate the task state
+  ---
+  duration_ms: 34.570811
+  type: 'test'
+  ...
+1..74
+# tests 74
+# suites 0
+# pass 74
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 25871.350389

@@ -46,7 +46,7 @@ Better decisions, less human coordination and lower model spending **have not be
 Requires **Node.js 18+, Git and a browser**. No `npm install`, database or build step. In a new terminal, obtain the preview source:
 
 ```bash
-git clone --branch codex/2026-10-22-product-hardening https://github.com/ttat288/agent-meeting.git
+git clone https://github.com/ttat288/agent-meeting.git
 cd agent-meeting
 git checkout f415cf46961ac43301083c4784fb216b68e87ac6
 node bin/cli.js --local --port 3125 --no-open
@@ -72,7 +72,7 @@ Stop with Ctrl+C. Plan stores tasks locally; drafts use browser storage. [Storag
 
 ## Boundaries and data
 
-- A reported “done” is separate from tested output and human acceptance. Managed execution currently supports guarded **single-file** integration on Linux with working bubblewrap; it isolates writes, not host reads or network access.
+- A reported “done” is separate from tested output and human acceptance. Managed code writing currently uses **Claude Code**, with guarded **single-file** integration on Linux and working bubblewrap. The agy adapter does not support managed code writing. These boundaries isolate filesystem writes, not host reads or network access. [Adapter limits and local direct-agy evidence](docs/SHOWCASE.md#managed-execution-boundaries).
 - Remote workers are experimental. Multi-file integration, second-machine recovery and long-duration model operation remain unaccepted. There is no automatic PM launcher or hard spending cap.
 - The host link controls the room; invitations request admission. Room state stays in memory unless persistence is enabled. Opening Plan saves linked tasks/source excerpts; admin/work data lives under `~/.agent-meeting/`, and drafts in browser local storage. Treat messages/files as untrusted. [Security](SECURITY.md) · [Threat model](docs/SECURITY-DESIGN.md).
 - English/Vietnamese, light/dark themes and responsive layouts are available. Technical checks and screenshots do not establish new-user comprehension or user acceptance.

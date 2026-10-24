@@ -21,13 +21,18 @@ function placeholder(target, source) {
   if (fs.statSync(source).isDirectory()) fs.mkdirSync(target, { mode: 0o700 });
   else fs.closeSync(fs.openSync(target, 'wx', 0o600));
 }
-function wrapExecution(bin, args, { workspace, write = false } = {}) {
+function wrapExecution(bin, args, { workspace, write = false, readOnlyPaths = [] } = {}) {
   checkSandbox();
   if (typeof bin !== 'string' || !path.isAbsolute(bin) || !Array.isArray(args) || args.some(a => typeof a !== 'string' || a.includes('\0'))) throw unsafe('structured executable and string arguments required');
   const executable = fs.realpathSync(bin);
   if (!fs.statSync(executable).isFile()) throw unsafe('executable must be a regular file');
   if (typeof workspace !== 'string' || !path.isAbsolute(workspace) || typeof write !== 'boolean') throw unsafe('absolute workspace and boolean write required');
   const real = fs.realpathSync(workspace), home = fs.realpathSync(os.homedir());
+  if (!Array.isArray(readOnlyPaths) || readOnlyPaths.length > 2) throw unsafe('bounded read-only context paths required');
+  for (const file of readOnlyPaths) {
+    if (typeof file !== 'string' || !path.isAbsolute(file) || fs.realpathSync(file) !== file || within(file, real) || within(real, file)
+      || !fs.existsSync(file)) throw unsafe('context paths must be canonical and separate from the writable workspace');
+  }
   if (!fs.statSync(real).isDirectory() || within(home, real)) throw unsafe('workspace must be a dedicated directory, not the home or filesystem root');
   const claude = path.join(home, '.claude');
   if (within(real, claude) || within(claude, real)) throw unsafe('workspace overlaps runtime settings');
@@ -49,6 +54,15 @@ function wrapExecution(bin, args, { workspace, write = false } = {}) {
       for (const part of path.relative('/tmp', real).split(path.sep)) { current = path.join(current, part); wrap.push('--dir', current); }
     }
     wrap.push(write ? '--bind' : '--ro-bind', real, real);
+    // Private /tmp hides host task context. Restore only these explicit sources,
+    // always read-only, including when worker tools can edit their workspace.
+    for (const file of readOnlyPaths) {
+      if (!within(file, '/tmp')) continue;
+      let current = '/tmp';
+      const parent = path.dirname(file);
+      for (const part of path.relative('/tmp', parent).split(path.sep).filter(Boolean)) { current = path.join(current, part); wrap.push('--dir', current); }
+      wrap.push('--ro-bind', file, file);
+    }
     if (fs.existsSync(claude)) {
       if (fs.lstatSync(claude).isSymbolicLink() || !fs.statSync(claude).isDirectory()) throw unsafe('Claude state directory must be a real directory');
       const state = path.join(scratch, 'claude'); fs.mkdirSync(state, { mode: 0o700 });

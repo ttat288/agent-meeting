@@ -1,0 +1,64 @@
+{
+  "totals": {
+    "calls": 19,
+    "serialCallWallMs": 412270,
+    "promptBytes": 148567,
+    "usage": {
+      "input_tokens": 189905,
+      "output_tokens": 9205,
+      "thinking_tokens": 0,
+      "cache_read_tokens": 0,
+      "total_tokens": 199110
+    }
+  },
+  "matched": [
+    {
+      "name": "baseline",
+      "inputTokens": 26360,
+      "outputTokens": 530,
+      "totalTokens": 26890,
+      "calls": 3,
+      "wallMs": 27199,
+      "handoffBytes": 1000,
+      "lookupRequestBytes": 83,
+      "lookupResponseBytes": 410,
+      "verifyExit": 0,
+      "integrationExit": 0
+    },
+    {
+      "name": "structured",
+      "inputTokens": 26380,
+      "outputTokens": 515,
+      "totalTokens": 26895,
+      "calls": 3,
+      "wallMs": 29410,
+      "handoffBytes": 916,
+      "lookupRequestBytes": 83,
+      "lookupResponseBytes": 410,
+      "verifyExit": 0,
+      "integrationExit": 0
+    },
+    {
+      "name": "caveman",
+      "inputTokens": 27531,
+      "outputTokens": 541,
+      "totalTokens": 28072,
+      "calls": 3,
+      "wallMs": 28353,
+      "handoffBytes": 844,
+      "lookupRequestBytes": 83,
+      "lookupResponseBytes": 410,
+      "verifyExit": 0,
+      "integrationExit": 0
+    }
+  ],
+  "billedCostUsd": null,
+  "pmTokens": null,
+  "humanTimeMs": null,
+  "notes": [
+    "Total includes both independent reviews, all pilot calls, two rejected recoveries and matched comparison; previous agy greeting probe and historical Gemini attempt are excluded from this shift and remain in their historical receipts.",
+    "CLI input usage includes whatever system/schema context it reports; hidden unreported context and billing unknown. Full prompt is resent on each mediated turn; no native session/MCP claim.",
+    "serialCallWallMs sums calls, including concurrent work; not elapsed shift duration.",
+    "Pilot source/test bytes match but Git base differs. Matched arms share source/test/base. Single sequential sample per arm; style and task IDs in prompt labels vary; not randomized or quality/causal benchmark."
+  ]
+}

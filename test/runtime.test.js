@@ -106,7 +106,7 @@ test('agy success keeps self-identified prose model unknown and bounds model out
 
 // Substitute only process launch/discovery: exercise runCli without starting any
 // real agent, network request, or global CLI configuration change.
-function fakeRuntime(output, exitCode = 0) {
+function fakeRuntime(output, exitCode = 0, sandboxError) {
   const captured = {};
   const stub = {
     spawnSync: () => ({ status: 0, stdout: '/fake/agy\n' }),
@@ -121,7 +121,7 @@ function fakeRuntime(output, exitCode = 0) {
   };
   const mod = { exports: {} };
   const source = fs.readFileSync(path.join(__dirname, '../src/runtime.js'), 'utf8');
-  new Function('require', 'module', source)(name => name === 'child_process' ? stub : name === './connect' ? { findCli: () => '/fake/claude' } : require(name), mod);
+  new Function('require', 'module', source)(name => name === 'child_process' ? stub : name === './connect' ? { findCli: () => '/fake/claude' } : name === './execution-sandbox' ? { wrapExecution: (bin, args, options) => { captured.boundary = { bin, args, options }; if (sandboxError) throw sandboxError; return { bin: '/fake/bwrap', args: ['readonly-boundary', ...args], cleanup: () => { captured.cleaned = true; } }; } } : require(name), mod);
   return { runtime: mod.exports, captured };
 }
 
@@ -177,4 +177,22 @@ test('agy SUCCESS with denied_actions is a permission failure, not a completed r
   assert.equal(result.status, 'failed'); assert.equal(result.permissionDenials, 1);
   assert.equal(result.error, 'Runtime reported permission denials');
   assert.equal(parseOutput('agy', JSON.stringify({ status: 'SUCCESS', response: 'Complete response', denied_actions: [] })).permissionDenials, 0);
+});
+
+
+test('agy read-only model calls always request a filesystem write boundary', async () => {
+  const { runtime, captured } = fakeRuntime('{"status":"SUCCESS","response":"Read-only report"}');
+  const result = await runtime.runCli({ adapter: 'agy', modelId: 'test-id', prompt: 'Read', workspace: __dirname, timeoutMs: 1000 });
+  assert.equal(captured.bin, '/fake/bwrap');
+  assert.equal(captured.boundary.options.write, false);
+  assert.equal(captured.boundary.options.workspace, fs.realpathSync(__dirname));
+  assert.equal(captured.cleaned, true); assert.equal(result.status, 'reported');
+  assert.equal(result.reportedModel, 'unknown');
+});
+
+test('agy probes fail closed before process launch when the filesystem boundary is unavailable', () => {
+  const unavailable = Object.assign(new Error('Fixture sandbox unavailable'), { code: 'EXECUTION_SANDBOX_UNAVAILABLE' });
+  const { runtime, captured } = fakeRuntime('{"status":"SUCCESS","response":"READY"}', 0, unavailable);
+  assert.throws(() => runtime.runCli({ adapter: 'agy', modelId: 'test-id', prompt: 'Reply only READY. No tools or file changes.', workspace: __dirname, timeoutMs: 1000 }), { code: 'EXECUTION_SANDBOX_UNAVAILABLE' });
+  assert.equal(captured.bin, undefined);
 });

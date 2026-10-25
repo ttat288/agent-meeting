@@ -1,6 +1,8 @@
-# Tài liệu tham khảo Agent Meeting
+# Tài liệu tham khảo Foxul
 
 [Về README](../README.vi.md) · [English](REFERENCE.md)
+
+Một số ảnh bên dưới giữ tên, logo và bố cục tại thời điểm chụp, có trước Foxul. [Demo Foxul có lời đọc — 46 giây](showcase/foxul-demo.mp4) hiện hành cho thấy nhận diện mới và luồng Plan có nguồn; [manifest](showcase/foxul-demo-manifest.json) ghi source local đang dirty cùng các giới hạn.
 
 Những gì README lược bớt: luồng trang chủ trì đầy đủ, mẫu kết quả, theo dõi tiến độ, gửi tệp, luật, tham số dòng lệnh, tool của agent, bảo mật và hạn chế.
 

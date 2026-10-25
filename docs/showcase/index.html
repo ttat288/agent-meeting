@@ -2,15 +2,19 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Agent Meeting · Product walkthrough</title>
-<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>Foxul · Product walkthrough</title>
+<link rel="icon" href="icon.png" type="image/png">
 <link rel="stylesheet" href="player.css">
 </head>
 <body>
-<header><a class="brand" href="https://github.com/ttat288/agent-meeting">Agent Meeting</a><span id="eyebrow">Product walkthrough</span><label><span id="languageLabel">Language</span> <select id="language"><option value="en">English</option><option value="vi">Tiếng Việt</option></select></label></header>
+<header><a class="brand" href="https://github.com/ttat288/agent-meeting">Foxul</a><span id="eyebrow">Product walkthrough</span><label><span id="languageLabel">Language</span> <select id="language"><option value="en">English</option><option value="vi">Tiếng Việt</option></select></label></header>
 <main>
-<div class="intro"><h1 id="headline">From a question to a plan.</h1><p id="disclosure">Real interface. Scripted participants. No AI calls or verified execution claims.</p></div>
-<figure><img id="scene" src="en/000_brief.png" width="1280" height="800" alt="Write a meeting brief"><figcaption><span id="caption">01 · Give the team a decision to make</span><span id="counter">1 / 10</span></figcaption></figure>
+<div class="intro"><h1 id="headline">See the outcome in 46 seconds.</h1><p id="disclosure">Narrated, edited browser recording. Scripted participants use real local APIs; all three tasks remain planned. English voice generated locally with Kokoro.</p></div>
+<figure class="video-figure"><video id="demo" controls playsinline preload="metadata" poster="foxul-demo-poster.png"><source src="foxul-demo.mp4" type="video/mp4"><source src="foxul-demo.webm" type="video/webm"><track kind="subtitles" src="foxul-demo.vi.vtt" srclang="vi" label="Tiếng Việt" default><track kind="captions" src="foxul-demo.en.vtt" srclang="en" label="English">Your browser does not support this video.</video><figcaption><span id="videoCaption">Brief → challenge → decision → three owners → conversation source</span><a id="videoFile" href="foxul-demo.mp4">MP4 · 46 s ↗</a></figcaption></figure>
+<p class="note" id="videoNote">English AI narration. Select Vietnamese subtitles or English captions with the player’s CC control.</p>
+<p class="note">Music: “Tech Live” — Kevin MacLeod (<a href="https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1700030">incompetech.com</a>), <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Excerpt, fades and mix. <a href="music/LICENSE.md">Music credit and license</a>.</p>
+<section class="archive" aria-labelledby="archiveTitle"><h2 id="archiveTitle">Historical scene walkthrough</h2><p id="archiveNote">These still scenes predate the Foxul identity and remain available for step-by-step inspection.</p></section>
+<figure class="scene-figure"><img id="scene" src="en/000_brief.png" width="1280" height="800" alt="Write a meeting brief"><figcaption><span id="caption">01 · Give the team a decision to make</span><span id="counter">1 / 10</span></figcaption></figure>
 <div class="controls" aria-label="Playback controls"><button id="previous" disabled aria-label="Previous scene">←</button><button id="play" aria-pressed="false">Play walkthrough</button><button id="next" disabled aria-label="Next scene">→</button><label class="seek"><span id="seekLabel">Scene</span><input id="seek" type="range" min="0" max="9" value="0" aria-label="Choose a scene"></label><a id="gif" href="../demo.gif">GIF ↗</a></div>
 <p class="note" id="note">Pause on any scene to read. The three research tasks remain planned; progress reports do not establish verification.</p>
 <p id="error" role="alert" hidden></p>

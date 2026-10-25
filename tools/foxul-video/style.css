@@ -1,0 +1,38 @@
+:root {
+  --obsidian:#0b0d12;
+  --ivory:#f4f3ef;
+  --indigo:#4f46e5;
+  --cool-indigo:#8b93ff;
+}
+* { box-sizing:border-box; }
+html,body { width:100%; height:100%; margin:0; overflow:hidden; background:var(--obsidian); }
+body { font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; color:var(--ivory); }
+#stage { position:relative; width:1920px; height:1080px; overflow:hidden; isolation:isolate; background:var(--obsidian); }
+.ambient { position:absolute; width:720px; height:720px; border-radius:50%; filter:blur(120px); opacity:.14; pointer-events:none; }
+.ambient-a { left:-280px; top:-360px; background:var(--indigo); }
+.ambient-b { right:-340px; bottom:-420px; background:var(--cool-indigo); opacity:.09; }
+.brandbar { position:absolute; z-index:20; top:0; left:0; width:100%; height:96px; display:flex; align-items:center; padding:0 72px; }
+.brand { display:flex; align-items:center; gap:14px; font-size:28px; font-weight:760; letter-spacing:-.04em; }
+.brand img { width:48px; height:48px; object-fit:contain; }
+.disclosure { margin-left:auto; color:#a9afbd; font-size:14px; font-weight:650; letter-spacing:.12em; }
+#scenes,.scene { position:absolute; inset:0; }
+.scene { opacity:0; pointer-events:none; }
+.scene .window { position:absolute; left:160px; top:118px; width:1600px; height:900px; overflow:hidden; border:1px solid rgba(139,147,255,.32); border-radius:22px; background:#141821; box-shadow:0 44px 120px rgba(0,0,0,.5); transform-origin:50% 50%; }
+.scene .window::before { content:""; position:absolute; z-index:2; inset:0; border-radius:inherit; box-shadow:inset 0 0 0 1px rgba(244,243,239,.07); pointer-events:none; }
+.scene .window img { width:100%; height:100%; display:block; object-fit:cover; transform-origin:50% 50%; }
+.scene .copy { position:absolute; z-index:4; left:110px; bottom:82px; max-width:1120px; padding:24px 30px 26px; border:1px solid rgba(244,243,239,.12); border-radius:18px; background:rgba(11,13,18,.91); box-shadow:0 22px 70px rgba(0,0,0,.46); backdrop-filter:blur(12px); }
+.scene .kicker { display:block; margin-bottom:10px; color:var(--cool-indigo); font-size:15px; line-height:1; font-weight:800; letter-spacing:.15em; text-transform:uppercase; }
+.scene h1 { margin:0; max-width:1080px; color:var(--ivory); font-size:55px; line-height:1.04; font-weight:760; letter-spacing:-.045em; text-wrap:balance; }
+.scene p { margin:15px 0 0; max-width:940px; color:#c8cbd4; font-size:23px; line-height:1.36; font-weight:470; }
+.scene.result .copy { left:108px; top:160px; bottom:auto; max-width:690px; }
+.scene.result h1 { font-size:67px; }
+.scene.result .window { left:260px; top:118px; transform-origin:67% 45%; }
+.scene.source .copy { max-width:830px; }
+.scene.final { display:grid; place-items:center; text-align:center; }
+.scene.final .endmark { position:relative; z-index:3; transform-origin:50% 50%; }
+.scene.final img { width:228px; height:228px; object-fit:contain; filter:drop-shadow(0 28px 65px rgba(79,70,229,.34)); }
+.scene.final h1 { margin:24px 0 10px; font-size:92px; line-height:1; letter-spacing:-.055em; }
+.scene.final .slogan { margin:0; color:var(--ivory); font-size:38px; font-weight:650; letter-spacing:-.025em; }
+.scene.final .try { display:inline-flex; margin-top:38px; padding:14px 22px; border:1px solid rgba(139,147,255,.44); border-radius:999px; color:var(--cool-indigo); background:rgba(79,70,229,.14); font-size:19px; font-weight:700; letter-spacing:.02em; }
+.timeline { position:absolute; z-index:30; left:72px; right:72px; bottom:34px; height:3px; background:rgba(244,243,239,.13); overflow:hidden; border-radius:99px; }
+.timeline i { display:block; height:100%; width:0; background:linear-gradient(90deg,var(--indigo),var(--cool-indigo)); }

@@ -1,4 +1,4 @@
-# Đánh giá ba bộ design skill cho Agent Meeting
+# Đánh giá ba bộ design skill cho Foxul
 
 Ngày kiểm: 2026-10-21. Người dùng đánh giá UI v2 “tạm ổn” và yêu cầu nghiên cứu, **chưa yêu cầu cài**. Chỉ tải tài liệu/mã nguồn vào `/tmp/agent-meeting-design-skills-review` để đọc. Không chạy installer, script upstream, engine, hook, telemetry, model CLI hoặc sửa settings/skill hiện có. Không sửa source ứng dụng.
 
@@ -28,7 +28,7 @@ Nguồn chính: [README](https://github.com/emilkowalski/skills/blob/2d228630ba1
 
 ## Impeccable: workflow review tốt, footprint lớn hơn Markdown
 
-[Core skill](https://github.com/pbakaus/impeccable/blob/dad8dbb3aac21ad1fa236c110315ef4abece23e8/.agents/skills/impeccable/SKILL.md) phân biệt Persuade/Operate/Read/Experience. Agent Meeting thuộc **Operate**: [hướng dẫn](https://github.com/pbakaus/impeccable/blob/dad8dbb3aac21ad1fa236c110315ef4abece23e8/.agents/skills/impeccable/reference/operate.md) cho phép system fonts, UI dày, điều hướng quen thuộc và ưu tiên nhất quán. Không nên đánh đồng toàn bộ repo với phong cách landing page phô diễn.
+[Core skill](https://github.com/pbakaus/impeccable/blob/dad8dbb3aac21ad1fa236c110315ef4abece23e8/.agents/skills/impeccable/SKILL.md) phân biệt Persuade/Operate/Read/Experience. Foxul thuộc **Operate**: [hướng dẫn](https://github.com/pbakaus/impeccable/blob/dad8dbb3aac21ad1fa236c110315ef4abece23e8/.agents/skills/impeccable/reference/operate.md) cho phép system fonts, UI dày, điều hướng quen thuộc và ưu tiên nhất quán. Không nên đánh đồng toàn bộ repo với phong cách landing page phô diễn.
 
 Các command `critique`, `audit`, `distill`, `clarify`, `harden` bổ sung đúng lớp đang cần: tìm vấn đề hierarchy, kiểm kỹ thuật, giảm trùng thông tin và xử lý state/i18n. Riêng [audit](https://github.com/pbakaus/impeccable/blob/dad8dbb3aac21ad1fa236c110315ef4abece23e8/.agents/skills/impeccable/reference/audit.md) là kiểm kỹ thuật; không thay việc người dùng đánh giá thiết kế. [distill](https://github.com/pbakaus/impeccable/blob/dad8dbb3aac21ad1fa236c110315ef4abece23e8/.agents/skills/impeccable/reference/distill.md) rất sát vấn đề tổng kết lặp task/conclusion, nhưng đề xuất bỏ/gom phải giữ inventory và dữ liệu.
 
@@ -40,7 +40,7 @@ Không chạy `npx impeccable install` cho repo này ở lượt nghiên cứu. 
 
 [README](https://github.com/Leonxlnx/taste-skill/blob/6010f91a9935f1c167dfc500fb1a475681892e6b/README.md) xác nhận plain HTML cũng được hỗ trợ. Không áp lời nhận xét về bản cũ mặc định React/Next cho snapshot này. Phần [app-screens](https://github.com/Leonxlnx/taste-skill/blob/6010f91a9935f1c167dfc500fb1a475681892e6b/skills/taste-skill/references/app-screens.md) dùng typography sản phẩm, border/divider và mật độ hợp app; app **không có motion floor**. Các yêu cầu ảnh/motion lớn trong route page không áp nguyên xi cho app.
 
-Điểm phù hợp: đếm theo view, một dữ kiện có một nguồn, số liệu thật, dữ liệu lỗi/loading/rỗng, kiểm browser và giữ stack. Điểm cần ghim ngoại lệ cho Agent Meeting: app rules vẫn cấm violet/indigo, màu navy/slate tối, accent ở một số chrome; yêu cầu face đã chọn được load. Đó là lựa chọn thẩm mỹ của tác giả, không phải tiêu chuẩn accessibility. Màu accent indigo hiện có, system font và shell/navigation đã được người dùng đánh giá phải được giữ. `--keep palette,type` và `--allow` có cơ chế bảo toàn brand/waiver, nhưng phải dùng đúng rule; chưa kiểm việc waiver bao phủ từng rule bằng runtime.
+Điểm phù hợp: đếm theo view, một dữ kiện có một nguồn, số liệu thật, dữ liệu lỗi/loading/rỗng, kiểm browser và giữ stack. Điểm cần ghim ngoại lệ cho Foxul: app rules vẫn cấm violet/indigo, màu navy/slate tối, accent ở một số chrome; yêu cầu face đã chọn được load. Đó là lựa chọn thẩm mỹ của tác giả, không phải tiêu chuẩn accessibility. Màu accent indigo hiện có, system font và shell/navigation đã được người dùng đánh giá phải được giữ. `--keep palette,type` và `--allow` có cơ chế bảo toàn brand/waiver, nhưng phải dùng đúng rule; chưa kiểm việc waiver bao phủ từng rule bằng runtime.
 
 Tooling [SKILL](https://github.com/Leonxlnx/taste-skill/blob/6010f91a9935f1c167dfc500fb1a475681892e6b/skills/taste-skill/SKILL.md) yêu cầu Node22+ và browser cài sẵn cho inspector; đây là tooling dev, không tự đổi runtime Node>=18 của app. Đã đọc draw/inspect/assets/CDP helper và installer, không chạy. Script `draw.mjs` mặc định có history ngoài project (`~/.taste-skill/history.json`, có biến `TASTE_SKILL_HISTORY`); assets tìm/tải ảnh từ nguồn ngoài. Installer shell `--codex` link vào `~/.codex/skills`, khác quy tắc cài project-local đang dùng. Nếu dùng sau phải chọn scope và tài nguyên đầy đủ, không chỉ lấy một Markdown bỏ library/references/scripts.
 

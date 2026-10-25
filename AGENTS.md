@@ -1,4 +1,4 @@
-# Hướng dẫn agent — Agent Meeting
+# Hướng dẫn agent — Foxul
 
 ## Hướng dẫn dự án hiện có
 
@@ -48,14 +48,14 @@ Kiểm kê ngày 2026-10-21 bao gồm thư mục ẩn, nội dung bị Git ignor
 
 | Skill | Đường dẫn từ gốc repo | Mục đích và điều kiện sử dụng | Xử lý |
 | --- | --- | --- | --- |
-| `ui-ux-pro-max` | `.agents/skills/ui-ux-pro-max/SKILL.md` | Hướng dẫn thiết kế, tương tác, accessibility, responsive và review UI/UX; bắt buộc đọc khi làm UI/UX theo quy tắc trên. | Skill phục vụ phát triển Agent Meeting; cài local và ignore đúng thư mục này. |
-| `add-lang` | `.local-tools/codegraph/.claude/skills/add-lang/SKILL.md` | Thêm grammar tree-sitter/extractor và kiểm chứng ngôn ngữ cho chính CodeGraph. | Thuộc repo công cụ nhúng, không phải skill của Agent Meeting; chỉ cân nhắc khi được giao phát triển CodeGraph. |
-| `agent-eval` | `.local-tools/codegraph/.claude/skills/agent-eval/SKILL.md` | Benchmark khả năng truy hồi CodeGraph với/không có công cụ trên corpus. | Thuộc CodeGraph; không tự chạy benchmark, thay đổi cài đặt global hoặc các lượt agent trả phí khi phát triển Agent Meeting. |
+| `ui-ux-pro-max` | `.agents/skills/ui-ux-pro-max/SKILL.md` | Hướng dẫn thiết kế, tương tác, accessibility, responsive và review UI/UX; bắt buộc đọc khi làm UI/UX theo quy tắc trên. | Skill phục vụ phát triển Foxul; cài local và ignore đúng thư mục này. |
+| `add-lang` | `.local-tools/codegraph/.claude/skills/add-lang/SKILL.md` | Thêm grammar tree-sitter/extractor và kiểm chứng ngôn ngữ cho chính CodeGraph. | Thuộc repo công cụ nhúng, không phải skill của Foxul; chỉ cân nhắc khi được giao phát triển CodeGraph. |
+| `agent-eval` | `.local-tools/codegraph/.claude/skills/agent-eval/SKILL.md` | Benchmark khả năng truy hồi CodeGraph với/không có công cụ trên corpus. | Thuộc CodeGraph; không tự chạy benchmark, thay đổi cài đặt global hoặc các lượt agent trả phí khi phát triển Foxul. |
 
 Đánh giá local ngày2026-10-24: Caveman tại `.local-tools/caveman-eval/SKILL.md`, nguồn `JuliusBrussee/caveman` commit `bae9beaf3aa6dc509f05f3d3ed239c827f6e51bb`, SHA-256 `415d43518f2b1a9498c15a445d4657117b129ee5e81b19454ce348439cc6672b`, Apache-2.0 (LICENSE giữ cùng thư mục). Chỉ lưu text để review/mẫu đối chứng; **không cài vào catalog phát triển/sản phẩm**, không hooks/proxy/global settings và không áp dụng session persistence cho phiên PM. `.local-tools/` đã ignore; không thêm ignore rộng mới. Ba mẫu PM soạn không là model A/B; chưa chứng minh lợi ích nên không chọn Caveman làm mặc định. Chi tiết trong `docs/evidence/task-skills/ACCEPTANCE.vi.md`.
 
-- Trước lần cài này, không có SKILL.md riêng của Agent Meeting, không có AGENTS.md ở gốc, và không có cấu hình `.agents/` hoặc `.codex/` trong repo. `.claude/launch.json` là cấu hình chạy ứng dụng, không đăng ký skill.
-- Hướng dẫn agent có sẵn nằm trong `.local-tools/codegraph/AGENTS.md`, `.local-tools/codegraph/docs/AGENTS.md` và `.local-tools/codegraph/CLAUDE.md` (tham chiếu `@AGENTS.md`). Chúng áp dụng cho CodeGraph, không trở thành chính sách toàn repo Agent Meeting. Tài liệu CodeGraph có nhắc harness `scripts/agent-eval/`, nhưng không liệt kê hai manifest trên thành danh mục skill cho Agent Meeting.
+- Trước lần cài này, không có SKILL.md riêng của Foxul, không có AGENTS.md ở gốc, và không có cấu hình `.agents/` hoặc `.codex/` trong repo. `.claude/launch.json` là cấu hình chạy ứng dụng, không đăng ký skill.
+- Hướng dẫn agent có sẵn nằm trong `.local-tools/codegraph/AGENTS.md`, `.local-tools/codegraph/docs/AGENTS.md` và `.local-tools/codegraph/CLAUDE.md` (tham chiếu `@AGENTS.md`). Chúng áp dụng cho CodeGraph, không trở thành chính sách toàn repo Foxul. Tài liệu CodeGraph có nhắc harness `scripts/agent-eval/`, nhưng không liệt kê hai manifest trên thành danh mục skill cho Foxul.
 - `.local-tools/` đã được ignore trước lần cấu hình này; giữ nguyên quy tắc đó và nội dung công cụ. Không sao chép skill CodeGraph sang `.agents/skills` hoặc tự động áp dụng chúng toàn repo.
 - Các skill global/bundled như `skill-installer` và `openai-docs` được dùng để cấu hình và xác minh discovery trong phiên cài; chúng không được cài vào repo và không thuộc danh mục skill dự án. Không sao chép danh sách skill global của máy vào đây.
 - **Bảo trì:** mỗi lần cài hoặc gỡ skill ở phạm vi dự án, cập nhật danh mục này, đường dẫn thực, mục đích, điều kiện sử dụng, nguồn/cách cài và quy tắc ignore tương ứng. Phân biệt skill dự án với skill vendor/công cụ nhúng; không tự nâng hướng dẫn vendor thành quy tắc toàn repo.

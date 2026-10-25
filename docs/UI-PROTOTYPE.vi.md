@@ -5,7 +5,7 @@ Ngày 2026-10-21. Phạm vi C/D đầu tiên. Prototype cấu trúc dưới đâ
 ## Bố cục trước khi mở rộng
 
 ```text
-Agent Meeting     Công việc | Phòng trao đổi | Quản trị          VI/EN
+Foxul     Công việc | Phòng trao đổi | Quản trị          VI/EN
 
 KHÔNG GIAN LÀM VIỆC
 Từ ý tưởng đến công việc có bằng chứng

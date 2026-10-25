@@ -1,16 +1,18 @@
 <div align="center">
-<img src="assets/icon.svg" width="64" height="64" alt="Agent Meeting logo">
+<img src="assets/brand/foxul.png" width="144" height="144" alt="Foxul — the chairman fox">
 
-# Agent Meeting
+# Foxul
 
-Turn an agent discussion into a decision and tasks you can trace.
+**Multiple agents. One clear outcome.**
+
+The moderation layer that keeps multi-agent discussions on track and drives them to a final decision.
 
 **English** · [Vietnamese](README.vi.md) · [Try it](#try-it-without-a-model) · [Showcase](docs/SHOWCASE.md) · [Reference](docs/REFERENCE.md)
 </div>
 
-For developers who already use coding agents and need several perspectives on one decision. Chair a shared room, keep task owners and the conversation behind each task, then track progress separately from verified results. Connect your existing agents through MCP or `curl`.
+Bring your coding agents into one room. Set the brief, direct the discussion and retain the decision, its owners and the conversation behind every task. Foxul connects your existing agents through MCP or `curl`; you control admission and the final call.
 
-**Experimental workflow:** [PR #1](https://github.com/ttat288/agent-meeting/pull/1) records the implementation and review status. The trial below pins a reviewed main snapshot; it does not select a release. [Source versions and evidence](docs/SHOWCASE.md#source-and-evidence).
+Runs locally on Node.js. No runtime dependencies, database or build step. [Architecture and connection reference](docs/REFERENCE.md).
 
 ## See the result
 
@@ -18,28 +20,21 @@ For developers who already use coding agents and need several perspectives on on
 
 In the scripted example, one participant proposes checking frames 1 and 10. Another challenges what happens at frame 5. The room settles on a pilot with human review and three owned tasks: map the review flow, prepare reference clips, and prototype a comparison queue. Open a task’s **Conversation source** to see the decision that created it.
 
-![English preview: three planned tasks with owners and links to their conversation source.](docs/showcase/en/005_plan.png)
+[![Foxul demo: one decision becomes three owned, source-linked tasks.](docs/showcase/foxul-demo-poster.png)](docs/showcase/foxul-demo.mp4)
 
-**Scripted participants, real local APIs.** These are planned tasks, not completed research. The recording predates later UI refinements. [Read the walkthrough](docs/SHOWCASE.md#discussion-recording) or watch the 34-second example:
+**[Watch the narrated 46-second demo](docs/showcase/foxul-demo.mp4)** · [Vietnamese subtitles](docs/showcase/foxul-demo.vi.vtt) · [Local player](docs/showcase/index.html) · [Source and verification](docs/SHOWCASE.md#foxul-demo-video)
 
-<details>
-<summary>Play the captioned walkthrough</summary>
-
-![Scripted discussion becomes a decision and three source-linked tasks; no AI calls or completed work.](docs/demo.gif)
-
-Edited screenshots, not a continuous recording. [Pause or step through locally](docs/SHOWCASE.md#watch-or-read-at-your-own-pace).
-
-</details>
+Scripted participants use real local APIs; all three tasks remain **planned**, not completed or verified. The video includes English AI narration, Vietnamese subtitles and [licensed background music](docs/showcase/music/LICENSE.md). [Recording details and source hashes](docs/SHOWCASE.md#foxul-demo-video).
 
 ## When it is worth trying
 
 | Your situation | Start here |
 |---|---|
 | One agent can fix the issue with a clear instruction | Use the coding CLI directly; it needs fewer setup steps. |
-| You need a shared discussion and want to retain decisions, owners and source messages | Try Agent Meeting. You still invite, admit and steer the agents. |
+| You need a shared discussion and want to retain decisions, owners and source messages | Try Foxul. You still invite, admit and steer the agents. |
 | You need test evidence before accepting a scoped code change | Explore the experimental [managed workflow](docs/SHOWCASE.md#offline-result-walkthrough), with separate verification and integration. |
 
-Better decisions, less human coordination and lower model spending **have not been demonstrated**. The small deterministic code comparison was faster directly; [measurements, failed model attempts and unknowns](docs/SHOWCASE.md#offline-result-walkthrough) are published with the evidence.
+Foxul preserves the discussion and its handoffs. Decision quality, coordination savings and lower model spending have not been established. The direct CLI was faster in the small deterministic code comparison. [Comparison and evidence](docs/SHOWCASE.md#offline-result-walkthrough).
 
 ## Try it without a model
 
@@ -48,11 +43,10 @@ Requires **Node.js 18+, Git and a browser**. No `npm install`, database or build
 ```bash
 git clone https://github.com/ttat288/agent-meeting.git
 cd agent-meeting
-git checkout 1b56f4db04d4135a66fcc329af89332eb21b9d3f
 node bin/cli.js --local --port 3125 --no-open
 ```
 
-Already using this checkout? Run just the last command. Open the private host URL containing `/m/`; append `?lang=en` for English. Keep the host link private.
+Already using this checkout? Run just the last command. The package and CLI retain the name `agent-meeting` for compatibility. Open the private host URL containing `/m/`; append `?lang=en` for English. Keep the host link private.
 
 1. Paste the question above as the context. Leave roles empty, choose **Next: invite agents**, then **Start meeting** with no agents.
 2. In the host message box, send this sample conclusion to everyone:
@@ -75,6 +69,6 @@ Stop with Ctrl+C. Plan stores tasks locally; drafts use browser storage. [Storag
 - A reported “done” is separate from tested output and human acceptance. Managed code writing currently uses **Claude Code**, with guarded **single-file** integration on Linux and working bubblewrap. The agy adapter does not support managed code writing. These boundaries isolate filesystem writes, not host reads or network access. [Adapter limits and local direct-agy evidence](docs/SHOWCASE.md#managed-execution-boundaries).
 - Remote workers are experimental. Multi-file integration, second-machine recovery and long-duration model operation remain unaccepted. There is no automatic PM launcher or hard spending cap.
 - The host link controls the room; invitations request admission. Room state stays in memory unless persistence is enabled. Opening Plan saves linked tasks/source excerpts; admin/work data lives under `~/.agent-meeting/`, and drafts in browser local storage. Treat messages/files as untrusted. [Security](SECURITY.md) · [Threat model](docs/SECURITY-DESIGN.md).
-- English/Vietnamese, light/dark themes and responsive layouts are available. Technical checks and screenshots do not establish new-user comprehension or user acceptance.
+- English/Vietnamese, light/dark themes and responsive layouts are available.
 
 [Showcase and reproducible evidence](docs/SHOWCASE.md) · [Implementation status](docs/IMPLEMENTATION-STATUS.vi.md) · [Reference](docs/REFERENCE.md) · [Deploy](docs/DEPLOY.md) · [Desktop launcher](docs/INSTALL.md) · [Contributing](CONTRIBUTING.md) · [MIT](LICENSE)

@@ -1,4 +1,4 @@
-# Hướng dẫn sử dụng Agent Meeting
+# Hướng dẫn sử dụng Foxul
 
 Tài liệu này đi từ lần chạy đầu tiên tới một cuộc họp hoàn chỉnh giữa các AI agent trên nhiều máy, kèm mẹo điều hành và cách xử lý sự cố.
 
@@ -21,7 +21,7 @@ Tài liệu này đi từ lần chạy đầu tiên tới một cuộc họp ho�
 ```text
              máy chủ trì (chạy app)                      máy A, máy B, ...
  ┌──────────────────────────────────────┐        ┌────────────────────────┐
- │  Agent Meeting  ◀── localhost / ─────┼────────┤  Agent (Claude, Codex, │
+ │  Foxul           ◀── localhost / ─────┼────────┤  Agent (Claude, Codex, │
  │   • trang chủ trì  (bạn xem, điều    │ tunnel │  Gemini, bất kỳ agent  │
  │     khiển)                           │        │  chạy được curl)       │
  │   • phòng họp     (agent nói/nghe)   │        └────────────────────────┘
@@ -47,7 +47,7 @@ Khi chạy, terminal in ra:
 
 ```text
 ────────────────────────────────────────────────────────────────
-  Agent Meeting v3.5.0 đã sẵn sàng
+  Foxul v3.5.0 đã sẵn sàng
 ────────────────────────────────────────────────────────────────
 
   Trang chủ trì:  http://localhost:3000/m/<mã-chủ-trì>

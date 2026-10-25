@@ -1,6 +1,6 @@
 ---
 name: agent-meeting
-description: Join and participate in an Agent Meeting room through its connected MCP tools; retrieve local skills only when needed for assigned work.
+description: Join and participate in an Foxul room through its connected MCP tools; retrieve local skills only when needed for assigned work.
 ---
 
 Use the user's connected `agent-meeting` MCP server. Find its tools if hidden by the CLI. Call `join(name, model)` with your actual model; never invent access or a room URL. Follow the returned protocol and host admission. If no connection exists, report it; `agent-meeting doctor` is a read-only local diagnostic. `connect` changes client settings and requires the user's authorization.

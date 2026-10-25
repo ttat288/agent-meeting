@@ -1,0 +1,574 @@
+{
+  "schema": "foxul/demo-video@2",
+  "recordedAt": "2026-10-25T07:22:45.499Z",
+  "disclosure": "Edited browser recording. Scripted participants use disposable real local APIs. No participant model or agent CLI calls. Local Kokoro neural TTS supplies English narration. Three tasks remain Planned.",
+  "source": {
+    "head": "2855dfcfbf28c2426dc7cc71e495b8c20dd73ccf",
+    "branch": "codex/2026-10-22-product-hardening",
+    "dirty": true,
+    "diffSha256": "a831f9c38be193c1d74a486ab801d9b5496cd18f24be287f52aae951362db0bc",
+    "files": {
+      "src/server.js": "796e55b8ebde3b9bde69156dc9bd8a46ef314c9c29edc57554272fb44f130964",
+      "src/meeting.js": "8cfb86afa63a8bc30e831f47e9f0d02d8c4a86aceb024f6993bd0ed0c2589140",
+      "src/brief.js": "8beb9daf816eafbf24e244ff2345ef9f5bf67d386218aef6f4fb23d97794e0a5",
+      "src/ui/index.html": "9b7fd3a3e072a5f904ac1e6f6921c892902f9ff036e51501f6a43888e55df1cb",
+      "src/ui/app.css": "4b026c246fa7597b256c125d1aa087ba7419fcc2ab4cd0db8cd9d22b4946c3b5",
+      "src/ui/app.js": "65fb6e5d20d4bb82b5e14371270744f1a066d6c5f28138dc31f74aeeb089fe5b",
+      "src/ui/workspace.html": "0b653d214ce21e6609410c77c0168febaff35d91c5eb849e8be6c0840403c006",
+      "src/ui/workspace.css": "ea8e1942635b000e78aed08e635d23b0ac73c8b00c444bc4a404bcebfdeed9a6",
+      "src/ui/workspace.js": "6ef21644ceccbbff829b25f25d78c746e849f5c6de4dcdf4ae20e9aee9a39156",
+      "assets/brand/foxul.png": "4a73637a5626178ccfbfd7b964c23cf15cfc7a4f2fe69ff895a463ac6efcc4a0",
+      "tools/record-foxul-video-v2.mjs": "77079f6013f61056883a440e6e9bb169e0308188e788a1531aa3e1ddc9f6ba8e",
+      "tools/foxul-video/narration.json": "05024e926c47bb31207687e63750d831c057266376c172befee453fd1a061a51",
+      "tools/foxul-video/generate-narration.mjs": "94300aaf9de5134e325d2330453b62866d92eb5555233d532e3527c57f34d766"
+    },
+    "originalCaptureFiles": {
+      "src/server.js": "796e55b8ebde3b9bde69156dc9bd8a46ef314c9c29edc57554272fb44f130964",
+      "src/meeting.js": "8cfb86afa63a8bc30e831f47e9f0d02d8c4a86aceb024f6993bd0ed0c2589140",
+      "src/brief.js": "8beb9daf816eafbf24e244ff2345ef9f5bf67d386218aef6f4fb23d97794e0a5",
+      "src/ui/index.html": "9b7fd3a3e072a5f904ac1e6f6921c892902f9ff036e51501f6a43888e55df1cb",
+      "src/ui/app.css": "4b026c246fa7597b256c125d1aa087ba7419fcc2ab4cd0db8cd9d22b4946c3b5",
+      "src/ui/app.js": "65fb6e5d20d4bb82b5e14371270744f1a066d6c5f28138dc31f74aeeb089fe5b",
+      "src/ui/workspace.html": "0b653d214ce21e6609410c77c0168febaff35d91c5eb849e8be6c0840403c006",
+      "src/ui/workspace.css": "ea8e1942635b000e78aed08e635d23b0ac73c8b00c444bc4a404bcebfdeed9a6",
+      "src/ui/workspace.js": "6ef21644ceccbbff829b25f25d78c746e849f5c6de4dcdf4ae20e9aee9a39156",
+      "assets/brand/foxul.png": "4a73637a5626178ccfbfd7b964c23cf15cfc7a4f2fe69ff895a463ac6efcc4a0",
+      "tools/record-foxul-video-v2.mjs": "77079f6013f61056883a440e6e9bb169e0308188e788a1531aa3e1ddc9f6ba8e",
+      "tools/foxul-video/narration.json": "05024e926c47bb31207687e63750d831c057266376c172befee453fd1a061a51",
+      "tools/foxul-video/generate-narration.mjs": "94300aaf9de5134e325d2330453b62866d92eb5555233d532e3527c57f34d766"
+    }
+  },
+  "capture": {
+    "viewport": "1280x720",
+    "deviceScaleFactor": 1.5,
+    "isolatedTempRoot": true,
+    "scriptedParticipants": true,
+    "realLocalHttpApis": true,
+    "participantModelCalls": 0,
+    "agentCliCalls": 0,
+    "paidServiceCalls": 0,
+    "paintFrames": 2120,
+    "consoleErrors": [],
+    "tasks": [
+      {
+        "id": "meeting-2772cbda8987623756458807fe9e3476",
+        "owner": "Task #1 · Minh · Workflow",
+        "status": "Planned"
+      },
+      {
+        "id": "meeting-5a4c0cb737002afeeba9e3fa1760c764",
+        "owner": "Task #2 · Lan · Quality",
+        "status": "Planned"
+      },
+      {
+        "id": "meeting-32f1c87e8c07e9daa01016bdd504cb5e",
+        "owner": "Task #3 · Sam · Tooling",
+        "status": "Planned"
+      }
+    ],
+    "marks": [
+      {
+        "id": "type-brief",
+        "mainSeconds": 0.152,
+        "globalSeconds": 3.152
+      },
+      {
+        "id": "invite",
+        "mainSeconds": 4.201,
+        "globalSeconds": 7.202
+      },
+      {
+        "id": "start-meeting",
+        "mainSeconds": 6.102,
+        "globalSeconds": 9.102
+      },
+      {
+        "id": "workflow-proposal",
+        "mainSeconds": 7.302,
+        "globalSeconds": 10.302
+      },
+      {
+        "id": "quality-challenge",
+        "mainSeconds": 10.101,
+        "globalSeconds": 13.101
+      },
+      {
+        "id": "tooling-response",
+        "mainSeconds": 12.8,
+        "globalSeconds": 15.8
+      },
+      {
+        "id": "host-asks-to-decide",
+        "mainSeconds": 16.101,
+        "globalSeconds": 19.101
+      },
+      {
+        "id": "decision",
+        "mainSeconds": 19.701,
+        "globalSeconds": 22.701
+      },
+      {
+        "id": "read-decision",
+        "mainSeconds": 23.201,
+        "globalSeconds": 26.201
+      },
+      {
+        "id": "open-plan",
+        "mainSeconds": 24.044,
+        "globalSeconds": 27.044
+      },
+      {
+        "id": "owners",
+        "mainSeconds": 26.502,
+        "globalSeconds": 29.502
+      },
+      {
+        "id": "third-owner",
+        "mainSeconds": 29.001,
+        "globalSeconds": 32.001000000000005
+      },
+      {
+        "id": "open-source",
+        "mainSeconds": 31.251,
+        "globalSeconds": 34.251000000000005
+      },
+      {
+        "id": "source-highlight",
+        "mainSeconds": 34,
+        "globalSeconds": 37
+      },
+      {
+        "id": "end-main",
+        "mainSeconds": 38.002,
+        "globalSeconds": 41.002
+      }
+    ]
+  },
+  "edit": {
+    "duration": 46,
+    "fps": 30,
+    "width": 1920,
+    "height": 1080,
+    "mainContinuousSeconds": 38,
+    "openingSeconds": 3,
+    "outroSeconds": 5,
+    "narration": {
+      "engine": {
+        "engine": "kokoro",
+        "model": "onnx-community/Kokoro-82M-v1.0-ONNX",
+        "dtype": "q8"
+      },
+      "voice": "af_heart",
+      "speed": 1.04,
+      "localInference": true,
+      "paidServiceCalls": 0,
+      "clips": [
+        {
+          "id": "outcome",
+          "start": 0,
+          "end": 3,
+          "text": "One decision. Three owners. Fully traceable.",
+          "vi": "Một quyết định. Ba người phụ trách. Truy được nguồn."
+        },
+        {
+          "id": "brief",
+          "start": 3,
+          "end": 10,
+          "text": "Start with a clear brief. How should annotators review tracking labels, and what must the pilot prove?",
+          "vi": "Bắt đầu bằng brief rõ ràng: kiểm tra nhãn tracking thế nào, và thử nghiệm cần chứng minh điều gì?"
+        },
+        {
+          "id": "challenge",
+          "start": 10,
+          "end": 19,
+          "text": "Workflow proposes two confirmed anchors. Quality challenges the assumption. Confidence at frame ten tells us little about frame five.",
+          "vi": "Workflow đề xuất hai mốc đã xác nhận. Quality phản biện: độ tin cậy ở khung 10 nói rất ít về khung 5."
+        },
+        {
+          "id": "decision",
+          "start": 19,
+          "end": 27,
+          "text": "The host asks for a decision. Review every intermediate frame, keep human corrections, and test the limits before extending.",
+          "vi": "Chủ trì yêu cầu chốt. Kiểm tra mọi khung trung gian, giữ chỉnh sửa của người và kiểm chứng giới hạn trước khi mở rộng."
+        },
+        {
+          "id": "plan",
+          "start": 27,
+          "end": 34,
+          "text": "Open Plan. Three concrete tasks, each with an owner. They remain planned, ready for the next step.",
+          "vi": "Mở Plan. Ba việc cụ thể, mỗi việc có người phụ trách. Cả ba vẫn ở trạng thái kế hoạch."
+        },
+        {
+          "id": "source",
+          "start": 34,
+          "end": 41,
+          "text": "Click Conversation source to return to the exact decision behind the task. The reason stays with the work.",
+          "vi": "Bấm Conversation source để trở về đúng quyết định tạo ra việc đó. Lý do luôn đi cùng công việc."
+        },
+        {
+          "id": "brand",
+          "start": 41,
+          "end": 46,
+          "text": "Foxul. Multiple agents. One clear outcome.",
+          "vi": "Foxul. Nhiều agent. Một kết quả rõ ràng."
+        }
+      ]
+    },
+    "toolchain": {
+      "argo": "0.41.0"
+    },
+    "palette": [
+      "#0B0D12",
+      "#4F46E5",
+      "#8B93FF",
+      "#F4F3EF"
+    ],
+    "camera": "Fixed frame throughout; no animated zoom or pan.",
+    "music": {
+      "title": "Tech Live",
+      "author": "Kevin MacLeod",
+      "authorSite": "https://incompetech.com/",
+      "isrc": "USUAN1700030",
+      "bpm": 124,
+      "instrumentation": "Synths, Percussion",
+      "trackPage": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1700030",
+      "catalogSource": "https://incompetech.com/music/royalty-free/pieces.json",
+      "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Tech%20Live.mp3",
+      "sourceSha256": "3fee678a805937e736449fe98347bbf3497258f6387b5569e49c97bae4c1072e",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "authorLicensePage": "https://incompetech.com/music/royalty-free/licenses/",
+      "authorAttributionInstructions": "https://incompetech.com/music/royalty-free/faq.html",
+      "retrievedAndChecked": "2026-10-25",
+      "commercialUsePermittedWithAttribution": true,
+      "feePaid": 0,
+      "attribution": "Tech Live by Kevin MacLeod (incompetech.com), licensed under CC BY 4.0 https://creativecommons.org/licenses/by/4.0/",
+      "creditLocations": [
+        "video outro",
+        "docs/SHOWCASE.md",
+        "docs/showcase/music/LICENSE.md",
+        "video metadata",
+        "preview player"
+      ],
+      "excerpt": {
+        "file": "tech-live-excerpt.mp3",
+        "sourceStartSeconds": 0,
+        "durationSeconds": 46,
+        "sha256": "6764c44aeb7c914edb5eecbf520f62c337fc36a21f575d180320c8bac7c9de1d"
+      },
+      "changes": "Excerpt and MP3 re-encode; in final video: normalization, fades, sidechain ducking and mix under original narration.",
+      "mix": "Sidechain ducking under voice; -22 LUFS source normalization, 0.45 gain under narration, 0.8 at the tail; 0.5 s intro / 1.2 s outro fades."
+    },
+    "files": {
+      "tools/record-foxul-video-v2.mjs": "1460d8f45396765458c43a0e967aa035380d148afbd0a1e84f756366679b6e7a",
+      "tools/foxul-video/export-v2.mjs": "d8e022cb025bca44d66cd59f1e0d1ffcf8dccdbd15538931dca99f5b3601999d"
+    },
+    "diffSha256": "a16a3e358b63c3758f791799867d8a325f7d010eb85872bad90fd50ec14c9241"
+  },
+  "output": {
+    "foxul-demo.mp4": {
+      "bytes": 3281384,
+      "sha256": "4a76454d27279df5daec895443c6950a143cb1f37f0d257a4f352f8e75de25c9"
+    },
+    "foxul-demo.webm": {
+      "bytes": 3130952,
+      "sha256": "eb3d4e1002053e1c177d09e783e6b0428694bdb734388668f6bd464c8d9a17c5"
+    },
+    "foxul-demo-poster.png": {
+      "bytes": 347820,
+      "sha256": "f4d6c1d1240ca40c5973e490886725ce4b7dbf5bf61062a08da7e9ba6dfde88d"
+    },
+    "foxul-demo.vi.vtt": {
+      "bytes": 1006,
+      "sha256": "6a2a6857e7f0c37a58e062b8c0a47c5a894365b2eb0fda7be09dc1023c9a30b4"
+    },
+    "foxul-demo.en.vtt": {
+      "bytes": 880,
+      "sha256": "0fdd15c4a2bc2f16fcc47b536489e17860817deec127d4b5ccea5778b2059f3c"
+    }
+  },
+  "probe": {
+    "streams": [
+      {
+        "index": 0,
+        "codec_name": "h264",
+        "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+        "profile": "High",
+        "codec_type": "video",
+        "codec_time_base": "1/60",
+        "codec_tag_string": "avc1",
+        "codec_tag": "0x31637661",
+        "width": 1920,
+        "height": 1080,
+        "coded_width": 1920,
+        "coded_height": 1088,
+        "has_b_frames": 2,
+        "sample_aspect_ratio": "1:1",
+        "display_aspect_ratio": "16:9",
+        "pix_fmt": "yuv420p",
+        "level": 40,
+        "chroma_location": "left",
+        "refs": 1,
+        "is_avc": "true",
+        "nal_length_size": "4",
+        "r_frame_rate": "30/1",
+        "avg_frame_rate": "30/1",
+        "time_base": "1/15360",
+        "start_pts": 0,
+        "start_time": "0.000000",
+        "duration_ts": 706560,
+        "duration": "46.000000",
+        "bit_rate": "370130",
+        "bits_per_raw_sample": "8",
+        "nb_frames": "1380",
+        "disposition": {
+          "default": 1,
+          "dub": 0,
+          "original": 0,
+          "comment": 0,
+          "lyrics": 0,
+          "karaoke": 0,
+          "forced": 0,
+          "hearing_impaired": 0,
+          "visual_impaired": 0,
+          "clean_effects": 0,
+          "attached_pic": 0,
+          "timed_thumbnails": 0
+        },
+        "tags": {
+          "language": "und",
+          "handler_name": "VideoHandler",
+          "encoder": "Lavc61.3.100 libx264"
+        }
+      },
+      {
+        "index": 1,
+        "codec_name": "aac",
+        "codec_long_name": "AAC (Advanced Audio Coding)",
+        "profile": "LC",
+        "codec_type": "audio",
+        "codec_time_base": "1/48000",
+        "codec_tag_string": "mp4a",
+        "codec_tag": "0x6134706d",
+        "sample_fmt": "fltp",
+        "sample_rate": "48000",
+        "channels": 2,
+        "channel_layout": "stereo",
+        "bits_per_sample": 0,
+        "r_frame_rate": "0/0",
+        "avg_frame_rate": "0/0",
+        "time_base": "1/48000",
+        "start_pts": 0,
+        "start_time": "0.000000",
+        "duration_ts": 2208000,
+        "duration": "46.000000",
+        "bit_rate": "191364",
+        "max_bit_rate": "192000",
+        "nb_frames": "2158",
+        "disposition": {
+          "default": 1,
+          "dub": 0,
+          "original": 0,
+          "comment": 0,
+          "lyrics": 0,
+          "karaoke": 0,
+          "forced": 0,
+          "hearing_impaired": 0,
+          "visual_impaired": 0,
+          "clean_effects": 0,
+          "attached_pic": 0,
+          "timed_thumbnails": 0
+        },
+        "tags": {
+          "language": "und",
+          "handler_name": "SoundHandler"
+        }
+      }
+    ],
+    "format": {
+      "filename": "/home/theo/workspace/agent-meeting/docs/showcase/foxul-demo.mp4",
+      "nb_streams": 2,
+      "nb_programs": 0,
+      "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+      "format_long_name": "QuickTime / MOV",
+      "start_time": "0.000000",
+      "duration": "46.000000",
+      "size": "3281384",
+      "bit_rate": "570675",
+      "probe_score": 100,
+      "tags": {
+        "major_brand": "isom",
+        "minor_version": "512",
+        "compatible_brands": "isomiso2avc1mp41",
+        "encoder": "Lavf61.1.100",
+        "comment": "Music: Tech Live by Kevin MacLeod (incompetech.com), CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ — excerpt, fades and ducking under original narration."
+      }
+    }
+  },
+  "qa": {
+    "status": "technical-playback-pass-director-creative-approved",
+    "directorApproval": {"date": "2026-10-25", "scope": "Creative cut approved; commit and push authorized. Does not establish new-user acceptance or product efficacy."},
+    "uninterruptedNormalSpeedWatch": true,
+    "muted": false,
+    "metadata": {
+      "duration": 46,
+      "width": 1920,
+      "height": 1080,
+      "muted": false,
+      "playbackRate": 1
+    },
+    "playback": {
+      "ended": true,
+      "currentTime": 46,
+      "audioDecodedBytes": 1100858,
+      "videoQuality": {
+        "totalVideoFrames": 1380,
+        "droppedVideoFrames": 0
+      },
+      "subtitleCues": 7,
+      "events": [
+        {
+          "type": "playing",
+          "time": 0
+        },
+        {
+          "type": "ended",
+          "time": 46
+        }
+      ]
+    },
+    "samples": [
+      {
+        "time": 0.709213,
+        "cue": [
+          "Một quyết định. Ba người phụ trách. Truy được nguồn."
+        ]
+      },
+      {
+        "time": 4.506938,
+        "cue": [
+          "Bắt đầu bằng brief rõ ràng: kiểm tra nhãn tracking thế nào, và thử nghiệm cần chứng minh điều gì?"
+        ]
+      },
+      {
+        "time": 8.509733,
+        "cue": [
+          "Bắt đầu bằng brief rõ ràng: kiểm tra nhãn tracking thế nào, và thử nghiệm cần chứng minh điều gì?"
+        ]
+      },
+      {
+        "time": 12.004213,
+        "cue": [
+          "Workflow đề xuất hai mốc đã xác nhận. Quality phản biện: độ tin cậy ở khung 10 nói rất ít về khung 5."
+        ]
+      },
+      {
+        "time": 16.005065,
+        "cue": [
+          "Workflow đề xuất hai mốc đã xác nhận. Quality phản biện: độ tin cậy ở khung 10 nói rất ít về khung 5."
+        ]
+      },
+      {
+        "time": 20.008302,
+        "cue": [
+          "Chủ trì yêu cầu chốt. Kiểm tra mọi khung trung gian, giữ chỉnh sửa của người và kiểm chứng giới hạn trước khi mở rộng."
+        ]
+      },
+      {
+        "time": 24.008775,
+        "cue": [
+          "Chủ trì yêu cầu chốt. Kiểm tra mọi khung trung gian, giữ chỉnh sửa của người và kiểm chứng giới hạn trước khi mở rộng."
+        ]
+      },
+      {
+        "time": 28.008531,
+        "cue": [
+          "Mở Plan. Ba việc cụ thể, mỗi việc có người phụ trách. Cả ba vẫn ở trạng thái kế hoạch."
+        ]
+      },
+      {
+        "time": 32.008088,
+        "cue": [
+          "Mở Plan. Ba việc cụ thể, mỗi việc có người phụ trách. Cả ba vẫn ở trạng thái kế hoạch."
+        ]
+      },
+      {
+        "time": 36.007479,
+        "cue": [
+          "Bấm Conversation source để trở về đúng quyết định tạo ra việc đó. Lý do luôn đi cùng công việc."
+        ]
+      },
+      {
+        "time": 40.023396,
+        "cue": [
+          "Bấm Conversation source để trở về đúng quyết định tạo ra việc đó. Lý do luôn đi cùng công việc."
+        ]
+      },
+      {
+        "time": 43.519085,
+        "cue": [
+          "Foxul. Nhiều agent. Một kết quả rõ ràng."
+        ]
+      },
+      {
+        "time": 45.407735,
+        "cue": [
+          "Foxul. Nhiều agent. Một kết quả rõ ràng."
+        ]
+      }
+    ],
+    "responsivePlayer": [
+      {
+        "width": 375,
+        "lang": "en",
+        "overflow": false,
+        "src": "http://127.0.0.1:33199/showcase/foxul-demo.mp4",
+        "duration": 46,
+        "tracks": [
+          "vi",
+          "en"
+        ],
+        "error": false
+      },
+      {
+        "width": 1280,
+        "lang": "en",
+        "overflow": false,
+        "src": "http://127.0.0.1:33199/showcase/foxul-demo.mp4",
+        "duration": 46,
+        "tracks": [
+          "vi",
+          "en"
+        ],
+        "error": false
+      },
+      {
+        "width": 375,
+        "lang": "vi",
+        "overflow": false,
+        "src": "http://127.0.0.1:33199/showcase/foxul-demo.mp4",
+        "duration": 46,
+        "tracks": [
+          "vi",
+          "en"
+        ],
+        "error": false
+      },
+      {
+        "width": 1280,
+        "lang": "vi",
+        "overflow": false,
+        "src": "http://127.0.0.1:33199/showcase/foxul-demo.mp4",
+        "duration": 46,
+        "tracks": [
+          "vi",
+          "en"
+        ],
+        "error": false
+      }
+    ],
+    "webmFallbackDecoded": true,
+    "consoleErrors": []
+  },
+  "reeditedAt": "2026-10-25T09:32:21.163Z"
+}

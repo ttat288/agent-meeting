@@ -1,0 +1,23 @@
+{
+  "title": "Tech Live",
+  "author": "Kevin MacLeod",
+  "authorSite": "https://incompetech.com/",
+  "isrc": "USUAN1700030",
+  "bpm": 124,
+  "instrumentation": "Synths, Percussion",
+  "trackPage": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1700030",
+  "catalogSource": "https://incompetech.com/music/royalty-free/pieces.json",
+  "sourceUrl": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Tech%20Live.mp3",
+  "sourceSha256": "3fee678a805937e736449fe98347bbf3497258f6387b5569e49c97bae4c1072e",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "authorLicensePage": "https://incompetech.com/music/royalty-free/licenses/",
+  "authorAttributionInstructions": "https://incompetech.com/music/royalty-free/faq.html",
+  "retrievedAndChecked": "2026-10-25",
+  "commercialUsePermittedWithAttribution": true,
+  "feePaid": 0,
+  "attribution": "Tech Live by Kevin MacLeod (incompetech.com), licensed under CC BY 4.0 https://creativecommons.org/licenses/by/4.0/",
+  "creditLocations": ["video outro", "docs/SHOWCASE.md", "docs/showcase/music/LICENSE.md", "video metadata", "preview player"],
+  "excerpt": {"file": "tech-live-excerpt.mp3", "sourceStartSeconds": 0, "durationSeconds": 46, "sha256": "6764c44aeb7c914edb5eecbf520f62c337fc36a21f575d180320c8bac7c9de1d"},
+  "changes": "Excerpt and MP3 re-encode; in final video: normalization, fades, sidechain ducking and mix under original narration."
+}

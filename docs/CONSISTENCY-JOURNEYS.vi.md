@@ -1,5 +1,11 @@
 # Hành trình thống nhất — hợp đồng v1 (2026-10-21)
 
+## J48 — nhận diện Foxul (2026-10-25)
+
+Mục tiêu: người mở repo hoặc app nhận cùng tên Foxul, logo cáo do giám đốc cung cấp và slogan “Multiple agents. One clear outcome.”. S01–S07 giữ dữ liệu, quyền, trạng thái và flow hiện có; chỉ đổi nhận diện ở header/title, lời giới thiệu S01, icon, màu trung tính và tài liệu hiện hành. Giữ `agent-meeting` cho package/CLI/MCP/schema/storage/install paths; không migrate dữ liệu hoặc tự cập nhật bản đã cài. Media/evidence lịch sử giữ nguyên và ghi rõ có trước nhận diện Foxul. Đây là bản tích hợp chờ giám đốc đánh giá logo, không phải nghiệm thu thương hiệu.
+
+Ma trận kiểm: S01/S03/S04–S07, VI/EN × sáng/tối ×375/768/1280; logo tải đủ, title đúng tên, không tràn ngang, không lỗi CSP/console; theme system/explicit giữ đúng token. Thử nhập kết luận→Kế hoạch→nguồn→reload/Back cùng task IDs; regression hiện có. Icon kiểm alpha thật và thu nhỏ16/24/64, ICO/ICNS đóng gói đủ size; native OS appearance chưa xác nhận. Bản quay mới chỉ làm sau khi giám đốc duyệt nhận diện.
+
 ## J44 — skill/tool theo task (đích trước kiểm browser, 2026-10-24)
 
 Khoảng trống source: `skills list/show/inspect` chỉ đọc riêng; `WorkManager.start` chưa cấp skill và Claude managed khóa MCP rỗng. Lát cắt dùng task host API hiện có, không thêm screen/editor/catalog toàn cục: host lưu `skillPolicy` required/optional và grant lookup riêng → task requirementRevision + hash nguồn → explicit Run cấp required một lần, optional metadata → MCP chỉ đọc nạp đúng resource → reported → failed checks/explicit retry → verified → integrate/test source. Task không liên quan không nạp catalog/guide. Skill không cấp quyền script, available/selected/supplied không chứng minh applied/compliant.

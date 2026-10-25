@@ -26,14 +26,14 @@ function makePlan({ platform = process.platform, home = os.homedir(), env = proc
     shortcut = join(data,'applications','agent-meeting.desktop');
     const bin = join(home,'.local','bin','agent-meeting');
     files = [
-      {path:shortcut, mode:0o644, text:'[Desktop Entry]\nType=Application\nName=Agent Meeting\nComment=Bring AI perspectives together and turn decisions into plans\nExec='+desktop(node)+' '+desktop(join(app,'bin','cli.js'))+'\nIcon='+join(app,'assets','icon.svg').replace(/\\/g,'\\\\')+'\nTerminal=true\nCategories=Development;Network;\n'},
+      {path:shortcut, mode:0o644, text:'[Desktop Entry]\nType=Application\nName=Foxul\nComment=Multiple agents. One clear outcome.\nExec='+desktop(node)+' '+desktop(join(app,'bin','cli.js'))+'\nIcon='+join(app,'assets','icon.svg').replace(/\\/g,'\\\\')+'\nTerminal=true\nCategories=Development;Network;\n'},
       {path:bin, mode:0o755, text:'#!/bin/sh\nexec '+sh(node)+' '+sh(join(app,'bin','cli.js'))+' "$@"\n'},
     ];
   } else if (platform === 'darwin') {
     root = join(home,'Applications','Agent Meeting.app'); app = join(root,'Contents','Resources','app');
     shortcut = root;
     files = [
-      {path:join(root,'Contents','Info.plist'), mode:0o644, text:'<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0"><dict><key>CFBundleName</key><string>Agent Meeting</string><key>CFBundleDisplayName</key><string>Agent Meeting</string><key>CFBundleIdentifier</key><string>dev.ttat288.agentmeeting</string><key>CFBundleVersion</key><string>'+xml(pkg.version)+'</string><key>CFBundleShortVersionString</key><string>'+xml(pkg.version)+'</string><key>CFBundlePackageType</key><string>APPL</string><key>CFBundleExecutable</key><string>AgentMeeting</string><key>CFBundleIconFile</key><string>AgentMeeting.icns</string></dict></plist>\n'},
+      {path:join(root,'Contents','Info.plist'), mode:0o644, text:'<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0"><dict><key>CFBundleName</key><string>Foxul</string><key>CFBundleDisplayName</key><string>Foxul</string><key>CFBundleIdentifier</key><string>dev.ttat288.agentmeeting</string><key>CFBundleVersion</key><string>'+xml(pkg.version)+'</string><key>CFBundleShortVersionString</key><string>'+xml(pkg.version)+'</string><key>CFBundlePackageType</key><string>APPL</string><key>CFBundleExecutable</key><string>AgentMeeting</string><key>CFBundleIconFile</key><string>AgentMeeting.icns</string></dict></plist>\n'},
       {path:join(root,'Contents','MacOS','AgentMeeting'), mode:0o755, text:'#!/bin/sh\nexec /usr/bin/open -a Terminal '+sh(join(root,'Contents','Resources','Start Agent Meeting.command'))+'\n'},
       {path:join(root,'Contents','Resources','Start Agent Meeting.command'), mode:0o755, text:'#!/bin/sh\nexec '+sh(node)+' '+sh(join(app,'bin','cli.js'))+'\n'},
       {path:join(home,'.local','bin','agent-meeting'), mode:0o755, text:'#!/bin/sh\nexec '+sh(node)+' '+sh(join(app,'bin','cli.js'))+' "$@"\n'},
@@ -79,7 +79,7 @@ function copyPayload(source, destination) {
     writeFile(path.join(destination,name),fs.readFileSync(from));
   }
 }
-const POWERSHELL_SHORTCUT = '$ErrorActionPreference="Stop"; $p=Get-Content -LiteralPath $env:AGENT_MEETING_SHORTCUT_PLAN -Encoding UTF8 -Raw | ConvertFrom-Json; $s=(New-Object -ComObject WScript.Shell).CreateShortcut($p.path); $s.TargetPath=$p.node; $s.Arguments=$p.arguments; $s.WorkingDirectory=$p.cwd; $s.IconLocation=$p.icon; $s.Description="Agent Meeting local server and browser"; $s.Save();';
+const POWERSHELL_SHORTCUT = '$ErrorActionPreference="Stop"; $p=Get-Content -LiteralPath $env:AGENT_MEETING_SHORTCUT_PLAN -Encoding UTF8 -Raw | ConvertFrom-Json; $s=(New-Object -ComObject WScript.Shell).CreateShortcut($p.path); $s.TargetPath=$p.node; $s.Arguments=$p.arguments; $s.WorkingDirectory=$p.cwd; $s.IconLocation=$p.icon; $s.Description="Foxul local server and browser"; $s.Save();';
 function windowsShortcut(plan, destination) {
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'agent-meeting-shortcut-'));
   try {
@@ -107,7 +107,7 @@ function installUnlocked(plan, {source=path.join(__dirname,'..'), beforeWrite}={
     previous=readManifest(plan);
     // Migrate the historical Linux installer only after identifying its package.
     const legacy=plan.platform==='linux' && fs.existsSync(path.join(plan.root,'package.json')) && JSON.parse(fs.readFileSync(path.join(plan.root,'package.json'),'utf8')).name==='agent-meeting' && fs.existsSync(path.join(plan.root,'bin','cli.js'));
-    if(!previous && !legacy)throw Error('Destination exists and is not a managed Agent Meeting install.');
+    if(!previous && !legacy)throw Error('Destination exists and is not a managed Foxul install.');
   }
   const external=plan.files.filter(f=>!f.path.startsWith(plan.root+path.sep));
   const allowed=new Set((previous?.external || []).map(f=>f.path));
@@ -202,7 +202,7 @@ function runCLI(args) {
   const plan=makePlan(options);
   if(dry) {console.log(json?JSON.stringify({...plan,operation:action},null,2):['Preview '+action+' only; nothing was written.', 'Platform: '+plan.platform,'App: '+plan.root,'Launcher: '+plan.shortcut,'Node: '+plan.node,...plan.files.map(f=>'File: '+f.path)].join('\n'));return 0;}
   const result=action==='install'?install(plan):uninstall(plan);
-  console.log(json?JSON.stringify(result,null,2):[action==='install'?'Installed Agent Meeting '+pkg.version:result.removed?'Removed managed app files':'Some files were preserved',...(result.root?['App: '+result.root]:[]),...(result.shortcut?['Open: '+result.shortcut]:[]),...(result.backup?['Previous app backup: '+result.backup]:[]),...(result.message?[result.message]:[]),...(result.preserved || []).map(f=>'Preserved: '+f),'Node must remain available at '+plan.node+'. The launcher opens a local console and your browser.'].join('\n'));
+  console.log(json?JSON.stringify(result,null,2):[action==='install'?'Installed Foxul '+pkg.version:result.removed?'Removed managed app files':'Some files were preserved',...(result.root?['App: '+result.root]:[]),...(result.shortcut?['Open: '+result.shortcut]:[]),...(result.backup?['Previous app backup: '+result.backup]:[]),...(result.message?[result.message]:[]),...(result.preserved || []).map(f=>'Preserved: '+f),'Node must remain available at '+plan.node+'. The launcher opens a local console and your browser.'].join('\n'));
   return 0;
 }
 module.exports={makePlan,install,uninstall,runCLI,MARKER};

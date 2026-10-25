@@ -21,10 +21,14 @@ async function load() {
     const response = await fetch($('language').value + '/manifest.json'); if (!response.ok) throw Error('HTTP ' + response.status);
     const data = await response.json(); if (current !== generation) return; manifest = data;
     document.documentElement.lang = $('language').value;
-    $('headline').textContent = t('From a question to a plan.', 'Từ câu hỏi đến kế hoạch.');
+    $('headline').textContent = t('See the outcome in 46 seconds.', 'Xem kết quả trong 46 giây.');
     $('eyebrow').textContent = t('Product walkthrough', 'Demo sản phẩm');
     $('languageLabel').textContent = t('Language', 'Ngôn ngữ');
-    $('disclosure').textContent = t('Real interface. Scripted participants. No AI calls or verified execution claims.', 'UI thật, thành viên kịch bản. Không gọi AI hoặc giả lập kết quả đã kiểm chứng.');
+    $('disclosure').textContent = t('Narrated, edited browser recording. Scripted participants use real local APIs; all three tasks remain planned. English voice generated locally with Kokoro.', 'Bản quay browser đã biên tập, có lời đọc. Thành viên theo kịch bản dùng API local thật; cả ba việc vẫn ở trạng thái kế hoạch. Giọng tiếng Anh tạo bằng Kokoro local.');
+    $('videoCaption').textContent = t('Brief → challenge → decision → three owners → conversation source', 'Brief → phản biện → quyết định → ba người phụ trách → nguồn hội thoại');
+    $('videoNote').textContent = t('English AI narration. Select Vietnamese subtitles or English captions with the player’s CC control.', 'Giọng đọc AI tiếng Anh. Chọn phụ đề Việt hoặc Anh bằng nút CC của trình phát.');
+    $('archiveTitle').textContent = t('Historical scene walkthrough', 'Walkthrough theo cảnh trước đây');
+    $('archiveNote').textContent = t('These still scenes predate the Foxul identity and remain available for step-by-step inspection.', 'Các cảnh tĩnh này có trước nhận diện Foxul và được giữ để xem từng bước.');
     $('note').textContent = t('Pause on any scene to read. The three research tasks remain planned; progress reports do not establish verification.', 'Dừng ở bất kỳ cảnh nào để đọc. Ba việc nghiên cứu vẫn ở trạng thái kế hoạch; tiến độ tự báo chưa phải kiểm chứng.');
     $('previous').setAttribute('aria-label', t('Previous scene', 'Cảnh trước')); $('next').setAttribute('aria-label', t('Next scene', 'Cảnh tiếp'));
     $('seek').setAttribute('aria-label', t('Choose a scene', 'Chọn cảnh')); $('seekLabel').textContent = t('Scene', 'Cảnh');

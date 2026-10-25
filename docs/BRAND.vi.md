@@ -1,31 +1,49 @@
-# Agent Meeting · Briefcase
+# Foxul
 
-Ngày 2026-10-22, người dùng chọn logo **cặp công sở đủ rộng để đựng laptop** và cung cấp SVG để thay Convergence trong app/README. Hình học giữ nguyên SVG người dùng gửi; đây là nhận diện hiện hành. Convergence và các bản phác thảo trước đó là lịch sử, không còn là bộ asset sử dụng.
+**Multiple agents. One clear outcome.**
 
-## Hình và màu
+The moderation layer that keeps multi-agent discussions on track and drives them to a final decision.
 
-Thân ngang, quai ngắn ở giữa, góc bo và khe nắp tạo hình cặp công sở quen thuộc. Dùng một path `fill-rule="evenodd"`; lỗ quai và khe nắp là vùng rỗng thật. Không có rect nền, bitmap nhúng, gradient, bóng đổ hoặc họa tiết caro.
+Ngày 2026-10-25, giám đốc cung cấp logo cáo và chọn tên Foxul để thay nhận diện briefcase; sau khi nhận bản tích hợp đã đồng ý chuyển sang quay video demo mới. Giữ hướng nhận diện này khi dựng video; không tự vẽ lại, thêm biểu tượng hoặc tối giản hình học. Sự đồng ý không chứng minh trademark, khả năng nhận diện ở mọi kích thước hoặc nghiệm thu mọi luồng UI.
 
-Màu chính `#4F46E5`, biến thể tối `#111827`, trắng `#FFFFFF`. App/favicon và logo README đổi sang indigo sáng `#A5B4FC` khi ngữ cảnh ảnh dùng color-scheme tối. Không đổi palette hoặc token UI toàn app. Giữ clear space có sẵn trong viewBox128×128; không bóp méo hình, không lấp khe nắp hoặc lỗ quai.
+## Logo và màu
 
-## Bộ asset
+Logo cáo có ghế phía sau, mặt chia mảng tối và đuôi cuộn thành vòng. Giữ tỷ lệ, chi tiết trắng ngà, chuyển sắc và viền sáng của ảnh do giám đốc cung cấp. Chỉ loại nền ngoài và chuẩn hoá canvas trong suốt. Không gọi bản raster là logo vector.
 
-| Asset | Dùng cho |
+| Vai trò | Màu |
 |---|---|
-| `assets/brand/mark.svg` | Symbol indigo, nền trong suốt |
-| `assets/brand/mark-mono.svg` | Symbol một màu tối |
-| `assets/brand/mark-inverse.svg` | Symbol trắng |
-| `assets/brand/wordmark.svg` | Symbol + tên sản phẩm, chữ system sans, hỗ trợ sáng/tối |
-| `assets/brand/app.svg` | Symbol trong suốt, hỗ trợ sáng/tối |
-| `assets/brand/app-16.png` … `app-1024.png` | PNG RGBA indigo với alpha thật |
-| `assets/brand/app.ico` | Icon nhiều kích thước Windows |
-| `assets/brand/app.icns` | Container icon PNG cho macOS |
-| `assets/icon.svg`, `src/ui/favicon.svg` | Cùng byte với app.svg; README, launcher và favicon/header app |
-| `assets/brand/legacy-icon.svg` | Bản hai người cũ, chỉ giữ để đối chiếu |
+| Nền tối / Obsidian | `#0B0D12` |
+| Màu chủ đạo / Indigo | `#4F46E5` |
+| Viền sáng, accent tối / Cool Indigo | `#8B93FF` |
+| Nội dung trên nền tối, nền sáng / Ivory | `#F4F3EF` |
 
-Wordmark dùng system font nên chữ có thể khác nhẹ giữa OS; symbol là path độc lập font. SVG dùng trực tiếp; bản PNG/ICO/ICNS được render từ app.svg trong chế độ sáng, không chụp nền ô caro. Alpha0 ở nền và vùng rỗng đủ lớn; phần thân opaque, mép có antialiasing. Ở kích thước16–32px, khe nắp nhỏ hơn hoặc gần một pixel nên pixel mẫu có thể mang alpha một phần thay vì0; đây là antialiasing của hình, không phải nền giả.
+Palette là token nhận diện, không phải cam kết mọi pixel của ảnh có đúng bốn mã màu: ảnh gốc có antialiasing và chuyển sắc. Dùng bản đủ màu trên cả nền sáng và tối, không áp filter hoặc đổi hue. Chưa có bản đơn sắc hay đảo màu được duyệt; trắng ngà là màu dành cho hướng đảo màu về sau, không tự chuyển toàn logo thành một khối trắng.
 
-## Preview và dựng lại
+UI giữ sáng/tối theo hệ thống và lựa chọn theme hiện có, Indigo cho hành động chính, Obsidian và Ivory cho nền/chữ. Giọng văn trực tiếp, cụ thể; không dùng hiệu ứng, lời tán dương hoặc hứa tiết kiệm chưa có bằng chứng để tạo cảm giác đẳng cấp.
+
+## Asset hiện hành
+
+| Asset | Công dụng |
+|---|---|
+| `assets/brand/foxul.png` | Master RGBA đã tách nền; README và trang review |
+| `assets/brand/app-16.png` … `app-1024.png` | Icon xuất từ master, giữ alpha |
+| `assets/brand/app.ico`, `app.icns` | Icon desktop nhiều kích thước |
+| `assets/brand/mark.svg`, `app.svg`, `assets/icon.svg`, `src/ui/favicon.svg` | Container SVG nhúng raster để tương thích đường dùng cũ; không phải vector master |
+| `assets/brand/wordmark.svg` | Logo raster + chữ Foxul bằng system font, chữ hỗ trợ sáng/tối |
+| `src/ui/favicon.png` | Icon tab 32 px |
+| `src/ui/logo.png` | Bản 128 px phục vụ header 32 px, không tải master dung lượng lớn |
+
+Các bản `mark-mono.svg` và `mark-inverse.svg` của briefcase được loại khỏi bộ hiện hành vì không có biến thể Foxul tương ứng được duyệt. Có thể khôi phục từ lịch sử Git. `legacy-icon.svg` và ảnh concept cũ chỉ là tư liệu lịch sử, không dùng trong sản phẩm hoặc trang review.
+
+Master xuất phát từ ảnh `Gemini_Generated_Image_rvuxtnrvuxtnrvux.png` do giám đốc cung cấp. Tách nền dùng công cụ chỉnh ảnh tích hợp, với yêu cầu giữ nguyên hình/chuyển sắc/chi tiết bên trong và alpha thật ngoài silhouette; cần kiểm thị giác thay vì coi lệnh tách nền là bảo đảm khớp pixel. Prompt cuối đã dùng:
+
+> BACKGROUND REMOVAL ONLY. Extract the exact logo from this image onto real transparent alpha. Keep the original artwork, colors, white inner fox details and shape unchanged; no regeneration or stylistic change. Completely eliminate the white exterior background and any stray exterior pixels, blue noise, speckles or halo. A pristine clean smooth silhouette is essential. Center the extracted logo on a SQUARE 1024x1024 transparent canvas with 6 percent padding on all four sides, tail fully visible. Internal ivory ears, eyes, cheeks and tail remain solid ivory. Deliver only the clean isolated logo. No added elements, no text, no new shadow.
+
+File thực tế là 1254×1254 px; không nhận đã tuân thủ chính xác kích thước/padding từ prompt. Kiểm alpha xác nhận bốn góc bằng 0, nền ngoài có alpha thật và chi tiết trắng bên trong vẫn hiện. PNG được xuất 16–1024 px, ICO có 7 kích thước; browser trên source tích hợp kiểm 72 ca bố cục và source→reload→Back giữ task IDs. Full `npm test` và 204 link/anchor trong 22 Markdown đã đổi đạt tại lượt tích hợp nhận diện. Đây là kiểm kỹ thuật và self-review; giám đốc sau đó đồng ý dùng hướng nhận diện để quay demo, native OS icon chưa kiểm lại.
+
+## Kích thước và kiểm tra
+
+Header dùng 32 px. Bản 16/24/64 px được đặt cạnh nhau trên nền Ivory và Obsidian trong trang review. Đây là downsample cùng artwork, chưa có responsive mark được vẽ riêng. Ở 16 px, tai và vòng đuôi là tín hiệu chính; mặt, ghế và các khe nhỏ có thể nhập lại. Không nhận đã giải quyết độ rõ favicon chỉ từ việc xuất đủ size. Giám đốc cần xem ở kích thước thật trước khi quyết định có cần micro mark riêng.
 
 ```bash
 node tools/brand-preview.js
@@ -33,6 +51,10 @@ node tools/brand-preview.js
 PLAYWRIGHT_MODULE=/absolute/path/to/playwright node tools/export-brand.js
 ```
 
-Preview chỉ whitelist trang và asset thương hiệu. Công cụ export dùng browser Chromium hiện có, Node standard library, không thêm dependency runtime. Có thể chọn executable bằng BROWSER_BIN. ICO/ICNS cần smoke test native theo workflow; giao diện thực tế Finder/Start Menu và cache icon vẫn cần kiểm thủ công.
+Exporter dùng browser hiện có, không thêm dependency runtime. Nó tạo PNG/ICO/ICNS và container SVG từ master; không dùng AI để xuất từng size. Kiểm native Finder/Start Menu và cache icon vẫn cần thực hiện trên đúng OS.
 
-Ảnh/GIF showcase và evidence trước ngày22.10.2026 giữ nhận diện cũ theo thời điểm ghi. Không chỉnh pixel ảnh/GIF cũ để giả một bản quay mới. Logo hiển thị đầu README và app source đã thay; demo cũ không phải bằng chứng cho nhận diện mới.
+## Tên hiển thị và tương thích
+
+Tên sản phẩm, header/title, README và tài liệu hiện hành dùng Foxul. Package/CLI/MCP/schema/storage keys, URL repo và đường cài vẫn dùng định danh cũ `agent-meeting` để tương thích. Không đổi remote, publish package hoặc migrate dữ liệu trong lần nhận diện này. Launcher cài sẵn cần người dùng cập nhật tường minh mới nhận asset mới.
+
+Media và receipt cũ giữ nguyên tên/logo tại thời điểm ghi; README/Showcase ghi rõ chúng có trước Foxul. Không sửa pixel ảnh/video cũ để giả bản quay mới. Độ khác biệt, khả năng đăng ký nhãn hiệu và phản hồi người dùng chưa được nghiên cứu; quyết định dùng tên/logo không tự chứng minh các điều đó.

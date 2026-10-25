@@ -144,7 +144,10 @@ test('Header bảo mật và tài nguyên giao diện', async (t) => {
   assert.equal(page.headers.get('referrer-policy'), 'no-referrer');
   assert.match(page.headers.get('content-security-policy'), /script-src 'self'/);
   assert.match(await page.text(), /assets\/app\.js/);
-  for (const a of ['/assets/app.js', '/assets/app.css', '/favicon.svg']) assert.equal((await fetch(base + a)).status, 200, a);
+  for (const a of ['/assets/app.js', '/assets/app.css', '/favicon.svg', '/favicon.png', '/assets/foxul.png']) assert.equal((await fetch(base + a)).status, 200, a);
+  const icon = await fetch(base + '/favicon.png');
+  assert.equal(icon.headers.get('content-type'), 'image/png');
+  assert.deepEqual(Buffer.from(await icon.arrayBuffer()).subarray(0, 8), Buffer.from([137,80,78,71,13,10,26,10]));
 });
 
 test('Chủ trì: nhắn riêng, chuyển mục, gán vai trò, tải biên bản', async (t) => {

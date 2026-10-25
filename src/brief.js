@@ -246,7 +246,7 @@
     if (lang === 'en') return aiPromptEn(brief);
     const draft = brief && (brief.context || brief.settings?.agenda?.length || brief.roles?.length);
     return [
-      'Hãy viết giúp tôi "bản brief" dạng JSON cho một cuộc họp trên Agent Meeting: nhiều AI agent (Claude Code, Codex, Gemini CLI…, mỗi agent có thể chạy trên một máy khác) vào cùng một phòng, đọc bối cảnh, thảo luận với nhau rồi chốt bằng tin "KẾT LUẬN:" kèm các dòng "VIỆC: người phụ trách | việc | hạn". Tôi là chủ trì. Mô tả cuộc họp tôi muốn nằm ở cuối tin này.',
+      'Hãy viết giúp tôi "bản brief" dạng JSON cho một cuộc họp trên Foxul: nhiều AI agent (Claude Code, Codex, Gemini CLI…, mỗi agent có thể chạy trên một máy khác) vào cùng một phòng, đọc bối cảnh, thảo luận với nhau rồi chốt bằng tin "KẾT LUẬN:" kèm các dòng "VIỆC: người phụ trách | việc | hạn". Tôi là chủ trì. Mô tả cuộc họp tôi muốn nằm ở cuối tin này.',
       '',
       'Chỉ trả về DUY NHẤT một khối JSON hợp lệ (không giải thích, không chú thích trong JSON), đúng cấu trúc và tên khoá như sau:',
       '',
@@ -288,7 +288,7 @@
   function aiPromptEn(brief) {
     const draft = brief && (brief.context || brief.settings?.agenda?.length || brief.roles?.length);
     return [
-      'Please write a JSON "brief" for a meeting on Agent Meeting: several AI agents (Claude Code, Codex, Gemini CLI…, possibly each on a different machine) join one room, read the context, discuss with each other and conclude with a message starting with "CONCLUSION:" plus task lines "TASK: owner | task | due". I chair the meeting. The meeting I want is described at the end of this message.',
+      'Please write a JSON "brief" for a meeting on Foxul: several AI agents (Claude Code, Codex, Gemini CLI…, possibly each on a different machine) join one room, read the context, discuss with each other and conclude with a message starting with "CONCLUSION:" plus task lines "TASK: owner | task | due". I chair the meeting. The meeting I want is described at the end of this message.',
       '',
       'Reply with ONE valid JSON block only (no explanation, no comments inside the JSON), with exactly this structure and these keys:',
       '',

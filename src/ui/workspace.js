@@ -172,7 +172,7 @@
   const json = value => node('pre', { class: 'ws-code' }, JSON.stringify(value, null, 2));
   const val = id => $(id).value.trim();
   if (admin) {
-    document.title = 'Agent Meeting · ' + t('Quản trị', 'Administration');
+    document.title = 'Foxul · ' + t('Quản trị', 'Administration');
     document.querySelector('.skip-link').textContent = t('Bỏ qua điều hướng', 'Skip navigation');
     const back = new URLSearchParams(location.search).get('view');
     const hash = ['plan','execute','results','conversation'].includes(back) ? '#' + back : '#conversation';

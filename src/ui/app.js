@@ -661,13 +661,13 @@
       if (log[rendered].type !== 'sys') real++;
     }
     if (!added) return;
-    if (document.hidden && real) { unread += real; document.title = `(${unread}) Agent Meeting`; }
+    if (document.hidden && real) { unread += real; document.title = `(${unread}) Foxul`; }
     if (stick) { f.style.scrollBehavior = 'auto'; f.scrollTop = f.scrollHeight; f.style.scrollBehavior = ''; }
     else $('newPill').hidden = false;
   }
   $('feed').addEventListener('scroll', () => { if (nearBottom()) $('newPill').hidden = true; });
   $('newPill').onclick = () => { $('feed').scrollTop = $('feed').scrollHeight; $('newPill').hidden = true; };
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) { unread = 0; document.title = 'Agent Meeting'; } });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { unread = 0; document.title = 'Foxul'; } });
 
   function renderTyping(s) {
     let txt = '';

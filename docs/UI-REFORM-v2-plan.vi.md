@@ -21,7 +21,7 @@ Không phải mọi chữ đều quá lớn: phần metadata hiện đã nhỏ. 
 
 ## 2. Cơ sở và phạm vi
 
-Đã áp dụng skill ui-ux-pro-max local: typography/spacing theo vai trò, reflow, target size web, focus, hierarchy. Search navigation trả Breadcrumbs không phù hợp app phẳng này, nên không dùng làm lý do thêm breadcrumb. Quyết định bố cục dưới đây là thiết kế cho Agent Meeting, không phải tiêu chuẩn bắt buộc có đúng số px đó.
+Đã áp dụng skill ui-ux-pro-max local: typography/spacing theo vai trò, reflow, target size web, focus, hierarchy. Search navigation trả Breadcrumbs không phù hợp app phẳng này, nên không dùng làm lý do thêm breadcrumb. Quyết định bố cục dưới đây là thiết kế cho Foxul, không phải tiêu chuẩn bắt buộc có đúng số px đó.
 
 Tham chiếu primary:
 

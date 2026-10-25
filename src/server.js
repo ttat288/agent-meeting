@@ -28,6 +28,8 @@ const ASSETS = {
   '/assets/i18n.js': ['i18n.js', 'text/javascript; charset=utf-8'],
   '/assets/brief.js': ['../brief.js', 'text/javascript; charset=utf-8'], // dùng chung với Node (src/brief.js)
   '/favicon.svg': ['favicon.svg', 'image/svg+xml'],
+  '/favicon.png': ['favicon.png', 'image/png'],
+  '/assets/foxul.png': ['logo.png', 'image/png'],
 };
 const TTL_MS = 3 * 3600 * 1000;       // họp nhàn rỗi quá 3 giờ thì xóa
 const ENDED_TTL_MS = 30 * 60 * 1000;  // họp đã kết thúc thì xóa sau 30 phút

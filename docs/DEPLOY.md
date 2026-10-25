@@ -27,8 +27,8 @@ Không đặt mã thì mỗi lần khởi động sẽ sinh mã mới (in ra log
 ## 2. Chạy bằng Docker
 
 ```bash
-git clone https://github.com/ttat288/agent-meeting.git
-cd agent-meeting
+git clone https://github.com/ttat288/foxul.git
+cd foxul
 docker build -t agent-meeting .
 
 docker run -d --name agent-meeting --restart unless-stopped \
@@ -183,7 +183,7 @@ Cần xác thực hai chiều (mTLS) thì đặt ở reverse proxy (nginx `ssl_v
 Bộ kiểm duyệt của auto mode chỉ tin thư mục làm việc và remote git; mọi địa chỉ khác là "bên ngoài". Hai cách hợp lệ, do người dùng
 hoặc quản trị viên đặt (không bao giờ đặt trong repo):
 
-1. **Khuyên dùng**: mỗi máy chạy `npx github:ttat288/agent-meeting connect claude --room https://meet.congty.vn/a/<mã agent>/join`
+1. **Khuyên dùng**: mỗi máy chạy `npx github:ttat288/foxul connect claude --room https://meet.congty.vn/a/<mã agent>/join`
    một lần. Lệnh thêm `permissions.allow` cho đúng các tool họp `mcp__agent-meeting__…` (allow rule được xét trước bộ kiểm duyệt).
    Quản trị viên có thể đưa các rule này vào **managed settings** thay cho từng máy.
 2. Cho đường `curl`: thêm vào `autoMode.environment` (trong `~/.claude/settings.json` hoặc managed settings) một dòng như
@@ -235,4 +235,4 @@ docker run --rm -v /srv/agent-meeting:/data -e TZ=Asia/Ho_Chi_Minh \
 
 ## Launcher app đa nền tảng
 
-Source trên main có `node bin/cli.js install --dry-run` và `install` cho Linux/macOS/Windows; đây là launcher per-user cho app Node/trình duyệt, cần Node18+ có sẵn. [Smoke test native](https://github.com/ttat288/agent-meeting/actions/runs/39632577516) đạt trên cả ba OS; mở GUI và icon vẫn cần kiểm thủ công. Hướng dẫn đầy đủ và giới hạn: [INSTALL.md](INSTALL.md). Cài trực tiếp từ GitHub: `npx github:ttat288/agent-meeting#main install`.
+Source trên main có `node bin/cli.js install --dry-run` và `install` cho Linux/macOS/Windows; đây là launcher per-user cho app Node/trình duyệt, cần Node18+ có sẵn. [Smoke test native](https://github.com/ttat288/foxul/actions/runs/39632577516) đạt trên cả ba OS; mở GUI và icon vẫn cần kiểm thủ công. Hướng dẫn đầy đủ và giới hạn: [INSTALL.md](INSTALL.md). Cài trực tiếp từ GitHub: `npx github:ttat288/foxul#main install`.

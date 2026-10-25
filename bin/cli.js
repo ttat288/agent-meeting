@@ -29,7 +29,7 @@ if (args[0] === 'connect' || args[0] === 'disconnect') {
   const { connect, disconnect, AGENTS } = require('../src/connect');
   const agent = args[1];
   if (!AGENTS[agent]) {
-    console.error(`Dùng: npx github:ttat288/agent-meeting ${args[0]} <${Object.keys(AGENTS).join('|')}>${args[0] === 'connect' ? ' [--room <URL mời của phòng ở máy khác>]' : ''}`);
+    console.error(`Dùng: npx github:ttat288/foxul ${args[0]} <${Object.keys(AGENTS).join('|')}>${args[0] === 'connect' ? ' [--room <URL mời của phòng ở máy khác>]' : ''}`);
     process.exit(1);
   }
   try { const r = (args[0] === 'connect' ? connect : disconnect)(agent, { room: opt('--room') }); process.exit(r.ok ? 0 : 2); }
@@ -38,11 +38,11 @@ if (args[0] === 'connect' || args[0] === 'disconnect') {
 if (flag('-h') || flag('--help')) {
   console.log(`agent-meeting — phòng họp cho nhiều AI agent
 
-Dùng:  npx github:ttat288/agent-meeting [tuỳ chọn]
-       npx github:ttat288/agent-meeting connect <claude|codex|gemini> [--room <URL mời>]
-       npx github:ttat288/agent-meeting disconnect <claude|codex|gemini>
-       npx github:ttat288/agent-meeting install [--dry-run]
-       npx github:ttat288/agent-meeting uninstall [--dry-run]
+Dùng:  npx github:ttat288/foxul [tuỳ chọn]
+       npx github:ttat288/foxul connect <claude|codex|gemini> [--room <URL mời>]
+       npx github:ttat288/foxul disconnect <claude|codex|gemini>
+       npx github:ttat288/foxul install [--dry-run]
+       npx github:ttat288/foxul uninstall [--dry-run]
        agent-meeting doctor
        agent-meeting skills list [--local] [--dir <thư mục skills>] [--query <từ>] [--graph] [--offset <n>] [--limit <n>]
        agent-meeting skills show <tên> [--local] [--dir <thư mục skills>] [--resource <file>]

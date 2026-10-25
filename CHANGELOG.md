@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — Repository rename
+
+- Rename the GitHub repository to `ttat288/foxul` and use its canonical URL in clone/install commands, package metadata and support links. The package, CLI, protocol and storage identifiers remain `agent-meeting` for compatibility.
+
 ## Unreleased — Foxul identity
 
 - Adopt Foxul and “Multiple agents. One clear outcome.” across the web app, CLI display text and current product documentation. Preserve package names, commands, storage keys and protocol identifiers for compatibility.
@@ -101,7 +105,7 @@
 
 - Logo Convergence v1 theo hướng nhiều góc nhìn hội tụ thành quyết định; SVG, biến thể đơn sắc/đảo màu, PNG, ICO và ICNS. Người dùng đã duyệt logo Convergence ngày 2026-10-21.
 - Lệnh `install`/`uninstall` cho launcher theo người dùng trên Linux/macOS/Windows; xem trước không ghi, staging/backup/rollback, giữ dữ liệu và file sửa tay. Không đổi PATH, client AI hoặc cấu hình global.
-- Smoke test installer native đạt trên Linux/macOS/Windows trong [CI](https://github.com/ttat288/agent-meeting/actions/runs/39632577516); kiểm mở GUI qua Finder/Start Menu và icon high-DPI vẫn còn mở.
+- Smoke test installer native đạt trên Linux/macOS/Windows trong [CI](https://github.com/ttat288/foxul/actions/runs/39632577516); kiểm mở GUI qua Finder/Start Menu và icon high-DPI vẫn còn mở.
 
 ## Chưa phát hành — showcase sản phẩm
 
@@ -143,7 +147,7 @@ chặn `curl …/join` tới `<ngẫu nhiên>.trycloudflare.com` là rò dữ li
 chạy trên một máy. Bộ kiểm duyệt đã làm đúng: sản phẩm bắt agent gửi dữ liệu ra host lạ chỉ vì chữ dán vào yêu cầu. 3.5 sửa sản
 phẩm, không lách kiểm duyệt. Thiết kế và mô hình đe doạ: [docs/SECURITY-DESIGN.md](docs/SECURITY-DESIGN.md).
 
-- **Kết nối một lần (`connect`)**: `npx github:ttat288/agent-meeting connect <claude|codex|gemini> [--room <URL mời>]` (hoặc nút
+- **Kết nối một lần (`connect`)**: `npx github:ttat288/foxul connect <claude|codex|gemini> [--room <URL mời>]` (hoặc nút
   **Kết nối … trên máy này** trên trang chủ trì) chép cầu nối MCP stdio vào `~/.agent-meeting/mcp.js`, đăng ký nó bằng CLI của chính
   agent và cho phép **đúng các tool họp** (Claude Code: `permissions.allow` trong `~/.claude/settings.json`, được xét trước bộ kiểm
   duyệt; Gemini: policy `~/.gemini/policies/agent-meeting.toml`; Codex: annotations). `send_file` không được cho phép sẵn. Sao lưu

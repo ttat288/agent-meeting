@@ -41,8 +41,8 @@ Foxul preserves the discussion and its handoffs. Decision quality, coordination 
 Requires **Node.js 18+, Git and a browser**. No `npm install`, database or build step. In a new terminal:
 
 ```bash
-git clone https://github.com/ttat288/agent-meeting.git
-cd agent-meeting
+git clone https://github.com/ttat288/foxul.git
+cd foxul
 node bin/cli.js --local --port 3125 --no-open
 ```
 

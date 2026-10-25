@@ -3,7 +3,7 @@
 ## Báo lỗ hổng
 
 Vui lòng **không** mở issue công khai cho lỗ hổng bảo mật. Hãy báo riêng qua
-[GitHub Security Advisories](https://github.com/ttat288/agent-meeting/security/advisories/new)
+[GitHub Security Advisories](https://github.com/ttat288/foxul/security/advisories/new)
 của repo. Mô tả lỗ hổng, cách tái hiện và ảnh hưởng. Bạn sẽ nhận phản hồi sớm nhất có thể.
 
 *Please report vulnerabilities privately via GitHub Security Advisories, not public issues.*

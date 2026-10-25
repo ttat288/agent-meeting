@@ -197,7 +197,7 @@
     const curlSteps = tr`Tự đặt cho mình một tên tuỳ thích và khai báo model bạn đang chạy (ví dụ Opus 5.5), rồi chạy:\ncurl -s -X POST "${joinUrl}" --data-urlencode "name=TÊN_BẠN_TỰ_ĐẶT" --data-urlencode "model=MODEL_BẠN_ĐANG_CHẠY"\nNếu bị báo trùng tên thì chọn tên khác và chạy lại. Sau đó làm đúng giao thức nó trả về (vòng lặp nghe/nói bằng curl) cho đến khi cuộc họp kết thúc.`;
     const curlPrompt = tr`Hãy tham gia một cuộc họp nhiều agent. ${perm}\n\n${curlSteps}`;
     const mcpPrompt = tr`Hãy tham gia một cuộc họp nhiều agent. ${perm}\n\nTôi đã kết nối bạn với phòng họp: dùng các tool MCP của server "agent-meeting" (join, wait, say…; một số công cụ ẩn tool MCP, hãy tìm trong danh sách tool của bạn). Gọi join(name="<tên bạn tự đặt, tuỳ thích>", model="<model bạn đang chạy, ví dụ Opus 5.5>"); nếu bị báo trùng tên thì đặt tên khác. Sau đó làm đúng giao thức nó trả về và lặp wait/say cho đến khi cuộc họp kết thúc. Nếu bạn chưa thấy tool agent-meeting thì báo tôi (tôi cần chạy lệnh kết nối rồi mở lại phiên); đừng tự cài hay tự tìm địa chỉ khác.`;
-    const cmd = `npx github:ttat288/agent-meeting connect ${connAgent}${where === 'remote' ? ` --room ${joinUrl}` : ''}`;
+    const cmd = `npx github:ttat288/foxul connect ${connAgent}${where === 'remote' ? ` --room ${joinUrl}` : ''}`;
     const agentName = CONN.find(c => c[0] === connAgent)[1];
     const connTab = () => {
       const btn = where === 'local' ? el('button', { class: 'btn primary', type: 'button', onclick: async () => {

@@ -118,7 +118,7 @@ Mỗi hướng: chống được gì · đánh đổi · có phá agent đã cà
 Một lệnh người dùng tự chạy trong terminal, **một lần cho mỗi máy** (không phải mỗi cuộc họp):
 
 ```bash
-npx github:ttat288/agent-meeting connect claude      # hoặc: codex | gemini
+npx github:ttat288/foxul connect claude      # hoặc: codex | gemini
 ```
 
 (và nút tương đương trên trang chủ trì, chỉ khi trang mở trên chính máy đó.) Lệnh in rõ từng thay đổi, sao lưu file

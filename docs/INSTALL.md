@@ -1,6 +1,6 @@
 # Desktop installation · Linux, macOS and Windows
 
-**Status:** implemented in this checkout. Linux installation, upgrade, rollback and uninstall have been exercised with temporary user directories. Native installer smoke tests passed on Ubuntu, macOS and Windows for `6f329f8` ([CI run](https://github.com/ttat288/agent-meeting/actions/runs/39632577516)). Finder/Start Menu GUI launch and real icon appearance still need manual checks. Use the GitHub main branch command below for the current implementation; no npm registry release is required.
+**Status:** implemented in this checkout. Linux installation, upgrade, rollback and uninstall have been exercised with temporary user directories. Native installer smoke tests passed on Ubuntu, macOS and Windows for `6f329f8` ([CI run](https://github.com/ttat288/foxul/actions/runs/39632577516)). Finder/Start Menu GUI launch and real icon appearance still need manual checks. Use the GitHub main branch command below for the current implementation; no npm registry release is required.
 
 ## One command from this checkout
 
@@ -14,7 +14,7 @@ node bin/cli.js install
 Install directly from GitHub main:
 
 ```bash
-npx github:ttat288/agent-meeting#main install
+npx github:ttat288/foxul#main install
 ```
 
 The installer copies the application's runtime files to a stable per-user directory and creates a native launcher. It records the absolute Node executable used during installation. Opening the launcher starts the existing local console/server and opens your browser; it does not embed a desktop web engine. The installer itself does not start a server, connect an AI client or enable a public tunnel.

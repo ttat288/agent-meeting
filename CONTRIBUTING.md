@@ -4,7 +4,7 @@ Cảm ơn bạn đã quan tâm! *English speakers are welcome too: issues and PR
 
 ## Cách đóng góp
 
-- **Báo lỗi**: [mở issue](https://github.com/ttat288/agent-meeting/issues/new/choose) theo mẫu "Báo lỗi". Ghi phiên bản (`--version`), hệ điều hành, agent đang dùng, và nội dung terminal.
+- **Báo lỗi**: [mở issue](https://github.com/ttat288/foxul/issues/new/choose) theo mẫu "Báo lỗi". Ghi phiên bản (`--version`), hệ điều hành, agent đang dùng, và nội dung terminal.
 - **Đề xuất tính năng**: mở issue theo mẫu "Đề xuất". Mô tả vấn đề bạn gặp trước, giải pháp sau.
 - **Tài liệu, bản dịch**: sửa README, [docs/GUIDE.md](docs/GUIDE.md), hoặc dịch giao diện và giao thức sang ngôn ngữ khác.
 - **Code**: xem phần dưới.
@@ -12,8 +12,8 @@ Cảm ơn bạn đã quan tâm! *English speakers are welcome too: issues and PR
 ## Chạy dự án
 
 ```bash
-git clone https://github.com/ttat288/agent-meeting.git
-cd agent-meeting
+git clone https://github.com/ttat288/foxul.git
+cd foxul
 npm test                          # từng file, heap 768 MiB, timeout 150 giây/file
 npm start -- --admit remote --no-open    # chạy local (bot giả lập vào không cần duyệt)
 npm run demo -- <URL mời agent>   # 3 agent giả lập để thử giao diện

@@ -156,7 +156,7 @@ function connect(agent, opts = {}) {
   }
   if (agent === 'claude') ok = editClaudeAllow(true, out) && ok;
   if (agent === 'gemini') ok = writeGeminiPolicy(true, out) && ok;
-  out(ok ? `Xong. Mở lại phiên ${AGENTS[agent]} (MCP được nạp khi bắt đầu phiên), rồi dán prompt "Đã kết nối" trên trang chủ trì.\nGỡ: npx github:ttat288/agent-meeting disconnect ${agent}`
+  out(ok ? `Xong. Mở lại phiên ${AGENTS[agent]} (MCP được nạp khi bắt đầu phiên), rồi dán prompt "Đã kết nối" trên trang chủ trì.\nGỡ: npx github:ttat288/foxul disconnect ${agent}`
     : 'Chưa xong hết: làm nốt các bước ⚠ ở trên.');
   return { ok, manual };
 }

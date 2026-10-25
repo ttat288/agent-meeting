@@ -55,6 +55,6 @@ Exporter dùng browser hiện có, không thêm dependency runtime. Nó tạo PN
 
 ## Tên hiển thị và tương thích
 
-Tên sản phẩm, header/title, README và tài liệu hiện hành dùng Foxul. Package/CLI/MCP/schema/storage keys, URL repo và đường cài vẫn dùng định danh cũ `agent-meeting` để tương thích. Không đổi remote, publish package hoặc migrate dữ liệu trong lần nhận diện này. Launcher cài sẵn cần người dùng cập nhật tường minh mới nhận asset mới.
+Tên sản phẩm, header/title, README và tài liệu hiện hành dùng Foxul. Package/CLI/MCP/schema/storage keys và đường cài vẫn dùng định danh `agent-meeting` để tương thích. Theo chỉ đạo tiếp theo ngày 2026-10-25, GitHub repo đã đổi thành `ttat288/foxul`, remote dùng `https://github.com/ttat288/foxul.git` và checkout thật ở `/home/theo/workspace/foxul`. Symlink đường dẫn cũ giữ phiên phát triển đang mở hoạt động; không có bản sao source thứ hai. Không publish package hoặc migrate dữ liệu người dùng. Launcher cài sẵn cần người dùng cập nhật tường minh mới nhận asset mới.
 
 Media và receipt cũ giữ nguyên tên/logo tại thời điểm ghi; README/Showcase ghi rõ chúng có trước Foxul. Không sửa pixel ảnh/video cũ để giả bản quay mới. Độ khác biệt, khả năng đăng ký nhãn hiệu và phản hồi người dùng chưa được nghiên cứu; quyết định dùng tên/logo không tự chứng minh các điều đó.

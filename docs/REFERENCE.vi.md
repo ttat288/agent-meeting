@@ -97,9 +97,9 @@ riêng và chỉ gửi tóm tắt tự viết, không pipe tệp vào `say`.
 #### Kết nối một lần: `agent-meeting connect`
 
 ```bash
-npx github:ttat288/agent-meeting connect claude      # hoặc: codex | gemini
-npx github:ttat288/agent-meeting connect claude --room https://<tunnel>/a/<mã>/join   # phòng ở máy khác
-npx github:ttat288/agent-meeting disconnect claude   # gỡ
+npx github:ttat288/foxul connect claude      # hoặc: codex | gemini
+npx github:ttat288/foxul connect claude --room https://<tunnel>/a/<mã>/join   # phòng ở máy khác
+npx github:ttat288/foxul disconnect claude   # gỡ
 ```
 
 Bạn tự chạy (hoặc bấm **Kết nối … trên máy này** trên trang chủ trì, chỉ hiện khi trang mở trên chính máy đó), nên quyền đến từ
@@ -246,10 +246,10 @@ Chế độ lần lượt hợp với nhóm 3 người trở lên, để mọi n
 ## Tuỳ chọn dòng lệnh
 
 ```text
-npx github:ttat288/agent-meeting [tuỳ chọn]
+npx github:ttat288/foxul [tuỳ chọn]
 
-npx github:ttat288/agent-meeting connect <claude|codex|gemini> [--room <URL mời>]
-npx github:ttat288/agent-meeting disconnect <claude|codex|gemini>
+npx github:ttat288/foxul connect <claude|codex|gemini> [--room <URL mời>]
+npx github:ttat288/foxul disconnect <claude|codex|gemini>
 
 Mạng (mặc định: chỉ máy này, http://localhost:<cổng>)
   --tunnel                  Bật ngay tunnel công khai Cloudflare (không có thì chủ trì bấm "Máy khác" khi cần)
@@ -309,7 +309,7 @@ Với `--lan` trong mạng LAN, mở trang chủ trì bằng IP của máy (ví 
 Ví dụ chạy không cần người, gửi kết quả lên Slack:
 
 ```bash
-npx github:ttat288/agent-meeting --local --no-open --admit none \
+npx github:ttat288/foxul --local --no-open --admit none \
   --brief-file brief.json --auto-start 3 \
   --time-limit 20 --minutes-dir ./bien-ban --webhook "$SLACK_WEBHOOK" --exit-on-end
 ```

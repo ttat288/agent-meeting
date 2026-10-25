@@ -41,8 +41,8 @@ Foxul giữ lại thảo luận và các bước bàn giao. Chất lượng quy�
 Cần **Node.js 18+, Git và trình duyệt**. Không cần `npm install`, database hoặc build. Mở terminal mới:
 
 ```bash
-git clone https://github.com/ttat288/agent-meeting.git
-cd agent-meeting
+git clone https://github.com/ttat288/foxul.git
+cd foxul
 node bin/cli.js --local --port 3125 --no-open
 ```
 

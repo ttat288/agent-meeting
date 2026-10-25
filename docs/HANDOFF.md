@@ -12,8 +12,8 @@
 
 ## Workspace và ranh giới quyền
 
-- Nhánh `codex/2026-10-22-product-hardening`; baseline trước hai lát cắt là `fcdbe0120f429382ea2f6104127936ded212578f`. Giám đốc đã cấp quyền ngày 2026-10-25 để commit và push **toàn bộ** thay đổi local hiện có lên đúng nhánh này. Không suy rộng quyền đó sang pull/merge/rebase/release hoặc sửa remote/OAuth/CA/settings global.
-- Sau push phải kiểm `git status --short --branch` và `git rev-parse HEAD`; nếu push thất bại thì giữ commit local, ghi đúng lỗi, không bypass TLS hay đổi cấu hình. Không reset/clean/pull/merge hoặc hoàn tác thay đổi không liên quan. Preview/receipt trong `/tmp` có thể đã mất; không mặc định dịch vụ/cổng cũ còn chạy.
+- Nhánh `codex/2026-10-22-product-hardening`; baseline trước hai lát cắt là `fcdbe0120f429382ea2f6104127936ded212578f`. Toàn bộ J47, sửa nhất quán ngôn ngữ, test và tài liệu đã commit tại `8e3e15114fc39b6fcc9f480f096933b2a7522350` (`Improve work overview and language consistency`) và push thành công lên `origin/codex/2026-10-22-product-hardening` ngày 2026-10-25.
+- Quyền commit/push cho yêu cầu này đã dùng xong; không suy rộng sang pull/merge/rebase/release hoặc sửa remote/OAuth/CA/settings global. Không reset/clean hoặc hoàn tác thay đổi không liên quan. Preview/receipt trong `/tmp` có thể đã mất; không mặc định dịch vụ/cổng cũ còn chạy.
 - Node>=18, không dependency runtime ngoài; UI HTML/CSS/JS thuần, không build. Giữ CSP, VI/EN, theme theo hệ thống, responsive và bàn phím. Công cụ/skill local không tự thành dependency sản phẩm.
 
 ## Quyết định phải giữ

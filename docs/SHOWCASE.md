@@ -4,7 +4,7 @@
 
 ## Source and evidence
 
-- **Current video v2:** [narrated 46-second Foxul demo](showcase/foxul-demo.mp4), [WebM fallback](showcase/foxul-demo.webm), [poster](showcase/foxul-demo-poster.png), [Vietnamese subtitles](showcase/foxul-demo.vi.vtt), [English captions](showcase/foxul-demo.en.vtt) and [recording manifest](showcase/foxul-demo-manifest.json). It was captured from the working tree based on HEAD `2855dfcfbf28c2426dc7cc71e495b8c20dd73ccf`, before the Foxul identity/media commit; it is not a versioned release recording. The manifest pins relevant source hashes, the full-diff hash at recording time, action timings, narration, media hashes and playback checks. The director approved the creative cut and authorized pushing it on 2026-10-25; this is not a new-user study or product-quality acceptance.
+- **Current video v2:** [watch the narrated 46-second Foxul demo on YouTube](https://youtu.be/O1ntGbQYhkI), or use the repository's [MP4 master](showcase/foxul-demo.mp4), [WebM fallback](showcase/foxul-demo.webm), [poster](showcase/foxul-demo-poster.png), [Vietnamese subtitles](showcase/foxul-demo.vi.vtt), [English captions](showcase/foxul-demo.en.vtt) and [recording manifest](showcase/foxul-demo-manifest.json). The public YouTube copy has both subtitle tracks. It was captured from the working tree based on HEAD `2855dfcfbf28c2426dc7cc71e495b8c20dd73ccf`, before the Foxul identity/media commit; it is not a versioned release recording. The manifest pins relevant source hashes, the full-diff hash at recording time, action timings, narration, media hashes and playback checks. The director approved the creative cut and authorized pushing it on 2026-10-25; this is not a new-user study or product-quality acceptance.
 - **Historical media source:** commit `f415cf46961ac43301083c4784fb216b68e87ac6` on branch `codex/2026-10-22-product-hardening`. [PR #1](https://github.com/ttat288/foxul/pull/1) records the implementation and current review/merge status; package version `3.5.0` alone does not identify the source.
 - **README trial source:** the README runs the source checkout directly, so the trial follows the current interface and identity. For the historical, pre-Foxul trial, commit `1b56f4db04d4135a66fcc329af89332eb21b9d3f` on main accepts the English `CONCLUSION` and `TASK` inputs. This checkout also accepts `ITEM DONE` and `TASK PROGRESS`, retains compatibility with existing localized inputs and includes `tools/try-workflow.js` plus bounded failure diagnostics on explicit managed retries. [Retry acceptance and limitations](evidence/retry-context/ACCEPTANCE.vi.md) distinguish scripted software checks from unproven model efficacy.
 - **Historical discussion media:** captured on 2026-10-21 from the earlier integrated checkout, with scripted participants over real HTTP APIs. [EN manifest](showcase/en/manifest.json) · [VI manifest](showcase/vi/manifest.json) · [capture source hashes](evidence/showcase/source-hashes.txt). These ten-scene GIFs retain their recorded pre-Foxul identity and last 34 seconds; they were not edited to imitate the current source.
@@ -14,7 +14,9 @@
 
 ## Foxul demo video
 
-[![Foxul demo poster: three owners and source-linked tasks, all Planned.](showcase/foxul-demo-poster.png)](showcase/foxul-demo.mp4)
+[![Foxul demo poster: three owners and source-linked tasks, all Planned.](showcase/foxul-demo-poster.png)](https://youtu.be/O1ntGbQYhkI)
+
+**[Watch on YouTube](https://youtu.be/O1ntGbQYhkI)** with published English and Vietnamese subtitles. The repository keeps the master media and sidecar captions below so the recording can still be inspected and reproduced independently.
 
 The English master is **46 seconds, 1920×1080, 30 fps, H.264/AAC MP4**, with English AI narration generated locally by Kokoro (`af_heart`), an electronic music bed, and seven-cue Vietnamese/English WebVTT tracks. A VP9/Opus WebM fallback is also available. It opens on the source-linked plan for three seconds, then shows **38 continuous seconds of real browser interaction**: typing the brief, starting the room, receiving the challenge, requesting a decision, opening Plan, and following Conversation source. The frame stays fixed throughout, with no animated zoom or pan. A five-second outro uses the approved Foxul logo and “Multiple agents. One clear outcome.” There are no chapter cards or large text panels over the product.
 
@@ -44,7 +46,7 @@ The interface is captured from the source checkout. Participants are **scripted*
 
 ## Watch or read at your own pace
 
-- [Foxul MP4](showcase/foxul-demo.mp4) · [WebM](showcase/foxul-demo.webm) · [Vietnamese subtitles](showcase/foxul-demo.vi.vtt) · [poster](showcase/foxul-demo-poster.png): the current narrated browser recording and its sidecar captions.
+- [YouTube](https://youtu.be/O1ntGbQYhkI) is the quickest public playback path, with published English and Vietnamese subtitles. [MP4 master](showcase/foxul-demo.mp4) · [WebM fallback](showcase/foxul-demo.webm) · [Vietnamese subtitles](showcase/foxul-demo.vi.vtt) · [English captions](showcase/foxul-demo.en.vtt) · [poster](showcase/foxul-demo-poster.png) remain in the repository for inspection and reproduction.
 - [Historical English GIF](demo.gif) · [historical Vietnamese GIF](demo.vi.gif): ten paced scenes, 34 seconds, captions outside the application image. This is an edited screenshot walkthrough, not a continuous real-time recording.
 - [Static English scenes](showcase/en) · [Static Vietnamese scenes](showcase/vi): lossless 1280×800 application captures, without captions composited into the UI.
 - The local HTML page plays the current video with native controls and Vietnamese CC. Its historical scene player retains play/pause, previous/next, a keyboard-operable slider and language selection.
@@ -56,7 +58,7 @@ python3 -m http.server 3121 --bind 127.0.0.1 --directory docs
 # Open http://127.0.0.1:3121/showcase/ (or add ?lang=vi).
 ```
 
-The player is a documentation artifact. It does not change the application server or its CSP. The README uses the poster as a click-to-play preview.
+The player is a documentation artifact. It does not change the application server or its CSP. The README poster opens the public YouTube copy, avoiding GitHub's large-file preview limitation.
 
 ## The story
 

@@ -30,7 +30,7 @@ function room() {
   const r = c?.rooms?.[process.env.AGENT_MEETING_ROOM || c.current];
   return r && /^https?:\/\//.test(r.url) && /^\w+$/.test(r.room) ? r : null;
 }
-const NO_ROOM = 'Chưa có phòng họp nào để vào: trên máy này chưa chạy agent-meeting, hoặc chưa kết nối phòng ở máy khác. Hãy nói với người dùng: chạy agent-meeting (npx github:ttat288/agent-meeting), hoặc với phòng ở máy khác thì chạy "npx github:ttat288/agent-meeting connect <agent> --room <URL mời>". Đừng tự tìm địa chỉ khác.';
+const NO_ROOM = 'Chưa có phòng họp nào để vào: trên máy này chưa chạy agent-meeting, hoặc chưa kết nối phòng ở máy khác. Hãy nói với người dùng: chạy agent-meeting (npx github:ttat288/foxul), hoặc với phòng ở máy khác thì chạy "npx github:ttat288/foxul connect <agent> --room <URL mời>". Đừng tự tìm địa chỉ khác.';
 const sessions = new Map(); // `${url}|${room}` -> Mcp-Session-Id
 const headers = (r, sid) => ({ 'content-type': 'application/json', accept: 'application/json, text/event-stream', 'x-agent-meeting-bridge': '1', ...(sid ? { 'mcp-session-id': sid } : {}), ...(r.headers || {}) });
 

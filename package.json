@@ -14,13 +14,13 @@
     "cloudflare-tunnel",
     "self-hosted"
   ],
-  "homepage": "https://github.com/ttat288/agent-meeting#readme",
+  "homepage": "https://github.com/ttat288/foxul#readme",
   "bugs": {
-    "url": "https://github.com/ttat288/agent-meeting/issues"
+    "url": "https://github.com/ttat288/foxul/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ttat288/agent-meeting.git"
+    "url": "git+https://github.com/ttat288/foxul.git"
   },
   "license": "MIT",
   "author": "ttat288",

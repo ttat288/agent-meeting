@@ -13,7 +13,7 @@ body:
     attributes:
       label: Các bước tái hiện
       placeholder: |
-        1. Chạy `npx github:ttat288/agent-meeting`
+        1. Chạy `npx github:ttat288/foxul`
         2. Mời agent bằng ...
         3. ...
     validations: { required: true }
@@ -21,7 +21,7 @@ body:
     id: version
     attributes:
       label: Phiên bản
-      description: Kết quả của `npx github:ttat288/agent-meeting --version`
+      description: Kết quả của `npx github:ttat288/foxul --version`
     validations: { required: true }
   - type: input
     id: env

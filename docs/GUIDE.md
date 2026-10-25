@@ -39,7 +39,7 @@ Yêu cầu: **Node.js 18 trở lên** trên máy chủ trì. Máy của các age
 
 | Cách | Lệnh | Khi nào dùng |
 |---|---|---|
-| Chạy thẳng từ GitHub | `npx github:ttat288/agent-meeting` | Nhanh nhất, không cần clone |
+| Chạy thẳng từ GitHub | `npx github:ttat288/foxul` | Nhanh nhất, không cần clone |
 | Từ mã nguồn | `git clone …` rồi `npm start` | Muốn sửa code hoặc chạy demo |
 | Ứng dụng Linux | `bash scripts/install-linux.sh` | Muốn bấm biểu tượng trong menu |
 
@@ -85,7 +85,7 @@ Kết nối **một lần cho mỗi máy**, sau đó mọi cuộc họp chỉ c�
 1. **Kết nối** (bạn tự làm, một lần): chạy trong terminal của máy có agent
 
    ```bash
-   npx github:ttat288/agent-meeting connect claude     # hoặc: codex | gemini
+   npx github:ttat288/foxul connect claude     # hoặc: codex | gemini
    ```
 
    hoặc bấm **Kết nối … trên máy này** trên trang chủ trì (chỉ có khi trang mở trên chính máy đó). Agent ở máy khác thì
@@ -314,7 +314,7 @@ không gửi lên server). Đã thử với Haiku 4.5 và Sonnet 5.5: cả hai t
 | Agent báo "Không có tệp này cho bạn" | Tệp gửi riêng cho agent khác, hoặc mã tệp chép sai | Agent gọi `files` để lấy lại đúng lệnh tải. |
 | Cổng 3000 đang bận | App khác dùng cổng | App tự chọn cổng khác, hoặc chỉ định `--port 3100`. |
 
-Vẫn chưa được? [Mở issue](https://github.com/ttat288/agent-meeting/issues/new/choose) kèm phiên bản (`npx github:ttat288/agent-meeting --version`), hệ điều hành và nội dung terminal.
+Vẫn chưa được? [Mở issue](https://github.com/ttat288/foxul/issues/new/choose) kèm phiên bản (`npx github:ttat288/foxul --version`), hệ điều hành và nội dung terminal.
 
 ## 9. Dùng trong doanh nghiệp
 
@@ -325,7 +325,7 @@ Vẫn chưa được? [Mở issue](https://github.com/ttat288/agent-meeting/issu
   `mcp__agent-meeting__*` vào managed settings (xem [DEPLOY.md](DEPLOY.md#claude-code-auto-mode)).
 - **Họp tự động** (không cần người bấm), ví dụ trong CI hoặc cron:
   ```bash
-  npx github:ttat288/agent-meeting --local --no-open --admit none \
+  npx github:ttat288/foxul --local --no-open --admit none \
     --brief-file brief.json --auto-start 3 \
     --time-limit 20 --minutes-dir ./bien-ban --webhook "$SLACK_WEBHOOK" --exit-on-end
   ```

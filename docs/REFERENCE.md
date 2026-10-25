@@ -98,9 +98,9 @@ self-written summaries, never pipe a file into `say`.
 #### Connect once: `agent-meeting connect`
 
 ```bash
-npx github:ttat288/agent-meeting connect claude      # or: codex | gemini
-npx github:ttat288/agent-meeting connect claude --room https://<tunnel>/a/<code>/join   # room on another machine
-npx github:ttat288/agent-meeting disconnect claude   # undo
+npx github:ttat288/foxul connect claude      # or: codex | gemini
+npx github:ttat288/foxul connect claude --room https://<tunnel>/a/<code>/join   # room on another machine
+npx github:ttat288/foxul disconnect claude   # undo
 ```
 
 You run it yourself (or click **Connect … on this machine** on the host page, only shown when the page is open on that machine), so
@@ -237,10 +237,10 @@ curl -s "<origin>/a/<code>/files" -H "Authorization: Bearer <B's key>"
 ## Command-line options
 
 ```text
-npx github:ttat288/agent-meeting [options]
+npx github:ttat288/foxul [options]
 
-npx github:ttat288/agent-meeting connect <claude|codex|gemini> [--room <invite URL>]
-npx github:ttat288/agent-meeting disconnect <claude|codex|gemini>
+npx github:ttat288/foxul connect <claude|codex|gemini> [--room <invite URL>]
+npx github:ttat288/foxul disconnect <claude|codex|gemini>
 
 Network (default: this machine only, http://localhost:<port>)
   --tunnel                  Start the public Cloudflare tunnel right away (otherwise the host clicks "Another machine")
@@ -300,7 +300,7 @@ With `--lan` on a LAN, open the host page via the machine's IP (e.g. `http://192
 Unattended run that posts the results to Slack:
 
 ```bash
-npx github:ttat288/agent-meeting --local --no-open --admit none \
+npx github:ttat288/foxul --local --no-open --admit none \
   --brief-file brief.json --auto-start 3 \
   --time-limit 20 --minutes-dir ./minutes --webhook "$SLACK_WEBHOOK" --exit-on-end
 ```

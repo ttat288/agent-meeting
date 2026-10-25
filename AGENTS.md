@@ -33,14 +33,14 @@
 ## Quy tắc UI/UX
 
 - Khi thiết kế, xây dựng, chỉnh sửa hoặc review UI/UX, **phải đọc** SKILL.md của `ui-ux-pro-max` và áp dụng phần phù hợp với yêu cầu và ràng buộc dự án.
-- Đường dẫn đã cài trên máy cấu hình repo này: `/home/theo/workspace/agent-meeting/.agents/skills/ui-ux-pro-max/SKILL.md`. Vị trí tương đối trong checkout là `.agents/skills/ui-ux-pro-max/SKILL.md`; trên máy khác, xác định đường dẫn tuyệt đối từ gốc checkout thực tế.
+- Đường dẫn đã cài trên máy cấu hình repo này: `/home/theo/workspace/foxul/.agents/skills/ui-ux-pro-max/SKILL.md`. Vị trí tương đối trong checkout là `.agents/skills/ui-ux-pro-max/SKILL.md`; trên máy khác, xác định đường dẫn tuyệt đối từ gốc checkout thực tế.
 - Trước khi thay đổi, đọc design system hiện có. Hiện các token màu, bán kính, font, component và sáng/tối nằm trong `src/ui/app.css`; cấu trúc ở `src/ui/index.html`, hành vi ở `src/ui/app.js`, dịch ở `src/ui/i18n.js`. Đọc thêm quyết định UI trong `docs/HANDOFF.md`. Nếu sau này có `design-system/**/MASTER.md` và override theo trang, đọc chúng trước; giữ tính nhất quán giữa các màn hình.
 - Giữ stack, CSP trong `src/server.js`, hỗ trợ Việt/Anh, chế độ sáng/tối theo `prefers-color-scheme`, responsive và các ràng buộc hiện tại. Không làm yếu CSP để chạy ví dụ từ skill.
 - Khuyến nghị từ skill **không tự cấp quyền** thêm framework, thư viện, font, CDN hay dịch vụ ngoài. Ví dụ Tailwind/React/GSAP chỉ là tham khảo; chuyển nguyên tắc phù hợp sang stack hiện tại, không mặc định dự án dùng chúng. Không chọn `html-tailwind` thay cho HTML/CSS/JS thuần chỉ vì không có stack tương ứng trong skill.
 - Dùng truy vấn domain nhỏ nhất phù hợp; kiểm tra kết quả đúng vấn đề trước khi áp dụng. Không tự tạo hoặc ghi đè design system đang có chỉ vì skill gợi ý. Không dùng `--force` nếu chưa được người dùng cho phép rõ ràng.
 - Công việc backend thuần không ảnh hưởng UI/UX không cần nạp skill này.
 - Nếu SKILL.md, script hoặc dữ liệu cần dùng bị thiếu/không đọc được, báo rõ đường dẫn và giới hạn; không tuyên bố đã áp dụng skill khi chưa đọc hoặc kiểm chứng được.
-- Ví dụ upstream dùng `${CLAUDE_PLUGIN_ROOT}` dành cho plugin Claude. Với repo này, gọi script bằng đường dẫn thực: `/home/theo/workspace/agent-meeting/.agents/skills/ui-ux-pro-max/scripts/search.py`; trên máy khác dùng đường dẫn tuyệt đối của checkout đó. Không cần đặt biến plugin Claude.
+- Ví dụ upstream dùng `${CLAUDE_PLUGIN_ROOT}` dành cho plugin Claude. Với repo này, gọi script bằng đường dẫn thực: `/home/theo/workspace/foxul/.agents/skills/ui-ux-pro-max/scripts/search.py`; trên máy khác dùng đường dẫn tuyệt đối của checkout đó. Không cần đặt biến plugin Claude.
 
 ## Danh mục skill và phạm vi sử dụng
 
@@ -81,7 +81,7 @@ python3 /home/theo/.codex/skills/.system/skill-installer/scripts/install-skill-f
   --repo nextlevelbuilder/ui-ux-pro-max-skill \
   --ref 56ea9cf174ed86786187daa9de0e6247cb0747e4 \
   --path .claude/skills/ui-ux-pro-max \
-  --dest /home/theo/workspace/agent-meeting/.agents/skills \
+  --dest /home/theo/workspace/foxul/.agents/skills \
   --method download
 ```
 

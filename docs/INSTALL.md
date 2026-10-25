@@ -22,8 +22,10 @@ The installer copies the application's runtime files to a stable per-user direct
 | System | App files | Launcher |
 |---|---|---|
 | Linux | `$XDG_DATA_HOME/agent-meeting`, normally `~/.local/share/agent-meeting` | Application menu `.desktop` entry and `~/.local/bin/agent-meeting` |
-| macOS | `~/Applications/Agent Meeting.app` | Finder app bundle opens Terminal; optional command at `~/.local/bin/agent-meeting` |
-| Windows | `%LOCALAPPDATA%\Programs\Agent Meeting` | Current user's Start Menu `.lnk`; command wrapper `agent-meeting.cmd` inside the app directory |
+| macOS | `~/Applications/Agent Meeting.app` | Finder app bundle (display name Foxul) opens Terminal; optional command at `~/.local/bin/agent-meeting` |
+| Windows | `%LOCALAPPDATA%\Programs\Agent Meeting` | Compatibility shortcut `Agent Meeting.lnk`; command wrapper `agent-meeting.cmd` inside the app directory |
+
+Foxul retains the existing package, command, storage and installation paths to keep upgrades compatible. Linux and macOS launcher metadata uses the Foxul display name. Existing desktop installations pick up new assets only after an explicit upgrade; this checkout does not modify an installed app automatically.
 
 Managed code execution/verification still requires Linux with functioning bubblewrap; desktop launcher support does not add native managed execution on macOS/Windows. See [implementation limits](IMPLEMENTATION-STATUS.vi.md).
 
@@ -35,7 +37,7 @@ The launcher relies on the platform's existing tools: a desktop environment/term
 
 Run `install` again from the newer checkout. A recognized old app is moved to a timestamped sibling backup before activation. On a caught installation error, the prior app and launcher bytes are restored. Backups are kept for manual recovery; the installer does not remove old backups automatically.
 
-Unknown destination directories, symlinks and locally modified managed launchers are preserved and reported. The historical Linux layout can migrate when its Agent Meeting package and CLI are identified; its old external icon file is retained. The compatibility command still works:
+Unknown destination directories, symlinks and locally modified managed launchers are preserved and reported. The historical Linux layout can migrate when its `agent-meeting` package and CLI are identified; its old external icon file is retained. The compatibility command still works:
 
 ```bash
 bash scripts/install-linux.sh --dry-run

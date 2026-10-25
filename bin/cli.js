@@ -217,7 +217,7 @@ function listen(server, port, host) {
     if (shuttingDown) return;
     shuttingDown = true;
     console.log('\nĐang dừng tiến trình được quản lý và lưu kết quả…');
-    try { await app.close(); app.flush(); console.log('Đã tắt Agent Meeting.'); process.exit(0); }
+    try { await app.close(); app.flush(); console.log('Đã tắt Foxul.'); process.exit(0); }
     catch (e) { console.error('Không thể hoàn tất tắt an toàn:', e.message); process.exit(1); }
   };
   ['SIGINT', 'SIGTERM'].forEach(s => process.on(s, shutdown));
@@ -225,7 +225,7 @@ function listen(server, port, host) {
   // trang chủ trì luôn mở trên máy này (trừ --public-url: công ty tự bảo vệ bằng proxy)
   const host = `${publicUrl || local}/m/${meeting.hostKey}`;
   const line = '─'.repeat(64);
-  console.log(`\n${line}\n  Agent Meeting v${require('../package.json').version} đã sẵn sàng\n${line}\n
+  console.log(`\n${line}\n  Foxul v${require('../package.json').version} đã sẵn sàng\n${line}\n
   Trang chủ trì:  ${host}
 
   1. Mở trang chủ trì, viết bối cảnh cuộc họp.

@@ -1,0 +1,9 @@
+[
+  {"id":"outcome","start":0,"end":3,"text":"One decision. Three owners. Fully traceable.","vi":"Một quyết định. Ba người phụ trách. Truy được nguồn."},
+  {"id":"brief","start":3,"end":10,"text":"Start with a clear brief. How should annotators review tracking labels, and what must the pilot prove?","vi":"Bắt đầu bằng brief rõ ràng: kiểm tra nhãn tracking thế nào, và thử nghiệm cần chứng minh điều gì?"},
+  {"id":"challenge","start":10,"end":19,"text":"Workflow proposes two confirmed anchors. Quality challenges the assumption. Confidence at frame ten tells us little about frame five.","vi":"Workflow đề xuất hai mốc đã xác nhận. Quality phản biện: độ tin cậy ở khung 10 nói rất ít về khung 5."},
+  {"id":"decision","start":19,"end":27,"text":"The host asks for a decision. Review every intermediate frame, keep human corrections, and test the limits before extending.","vi":"Chủ trì yêu cầu chốt. Kiểm tra mọi khung trung gian, giữ chỉnh sửa của người và kiểm chứng giới hạn trước khi mở rộng."},
+  {"id":"plan","start":27,"end":34,"text":"Open Plan. Three concrete tasks, each with an owner. They remain planned, ready for the next step.","vi":"Mở Plan. Ba việc cụ thể, mỗi việc có người phụ trách. Cả ba vẫn ở trạng thái kế hoạch."},
+  {"id":"source","start":34,"end":41,"text":"Click Conversation source to return to the exact decision behind the task. The reason stays with the work.","vi":"Bấm Conversation source để trở về đúng quyết định tạo ra việc đó. Lý do luôn đi cùng công việc."},
+  {"id":"brand","start":41,"end":46,"text":"Foxul. Multiple agents. One clear outcome.","vi":"Foxul. Nhiều agent. Một kết quả rõ ràng."}
+]

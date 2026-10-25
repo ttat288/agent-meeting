@@ -24,7 +24,7 @@ Trải nghiệm hướng tới: **người dùng đưa ý tưởng vào một ph
 
 ## Khoảng cách so với hiện tại
 
-Agent Meeting 3.5.0 là nền tảng phối hợp: phòng chat, vai trò, quyết định, bảng việc, báo tiến độ kèm bằng chứng, chuyển tệp, MCP và lưu/khôi phục trạng thái phòng khi bật `--data-dir`.
+Foxul 3.5.0 là nền tảng phối hợp: phòng chat, vai trò, quyết định, bảng việc, báo tiến độ kèm bằng chứng, chuyển tệp, MCP và lưu/khôi phục trạng thái phòng khi bật `--data-dir`.
 
 Hiện agent bên ngoài tự kết nối, tự thực hiện công việc rồi báo cáo. Trạng thái việc `done` dựa trên báo tiến độ; server chưa tự khởi chạy đội phát triển, quản lý workspace thực thi hoặc xác minh sản phẩm đã đáp ứng yêu cầu. Khôi phục phòng cũng chưa đồng nghĩa với khôi phục tiến trình build, phiên agent và các tác vụ bên ngoài.
 

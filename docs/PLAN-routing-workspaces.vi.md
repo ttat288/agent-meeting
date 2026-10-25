@@ -4,7 +4,7 @@ Ngày: 2026-10-21. Bản nháp để chủ dự án đọc và chỉnh. Chưa ph
 
 ## 1. Trải nghiệm muốn đạt
 
-Người dùng mở Agent Meeting, nói mình muốn bàn một vấn đề, nhờ phân công hay làm ra sản phẩm. Hệ thống giúp chọn đội phù hợp với model, công cụ và máy đang có. Trưởng nhóm làm rõ yêu cầu, tra năng lực, đề xuất phân công và điều phối theo phạm vi được giao. Người dùng theo dõi được quyết định, công việc và bằng chứng; có thể đổi hướng mà không phải tự chuyển prompt giữa các CLI.
+Người dùng mở Foxul, nói mình muốn bàn một vấn đề, nhờ phân công hay làm ra sản phẩm. Hệ thống giúp chọn đội phù hợp với model, công cụ và máy đang có. Trưởng nhóm làm rõ yêu cầu, tra năng lực, đề xuất phân công và điều phối theo phạm vi được giao. Người dùng theo dõi được quyết định, công việc và bằng chứng; có thể đổi hướng mà không phải tự chuyển prompt giữa các CLI.
 
 Người dùng không cần diễn đạt hết ngay từ đầu. Có thể bắt đầu bằng trao đổi, giữ lại yêu cầu/quyết định, rồi tạo kế hoạch và chuyển sang thực hiện khi đã rõ mục tiêu. Việc chuyển sang thực hiện phải hiện rõ thay đổi quyền, môi trường và chi phí dự kiến.
 
@@ -86,7 +86,7 @@ Khi triển khai chặng này, thêm hướng dẫn ngắn trong AGENTS.md và t
 
 “Áp dụng cho tôi” nghĩa là workflow có chỉ dẫn và tool để tôi tuân theo trong repo này. Không sửa trọng số hay trí nhớ vĩnh viễn của model, không bảo đảm ảnh hưởng các phiên ngoài repo. Cần kiểm tra discovery và dùng được ở phiên mới.
 
-Đợt thử đầu: chính Agent Meeting dùng catalog để chọn worker cho một task giới hạn. Chỉ gọi model/runtime đã có quyền sử dụng; không cài hoặc chạy hàng loạt chỉ để chứng minh đủ ba hãng.
+Đợt thử đầu: chính Foxul dùng catalog để chọn worker cho một task giới hạn. Chỉ gọi model/runtime đã có quyền sử dụng; không cài hoặc chạy hàng loạt chỉ để chứng minh đủ ba hãng.
 
 ## 5. Tổ chức UI: không gian sử dụng và trang quản trị riêng
 
@@ -213,7 +213,7 @@ Kiểm tra UI bằng desktop/mobile, bàn phím, Việt/Anh và sáng/tối. Ki�
 - Astra là trưởng nhóm ưu tiên theo mong muốn người dùng; vai trò trưởng nhóm vẫn cấu hình được.
 - Nhập ba nhóm model trong prompt trước; schema mở để thêm model, không đóng vào ba hãng.
 - Tự động hóa local trước. Thiết kế UI từ đầu có chỗ cho remote/mixed; worker remote triển khai sau luồng local đã kiểm chứng.
-- Trải nghiệm đầu tiên là làm tiếp trên chính Agent Meeting với task nhỏ; mục tiêu dài hạn web full-stack trong VISION.vi.md vẫn giữ.
+- Trải nghiệm đầu tiên là làm tiếp trên chính Foxul với task nhỏ; mục tiêu dài hạn web full-stack trong VISION.vi.md vẫn giữ.
 - Chưa chọn lại tên sản phẩm, framework, database lớn hoặc triển khai cloud trong bản kế hoạch này.
 
 Bước triển khai đầu sau khi chỉnh bản kế hoạch: lập bảng đối chiếu prompt gốc → catalog/policy/handoff, thiết kế schema và mẫu phản hồi tool; từ đó làm chặng A trước khi tự động khởi chạy agent.

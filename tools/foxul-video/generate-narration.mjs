@@ -1,0 +1,31 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+import { execFileSync } from 'node:child_process';
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const local = path.join(root, '.local-tools/video-v2');
+const require = createRequire(path.join(local, 'package.json'));
+const { env } = await import(path.join(local, 'node_modules/@huggingface/transformers/dist/transformers.node.mjs'));
+env.cacheDir = path.join(local, 'model-cache');
+const { KokoroEngine } = await import(path.join(local, 'node_modules/@argo-video/cli/dist/tts/engines/kokoro.js'));
+const ffmpeg = require('ffmpeg-static');
+const ffprobe = require('ffprobe-static').path;
+const clips = JSON.parse(fs.readFileSync(path.join(root, 'tools/foxul-video/narration.json')));
+const out = path.join(local, 'narration');
+fs.mkdirSync(out, { recursive: true });
+const engine = new KokoroEngine({ dtype:'q8', device:'cpu', onProgress:event => { if(event.status === 'done') console.log('Model asset ready:', event.file); } });
+for (const clip of clips) {
+  const raw = path.join(out, clip.id + '-raw.wav');
+  if (!fs.existsSync(raw)) fs.writeFileSync(raw, await engine.generate(clip.text, { voice:'af_heart', speed:1.04 }));
+  const duration = Number(execFileSync(ffprobe, ['-v','error','-show_entries','format=duration','-of','csv=p=0',raw], {encoding:'utf8'}).trim());
+  const slot = clip.end - clip.start;
+  const tempo = Math.max(1, duration / (slot - .16));
+  if (tempo > 1.25) throw Error(`Narration too long: ${clip.id} ${duration}s / ${slot}s`);
+  execFileSync(ffmpeg, ['-v','error','-y','-i',raw,'-af',`atempo=${tempo},apad,atrim=duration=${slot}`,'-ar','48000','-ac','1',path.join(out,clip.id+'.wav')]);
+  console.log(JSON.stringify({id:clip.id, rawDuration:duration, slot, tempo}));
+}
+const args = clips.flatMap(clip=>['-i',path.join(out,clip.id+'.wav')]);
+execFileSync(ffmpeg,['-v','error','-y',...args,'-filter_complex',clips.map((_,i)=>`[${i}:a]`).join('')+`concat=n=${clips.length}:v=0:a=1,loudnorm=I=-16:TP=-1.5:LRA=7[a]`,'-map','[a]','-ar','48000',path.join(out,'voiceover.wav')]);
+fs.writeFileSync(path.join(out,'provenance.json'),JSON.stringify({engine:engine.describe(),voice:'af_heart',speed:1.04,localInference:true,paidServiceCalls:0,clips},null,2)+'\n');
+console.log('Narration complete:', path.join(out,'voiceover.wav'));

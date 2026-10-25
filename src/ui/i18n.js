@@ -146,7 +146,7 @@
     [`Huỷ`, `Cancel`],
     [`Đồng ý`, `OK`],
     [`Không tìm thấy cuộc họp`, `Meeting not found`],
-    [`Link này không còn hiệu lực: app đã tắt hoặc đã khởi động lại. Hãy chạy lại Agent Meeting và mở link mới in ra ở terminal.`, `This link is no longer valid: the app was stopped or restarted. Run Agent Meeting again and open the new link printed in the terminal.`],
+    [`Link này không còn hiệu lực: app đã tắt hoặc đã khởi động lại. Hãy chạy lại Foxul và mở link mới in ra ở terminal.`, `This link is no longer valid: the app was stopped or restarted. Run Foxul again and open the new link printed in the terminal.`],
     // ---------- app.js ----------
     [`đang nghe`, `listening`],
     [`vắng (có thể đang chờ người dùng duyệt)`, `away (may be waiting for its user's approval)`],

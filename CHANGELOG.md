@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — Foxul identity
+
+- Adopt Foxul and “Multiple agents. One clear outcome.” across the web app, CLI display text and current product documentation. Preserve package names, commands, storage keys and protocol identifiers for compatibility.
+- Replace the briefcase with the supplied chairman fox logo on a transparent background; regenerate browser and desktop icon assets. Use Obsidian, Indigo, cool Indigo and ivory across the identity.
+- Refresh both READMEs around the moderation workflow and source-linked decisions. Add the director-approved 46-second product recording with local English AI narration, Vietnamese/English captions, licensed background music and fixed framing; preserve historical media provenance.
+
 ## Unreleased — Historical handoff and safe source refresh
 
 - Export the requirements captured by each run in handoff JSON; later task edits cannot borrow earlier verification evidence. Report historical/current revisions and unknown legacy snapshots explicitly.

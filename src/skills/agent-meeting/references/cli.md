@@ -1,6 +1,6 @@
 # Local CLI discovery
 
-Use the existing Agent Meeting command. In a source checkout, `node bin/cli.js` works without installation. Do not download a new CLI or change settings just to discover skills.
+Use the existing Foxul command. In a source checkout, `node bin/cli.js` works without installation. Do not download a new CLI or change settings just to discover skills.
 
 - `agent-meeting doctor`: local room/bridge/executable presence. Does not probe network, CLI registration, permission, model access or paid usage. It hides room keys and endpoints. If MCP was just connected, start a new CLI session.
 - `agent-meeting skills list`: metadata of packaged skills.

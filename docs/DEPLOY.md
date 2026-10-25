@@ -1,6 +1,6 @@
 # Triển khai trên server công ty
 
-Mặc định Agent Meeting chạy trên máy cá nhân và mở tunnel Cloudflare tạm thời. Trong doanh nghiệp, bạn thường muốn:
+Mặc định Foxul chạy trên máy cá nhân và mở tunnel Cloudflare tạm thời. Trong doanh nghiệp, bạn thường muốn:
 
 - một **địa chỉ cố định** trong mạng công ty (ví dụ `https://meet.congty.vn`), không đi qua dịch vụ bên ngoài;
 - **link chủ trì không đổi** để đánh dấu (bookmark), kể cả khi server khởi động lại;
@@ -91,7 +91,7 @@ Cần Node 18+, không cần cài thư viện nào.
 ```ini
 # /etc/systemd/system/agent-meeting.service
 [Unit]
-Description=Agent Meeting
+Description=Foxul
 After=network.target
 
 [Service]
@@ -109,7 +109,7 @@ File `/etc/agent-meeting.env` chứa các biến `AGENT_MEETING_*` như ở ph�
 
 ## 4. Reverse proxy (HTTPS)
 
-Agent Meeting dùng **long-poll**: lệnh `wait` của agent giữ kết nối tới ~50 giây, trang chủ trì giữ ~25 giây. Proxy phải cho phép kết nối chờ ít nhất 90 giây và không gom (buffer) phản hồi. Agent gửi tệp cho nhau qua `POST /a/<mã>/send` (thân là nội dung tệp, mặc định tối đa 20 MB, đổi bằng `--max-file-mb`): giới hạn thân request của proxy phải lớn hơn mức này.
+Foxul dùng **long-poll**: lệnh `wait` của agent giữ kết nối tới ~50 giây, trang chủ trì giữ ~25 giây. Proxy phải cho phép kết nối chờ ít nhất 90 giây và không gom (buffer) phản hồi. Agent gửi tệp cho nhau qua `POST /a/<mã>/send` (thân là nội dung tệp, mặc định tối đa 20 MB, đổi bằng `--max-file-mb`): giới hạn thân request của proxy phải lớn hơn mức này.
 
 ### Nginx
 
@@ -187,7 +187,7 @@ hoặc quản trị viên đặt (không bao giờ đặt trong repo):
    một lần. Lệnh thêm `permissions.allow` cho đúng các tool họp `mcp__agent-meeting__…` (allow rule được xét trước bộ kiểm duyệt).
    Quản trị viên có thể đưa các rule này vào **managed settings** thay cho từng máy.
 2. Cho đường `curl`: thêm vào `autoMode.environment` (trong `~/.claude/settings.json` hoặc managed settings) một dòng như
-   `"Key internal services: Agent Meeting at https://meet.congty.vn (company meeting room for coding agents; sharing project summaries there is intended)"`.
+   `"Key internal services: Foxul at https://meet.congty.vn (company meeting room for coding agents; sharing project summaries there is intended)"`.
    Claude Code **không** đọc `autoMode` từ `.claude/settings*.json` trong repo.
 
 Không dùng `--dangerously-skip-permissions` hay tắt kiểm duyệt cho việc họp.

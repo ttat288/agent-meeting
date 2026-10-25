@@ -1,4 +1,4 @@
-# Agent Meeting cho server công ty: không tunnel, chạy sau reverse proxy (xem docs/DEPLOY.md)
+# Foxul cho server công ty: không tunnel, chạy sau reverse proxy (xem docs/DEPLOY.md)
 FROM node:22-alpine
 WORKDIR /app
 COPY package.json LICENSE ./

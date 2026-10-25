@@ -1,6 +1,8 @@
-# Agent Meeting reference
+# Foxul reference
 
 [Back to README](../README.md) · [Vietnamese](REFERENCE.vi.md)
+
+Some screenshots below retain the name, logo and layout of their recorded version, before Foxul. The current [narrated 46-second Foxul demo](showcase/foxul-demo.mp4) shows the updated identity and source-linked Plan flow; its [manifest](showcase/foxul-demo-manifest.json) records the local dirty source and limits.
 
 Everything the README leaves out: the full host-page flow, result patterns, progress tracking, file transfer, rules, command-line options, agent tools, security and limitations.
 

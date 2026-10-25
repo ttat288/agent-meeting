@@ -1,7 +1,7 @@
 {
   "name": "agent-meeting",
   "version": "3.5.0",
-  "description": "Phòng họp cho nhiều AI agent trên các máy khác nhau tự trao đổi qua MCP hoặc curl, bạn là chủ trì. Một lệnh là chạy, có tunnel công khai miễn phí.",
+  "description": "Foxul — Multiple agents. One clear outcome. The moderation layer that keeps multi-agent discussions on track and drives them to a final decision.",
   "keywords": [
     "mcp",
     "model-context-protocol",

@@ -1,15 +1,26 @@
-# Agent Meeting showcase
+# Foxul showcase
 
 **One decision → three owned tasks → the source behind each task.** Start with the discussion example, then try task capture in your own browser without calling a model. The separate code fixture below checks verification/integration; it does not complete the research in this example.
 
 ## Source and evidence
 
+- **Current video v2:** [narrated 46-second Foxul demo](showcase/foxul-demo.mp4), [WebM fallback](showcase/foxul-demo.webm), [poster](showcase/foxul-demo-poster.png), [Vietnamese subtitles](showcase/foxul-demo.vi.vtt), [English captions](showcase/foxul-demo.en.vtt) and [recording manifest](showcase/foxul-demo-manifest.json). It was captured from the working tree based on HEAD `2855dfcfbf28c2426dc7cc71e495b8c20dd73ccf`, before the Foxul identity/media commit; it is not a versioned release recording. The manifest pins relevant source hashes, the full-diff hash at recording time, action timings, narration, media hashes and playback checks. The director approved the creative cut and authorized pushing it on 2026-10-25; this is not a new-user study or product-quality acceptance.
 - **Historical media source:** commit `f415cf46961ac43301083c4784fb216b68e87ac6` on branch `codex/2026-10-22-product-hardening`. [PR #1](https://github.com/ttat288/agent-meeting/pull/1) records the implementation and current review/merge status; package version `3.5.0` alone does not identify the source.
-- **README trial source:** commit `1b56f4db04d4135a66fcc329af89332eb21b9d3f` on main accepts the English `CONCLUSION` and `TASK` inputs used by the trial. This checkout extends the complete English result protocol with `ITEM DONE` and `TASK PROGRESS`, while retaining compatibility with existing localized inputs. It also includes `tools/try-workflow.js` and bounded failure diagnostics on explicit managed retries. [Retry acceptance and limitations](evidence/retry-context/ACCEPTANCE.vi.md) distinguish scripted software checks from unproven model efficacy.
-- **Discussion media:** captured on 2026-10-21 from the earlier integrated checkout, with scripted participants over real HTTP APIs. [EN manifest](showcase/en/manifest.json) · [VI manifest](showcase/vi/manifest.json) · [capture source hashes](evidence/showcase/source-hashes.txt). Later UI refinements are not pictured. The README uses scene 06, `005_plan.png`, in each language; the GIF combines ten scenes lasting 34 seconds.
+- **README trial source:** the README runs the source checkout directly, so the trial follows the current interface and identity. For the historical, pre-Foxul trial, commit `1b56f4db04d4135a66fcc329af89332eb21b9d3f` on main accepts the English `CONCLUSION` and `TASK` inputs. This checkout also accepts `ITEM DONE` and `TASK PROGRESS`, retains compatibility with existing localized inputs and includes `tools/try-workflow.js` plus bounded failure diagnostics on explicit managed retries. [Retry acceptance and limitations](evidence/retry-context/ACCEPTANCE.vi.md) distinguish scripted software checks from unproven model efficacy.
+- **Historical discussion media:** captured on 2026-10-21 from the earlier integrated checkout, with scripted participants over real HTTP APIs. [EN manifest](showcase/en/manifest.json) · [VI manifest](showcase/vi/manifest.json) · [capture source hashes](evidence/showcase/source-hashes.txt). These ten-scene GIFs retain their recorded pre-Foxul identity and last 34 seconds; they were not edited to imitate the current source.
 - **What is not established:** model problem-solving quality, better decisions, net coordination savings, token/billing savings and new-user acceptance. Fixture assertions and self-review do not establish those outcomes. The direct deterministic code arm was faster; its full scope and unknowns are [below](#offline-result-walkthrough).
 
 [Prior local review checks](evidence/showcase/readme-review.json) record the documentation/source hashes before the English capture fix. [English capture regression](evidence/consistency/english-capture.json) records the new parser/API verification; no new browser acceptance is implied. Older browser/CI receipts apply to their recorded sources, not automatically to later source changes. Some deep engineering documents are Vietnamese; this page gives the English explanation of the claims, measurements and material limits.
+
+## Foxul demo video
+
+[![Foxul demo poster: three owners and source-linked tasks, all Planned.](showcase/foxul-demo-poster.png)](showcase/foxul-demo.mp4)
+
+The English master is **46 seconds, 1920×1080, 30 fps, H.264/AAC MP4**, with English AI narration generated locally by Kokoro (`af_heart`), an electronic music bed, and seven-cue Vietnamese/English WebVTT tracks. A VP9/Opus WebM fallback is also available. It opens on the source-linked plan for three seconds, then shows **38 continuous seconds of real browser interaction**: typing the brief, starting the room, receiving the challenge, requesting a decision, opening Plan, and following Conversation source. The frame stays fixed throughout, with no animated zoom or pan. A five-second outro uses the approved Foxul logo and “Multiple agents. One clear outcome.” There are no chapter cards or large text panels over the product.
+
+The source UI is real and the scripted Workflow, Quality and Tooling participants speak through disposable local HTTP APIs. No participant model or agent CLI is called; Kokoro is used only for local speech synthesis. Cursor feedback is a capture-only editorial layer using Argo's seeded pointer paths. Foxul's production CSP is unchanged. Editing adds the opening result, framing, narration, music and outro. The tracking proposal remains a pilot; all three research tasks stay **Planned**. The video does not establish annotation quality, model quality, coordination savings or user acceptance.
+
+Music: **“Tech Live” — Kevin MacLeod (incompetech.com)**, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Free commercial use with attribution; the final frame contains the credit. The 46-second excerpt is faded and ducked under narration. [Track/source/license details](showcase/music/LICENSE.md) · [author's track page](https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1700030). Preserve the credit when publishing.
 
 ## Try the linked-task flow
 
@@ -33,9 +44,10 @@ The interface is captured from the source checkout. Participants are **scripted*
 
 ## Watch or read at your own pace
 
-- [English GIF](demo.gif) · [Vietnamese GIF](demo.vi.gif): ten paced scenes, 34 seconds, captions outside the application image. This is an edited screenshot walkthrough, not a continuous real-time recording.
+- [Foxul MP4](showcase/foxul-demo.mp4) · [WebM](showcase/foxul-demo.webm) · [Vietnamese subtitles](showcase/foxul-demo.vi.vtt) · [poster](showcase/foxul-demo-poster.png): the current narrated browser recording and its sidecar captions.
+- [Historical English GIF](demo.gif) · [historical Vietnamese GIF](demo.vi.gif): ten paced scenes, 34 seconds, captions outside the application image. This is an edited screenshot walkthrough, not a continuous real-time recording.
 - [Static English scenes](showcase/en) · [Static Vietnamese scenes](showcase/vi): lossless 1280×800 application captures, without captions composited into the UI.
-- The local HTML player has play/pause, previous/next, a keyboard-operable scene slider and language selection. It starts paused, including with reduced-motion enabled, and pauses when the page is hidden.
+- The local HTML page plays the current video with native controls and Vietnamese CC. Its historical scene player retains play/pause, previous/next, a keyboard-operable slider and language selection.
 
 To open the player from a checkout:
 
@@ -44,22 +56,20 @@ python3 -m http.server 3121 --bind 127.0.0.1 --directory docs
 # Open http://127.0.0.1:3121/showcase/ (or add ?lang=vi).
 ```
 
-The player is a documentation artifact. It does not change the application server or its CSP. The README shows a static Plan capture first; its animation is inside an expandable section.
+The player is a documentation artifact. It does not change the application server or its CSP. The README uses the poster as a click-to-play preview.
 
 ## The story
 
-| Scene | What happens | Why it matters |
+| Stage | What happens | Why it matters |
 |---|---|---|
+| 00 · Outcome | Plan already shows three owners and Conversation source links. | A new viewer sees the useful result before the tour. |
 | 01 · Brief | The host asks for a pilot workflow, limits and three tasks. | Start with a decision, not an open-ended chat. |
-| 02 · Invite | Workflow, Quality and Tooling participants join. | The room brings complementary perspectives together. |
-| 03 · Challenge | Quality questions confidence at frame 10. | A second perspective exposes a hidden assumption. |
-| 04 · Refine | The participants discuss split segments, human review and independent samples. | The plan improves through direct responses. |
-| 05 · Decide | The host asks for a conclusion; the room records a decision and owners. | The discussion produces an explicit next step. |
-| 06 · Plan | Three linked tasks appear in Plan. | Ownership and source survive the view change. |
-| 07 · Source | A task opens the message that created it. | Readers can check why the work was proposed. |
-| 08 · Follow-up | The meeting enters WORK with the transcript still readable. | Progress continues in the same room. |
-| 09 · Provenance | Task details retain the original context; a report marks missing reference clips. | Self-reported progress is distinct from verified execution. |
-| 10 · End | The host closes the room, leaving three unfinished tasks and minutes/follow-up controls. | Closing a meeting does not manufacture completed work. |
+| 02 · Perspectives | Workflow, Quality and Tooling respond to one brief. | The room holds distinct lenses together. |
+| 03 · Challenge | Quality questions what confidence at frame 10 says about frame 5. | A second perspective exposes a hidden assumption. |
+| 04 · Decide | The host requests a conclusion; the room records the pilot and its limits. | The discussion produces an explicit, bounded next step. |
+| 05 · Own the work | Three tasks appear in Plan with owners and Planned status. | Responsibility survives the view change without claiming completion. |
+| 06 · Trace the why | A task opens the exact conclusion that created it. | Readers can inspect the source instead of trusting a detached card. |
+| 07 · Foxul | The approved identity and slogan close the edit. | The product promise follows the demonstrated result. |
 
 ## Offline result walkthrough
 
@@ -91,11 +101,20 @@ The API fixture has separate historical [Results screenshots and capture hashes]
 
 ## Reproduce the recording
 
-Development prerequisites: an existing Chromium browser, Playwright available outside the app, and Python/Pillow for GIF encoding. These are documentation tools, not runtime dependencies. No installer is invoked and no package is added to Agent Meeting. The examples below use your own paths for the external tools.
+Development prerequisites: an existing Chromium browser, Playwright available outside the app and a local FFmpeg build with MJPEG input plus VP9/WebM output. The historical GIF path additionally needs Python/Pillow. These are documentation tools, not runtime dependencies. No installer is invoked and no package is added to Foxul. The examples below use your own paths for the external tools.
 
 ```bash
 export PLAYWRIGHT_MODULE=/absolute/path/to/playwright
 export BROWSER_BIN=/absolute/path/to/chromium
+# Current v2. Install tools only into the ignored project-local directory.
+# Node 20+; downloads npm packages and Kokoro weights on first use.
+npm install --prefix .local-tools/video-v2 --no-audit --no-fund \
+  @argo-video/cli@0.41.0 kokoro-js@1.2.1 ffmpeg-static@5.3.0 ffprobe-static@3.1.0
+node tools/foxul-video/generate-narration.mjs
+node tools/record-foxul-video-v2.mjs
+node tools/check-foxul-video-v2.mjs
+
+# Historical ten-scene still/GIF walkthrough:
 node tools/record-demo.js /tmp/am-demo-en
 node tools/record-demo.js /tmp/am-demo-vi --vi
 
@@ -110,11 +129,13 @@ python3 tools/make-gif.py /tmp/am-captioned-vi docs/demo.vi.gif
 node tools/check-showcase.js /tmp/am-showcase-check
 ```
 
-The recorder binds a temporary server to an OS-assigned loopback port, isolates config/work data under a temporary directory and removes it afterward. It does not use port 3000, existing meeting rooms, personal browser profiles or global settings. Frames use the current source's English/Vietnamese UI. The manifest records scene timing, responsive checks and the scripted-data disclosure.
+The recorders bind temporary servers to OS-assigned loopback ports, isolate config/work data under temporary directories and remove them afterward. They do not use port 3000, existing meeting rooms, personal browser profiles or global settings. The current recorder uses the English dark UI. Its narration script and local TTS entry point live in `tools/foxul-video/`; intermediates, tools and model cache stay under ignored `.local-tools/video-v2/`. Argo is MIT-licensed; Kokoro JS and model weights are Apache-2.0. The ffmpeg-static package is GPL-3.0-or-later; its license stays with the local tool, whose binary is not shipped with Foxul. No tool is added to Foxul's runtime dependencies. The earlier `tools/record-foxul-video.js` is retained as the superseded silent v1 renderer.
 
 ## Verification and limits
 
-See [browser evidence](evidence/showcase/checks.json) and [player checks](evidence/showcase/player.json). Independent checks cover long tasks and empty rooms, WORK/ENDED, both languages and system light/dark at 375/768/1280 CSS px with a 608 px viewport; keyboard disclosure controls, minutes download, task-source navigation, Back/reload and carry; browser zoom 200% in a disposable extension/profile. Test regression details: [tests](evidence/showcase/tests.json).
+The [current video manifest](showcase/foxul-demo-manifest.json) records 46-second/1920×1080 metadata, 2,120 captured browser paint frames conformed to 30 fps, seven cues per subtitle track, audio/video codecs, media hashes, zero capture/playback console errors and three Planned tasks. Export QA plays the full MP4 at 1× with narration enabled, captures thirteen moments without seeking, verifies decoded audio and active Vietnamese cues throughout, tests both player languages at 375/1280 px, and decodes the WebM fallback. This is technical/self-review evidence, not external creative or voice-quality approval.
+
+Historical checks remain in [browser evidence](evidence/showcase/checks.json) and [player checks](evidence/showcase/player.json). They cover long tasks and empty rooms, WORK/ENDED, both languages and system light/dark at 375/768/1280 CSS px with a 608 px viewport; keyboard disclosure controls, minutes download, task-source navigation, Back/reload and carry; browser zoom 200% in a disposable extension/profile. Test regression details: [tests](evidence/showcase/tests.json).
 
 The earlier ENDED failure left only about 24 px of transcript with three long tasks. The revised footer keeps a state summary and Plan link, with exports/next meeting under a disclosure. In the current long-task fixture, the transcript has about 370–423 px at the tested viewport sizes; expanding the footer preserves scrolling space. [Desktop](evidence/showcase/ended-1280.png) · [Mobile](evidence/showcase/ended-375.png) · [Zoom 200%](evidence/showcase/zoom200.png).
 

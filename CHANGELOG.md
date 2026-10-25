@@ -8,7 +8,7 @@
 - Preserve original file permission bits across integration and rollback under restrictive process umasks while retaining external-edit conflict guards.
 - When a CLI responds without a matching machine model identity, task recovery explains missing identity or a model mismatch and points to runtime reporting/profile mapping before another paid probe.
 - Require Linux/bubblewrap for every agy runtime model call, including read-only tasks and probes: its plan flags alone did not prevent native file editing in a real fixture. Missing isolation fails closed; managed agy writing/MCP guards remain.
-- Clarify the Claude Code writing adapter and unpublished direct-agy evidence in both READMEs; keep the historical trial pin without requiring a topic branch.
+- Clarify the Claude Code writing adapter and unpublished direct-agy evidence in both READMEs; keep a reviewed main snapshot pinned without requiring a topic branch.
 
 ## Unreleased — task-scoped skill supply and lookup
 
@@ -30,13 +30,14 @@
 - Add a CSV recovery fixture with a direct CLI baseline, failed verification, restart and tests on integrated source. Scripted participants do not establish AI debugging quality, multi-provider value or billing savings.
 - Language switching keeps the chosen locale in the URL so repeated switches work without a manual reload, including when browser storage is blocked; current view and other query parameters are preserved.
 
-## Unreleased — English decision/task capture
+## Unreleased — English result protocol and language consistency
 
-- Accept `CONCLUSION:` and `TASK:` alongside Vietnamese markers, preserving decision cleanup, task owners, source links and restart identity. The pinned preview still requires Vietnamese markers.
+- Accept `CONCLUSION:`, `TASK:`, `ITEM DONE` and `TASK PROGRESS` alongside existing localized markers, preserving decision cleanup, task owners, source links, agenda boundaries, progress evidence and restart identity.
+- Keep the English UI dictionary, AI brief prompt, README, Showcase and Reference free of Vietnamese display text; automated guards fail if mixed-language copy returns.
 
 ## Unreleased — reproducible first result
 
-- Lead English/Vietnamese READMEs with a shared decision → owned tasks → conversation-source example. Add a no-model browser trial pinned to the published preview commit; move benchmark details into the English showcase and distinguish draft PR, historical media and local additions.
+- Lead English/Vietnamese READMEs with a shared decision → owned tasks → conversation-source example. Add a no-model browser trial pinned to a reviewed main snapshot; move benchmark details into the English showcase and distinguish draft PR, historical media and local additions.
 - Add `tools/try-workflow.js`: disposable no-model API walkthrough with direct fixture comparison, conflict recovery, verification/integration and restart evidence. Measurements describe machinery only; model efficacy and human value remain unproven.
 
 ## Unreleased — live work monitoring and revision guards

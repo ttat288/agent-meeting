@@ -5,12 +5,12 @@
 
 Turn an agent discussion into a decision and tasks you can trace.
 
-**English** · [Tiếng Việt](README.vi.md) · [Try it](#try-it-without-a-model) · [Showcase](docs/SHOWCASE.md) · [Reference](docs/REFERENCE.md)
+**English** · [Vietnamese](README.vi.md) · [Try it](#try-it-without-a-model) · [Showcase](docs/SHOWCASE.md) · [Reference](docs/REFERENCE.md)
 </div>
 
 For developers who already use coding agents and need several perspectives on one decision. Chair a shared room, keep task owners and the conversation behind each task, then track progress separately from verified results. Connect your existing agents through MCP or `curl`.
 
-**Experimental workflow:** [PR #1](https://github.com/ttat288/agent-meeting/pull/1) records the implementation and review status. The trial below selects an earlier, fixed preview commit; it does not select a release. [Source versions and evidence](docs/SHOWCASE.md#source-and-evidence).
+**Experimental workflow:** [PR #1](https://github.com/ttat288/agent-meeting/pull/1) records the implementation and review status. The trial below pins a reviewed main snapshot; it does not select a release. [Source versions and evidence](docs/SHOWCASE.md#source-and-evidence).
 
 ## See the result
 
@@ -43,30 +43,30 @@ Better decisions, less human coordination and lower model spending **have not be
 
 ## Try it without a model
 
-Requires **Node.js 18+, Git and a browser**. No `npm install`, database or build step. In a new terminal, obtain the preview source:
+Requires **Node.js 18+, Git and a browser**. No `npm install`, database or build step. In a new terminal:
 
 ```bash
 git clone https://github.com/ttat288/agent-meeting.git
 cd agent-meeting
-git checkout f415cf46961ac43301083c4784fb216b68e87ac6
+git checkout 1b56f4db04d4135a66fcc329af89332eb21b9d3f
 node bin/cli.js --local --port 3125 --no-open
 ```
 
-Already using this checkout? Run just the last command in this checkout. Open the private host URL printed after `/m/`; append `?lang=en` for English. The terminal instructions are currently Vietnamese. Keep the host link private.
+Already using this checkout? Run just the last command. Open the private host URL containing `/m/`; append `?lang=en` for English. Keep the host link private.
 
 1. Paste the question above as the context. Leave roles empty, choose **Next: invite agents**, then **Start meeting** with no agents.
 2. In the host message box, send this sample conclusion to everyone:
 
 ```text
-KẾT LUẬN: Pilot human review of every frame between confirmed anchors 1 and 10; no validated threshold yet.
-VIỆC: Workflow | Map the review flow and anchor corrections | Before pilot
-VIỆC: Quality | Prepare reference clips and independent review | Before pilot
-VIỆC: Tooling | Prototype a queue preserving point source and human edits | After flow review
+CONCLUSION: Pilot human review of every frame between confirmed anchors 1 and 10; no validated threshold yet.
+TASK: Workflow | Map the review flow and anchor corrections | Before pilot
+TASK: Quality | Prepare reference clips and independent review | Before pilot
+TASK: Tooling | Prototype a queue preserving point source and human edits | After flow review
 ```
 
 3. Open **Plan**: expect three planned tasks with the owners above. Follow **Conversation source** on one task, reload, then use browser Back to return to Plan.
 
-`KẾT LUẬN` means “conclusion” and `VIỆC` means “task”. The pinned preview requires those Vietnamese markers. **The source in this checkout also accepts `CONCLUSION:` and `TASK:`**, with the same task/source behavior; replace the corresponding markers above when trying this checkout. This manual sample checks task capture and navigation, without running an agent or doing the research. [Detailed steps, expected results and recovery](docs/SHOWCASE.md#try-the-linked-task-flow).
+This manual sample checks task capture and navigation, without running an agent or doing the research. [Detailed steps, expected results and recovery](docs/SHOWCASE.md#try-the-linked-task-flow).
 
 Stop with Ctrl+C. Plan stores tasks locally; drafts use browser storage. [Storage and security](#boundaries-and-data). For an actual discussion, invite your agents from the room; they use their own tools/subscriptions and may incur charges. [Connection instructions](docs/REFERENCE.md).
 

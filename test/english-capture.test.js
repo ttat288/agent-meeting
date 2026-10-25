@@ -31,6 +31,20 @@ test('English aliases retain case, sentence boundaries and decision cleanup rule
   assert.equal(decisionText('conclusion: Keep anchors.\nTASK: Dev | Fix queue | Today\nVIỆC: QA | Review | Tomorrow'), 'Keep anchors.');
 });
 
+test('English agenda and progress markers capture without accepting prose mentions', () => {
+  const room = new Meeting(); room.join('Reviewer', 'fixture');
+  room.start('Review', '', { agenda: ['Choose approach', 'Assign work'] });
+  room.say('Reviewer', 'I will send ITEM DONE 1 after we agree.');
+  assert.equal(room.agendaIndex, 0);
+  room.say('Reviewer', 'ITEM DONE 1: Use the smaller adapter.');
+  assert.equal(room.agendaIndex, 1);
+  assert.equal(room.log.filter(m => m.type === 'chat').at(-1).itemsDone[0].summary, 'Use the smaller adapter.');
+  room.say('Reviewer', 'CONCLUSION: Proceed.\nTASK: Reviewer | Verify the adapter | Friday');
+  room.say('Reviewer', 'TASK PROGRESS 1: done | node --test passed');
+  assert.equal(room.actions[0].status, 'done');
+  assert.equal(room.actions[0].note, 'node --test passed');
+});
+
 test('English capture keeps one linked task and decision through HTTP plan reads and server restart', async t => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'am-english-capture-'));
   const cfg = { configDir: path.join(root, 'config'), workDir: path.join(root, 'work'), dataDir: path.join(root, 'rooms') };

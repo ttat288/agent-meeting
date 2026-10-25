@@ -277,10 +277,10 @@
   }
 
   // Bản tiếng Anh cho trang chủ trì tiếng Anh. Cùng các bài học như bản tiếng Việt (ví dụ không có số liệu để chép; khi
-  // followUp thì agenda/endCondition chỉ là phần bàn bạc). Từ khoá giao thức (KẾT LUẬN, VIỆC) giữ nguyên tiếng Việt.
+  // followUp thì agenda/endCondition chỉ là phần bàn bạc). Dùng các từ khoá giao thức tiếng Anh mà parser hỗ trợ.
   const EXAMPLE_EN = {
     schema: SCHEMA,
-    context: 'The two of you pick a charting library for the reports page. Each of you proposes one option and challenges the other with concrete arguments, then agree on one option. Finish with a KẾT LUẬN message and VIỆC lines, each naming the agent responsible.',
+    context: 'The two of you pick a charting library for the reports page. Each of you proposes one option and challenges the other with concrete arguments, then agree on one option. Finish with a CONCLUSION message and TASK lines, each naming the agent responsible.',
     endCondition: '',
     settings: { agenda: ['Compare the options', 'Pick one and split the work'], followUp: false, mode: 'free', maxMsgs: 60, timeLimitMin: 0, idleSec: 40 },
     roles: ['proposer', "devil's advocate"],
@@ -288,7 +288,7 @@
   function aiPromptEn(brief) {
     const draft = brief && (brief.context || brief.settings?.agenda?.length || brief.roles?.length);
     return [
-      'Please write a JSON "brief" for a meeting on Agent Meeting: several AI agents (Claude Code, Codex, Gemini CLI…, possibly each on a different machine) join one room, read the context, discuss with each other and conclude with a message starting with "KẾT LUẬN:" (conclusion) plus task lines "VIỆC: owner | task | due" (these two keywords stay in Vietnamese, they are part of the protocol). I chair the meeting. The meeting I want is described at the end of this message.',
+      'Please write a JSON "brief" for a meeting on Agent Meeting: several AI agents (Claude Code, Codex, Gemini CLI…, possibly each on a different machine) join one room, read the context, discuss with each other and conclude with a message starting with "CONCLUSION:" plus task lines "TASK: owner | task | due". I chair the meeting. The meeting I want is described at the end of this message.',
       '',
       'Reply with ONE valid JSON block only (no explanation, no comments inside the JSON), with exactly this structure and these keys:',
       '',
@@ -299,7 +299,7 @@
       'Meaning and limits of each field:',
       `- "schema": keep "${SCHEMA}".`,
       `- "context" (required, up to ${LIMITS.context} characters): direct instructions to the agents: goal, background (repo, paths, constraints, figures), the steps, and the expected output. Be clear and specific; use \\n for line breaks. Write it in the language the agents should use.`,
-      '  Agents pick their own names when they join, so names are unknown in advance: do not address agents by name; to assign work, say "each VIỆC line names the agent responsible".',
+      '  Agents pick their own names when they join, so names are unknown in advance: do not address agents by name; to assign work, say "each TASK line names the agent responsible".',
       '  If the agents must do real work after the meeting (change code, write docs…), say what evidence to report when done (commit hash, test results, PR link).',
       `- "endCondition" (up to ${LIMITS.endCondition} characters, may be ""): when to stop the discussion. "" means the agents discuss until they reach a conclusion (usually best left "").`,
       `- "settings.agenda": items discussed in order (up to ${LIMITS.agenda} items, ${LIMITS.item} characters each, no numbering). [] for a single topic.`,

@@ -274,6 +274,69 @@
   const disclosure = (label, ...content) => node('details', { class: 'ws-disclosure' }, node('summary', {}, label), ...content);
   const viewLink = (hash, label, primary = false) => node('a', { class: 'btn ' + (primary ? 'primary' : 'ghost'), href: '#' + hash }, label);
   const activeRun = run => ['queued', 'starting', 'running', 'verifying', 'integrating'].includes(run.status);
+  function latestWorkRun(items) {
+    return items.reduce((latest, run) => {
+      if (!latest) return run;
+      const stamp = Date.parse(run.updatedAt || run.finishedAt || run.startedAt || run.createdAt || '');
+      const latestStamp = Date.parse(latest.updatedAt || latest.finishedAt || latest.startedAt || latest.createdAt || '');
+      return Number.isFinite(stamp) && (!Number.isFinite(latestStamp) || stamp >= latestStamp) ? run : latest;
+    }, null);
+  }
+  function classifyWorkTask(currentTab, task, runs = [], remoteRuns = []) {
+    const failures = new Set(['failed', 'cancelled', 'rejected', 'timeout', 'output-limit', 'interrupted', 'lost']);
+    const taskRuns = [...runs, ...remoteRuns].filter(run => run.taskId === task.id);
+    if (currentTab === 'results' && !taskRuns.length) return { visible: false, summaryGroup: null, attention: 'pending' };
+    const currentRuns = taskRuns.filter(run => run.requirementRevision === task.requirementRevision);
+    let state;
+    if (currentTab === 'results' && !currentRuns.length) state = 'failed';
+    else {
+      const statuses = currentRuns.map(run => run.status), latest = latestWorkRun(currentRuns);
+      state = task.status === 'done' || statuses.includes('integrated') ? 'complete'
+        : currentRuns.some(activeRun) ? 'active'
+          : ['reported', 'verified'].includes(latest?.status) ? 'review'
+            : failures.has(latest?.status) ? 'failed'
+              : task.sourceCurrent !== false && task.purpose === 'execute' && task.acceptance?.length ? 'ready' : 'setup';
+    }
+    const summaryGroup = currentTab === 'plan'
+      ? state === 'setup' ? 'setup' : state === 'complete' ? 'complete' : 'prepared'
+      : currentTab === 'results'
+        ? ({ review: 'review', active: 'active', failed: 'attention', complete: 'complete' })[state] || null
+        : ({ ready: 'ready', active: 'active', review: 'attention', failed: 'attention' })[state] || null;
+    const attention = task.sourceCurrent === false ? 'muted'
+      : state === 'complete' ? 'done' : state === 'active' ? 'active' : state === 'review' ? 'review' : state === 'failed' ? 'warning' : 'pending';
+    return { visible: true, summaryGroup, attention };
+  }
+  function summarizeWorkView(currentTab, tasks = [], runs = [], remoteRuns = []) {
+    const summary = Object.fromEntries(['setup', 'prepared', 'ready', 'active', 'review', 'attention', 'complete'].map(key => [key, { count: 0, targetTaskId: null }]));
+    for (const task of tasks) {
+      const group = classifyWorkTask(currentTab, task, runs, remoteRuns).summaryGroup;
+      if (!group) continue;
+      summary[group].count++;
+      summary[group].targetTaskId ||= task.id;
+    }
+    return summary;
+  }
+  function focusWorkTask(taskId) {
+    const card = [...$('taskList').querySelectorAll('.ws-task')].find(item => item.dataset.taskId === taskId);
+    if (!card) return;
+    card.focus({ preventScroll: true });
+    card.scrollIntoView({ block: 'center', inline: 'nearest' });
+  }
+  function workSummary(currentTab) {
+    const summary = summarizeWorkView(currentTab, work.tasks || [], work.runs || [], remote.runs || []);
+    const items = currentTab === 'plan'
+      ? [['setup', t('Cần chuẩn bị', 'Needs setup'), 'pending'], ['prepared', t('Đã chuẩn bị', 'Prepared'), 'active'], ['complete', t('Hoàn tất', 'Complete'), 'done']]
+      : currentTab === 'results'
+        ? [['review', t('Cần nghiệm thu', 'Needs review'), 'review'], ['active', t('Đang xử lý', 'In progress'), 'active'], ['attention', t('Cần xử lý', 'Needs attention'), 'warning'], ['complete', t('Đã tích hợp', 'Integrated'), 'done']]
+        : [['ready', t('Sẵn sàng chạy', 'Ready to run'), 'pending'], ['active', t('Đang xử lý', 'In progress'), 'active'], ['attention', t('Cần xử lý', 'Needs attention'), 'review']];
+    return node('div', { class: 'ws-overview', 'data-items': String(items.length), 'aria-label': t('Tóm tắt trạng thái', 'Status summary') }, items.map(([key, label, tone]) => {
+      const { count, targetTaskId } = summary[key];
+      const content = [node('strong', {}, String(count)), node('span', {}, label)];
+      return targetTaskId
+        ? node('button', { type: 'button', class: 'ws-stat', 'data-tone': tone, 'data-target-task-id': targetTaskId, 'aria-label': t('Đi tới công việc đầu tiên: ', 'Go to first task: ') + label, onclick: () => focusWorkTask(targetTaskId) }, content)
+        : node('span', { class: 'ws-stat', 'data-tone': tone }, content);
+    }));
+  }
   function evidencePassed(entry) { return !!entry && typeof entry === 'object' && entry.exitCode === 0 && !entry.error && !entry.timeout && !entry.cancelled; }
   function renderSyncStatus() {
     const status = $('workSync'); if (!status) return;
@@ -318,7 +381,7 @@
     let context = work.session?.context || '';
     if (!context) try { context = JSON.parse(localStorage.getItem('agent-meeting:' + hostKey + ':brief') || '{}').context || ''; } catch {}
     const title = tab === 'plan' ? t('Kế hoạch', 'Plan') : tab === 'results' ? t('Kết quả', 'Results') : t('Thực hiện', 'Execute');
-    page.replaceChildren(node('header', { class: 'ws-view-heading ws-row between' }, node('div', {}, node('h1', { tabindex: '-1', id: 'workTitle' }, title + ' (' + (work.tasks || []).filter(task => tab !== 'results' || [...(work.runs || []), ...(remote.runs || [])].some(run => run.taskId === task.id)).length + ')')), node('div', { class: 'ws-row' }, node('div', { id: 'workSync', class: 'ws-sync' }), refresh)),
+    page.replaceChildren(node('header', { class: 'ws-view-heading ws-row between' }, node('div', { class: 'ws-title-group' }, node('h1', { tabindex: '-1', id: 'workTitle' }, title), workSummary(tab)), node('div', { class: 'ws-row' }, node('div', { id: 'workSync', class: 'ws-sync' }), refresh)),
       node('section', { id: 'taskList', 'aria-label': t('Danh sách công việc', 'Task list') }),
       disclosure(t('Bối cảnh phiên', 'Session context'), node('p', { class: 'session-context' }, context || t('Chưa có bối cảnh.', 'No context yet.')), viewLink('conversation', t('Về hội thoại', 'Go to conversation'))));
     renderTaskList();
@@ -335,9 +398,10 @@
     for (const task of tasks) {
       const runs = (work.runs || []).filter(r => r.taskId === task.id);
       const remoteRuns = (remote.runs || []).filter(r => r.taskId === task.id);
-      if (tab === 'results' && !runs.length && !remoteRuns.length) continue;
+      const classification = classifyWorkTask(tab, task, runs, remoteRuns);
+      if (!classification.visible) continue;
       const state = task.sourceCurrent === false ? 'retired' : task.status || 'planned';
-      const card = node('article', { class: 'ws-task', 'data-task-id': task.id },
+      const card = node('article', { class: 'ws-task', 'data-task-id': task.id, 'data-attention': classification.attention, tabindex: '-1' },
         node('header', { class: 'ws-row between' }, node('div', {}, node('h2', {}, task.goal), node('p', { class: 'ws-task-label' }, (task.origin?.kind === 'pm-goal' ? t('Mục tiêu PM #', 'PM goal #') + task.origin.goalRevision : task.origin?.kind === 'meeting-action' ? t('Việc #', 'Task #') + task.origin.number : t('Công việc', 'Task')) + (task.owner ? ' · ' + task.owner : ''))), node('span', { class: 'ws-pill', 'data-status': state }, task.pmId && state === 'done' ? t('Đã tích hợp và test', 'Integrated and tested') : state === 'verifying' ? t('Chờ kiểm chứng', 'Awaiting verification') : statusText(state))));
       const sourceHash = task.origin?.kind === 'pm-goal' ? '#pmControl' : task.origin?.roomCreatedAt === work.session?.createdAt && task.origin?.messageIndex != null ? '#message-' + task.origin.messageIndex : '#conversation';
       const source = node('div', { class: 'ws-task-source ws-row' }, task.origin ? node('a', { href: sourceHash }, task.origin.kind === 'pm-goal' ? t('Nguồn mục tiêu PM', 'PM goal source') : t('Nguồn hội thoại', 'Conversation source')) : node('span', { class: 'ws-meta' }, t('Chưa liên kết nguồn hội thoại', 'No conversation source linked')),

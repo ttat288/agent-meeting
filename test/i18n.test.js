@@ -86,6 +86,22 @@ test('tr: tiếng Việt giữ nguyên, tiếng Anh dịch, template đổi đư
   }
 });
 
+test('bản dịch tiếng Anh không lẫn tiếng Việt hay từ khoá giao thức Việt', () => {
+  const { EN } = loadI18n('en');
+  const mixed = [...EN].filter(([, value]) => VI.test(value));
+  assert.deepEqual(mixed, []);
+});
+
+test('tài liệu sản phẩm tiếng Anh không lẫn nội dung tiếng Việt', () => {
+  const files = ['README.md', 'docs/SHOWCASE.md', 'docs/REFERENCE.md'];
+  const mixed = files.flatMap(file => {
+    const rendered = fs.readFileSync(path.join(__dirname, '..', file), 'utf8')
+      .replace(/\]\([^)]*\)/g, ']'); // đường dẫn .vi.md / anchor Việt không phải nội dung hiển thị
+    return rendered.split('\n').map((line, i) => [file, i + 1, line]).filter(([, , line]) => VI.test(line));
+  });
+  assert.deepEqual(mixed, []);
+});
+
 test('parseBrief / aiPrompt tiếng Anh', () => {
   const B = require('../src/brief');
   const r = B.parseBrief('{\n "context": 5,\n}', null, 'en');
@@ -96,7 +112,9 @@ test('parseBrief / aiPrompt tiếng Anh', () => {
   assert.match(p, /ONE valid JSON block only/);
   assert.match(p, /My meeting:\n$/);
   assert.doesNotMatch(p, B.PLACEHOLDER);
-  assert.doesNotMatch(p.replace(/KẾT LUẬN|VIỆC/g, ''), VI); // chỉ giữ từ khoá giao thức tiếng Việt
+  assert.doesNotMatch(p, VI);
+  assert.match(p, /CONCLUSION:/);
+  assert.match(p, /TASK: owner \| task \| due/);
   const sample = p.slice(p.indexOf('{'), p.indexOf('\n}\n') + 2);
   assert.deepEqual(B.parseBrief(sample).warnings, []);
 });

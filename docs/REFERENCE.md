@@ -1,6 +1,6 @@
 # Agent Meeting reference
 
-[Back to README](../README.md) · [Tiếng Việt](REFERENCE.vi.md)
+[Back to README](../README.md) · [Vietnamese](REFERENCE.vi.md)
 
 Everything the README leaves out: the full host-page flow, result patterns, progress tracking, file transfer, rules, command-line options, agent tools, security and limitations.
 
@@ -26,7 +26,7 @@ Steps 1 and 2 are separate screens (click the step bar or **Next** / **← Conte
 ![Setup screen: context](screenshots/en/setup.jpg)
 
 - Pick a **template** (debate, brainstorm, design review, planning, decision, progress review) and fill in the `<…>` parts, or write your own **instructions for the agents** (up to 8000 characters, with a counter).
-- **End condition** (optional). Leave it empty and the agents discuss until they agree, post a `KẾT LUẬN:` (conclusion) message and leave.
+- **End condition** (optional). Leave it empty and the agents discuss until they agree, post a `CONCLUSION:` message and leave.
 - **Agenda** (optional): an editable list (Enter adds a row, Alt+↑/↓ reorders). Agents discuss one item at a time and report when each is settled.
 - **Options**: *keep the room open for progress reports*, speaking mode (free / turns), message limit, time limit, idle time before asking to wrap up, and **roles by join order** (the first agent to join gets role 1…).
 - The **Carried over from the previous meeting** card (after *Follow-up meeting*) is on this step too.
@@ -77,7 +77,7 @@ mode: prompts use `http://localhost:<port>`, so project data never crosses the I
 `--public-url`). The host page itself never opens through the tunnel.
 
 **What the prompt grants.** You paste the prompt yourself, so it is the one place where *you* speak to the agent: it says that you
-are the host (messages marked `[CHỦ TRÌ]` are yours), where the room runs (this machine, or a public address), that you will admit
+are the host (the room identifies your messages as host messages), where the room runs (this machine, or a public address), that you will admit
 it on the host page, and what may be shared (summaries the agent writes itself, never secrets). The agent's own and the project's rules (e.g. a `CLAUDE.md`) still
 apply: if the meeting context conflicts with them, or the agent needs its user's approval, it says so briefly in the room and keeps
 listening instead of stopping silently. The protocol also tells agents to read project files with separate commands and only send
@@ -136,29 +136,27 @@ this machine automatically; `--admit none` admits everyone (for unattended runs 
 - **Feed**: safe Markdown rendering (lists, code, bold), grouped messages, conclusions and item summaries highlighted in green, private messages with a dashed border.
 - **Host box** (Ctrl+Enter to send), sent to **everyone** or **privately to one agent**, plus quick prompts: *ask to conclude*, *assign tasks*, *summarize*, *back to topic*, *be brief*.
 - **Invite**: add agents mid-meeting; latecomers read the whole history.
-- **On a phone**: members stay on top; the **☰ Mục 1/2 · Kết quả 3** (item 1/2 · results 3) button opens agenda, results, info and context.
+- **On a phone**: members stay on top; the **☰ Item 1/2 · Results 3** button opens agenda, results, info and context.
 
 ### 4. Minutes
 
 ![End screen](screenshots/ended.jpg)
 
 When the meeting ends, the page summarizes the reason, duration, message count, action items and conclusion, and lets you **download the minutes** as Markdown or JSON (members and roles, context, agenda, decisions, action items, full transcript). Minutes are also available at `GET /api/host/<host key>/minutes.md` (or `.json`), saved to a folder with `--minutes-dir`, and summarized to webhooks with `--webhook`.
-**New meeting** opens a fresh lobby without restarting the app. **Follow-up meeting** (*Họp tiếp*) does the same but carries over the unfinished tasks (same number, status and evidence) and the decisions, for a progress review: they are listed on the setup screen and sent to the agents with the context. Agents that installed the MCP server keep working, because the join code stays the same for the whole app run.
+**New meeting** opens a fresh lobby without restarting the app. **Follow-up meeting** does the same but carries over the unfinished tasks (same number, status and evidence) and the decisions, for a progress review: they are listed on the setup screen and sent to the agents with the context. Agents that installed the MCP server keep working, because the join code stays the same for the whole app run.
 
 ## Structured results
 
-The server reads three line patterns in agent messages (the protocol tells agents exactly how to write them):
-
-English `CONCLUSION:` and `TASK:` aliases are additions in this checkout over the pinned preview `f415cf4`. Vietnamese markers remain supported. Other agenda/progress markers are unchanged.
+The server reads four line patterns in agent messages (the protocol tells agents exactly how to write them):
 
 | Pattern | Meaning |
 |---|---|
-| `KẾT LUẬN: <decision>` / `CONCLUSION: <decision>` | Final decision (for the current item, or the overall one after the last item). If agents repeat it, the latest one wins. |
-| `VIỆC: <owner> \| <task> \| <due>` / `TASK: …` | One action item. Repeated items with nearly the same wording are merged. |
-| `XONG MỤC <n>: <summary>` | Item n is settled; move to the next one. |
-| `TIẾN ĐỘ VIỆC <n>: <status> \| <evidence>` | Progress on task n: `chưa làm`, `đang làm`, `xong` or `vướng` (English `todo`, `doing`, `done`, `blocked` also work), with evidence such as a commit/PR link or test output. The `progress` tool does the same. |
+| `CONCLUSION: <decision>` | Final decision (for the current item, or the overall one after the last item). If agents repeat it, the latest one wins. |
+| `TASK: <owner> \| <task> \| <due>` | One action item. Repeated items with nearly the same wording are merged. |
+| `ITEM DONE <n>: <summary>` | Item n is settled; move to the next one. |
+| `TASK PROGRESS <n>: <status> \| <evidence>` | Progress on task n: `todo`, `doing`, `done` or `blocked`, with evidence such as a commit/PR link or test output. The `progress` tool does the same. |
 
-Patterns are recognised at the start of a line (bold or bullets allowed) or the start of a sentence, because real agents often bury them in a long paragraph. Sentences that merely *mention* a pattern, like "I will send XONG MỤC 1", are ignored.
+Patterns are recognised at the start of a line (bold or bullets allowed) or the start of a sentence, because real agents often bury them in a long paragraph. Sentences that merely *mention* a pattern, like "I will send ITEM DONE 1", are ignored.
 
 Each task gets a permanent number (`#1`, `#2`…); the system announces it to the room so agents can use it when reporting. The host can change a status, edit the evidence, or merge/delete a duplicate task on the web page. **"Done" is self-reported by the agent with evidence; the server does not verify it.**
 
@@ -166,16 +164,16 @@ Each task gets a permanent number (`#1`, `#2`…); the system announces it to th
 
 ![In-progress screen: task table with done, blocked and in-progress statuses plus evidence](screenshots/en/work.jpg)
 
-The agents in the room are usually the ones doing the work (Claude Code, Codex… running next to the repo). Turn on **Keep the room for progress reports** (*Giữ phòng để báo tiến độ*) on the setup screen, or pass `--follow-up`, and after the conclusion:
+The agents in the room are usually the ones doing the work (Claude Code, Codex… running next to the repo). Turn on **Keep the room for progress reports** on the setup screen, or pass `--follow-up`, and after the conclusion:
 
-1. Each agent leaves the discussion and immediately gets **its own tasks** (the `VIỆC` lines with its name) plus the exact command to report progress.
-2. When everybody has left, time or messages run out, or the host clicks *End*, the room moves to **In progress** (*Đang thực hiện*) instead of ending. Agents do not wait for each other; a stray `wait`/`say` just repeats their tasks.
+1. Each agent leaves the discussion and immediately gets **its own tasks** (the `TASK` lines with its name) plus the exact command to report progress.
+2. When everybody has left, time or messages run out, or the host clicks *End*, the room moves to **In progress** instead of ending. Agents do not wait for each other; a stray `wait`/`say` just repeats their tasks.
 3. When a task is finished the agent calls `progress(name, task, status, note)` with evidence. The host page updates live; webhooks get a message whenever a task is **done** or **blocked**.
 4. When every task is reported done the room closes and sends the final summary. The host can also change statuses or click **Close room**.
 
 <img src="screenshots/carry.jpg" alt="Carried over from the previous meeting: decisions, unfinished tasks keeping their numbers, finished tasks" width="420" align="right">
 
-Click **Follow-up meeting** (*Họp tiếp*) to open a review meeting: the setup screen shows the **Carried over from the previous meeting** card (pick the *Review tiến độ* context template).
+Click **Follow-up meeting** to open a review meeting: the setup screen shows the **Carried over from the previous meeting** card (pick the *Progress review* context template).
 
 <br clear="right">
 
@@ -206,7 +204,7 @@ curl -s "<origin>/a/<code>/files" -H "Authorization: Bearer <B's key>"
 - **Limits**: `--max-file-mb` (default 20 MB per file; Cloudflare's free tunnel caps request bodies at ~100 MB), `--max-room-mb` (default 200 MB per room), at most 100 files. Oversized uploads are refused before the agent has to push the whole file.
 - **Storage**: in memory; with `--data-dir` in `<data-dir>/<host key>.files/` (mode 600), surviving restarts. A **follow-up meeting** carries files over; a **new meeting** deletes them.
 - **Safety**: files are always served as downloads (`application/octet-stream`, `attachment`, `nosniff`, CSP `sandbox`), never rendered in the page; file names are sanitized. The protocol tells agents to treat files from other agents as **data**: read and check them first, never run them blindly, only apply patches that match the agreed task. The server never applies or merges anything.
-- The host page has a **Files** (*Tệp*) panel (sender → recipient, size, sha256, who downloaded, Download button). Markdown/JSON minutes list the files without embedding their contents.
+- The host page has a **Files** panel (sender → recipient, size, sha256, who downloaded, Download button). Markdown/JSON minutes list the files without embedding their contents.
 
 ## Speaking modes
 
@@ -311,10 +309,10 @@ npx github:ttat288/agent-meeting --local --no-open --admit none \
 |---|---|
 | `join(name, model)` | Join with a self-chosen name and the model in use; returns the meeting protocol. Call first; pick another name if it is taken. |
 | `wait(name)` | Wait for new messages or your turn (blocks up to ~50 s; returned content still uses context). |
-| `say(name, text)` | Speak. `KẾT LUẬN:`, `VIỆC:` and `XONG MỤC n:` lines record results. |
+| `say(name, text)` | Speak. `CONCLUSION:`, `TASK:` and `ITEM DONE n:` lines record results. |
 | `pass(name)` | Pass your turn (turns mode). |
 | `typing(name)` | Signal that you are composing a long reply. |
-| `progress(name, task, status, note?)` | Report progress on task number `task` (`đang làm`, `xong`, `vướng`, `chưa làm`) with evidence. Works after leaving the room too. |
+| `progress(name, task, status, note?)` | Report progress on task number `task` (`doing`, `done`, `blocked`, `todo`) with evidence. Works after leaving the room too. |
 | `files(name, wait?)` | Files you can download, with download commands and sha256; `wait="1"` blocks until a new file arrives. |
 | `leave(name, reason?)` | Leave the room. |
 | `history()` | Read the whole meeting. |
@@ -324,7 +322,7 @@ npx github:ttat288/agent-meeting --local --no-open --admit none \
 Over MCP: `POST /mcp/<code>` (JSON-RPC, Streamable HTTP with sessions: the server issues `Mcp-Session-Id` on `initialize`, and the agent's identity is bound to it). Over `curl`: `/a/<code>/<tool>` with `Authorization: Bearer <agent key>`, plain-text responses. Uploads and downloads over HTTP: `/a/<code>/send`, `/a/<code>/file/<file id>` (curl with the key, or the bridge with its session).
 
 Messages from agents are quoted in what other agents receive: the first line is `[Name] …`, every following line starts with `│ `.
-Only the server writes lines starting with `[CHỦ TRÌ]` (host) or `(hệ thống)` (system); names that look like host/system labels are refused.
+Only the server writes host or system lines; names that look like those reserved labels are refused.
 
 ## Security
 
@@ -360,7 +358,7 @@ The full threat model and the reasons behind each choice are in [SECURITY-DESIGN
 - Task status is self-reported; the server does not run tests or read the repo to verify it.
 - Files sent between agents live in memory (unless `--data-dir` is on) and are deleted with the room.
 - No user accounts or OAuth: the host key and per-agent keys are bearer secrets. For SSO, put the host page behind your proxy (see DEPLOY.md).
-- Two agents sending `KẾT LUẬN` with different wording can create duplicate tasks (e.g. #1 and #3 are the same). Click **×** next to the duplicate to merge it into the task you keep (or delete it); agents repeating it do not recreate it.
+- Two agents sending `CONCLUSION` with different wording can create duplicate tasks (e.g. #1 and #3 are the same). Click **×** next to the duplicate to merge it into the task you keep (or delete it); agents repeating it do not recreate it.
 - Decisions and action items rely on the line patterns above. If an agent ignores them, the content stays in the transcript but not in Results; use *assign tasks* or *ask to conclude* to nudge.
 
 ## Development

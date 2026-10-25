@@ -5,15 +5,15 @@
 ## Trạng thái và việc tiếp theo
 
 - Người dùng là **giám đốc**, agent là **PM**; PM tự phân tích, triển khai và kiểm chứng trong phạm vi đã giao. Không tự biến backlog thành yêu cầu.
-- Ca kiểm giá trị ngày24/10 đã đóng lúc **15:26:31 Asia/Bangkok**, T0 **12:59:04**, elapsed **2h27m27s**; dừng trước hạn16:30, không nhận đã làm tới hạn. Bốn đầu ra và sáu sửa có bằng chứng bên dưới; lợi ích ròng/wow factor chưa chứng minh.
-- Việc gần nhất đã hoàn thành: rút bàn giao từ 1.270 xuống 60 dòng, giữ nguyên bản cũ trong archive và kiểm 28 liên kết; sau đó chỉnh skill `viet-ban-giao` để viết chuyên nghiệp, tập trung vào trạng thái, bằng chứng và bước tiếp theo. Skill đã qua validator; đây là skill cá nhân trên máy, không phải tài nguyên sản phẩm.
-- **Phiên tiếp theo nạp context rồi chờ yêu cầu mới.** Chưa có lệnh mở lại ca phát triển; không tự chạy backlog hoặc dời/gia hạn deadline cũ. Mã, quyền và bằng chứng kiểm source của ca trước giữ nguyên.
-- Ưu tiên khi được giao phát triển tiếp: hành trình repo → hiểu giá trị → xem bằng chứng → thử → kết quả; xử lý phản hồi UI còn mở trước backlog model/remote. UI chưa được người dùng nghiệm thu. PM chọn pain point có bằng chứng trong nhiệm vụ mới, không mặc định xây adapter/graph/màn hình.
+- Hai lát cắt đã đạt điểm dừng: **J47 điều hướng tổng hợp công việc** và **nhất quán ngôn ngữ trên hành trình công khai**. Kế hoạch/Thực hiện/Kết quả có tổng hợp trạng thái, status rail và vùng điều khiển; mục có số lớn hơn0 dẫn bằng chuột/bàn phím tới card đầu tiên đúng nhóm, mục0 là nội dung tĩnh. Hợp đồng dữ liệu, route, thứ tự và mutation giữ nguyên.
+- README/Showcase/Reference và từ điển UI tiếng Anh không còn giải thích hoặc hiển thị từ khóa tiếng Việt. Parser nhận đủ `CONCLUSION`, `TASK`, `ITEM DONE`, `TASK PROGRESS` và vẫn tương thích ngược với marker Việt. Guard mới chặn tiếng Việt lọt lại vào ba tài liệu sản phẩm tiếng Anh cùng toàn bộ giá trị dịch UI tiếng Anh.
+- Kiểm hiện tại: helper J47 4/4; language/parser 10/10; full `npm test` đạt (511 test sau khi thêm 3 guard/ca parser, 45 file); `git diff --check` đạt. Browser fixture J47 cô lập 8 ca VI/EN×sáng/tối×375/1280 xác nhận Tab/Enter, focus ring, đúng task đầu tiên, không tràn ngang, thứ tự và `tasks/runs` không đổi; 0 model call. Đây là self-review/fixture, chưa phải người dùng nghiệm thu hoặc bằng chứng giảm thời gian người thật.
+- **Không có nhiệm vụ phát triển tiếp theo đã được giao.** Phiên mới nạp context, kiểm Git chỉ đọc khi cần, xác nhận ngắn rồi chờ. Không tự mở filter, sắp xếp, i18n giao thức agent, adapter/model/admin hoặc backlog.
 
 ## Workspace và ranh giới quyền
 
-- Lúc chốt ca: HEAD `1b56f4db04d4135a66fcc329af89332eb21b9d3f`, nhánh `codex/2026-10-22-product-hardening`. **Nhiều thay đổi local và untracked đã có trước ca**, gồm source runtime/work/UI/task-skills, tests, tools và evidence. Kiểm `git status` thực tế; không reset/clean/pull/merge hoặc hoàn tác thay đổi không liên quan. HEAD không đại diện toàn bộ source đã kiểm.
-- Giữ local: không commit/push/merge/release, sửa OAuth/settings/MCP global, chạm app cổng3000/phòng thật hoặc mở endpoint public. Không lấy quyền cũ trong archive làm quyền mới. Preview/receipt trong `/tmp` có thể đã mất; không mặc định dịch vụ/cổng cũ còn chạy.
+- Nhánh `codex/2026-10-22-product-hardening`; baseline trước hai lát cắt là `fcdbe0120f429382ea2f6104127936ded212578f`. Giám đốc đã cấp quyền ngày 2026-10-25 để commit và push **toàn bộ** thay đổi local hiện có lên đúng nhánh này. Không suy rộng quyền đó sang pull/merge/rebase/release hoặc sửa remote/OAuth/CA/settings global.
+- Sau push phải kiểm `git status --short --branch` và `git rev-parse HEAD`; nếu push thất bại thì giữ commit local, ghi đúng lỗi, không bypass TLS hay đổi cấu hình. Không reset/clean/pull/merge hoặc hoàn tác thay đổi không liên quan. Preview/receipt trong `/tmp` có thể đã mất; không mặc định dịch vụ/cổng cũ còn chạy.
 - Node>=18, không dependency runtime ngoài; UI HTML/CSS/JS thuần, không build. Giữ CSP, VI/EN, theme theo hệ thống, responsive và bàn phím. Công cụ/skill local không tự thành dependency sản phẩm.
 
 ## Quyết định phải giữ
@@ -27,6 +27,12 @@
 - Skill theo task chỉ direct local managed Claude: required supplied, optional lookup với grant riêng; pin/hash/source guard; remote/team-swap/agy chưa hỗ trợ policy. `supplied` không chứng minh `applied/compliant`; UI chưa có policy editor. Caveman chỉ mẫu local để review, không cài/hook/persistence mặc định; CodeGraph chưa xác nhận runtime/index hoạt động. Chi tiết trong AGENTS và evidence task-skills.
 
 ## Kết quả local gần nhất và bằng chứng
+
+J47 xử lý khả năng quét S04–S06: bỏ tổng số mơ hồ ở title, thêm tổng hợp theo hành động, status rail và gom footer thành vùng điều khiển. Summary có đích dùng button với nhãn VI/EN, giữ thứ tự Tab theo thị giác rồi focus/scroll tới card `tabindex=-1`; summary0 dùng span không giả disabled action. Thiết kế dùng token hiện có, nhãn chữ vẫn mang nghĩa, mobile control44px; không thêm framework/CDN/palette. Đặc tả và giới hạn ở [J47](CONSISTENCY-JOURNEYS.vi.md#j47--quét-nhanh-trạng-thái-kế-hoạch--thực-hiện--kết-quả-2026-10-24); test mới đọc helper production thay vì chép logic.
+
+Lát cắt ngôn ngữ loại bỏ pain point người đọc README tiếng Anh phải thấy marker Việt rồi đọc thêm câu giải nghĩa. README tiếng Anh dùng marker Anh trực tiếp với snapshot main có thể tái lập; README Việt dùng nội dung mẫu Việt. Showcase/Reference, quick prompt, empty state và prompt nhờ AI đồng bộ. Parser aliases giữ tương thích dữ liệu; không lọc, ẩn, đổi thứ tự hay mutation task. Giao thức vận chuyển agent `join/wait` và một số tài liệu vận hành vẫn là tiếng Việt thuần vì contract chưa có locale; chưa tuyên bố quốc tế hoá end-to-end.
+
+Preview tạm cổng3137 đã dừng; dữ liệu `/tmp` không phải artifact bền vững.
 
 Đã sửa sáu điểm: **handoff lịch sử**, **permission bits integration/rollback dưới umask077**, **rebase stale/nguồn đổi trước ghi**, **recovery lỗi actual identity**, **mutator run thiếu revision**, **filesystem boundary cho agy readonly/probe**. Success và lỗi/phục hồi gồm restart, missing/restore source, canonical redirect, stale revision, explicit new attempt cùng task và rollback conflict đã kiểm.
 

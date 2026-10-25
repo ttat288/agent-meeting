@@ -36,11 +36,11 @@ const findConclusion = (text) => {
 const ACTION = /^\s*(?:[-*•]\s*)?(?:\*\*)?\s*(?:VIỆC|TASK)\s*(?:\*\*)?\s*:\s*(?:\*\*)?\s*(.+)$/i;
 // "XONG MỤC 2: tóm tắt" để báo đã chốt một mục. Nhận ở đầu dòng hoặc đầu câu (agent thật hay viết giữa đoạn),
 // nhiều mục trong một tin. Không nhận câu kiểu "tôi sẽ gửi XONG MỤC 1." hay "trước khi XONG MỤC 2, ...".
-const ITEM_DONE = /(?:^|\n|[.!?)][ \t]+)[ \t]*(?:[-*•][ \t]*)?(?:\*\*)?XONG MỤC[ \t]*#?(\d+)[ \t]*(?:\*\*)?[ \t]*(?:[:\-–][ \t]*(?:\*\*)?[ \t]*([^\n]*)|(?=[ \t]*(?:\n|$)))/gi;
-const ITEM_DONE_LINE = /^\s*(?:[-*•]\s*)?(?:\*\*)?XONG MỤC/i;
+const ITEM_DONE = /(?:^|\n|[.!?)][ \t]+)[ \t]*(?:[-*•][ \t]*)?(?:\*\*)?(?:XONG MỤC|ITEM DONE)[ \t]*#?(\d+)[ \t]*(?:\*\*)?[ \t]*(?:[:\-–][ \t]*(?:\*\*)?[ \t]*([^\n]*)|(?=[ \t]*(?:\n|$)))/gi;
+const ITEM_DONE_LINE = /^\s*(?:[-*•]\s*)?(?:\*\*)?(?:XONG MỤC|ITEM DONE)/i;
 const MAX_AGENDA = 20;
 // "TIẾN ĐỘ VIỆC 2: xong | link commit/PR, kết quả test" (đầu dòng, một dòng một việc)
-const PROGRESS = /^\s*(?:[-*•]\s*)?(?:\*\*)?\s*TIẾN ĐỘ\s+VIỆC\s*#?(\d+)\s*(?:\*\*)?\s*[:\-–]\s*(?:\*\*)?\s*(.+)$/i;
+const PROGRESS = /^\s*(?:[-*•]\s*)?(?:\*\*)?\s*(?:TIẾN ĐỘ\s+VIỆC|TASK\s+PROGRESS)\s*#?(\d+)\s*(?:\*\*)?\s*[:\-–]\s*(?:\*\*)?\s*(.+)$/i;
 const TASK_STATUS = { todo: 'chưa làm', doing: 'đang làm', done: 'xong', blocked: 'vướng' };
 // Bản tiếng Anh CHỈ để hiển thị trên trang chủ trì tiếng Anh (m.en); agent luôn nhận m.text (tiếng Việt).
 const TASK_STATUS_EN = { todo: 'to do', doing: 'doing', done: 'done', blocked: 'blocked' };
@@ -324,7 +324,7 @@ class Meeting {
         const late = idx < this.agendaIndex;
         if (late && this.log.some(x => x.itemsDone?.some(y => y.item === idx && y.summary))) continue;
         if (!late) firstDone = Math.min(firstDone, d.index);
-        let summary = (d[2] || '').split(/(?:\*\*)?\s*(?:KẾT LUẬN|CONCLUSION)\s*(?:\*\*)?\s*:/i)[0].split(/(?:\*\*)?XONG MỤC\s*#?\d/i)[0];
+        let summary = (d[2] || '').split(/(?:\*\*)?\s*(?:KẾT LUẬN|CONCLUSION)\s*(?:\*\*)?\s*:/i)[0].split(/(?:\*\*)?(?:XONG MỤC|ITEM DONE)\s*#?\d/i)[0];
         if (!summary.trim()) { // "XONG MỤC 1" đứng một mình: lấy dòng kế tiếp (không phải VIỆC / KẾT LUẬN)
           const rest = m.text.slice(d.index + d[0].length).split('\n').map(l => l.trim()).filter(Boolean);
           summary = rest.find(l => !ACTION.test(l) && findConclusion(l) < 0 && !ITEM_DONE_LINE.test(l)) || '';
@@ -379,7 +379,7 @@ class Meeting {
       ? `Chuyển sang mục ${this.agendaIndex + 1}/${n}: ${this.agenda[this.agendaIndex]}`
       : 'Đã bàn xong mọi mục trong chương trình. Hãy gửi một tin KẾT LUẬN tổng hợp (kèm các dòng VIỆC: nếu có), rồi rời phòng.', undefined,
       { en: this.agendaIndex < n ? `Moving to item ${this.agendaIndex + 1}/${n}: ${this.agenda[this.agendaIndex]}`
-        : 'Every agenda item is done. Send one overall KẾT LUẬN (conclusion) message (with VIỆC: task lines if any), then leave.' });
+        : 'Every agenda item is done. Send one overall CONCLUSION message (with TASK: lines if any), then leave.' });
     return true;
   }
 
@@ -536,11 +536,11 @@ ${calls}`;
   _openingEn() {
     const lim = this.cfg.timeLimitMin, L = [
       this.context || 'No specific topic: agree on one yourselves.', '',
-      'End condition: ' + (this.endCondition || 'none. Discuss until you reach a conclusion (a "KẾT LUẬN: ..." message), then leave one by one.'),
+      'End condition: ' + (this.endCondition || 'none. Discuss until you reach a conclusion (a "CONCLUSION: ..." message), then leave one by one.'),
       'Speaking mode: ' + (this.cfg.mode === 'turns' ? 'turns by slot (wait until wait says it is your turn).' : 'free.'),
     ];
     if (lim) L.push(`Time limit: ${lim} minutes.`);
-    if (this.cfg.followUp) L.push('', 'AFTER THE CONCLUSION THE ROOM STAYS OPEN FOR PROGRESS REPORTS: once there is a KẾT LUẬN and VIỆC lines (naming the agent responsible),',
+    if (this.cfg.followUp) L.push('', 'AFTER THE CONCLUSION THE ROOM STAYS OPEN FOR PROGRESS REPORTS: once there is a CONCLUSION and TASK lines (naming the agent responsible),',
       'each agent leaves (leave) and does its own tasks RIGHT AWAY. When done, report with progress (task number, done, evidence such as a commit/PR link, test results).',
       'Do not wait for each other in the room; only report "done" when the work is really done.');
     if (this.carry) {
@@ -548,7 +548,7 @@ ${calls}`;
       L.push('', `FROM THE PREVIOUS MEETING${c.topic ? ` (${c.topic})` : ''}:`);
       if (c.decisions.length) L.push('Decisions:', ...c.decisions.map(d => `- ${d.item ? `[Item ${d.item}] ` : ''}${d.text}`));
       if (c.done.length) L.push('Tasks reported done:', ...c.done.map(t => `- #${t.n} ${t.task}${t.owner ? ` (${t.owner})` : ''}${t.note ? `: ${t.note}` : ''}`));
-      if (open.length) L.push('UNFINISHED tasks (numbers unchanged; owners report "TIẾN ĐỘ VIỆC <n>: <status> | <evidence>"):',
+      if (open.length) L.push('UNFINISHED tasks (numbers unchanged; owners report "TASK PROGRESS <n>: <status> | <evidence>"):',
         ...open.map(t => `- #${t.n} ${t.owner ? t.owner + ' — ' : ''}${t.task}${t.due ? ` (due: ${t.due})` : ''}: ${TASK_STATUS_EN[t.status]}${t.note ? ` · ${t.note}` : ''}`));
     }
     if (this.files.length) L.push('', `${this.files.length} file(s) from the previous meeting: call files to list them and get download commands.`);
@@ -556,8 +556,8 @@ ${calls}`;
     if (withRole.length) L.push('', 'Roles:', ...withRole.map(a => `- ${a.name}: ${a.role}`));
     if (this.agenda.length) L.push('', `Agenda (${this.agenda.length} items, in order):`, ...this.agenda.map((x, i) => `${i + 1}. ${x}`),
       'Discuss one item at a time. When the current item is settled, ONE agent posts a message with its own line (at the start of a line):',
-      'XONG MỤC <n>: <summary of the decision for the item>',
-      'For example "XONG MỤC 1: use managed PostgreSQL". The system then moves to the next item. After the last item, send an overall KẾT LUẬN (with VIỆC lines if any).',
+      'ITEM DONE <n>: <summary of the decision for the item>',
+      'For example "ITEM DONE 1: use managed PostgreSQL". The system then moves to the next item. After the last item, send an overall CONCLUSION (with TASK lines if any).',
       '', `Start with item 1: ${this.agenda[0]}`);
     return L.join('\n');
   }
@@ -568,7 +568,7 @@ ${calls}`;
     if (left > WARN_BEFORE_MS && this.endsAt - this.startedAt > WARN_BEFORE_MS) this._timer(left - WARN_BEFORE_MS, () => {
       if (this.state !== 'LIVE') return;
       this._push('host', 'Chủ trì', 'Còn 2 phút. Hãy chốt kết luận ngay (tin "KẾT LUẬN: ...") rồi rời phòng.', undefined,
-        { en: '2 minutes left. Conclude now (a "KẾT LUẬN: ..." message), then leave.' });
+        { en: '2 minutes left. Conclude now (a "CONCLUSION: ..." message), then leave.' });
       this._changed();
     });
     this._timer(left, () => this._end('hết thời gian'));

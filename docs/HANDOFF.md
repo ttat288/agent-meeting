@@ -12,8 +12,8 @@
 
 ## Workspace và ranh giới quyền
 
-- Nhánh `codex/2026-10-22-product-hardening`; baseline trước hai lát cắt là `fcdbe0120f429382ea2f6104127936ded212578f`. Toàn bộ J47, sửa nhất quán ngôn ngữ, test và tài liệu đã commit tại `8e3e15114fc39b6fcc9f480f096933b2a7522350` (`Improve work overview and language consistency`) và push thành công lên `origin/codex/2026-10-22-product-hardening` ngày 2026-10-25.
-- Quyền commit/push cho yêu cầu này đã dùng xong; không suy rộng sang pull/merge/rebase/release hoặc sửa remote/OAuth/CA/settings global. Không reset/clean hoặc hoàn tác thay đổi không liên quan. Preview/receipt trong `/tmp` có thể đã mất; không mặc định dịch vụ/cổng cũ còn chạy.
+- Baseline trước hai lát cắt là `fcdbe0120f429382ea2f6104127936ded212578f`. Toàn bộ J47, sửa nhất quán ngôn ngữ, test và tài liệu đã commit tại `8e3e15114fc39b6fcc9f480f096933b2a7522350` (`Improve work overview and language consistency`), sau đó bàn giao tại `b182aa80291b71999c1a6d5f0fa4a41462c27c36`. Cả hai đã push lên `origin/codex/2026-10-22-product-hardening` và fast-forward vào `origin/main` ngày 2026-10-25.
+- Push trực tiếp `main` đã dùng quyền bypass: GitHub báo vi phạm quy tắc “phải qua pull request” và 3/3 required status checks chưa thành công. Bằng chứng hiện có là test local nêu ở trên, **không phải CI main**. Quyền đặc biệt cho yêu cầu này đã dùng xong; không suy rộng sang release hoặc sửa remote/OAuth/CA/settings global. Preview/receipt trong `/tmp` có thể đã mất; không mặc định dịch vụ/cổng cũ còn chạy.
 - Node>=18, không dependency runtime ngoài; UI HTML/CSS/JS thuần, không build. Giữ CSP, VI/EN, theme theo hệ thống, responsive và bàn phím. Công cụ/skill local không tự thành dependency sản phẩm.
 
 ## Quyết định phải giữ

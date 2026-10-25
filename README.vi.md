@@ -20,9 +20,9 @@ Chạy local bằng Node.js. Không dependency runtime, database hoặc bước 
 
 Trong ví dụ theo kịch bản, một người đề xuất kiểm frame 1 và 10. Người khác chất vấn điều gì xảy ra tại frame 5. Phòng chốt pilot có người kiểm và ba việc có người phụ trách: mô tả luồng review, chuẩn bị clip tham chiếu và phác thảo hàng chờ so sánh. Mở **Nguồn hội thoại** của một việc để xem quyết định tạo ra nó.
 
-[![Demo Foxul: một quyết định thành ba việc có người phụ trách và nguồn hội thoại.](docs/showcase/foxul-demo-poster.png)](docs/showcase/foxul-demo.mp4)
+[![Demo Foxul: một quyết định thành ba việc có người phụ trách và nguồn hội thoại.](docs/showcase/foxul-demo-poster.png)](https://youtu.be/O1ntGbQYhkI)
 
-**[Xem demo có lời đọc — 46 giây](docs/showcase/foxul-demo.mp4)** · [Phụ đề Việt](docs/showcase/foxul-demo.vi.vtt) · [Trình phát local](docs/showcase/index.html) · [Nguồn và kiểm chứng](docs/SHOWCASE.md#foxul-demo-video)
+**[Xem demo có lời đọc trên YouTube — 46 giây](https://youtu.be/O1ntGbQYhkI)** · [Phụ đề Anh](docs/showcase/foxul-demo.en.vtt) · [Phụ đề Việt](docs/showcase/foxul-demo.vi.vtt) · [Trình phát local](docs/showcase/index.html) · [Nguồn và kiểm chứng](docs/SHOWCASE.md#foxul-demo-video)
 
 Người tham gia theo kịch bản dùng API local thật; cả ba việc vẫn ở trạng thái **dự kiến**, chưa hoàn tất hoặc kiểm chứng. Video có giọng đọc AI tiếng Anh, phụ đề Việt và [nhạc nền có giấy phép thương mại](docs/showcase/music/LICENSE.md). [Chi tiết bản quay và hash nguồn](docs/SHOWCASE.md#foxul-demo-video).
 

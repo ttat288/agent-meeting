@@ -20,9 +20,9 @@ Runs locally on Node.js. No runtime dependencies, database or build step. [Archi
 
 In the scripted example, one participant proposes checking frames 1 and 10. Another challenges what happens at frame 5. The room settles on a pilot with human review and three owned tasks: map the review flow, prepare reference clips, and prototype a comparison queue. Open a task’s **Conversation source** to see the decision that created it.
 
-[![Foxul demo: one decision becomes three owned, source-linked tasks.](docs/showcase/foxul-demo-poster.png)](docs/showcase/foxul-demo.mp4)
+[![Foxul demo: one decision becomes three owned, source-linked tasks.](docs/showcase/foxul-demo-poster.png)](https://youtu.be/O1ntGbQYhkI)
 
-**[Watch the narrated 46-second demo](docs/showcase/foxul-demo.mp4)** · [Vietnamese subtitles](docs/showcase/foxul-demo.vi.vtt) · [Local player](docs/showcase/index.html) · [Source and verification](docs/SHOWCASE.md#foxul-demo-video)
+**[Watch the narrated 46-second demo on YouTube](https://youtu.be/O1ntGbQYhkI)** · [English captions](docs/showcase/foxul-demo.en.vtt) · [Vietnamese subtitles](docs/showcase/foxul-demo.vi.vtt) · [Local player](docs/showcase/index.html) · [Source and verification](docs/SHOWCASE.md#foxul-demo-video)
 
 Scripted participants use real local APIs; all three tasks remain **planned**, not completed or verified. The video includes English AI narration, Vietnamese subtitles and [licensed background music](docs/showcase/music/LICENSE.md). [Recording details and source hashes](docs/SHOWCASE.md#foxul-demo-video).
 
